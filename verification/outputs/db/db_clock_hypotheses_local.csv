@@ -1,0 +1,97 @@
+hypothesis,test,zone,period,observed,predicted,match,clock_column
+machine_local_dst,zone vs Eastern,Central,DST,0.86,0.0,False,local
+machine_local_dst,zone vs Eastern,Mountain,DST,1.88,0.0,False,local
+machine_local_dst,zone vs Eastern,Arizona (no DST),DST,2.89,0.0,False,local
+machine_local_dst,zone vs Eastern,Pacific,DST,2.94,0.0,False,local
+machine_local_dst,zone vs Eastern,Hawaii (no DST),DST,5.92,0.0,False,local
+machine_local_dst,zone vs Eastern,Central,Standard,0.86,0.0,False,local
+machine_local_dst,zone vs Eastern,Mountain,Standard,1.88,0.0,False,local
+machine_local_dst,zone vs Eastern,Arizona (no DST),Standard,1.88,0.0,False,local
+machine_local_dst,zone vs Eastern,Pacific,Standard,2.94,0.0,False,local
+machine_local_dst,zone vs Eastern,Hawaii (no DST),Standard,4.95,0.0,False,local
+machine_local_dst,Standard vs DST (same zone),Eastern,Std-DST,1.01,0.0,False,local
+machine_local_dst,Standard vs DST (same zone),Central,Std-DST,1.0,0.0,False,local
+machine_local_dst,Standard vs DST (same zone),Mountain,Std-DST,1.01,0.0,False,local
+machine_local_dst,Standard vs DST (same zone),Arizona (no DST),Std-DST,0.0,0.0,True,local
+machine_local_dst,Standard vs DST (same zone),Pacific,Std-DST,1.0,0.0,False,local
+machine_local_dst,Standard vs DST (same zone),Hawaii (no DST),Std-DST,0.04,0.0,True,local
+utc,zone vs Eastern,Central,DST,0.86,1.0,True,local
+utc,zone vs Eastern,Mountain,DST,1.88,2.0,True,local
+utc,zone vs Eastern,Arizona (no DST),DST,2.89,3.0,True,local
+utc,zone vs Eastern,Pacific,DST,2.94,3.0,True,local
+utc,zone vs Eastern,Hawaii (no DST),DST,5.92,6.0,True,local
+utc,zone vs Eastern,Central,Standard,0.86,1.0,True,local
+utc,zone vs Eastern,Mountain,Standard,1.88,2.0,True,local
+utc,zone vs Eastern,Arizona (no DST),Standard,1.88,2.0,True,local
+utc,zone vs Eastern,Pacific,Standard,2.94,3.0,True,local
+utc,zone vs Eastern,Hawaii (no DST),Standard,4.95,5.0,True,local
+utc,Standard vs DST (same zone),Eastern,Std-DST,1.01,1.0,True,local
+utc,Standard vs DST (same zone),Central,Std-DST,1.0,1.0,True,local
+utc,Standard vs DST (same zone),Mountain,Std-DST,1.01,1.0,True,local
+utc,Standard vs DST (same zone),Arizona (no DST),Std-DST,0.0,0.0,True,local
+utc,Standard vs DST (same zone),Pacific,Std-DST,1.0,1.0,True,local
+utc,Standard vs DST (same zone),Hawaii (no DST),Std-DST,0.04,0.0,True,local
+local_standard_no_dst,zone vs Eastern,Central,DST,0.86,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Mountain,DST,1.88,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Arizona (no DST),DST,2.89,1.0,False,local
+local_standard_no_dst,zone vs Eastern,Pacific,DST,2.94,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Hawaii (no DST),DST,5.92,1.0,False,local
+local_standard_no_dst,zone vs Eastern,Central,Standard,0.86,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Mountain,Standard,1.88,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Arizona (no DST),Standard,1.88,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Pacific,Standard,2.94,0.0,False,local
+local_standard_no_dst,zone vs Eastern,Hawaii (no DST),Standard,4.95,0.0,False,local
+local_standard_no_dst,Standard vs DST (same zone),Eastern,Std-DST,1.01,1.0,True,local
+local_standard_no_dst,Standard vs DST (same zone),Central,Std-DST,1.0,1.0,True,local
+local_standard_no_dst,Standard vs DST (same zone),Mountain,Std-DST,1.01,1.0,True,local
+local_standard_no_dst,Standard vs DST (same zone),Arizona (no DST),Std-DST,0.0,0.0,True,local
+local_standard_no_dst,Standard vs DST (same zone),Pacific,Std-DST,1.0,1.0,True,local
+local_standard_no_dst,Standard vs DST (same zone),Hawaii (no DST),Std-DST,0.04,0.0,True,local
+fixed_eastern_wall,zone vs Eastern,Central,DST,0.86,1.0,True,local
+fixed_eastern_wall,zone vs Eastern,Mountain,DST,1.88,2.0,True,local
+fixed_eastern_wall,zone vs Eastern,Arizona (no DST),DST,2.89,3.0,True,local
+fixed_eastern_wall,zone vs Eastern,Pacific,DST,2.94,3.0,True,local
+fixed_eastern_wall,zone vs Eastern,Hawaii (no DST),DST,5.92,6.0,True,local
+fixed_eastern_wall,zone vs Eastern,Central,Standard,0.86,1.0,True,local
+fixed_eastern_wall,zone vs Eastern,Mountain,Standard,1.88,2.0,True,local
+fixed_eastern_wall,zone vs Eastern,Arizona (no DST),Standard,1.88,2.0,True,local
+fixed_eastern_wall,zone vs Eastern,Pacific,Standard,2.94,3.0,True,local
+fixed_eastern_wall,zone vs Eastern,Hawaii (no DST),Standard,4.95,5.0,True,local
+fixed_eastern_wall,Standard vs DST (same zone),Eastern,Std-DST,1.01,0.0,False,local
+fixed_eastern_wall,Standard vs DST (same zone),Central,Std-DST,1.0,0.0,False,local
+fixed_eastern_wall,Standard vs DST (same zone),Mountain,Std-DST,1.01,0.0,False,local
+fixed_eastern_wall,Standard vs DST (same zone),Arizona (no DST),Std-DST,0.0,-1.0,False,local
+fixed_eastern_wall,Standard vs DST (same zone),Pacific,Std-DST,1.0,0.0,False,local
+fixed_eastern_wall,Standard vs DST (same zone),Hawaii (no DST),Std-DST,0.04,-1.0,False,local
+fixed_central_wall,zone vs Eastern,Central,DST,0.86,1.0,True,local
+fixed_central_wall,zone vs Eastern,Mountain,DST,1.88,2.0,True,local
+fixed_central_wall,zone vs Eastern,Arizona (no DST),DST,2.89,3.0,True,local
+fixed_central_wall,zone vs Eastern,Pacific,DST,2.94,3.0,True,local
+fixed_central_wall,zone vs Eastern,Hawaii (no DST),DST,5.92,6.0,True,local
+fixed_central_wall,zone vs Eastern,Central,Standard,0.86,1.0,True,local
+fixed_central_wall,zone vs Eastern,Mountain,Standard,1.88,2.0,True,local
+fixed_central_wall,zone vs Eastern,Arizona (no DST),Standard,1.88,2.0,True,local
+fixed_central_wall,zone vs Eastern,Pacific,Standard,2.94,3.0,True,local
+fixed_central_wall,zone vs Eastern,Hawaii (no DST),Standard,4.95,5.0,True,local
+fixed_central_wall,Standard vs DST (same zone),Eastern,Std-DST,1.01,0.0,False,local
+fixed_central_wall,Standard vs DST (same zone),Central,Std-DST,1.0,0.0,False,local
+fixed_central_wall,Standard vs DST (same zone),Mountain,Std-DST,1.01,0.0,False,local
+fixed_central_wall,Standard vs DST (same zone),Arizona (no DST),Std-DST,0.0,-1.0,False,local
+fixed_central_wall,Standard vs DST (same zone),Pacific,Std-DST,1.0,0.0,False,local
+fixed_central_wall,Standard vs DST (same zone),Hawaii (no DST),Std-DST,0.04,-1.0,False,local
+fixed_pacific_wall,zone vs Eastern,Central,DST,0.86,1.0,True,local
+fixed_pacific_wall,zone vs Eastern,Mountain,DST,1.88,2.0,True,local
+fixed_pacific_wall,zone vs Eastern,Arizona (no DST),DST,2.89,3.0,True,local
+fixed_pacific_wall,zone vs Eastern,Pacific,DST,2.94,3.0,True,local
+fixed_pacific_wall,zone vs Eastern,Hawaii (no DST),DST,5.92,6.0,True,local
+fixed_pacific_wall,zone vs Eastern,Central,Standard,0.86,1.0,True,local
+fixed_pacific_wall,zone vs Eastern,Mountain,Standard,1.88,2.0,True,local
+fixed_pacific_wall,zone vs Eastern,Arizona (no DST),Standard,1.88,2.0,True,local
+fixed_pacific_wall,zone vs Eastern,Pacific,Standard,2.94,3.0,True,local
+fixed_pacific_wall,zone vs Eastern,Hawaii (no DST),Standard,4.95,5.0,True,local
+fixed_pacific_wall,Standard vs DST (same zone),Eastern,Std-DST,1.01,0.0,False,local
+fixed_pacific_wall,Standard vs DST (same zone),Central,Std-DST,1.0,0.0,False,local
+fixed_pacific_wall,Standard vs DST (same zone),Mountain,Std-DST,1.01,0.0,False,local
+fixed_pacific_wall,Standard vs DST (same zone),Arizona (no DST),Std-DST,0.0,-1.0,False,local
+fixed_pacific_wall,Standard vs DST (same zone),Pacific,Std-DST,1.0,0.0,False,local
+fixed_pacific_wall,Standard vs DST (same zone),Hawaii (no DST),Std-DST,0.04,-1.0,False,local

@@ -1,0 +1,4 @@
+normalisation,unmatched_tickets,unmatched_serials,tickets_matching_after_normalisation,serials_matching_after_normalisation
+upper,1358,732,0,0
+alnum_upper,1358,732,0,0
+alnum_upper_no_leading_zeros,1358,732,0,0

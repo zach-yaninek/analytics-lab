@@ -1,0 +1,7 @@
+variant,models_spanning_gt1_type,customers_spanning_gt1_host,hosts_with_gt1_customer
+Zac (pandas re-implementation),16,31,83
+excluding shared internal host and NULL host,14,26,82
+excluding 'Unknown' machine type (measure 1 only),14,,
+"host URL normalised (trim, lower, no trailing slash)",16,27,83
+one modal account per machine,16,31,83
+"one modal account per machine, excl. shared/NULL host",14,26,82

@@ -1,0 +1,1153 @@
+clock_column,zone,period,hour,transactions,share_pct
+local,Arizona (no DST),DST,0,14870,4.207
+local,Arizona (no DST),DST,1,26762,7.571
+local,Arizona (no DST),DST,2,24468,6.922
+local,Arizona (no DST),DST,3,7279,2.059
+local,Arizona (no DST),DST,4,3969,1.123
+local,Arizona (no DST),DST,5,6191,1.751
+local,Arizona (no DST),DST,6,6080,1.72
+local,Arizona (no DST),DST,7,1708,0.483
+local,Arizona (no DST),DST,8,1305,0.369
+local,Arizona (no DST),DST,9,1406,0.398
+local,Arizona (no DST),DST,10,1518,0.429
+local,Arizona (no DST),DST,11,7663,2.168
+local,Arizona (no DST),DST,12,17113,4.841
+local,Arizona (no DST),DST,13,62578,17.704
+local,Arizona (no DST),DST,14,38266,10.826
+local,Arizona (no DST),DST,15,13737,3.886
+local,Arizona (no DST),DST,16,11478,3.247
+local,Arizona (no DST),DST,17,10802,3.056
+local,Arizona (no DST),DST,18,9157,2.591
+local,Arizona (no DST),DST,19,9990,2.826
+local,Arizona (no DST),DST,20,10675,3.02
+local,Arizona (no DST),DST,21,21548,6.096
+local,Arizona (no DST),DST,22,23878,6.755
+local,Arizona (no DST),DST,23,21036,5.951
+local,Arizona (no DST),Standard,0,6331,3.984
+local,Arizona (no DST),Standard,1,12099,7.613
+local,Arizona (no DST),Standard,2,11117,6.995
+local,Arizona (no DST),Standard,3,3022,1.902
+local,Arizona (no DST),Standard,4,1369,0.861
+local,Arizona (no DST),Standard,5,2456,1.545
+local,Arizona (no DST),Standard,6,2886,1.816
+local,Arizona (no DST),Standard,7,636,0.4
+local,Arizona (no DST),Standard,8,605,0.381
+local,Arizona (no DST),Standard,9,550,0.346
+local,Arizona (no DST),Standard,10,465,0.293
+local,Arizona (no DST),Standard,11,3305,2.08
+local,Arizona (no DST),Standard,12,8034,5.055
+local,Arizona (no DST),Standard,13,27735,17.453
+local,Arizona (no DST),Standard,14,17792,11.196
+local,Arizona (no DST),Standard,15,6404,4.03
+local,Arizona (no DST),Standard,16,4596,2.892
+local,Arizona (no DST),Standard,17,4808,3.025
+local,Arizona (no DST),Standard,18,4129,2.598
+local,Arizona (no DST),Standard,19,4957,3.119
+local,Arizona (no DST),Standard,20,5207,3.277
+local,Arizona (no DST),Standard,21,10219,6.43
+local,Arizona (no DST),Standard,22,11212,7.055
+local,Arizona (no DST),Standard,23,8983,5.653
+local,Central,DST,0,248300,4.311
+local,Central,DST,1,127131,2.207
+local,Central,DST,2,110036,1.91
+local,Central,DST,3,139448,2.421
+local,Central,DST,4,99989,1.736
+local,Central,DST,5,32271,0.56
+local,Central,DST,6,25313,0.439
+local,Central,DST,7,26156,0.454
+local,Central,DST,8,31409,0.545
+local,Central,DST,9,63754,1.107
+local,Central,DST,10,253732,4.405
+local,Central,DST,11,949939,16.493
+local,Central,DST,12,570493,9.905
+local,Central,DST,13,247662,4.3
+local,Central,DST,14,174646,3.032
+local,Central,DST,15,186119,3.231
+local,Central,DST,16,155291,2.696
+local,Central,DST,17,169410,2.941
+local,Central,DST,18,222079,3.856
+local,Central,DST,19,444045,7.71
+local,Central,DST,20,463187,8.042
+local,Central,DST,21,333471,5.79
+local,Central,DST,22,351551,6.104
+local,Central,DST,23,334141,5.801
+local,Central,Standard,0,153368,5.7
+local,Central,Standard,1,117914,4.382
+local,Central,Standard,2,64467,2.396
+local,Central,Standard,3,53003,1.97
+local,Central,Standard,4,65936,2.45
+local,Central,Standard,5,50808,1.888
+local,Central,Standard,6,19000,0.706
+local,Central,Standard,7,15920,0.592
+local,Central,Standard,8,15977,0.594
+local,Central,Standard,9,18319,0.681
+local,Central,Standard,10,33225,1.235
+local,Central,Standard,11,115302,4.285
+local,Central,Standard,12,426447,15.849
+local,Central,Standard,13,258139,9.594
+local,Central,Standard,14,118832,4.416
+local,Central,Standard,15,84047,3.124
+local,Central,Standard,16,89767,3.336
+local,Central,Standard,17,75844,2.819
+local,Central,Standard,18,82808,3.077
+local,Central,Standard,19,103761,3.856
+local,Central,Standard,20,204726,7.608
+local,Central,Standard,21,208381,7.744
+local,Central,Standard,22,153154,5.692
+local,Central,Standard,23,161624,6.007
+local,Eastern,DST,0,771684,2.515
+local,Eastern,DST,1,669575,2.182
+local,Eastern,DST,2,818416,2.667
+local,Eastern,DST,3,796625,2.596
+local,Eastern,DST,4,341014,1.111
+local,Eastern,DST,5,273065,0.89
+local,Eastern,DST,6,294579,0.96
+local,Eastern,DST,7,291649,0.95
+local,Eastern,DST,8,365390,1.191
+local,Eastern,DST,9,1052310,3.429
+local,Eastern,DST,10,3973763,12.949
+local,Eastern,DST,11,3108850,10.13
+local,Eastern,DST,12,1422217,4.634
+local,Eastern,DST,13,1021625,3.329
+local,Eastern,DST,14,1053455,3.433
+local,Eastern,DST,15,933310,3.041
+local,Eastern,DST,16,932588,3.039
+local,Eastern,DST,17,1084385,3.533
+local,Eastern,DST,18,1960009,6.387
+local,Eastern,DST,19,2516102,8.199
+local,Eastern,DST,20,1819203,5.928
+local,Eastern,DST,21,1760173,5.736
+local,Eastern,DST,22,1728582,5.633
+local,Eastern,DST,23,1700188,5.54
+local,Eastern,Standard,0,789905,5.667
+local,Eastern,Standard,1,352665,2.53
+local,Eastern,Standard,2,307267,2.204
+local,Eastern,Standard,3,373177,2.677
+local,Eastern,Standard,4,364148,2.612
+local,Eastern,Standard,5,159402,1.144
+local,Eastern,Standard,6,137690,0.988
+local,Eastern,Standard,7,125441,0.9
+local,Eastern,Standard,8,127185,0.912
+local,Eastern,Standard,9,161174,1.156
+local,Eastern,Standard,10,460565,3.304
+local,Eastern,Standard,11,1781334,12.779
+local,Eastern,Standard,12,1417355,10.168
+local,Eastern,Standard,13,642932,4.612
+local,Eastern,Standard,14,471038,3.379
+local,Eastern,Standard,15,490289,3.517
+local,Eastern,Standard,16,418095,2.999
+local,Eastern,Standard,17,426835,3.062
+local,Eastern,Standard,18,495927,3.558
+local,Eastern,Standard,19,885497,6.352
+local,Eastern,Standard,20,1140319,8.181
+local,Eastern,Standard,21,814332,5.842
+local,Eastern,Standard,22,805435,5.778
+local,Eastern,Standard,23,791406,5.677
+local,Hawaii (no DST),DST,0,11586,5.902
+local,Hawaii (no DST),DST,1,15858,8.078
+local,Hawaii (no DST),DST,2,13277,6.763
+local,Hawaii (no DST),DST,3,11083,5.645
+local,Hawaii (no DST),DST,4,9557,4.868
+local,Hawaii (no DST),DST,5,8167,4.16
+local,Hawaii (no DST),DST,6,4818,2.454
+local,Hawaii (no DST),DST,7,5215,2.656
+local,Hawaii (no DST),DST,8,6304,3.211
+local,Hawaii (no DST),DST,9,4156,2.117
+local,Hawaii (no DST),DST,10,1917,0.976
+local,Hawaii (no DST),DST,11,3895,1.984
+local,Hawaii (no DST),DST,12,1703,0.867
+local,Hawaii (no DST),DST,13,1074,0.547
+local,Hawaii (no DST),DST,14,2196,1.119
+local,Hawaii (no DST),DST,15,7544,3.843
+local,Hawaii (no DST),DST,16,30967,15.774
+local,Hawaii (no DST),DST,17,18734,9.543
+local,Hawaii (no DST),DST,18,8935,4.551
+local,Hawaii (no DST),DST,19,5911,3.011
+local,Hawaii (no DST),DST,20,5271,2.685
+local,Hawaii (no DST),DST,21,5392,2.747
+local,Hawaii (no DST),DST,22,5653,2.88
+local,Hawaii (no DST),DST,23,7105,3.619
+local,Hawaii (no DST),Standard,0,5277,5.817
+local,Hawaii (no DST),Standard,1,7229,7.968
+local,Hawaii (no DST),Standard,2,6274,6.916
+local,Hawaii (no DST),Standard,3,4801,5.292
+local,Hawaii (no DST),Standard,4,4235,4.668
+local,Hawaii (no DST),Standard,5,3865,4.26
+local,Hawaii (no DST),Standard,6,2630,2.899
+local,Hawaii (no DST),Standard,7,2238,2.467
+local,Hawaii (no DST),Standard,8,3230,3.56
+local,Hawaii (no DST),Standard,9,2205,2.431
+local,Hawaii (no DST),Standard,10,887,0.978
+local,Hawaii (no DST),Standard,11,1852,2.041
+local,Hawaii (no DST),Standard,12,738,0.813
+local,Hawaii (no DST),Standard,13,435,0.479
+local,Hawaii (no DST),Standard,14,897,0.989
+local,Hawaii (no DST),Standard,15,2925,3.224
+local,Hawaii (no DST),Standard,16,13947,15.374
+local,Hawaii (no DST),Standard,17,9001,9.922
+local,Hawaii (no DST),Standard,18,4149,4.573
+local,Hawaii (no DST),Standard,19,2505,2.761
+local,Hawaii (no DST),Standard,20,2421,2.669
+local,Hawaii (no DST),Standard,21,2533,2.792
+local,Hawaii (no DST),Standard,22,3036,3.347
+local,Hawaii (no DST),Standard,23,3411,3.76
+local,Mountain,DST,0,72824,8.557
+local,Mountain,DST,1,47686,5.603
+local,Mountain,DST,2,16673,1.959
+local,Mountain,DST,3,14203,1.669
+local,Mountain,DST,4,18518,2.176
+local,Mountain,DST,5,17435,2.049
+local,Mountain,DST,6,6586,0.774
+local,Mountain,DST,7,3513,0.413
+local,Mountain,DST,8,2913,0.342
+local,Mountain,DST,9,4407,0.518
+local,Mountain,DST,10,10648,1.251
+local,Mountain,DST,11,36003,4.23
+local,Mountain,DST,12,139674,16.412
+local,Mountain,DST,13,76981,9.045
+local,Mountain,DST,14,35177,4.133
+local,Mountain,DST,15,21733,2.554
+local,Mountain,DST,16,21930,2.577
+local,Mountain,DST,17,19917,2.34
+local,Mountain,DST,18,20896,2.455
+local,Mountain,DST,19,26833,3.153
+local,Mountain,DST,20,56629,6.654
+local,Mountain,DST,21,59207,6.957
+local,Mountain,DST,22,58968,6.929
+local,Mountain,DST,23,61716,7.252
+local,Mountain,Standard,0,30111,7.091
+local,Mountain,Standard,1,38901,9.162
+local,Mountain,Standard,2,25791,6.074
+local,Mountain,Standard,3,8687,2.046
+local,Mountain,Standard,4,7550,1.778
+local,Mountain,Standard,5,9913,2.335
+local,Mountain,Standard,6,10183,2.398
+local,Mountain,Standard,7,3328,0.784
+local,Mountain,Standard,8,1852,0.436
+local,Mountain,Standard,9,1611,0.379
+local,Mountain,Standard,10,2289,0.539
+local,Mountain,Standard,11,6011,1.416
+local,Mountain,Standard,12,16559,3.9
+local,Mountain,Standard,13,69495,16.367
+local,Mountain,Standard,14,38029,8.956
+local,Mountain,Standard,15,16729,3.94
+local,Mountain,Standard,16,10246,2.413
+local,Mountain,Standard,17,9739,2.294
+local,Mountain,Standard,18,8118,1.912
+local,Mountain,Standard,19,10195,2.401
+local,Mountain,Standard,20,12334,2.905
+local,Mountain,Standard,21,28192,6.639
+local,Mountain,Standard,22,30460,7.174
+local,Mountain,Standard,23,28289,6.662
+local,Newfoundland,DST,0,395,0.992
+local,Newfoundland,DST,1,1044,2.621
+local,Newfoundland,DST,2,591,1.484
+local,Newfoundland,DST,3,157,0.394
+local,Newfoundland,DST,4,68,0.171
+local,Newfoundland,DST,5,54,0.136
+local,Newfoundland,DST,6,40,0.1
+local,Newfoundland,DST,7,59,0.148
+local,Newfoundland,DST,8,346,0.869
+local,Newfoundland,DST,9,4249,10.669
+local,Newfoundland,DST,10,8107,20.357
+local,Newfoundland,DST,11,2650,6.654
+local,Newfoundland,DST,12,1486,3.731
+local,Newfoundland,DST,13,847,2.127
+local,Newfoundland,DST,14,818,2.054
+local,Newfoundland,DST,15,935,2.348
+local,Newfoundland,DST,16,1079,2.709
+local,Newfoundland,DST,17,4052,10.175
+local,Newfoundland,DST,18,7150,17.954
+local,Newfoundland,DST,19,2512,6.308
+local,Newfoundland,DST,20,1655,4.156
+local,Newfoundland,DST,21,698,1.753
+local,Newfoundland,DST,22,493,1.238
+local,Newfoundland,DST,23,340,0.854
+local,Newfoundland,Standard,0,123,0.616
+local,Newfoundland,Standard,1,132,0.661
+local,Newfoundland,Standard,2,435,2.178
+local,Newfoundland,Standard,3,242,1.212
+local,Newfoundland,Standard,4,76,0.381
+local,Newfoundland,Standard,5,29,0.145
+local,Newfoundland,Standard,6,24,0.12
+local,Newfoundland,Standard,7,11,0.055
+local,Newfoundland,Standard,8,27,0.135
+local,Newfoundland,Standard,9,214,1.072
+local,Newfoundland,Standard,10,2107,10.55
+local,Newfoundland,Standard,11,4553,22.798
+local,Newfoundland,Standard,12,997,4.992
+local,Newfoundland,Standard,13,785,3.931
+local,Newfoundland,Standard,14,417,2.088
+local,Newfoundland,Standard,15,368,1.843
+local,Newfoundland,Standard,16,507,2.539
+local,Newfoundland,Standard,17,563,2.819
+local,Newfoundland,Standard,18,1989,9.959
+local,Newfoundland,Standard,19,3674,18.397
+local,Newfoundland,Standard,20,1249,6.254
+local,Newfoundland,Standard,21,942,4.717
+local,Newfoundland,Standard,22,355,1.778
+local,Newfoundland,Standard,23,152,0.761
+local,Pacific,DST,0,309583,6.112
+local,Pacific,DST,1,338950,6.691
+local,Pacific,DST,2,279991,5.527
+local,Pacific,DST,3,128683,2.54
+local,Pacific,DST,4,114874,2.268
+local,Pacific,DST,5,157370,3.107
+local,Pacific,DST,6,156331,3.086
+local,Pacific,DST,7,39158,0.773
+local,Pacific,DST,8,26421,0.522
+local,Pacific,DST,9,22509,0.444
+local,Pacific,DST,10,25763,0.509
+local,Pacific,DST,11,51905,1.025
+local,Pacific,DST,12,205508,4.057
+local,Pacific,DST,13,689771,13.617
+local,Pacific,DST,14,492029,9.713
+local,Pacific,DST,15,229680,4.534
+local,Pacific,DST,16,152984,3.02
+local,Pacific,DST,17,156432,3.088
+local,Pacific,DST,18,134315,2.652
+local,Pacific,DST,19,148684,2.935
+local,Pacific,DST,20,179866,3.551
+local,Pacific,DST,21,345534,6.821
+local,Pacific,DST,22,395163,7.801
+local,Pacific,DST,23,283916,5.605
+local,Pacific,Standard,0,121551,5.594
+local,Pacific,Standard,1,131434,6.049
+local,Pacific,Standard,2,145040,6.676
+local,Pacific,Standard,3,119081,5.481
+local,Pacific,Standard,4,55471,2.553
+local,Pacific,Standard,5,50462,2.323
+local,Pacific,Standard,6,66284,3.051
+local,Pacific,Standard,7,67378,3.101
+local,Pacific,Standard,8,17458,0.804
+local,Pacific,Standard,9,11057,0.509
+local,Pacific,Standard,10,10144,0.467
+local,Pacific,Standard,11,11488,0.529
+local,Pacific,Standard,12,21635,0.996
+local,Pacific,Standard,13,86071,3.961
+local,Pacific,Standard,14,295936,13.621
+local,Pacific,Standard,15,212625,9.786
+local,Pacific,Standard,16,96806,4.456
+local,Pacific,Standard,17,66608,3.066
+local,Pacific,Standard,18,68918,3.172
+local,Pacific,Standard,19,57796,2.66
+local,Pacific,Standard,20,63975,2.944
+local,Pacific,Standard,21,76633,3.527
+local,Pacific,Standard,22,151088,6.954
+local,Pacific,Standard,23,167766,7.722
+local,Eastern,All,0,1561589,3.499
+local,Eastern,All,1,1022240,2.291
+local,Eastern,All,2,1125683,2.522
+local,Eastern,All,3,1169802,2.621
+local,Eastern,All,4,705162,1.58
+local,Eastern,All,5,432467,0.969
+local,Eastern,All,6,432269,0.969
+local,Eastern,All,7,417090,0.935
+local,Eastern,All,8,492575,1.104
+local,Eastern,All,9,1213484,2.719
+local,Eastern,All,10,4434328,9.936
+local,Eastern,All,11,4890184,10.958
+local,Eastern,All,12,2839572,6.363
+local,Eastern,All,13,1664557,3.73
+local,Eastern,All,14,1524493,3.416
+local,Eastern,All,15,1423599,3.19
+local,Eastern,All,16,1350683,3.027
+local,Eastern,All,17,1511220,3.386
+local,Eastern,All,18,2455936,5.503
+local,Eastern,All,19,3401599,7.622
+local,Eastern,All,20,2959522,6.632
+local,Eastern,All,21,2574505,5.769
+local,Eastern,All,22,2534017,5.678
+local,Eastern,All,23,2491594,5.583
+local,Central,All,0,401668,4.753
+local,Central,All,1,245045,2.9
+local,Central,All,2,174503,2.065
+local,Central,All,3,192451,2.277
+local,Central,All,4,165925,1.964
+local,Central,All,5,83079,0.983
+local,Central,All,6,44313,0.524
+local,Central,All,7,42076,0.498
+local,Central,All,8,47386,0.561
+local,Central,All,9,82073,0.971
+local,Central,All,10,286957,3.396
+local,Central,All,11,1065241,12.606
+local,Central,All,12,996940,11.798
+local,Central,All,13,505801,5.986
+local,Central,All,14,293478,3.473
+local,Central,All,15,270166,3.197
+local,Central,All,16,245058,2.9
+local,Central,All,17,245254,2.902
+local,Central,All,18,304887,3.608
+local,Central,All,19,547806,6.483
+local,Central,All,20,667913,7.904
+local,Central,All,21,541852,6.412
+local,Central,All,22,504705,5.973
+local,Central,All,23,495765,5.867
+local,Mountain,All,0,102935,8.069
+local,Mountain,All,1,86587,6.788
+local,Mountain,All,2,42464,3.329
+local,Mountain,All,3,22890,1.794
+local,Mountain,All,4,26068,2.043
+local,Mountain,All,5,27348,2.144
+local,Mountain,All,6,16769,1.315
+local,Mountain,All,7,6841,0.536
+local,Mountain,All,8,4765,0.374
+local,Mountain,All,9,6018,0.472
+local,Mountain,All,10,12937,1.014
+local,Mountain,All,11,42014,3.293
+local,Mountain,All,12,156233,12.247
+local,Mountain,All,13,146476,11.482
+local,Mountain,All,14,73206,5.739
+local,Mountain,All,15,38462,3.015
+local,Mountain,All,16,32176,2.522
+local,Mountain,All,17,29656,2.325
+local,Mountain,All,18,29014,2.274
+local,Mountain,All,19,37028,2.903
+local,Mountain,All,20,68963,5.406
+local,Mountain,All,21,87399,6.851
+local,Mountain,All,22,89428,7.01
+local,Mountain,All,23,90005,7.055
+local,Arizona (no DST),All,0,21201,4.138
+local,Arizona (no DST),All,1,38861,7.584
+local,Arizona (no DST),All,2,35585,6.945
+local,Arizona (no DST),All,3,10301,2.01
+local,Arizona (no DST),All,4,5338,1.042
+local,Arizona (no DST),All,5,8647,1.688
+local,Arizona (no DST),All,6,8966,1.75
+local,Arizona (no DST),All,7,2344,0.457
+local,Arizona (no DST),All,8,1910,0.373
+local,Arizona (no DST),All,9,1956,0.382
+local,Arizona (no DST),All,10,1983,0.387
+local,Arizona (no DST),All,11,10968,2.141
+local,Arizona (no DST),All,12,25147,4.908
+local,Arizona (no DST),All,13,90313,17.626
+local,Arizona (no DST),All,14,56058,10.94
+local,Arizona (no DST),All,15,20141,3.931
+local,Arizona (no DST),All,16,16074,3.137
+local,Arizona (no DST),All,17,15610,3.046
+local,Arizona (no DST),All,18,13286,2.593
+local,Arizona (no DST),All,19,14947,2.917
+local,Arizona (no DST),All,20,15882,3.1
+local,Arizona (no DST),All,21,31767,6.2
+local,Arizona (no DST),All,22,35090,6.848
+local,Arizona (no DST),All,23,30019,5.859
+local,Pacific,All,0,431134,5.956
+local,Pacific,All,1,470384,6.499
+local,Pacific,All,2,425031,5.872
+local,Pacific,All,3,247764,3.423
+local,Pacific,All,4,170345,2.353
+local,Pacific,All,5,207832,2.871
+local,Pacific,All,6,222615,3.076
+local,Pacific,All,7,106536,1.472
+local,Pacific,All,8,43879,0.606
+local,Pacific,All,9,33566,0.464
+local,Pacific,All,10,35907,0.496
+local,Pacific,All,11,63393,0.876
+local,Pacific,All,12,227143,3.138
+local,Pacific,All,13,775842,10.719
+local,Pacific,All,14,787965,10.886
+local,Pacific,All,15,442305,6.111
+local,Pacific,All,16,249790,3.451
+local,Pacific,All,17,223040,3.081
+local,Pacific,All,18,203233,2.808
+local,Pacific,All,19,206480,2.853
+local,Pacific,All,20,243841,3.369
+local,Pacific,All,21,422167,5.833
+local,Pacific,All,22,546251,7.547
+local,Pacific,All,23,451682,6.24
+local,Newfoundland,All,0,518,0.866
+local,Newfoundland,All,1,1176,1.967
+local,Newfoundland,All,2,1026,1.716
+local,Newfoundland,All,3,399,0.667
+local,Newfoundland,All,4,144,0.241
+local,Newfoundland,All,5,83,0.139
+local,Newfoundland,All,6,64,0.107
+local,Newfoundland,All,7,70,0.117
+local,Newfoundland,All,8,373,0.624
+local,Newfoundland,All,9,4463,7.464
+local,Newfoundland,All,10,10214,17.081
+local,Newfoundland,All,11,7203,12.046
+local,Newfoundland,All,12,2483,4.152
+local,Newfoundland,All,13,1632,2.729
+local,Newfoundland,All,14,1235,2.065
+local,Newfoundland,All,15,1303,2.179
+local,Newfoundland,All,16,1586,2.652
+local,Newfoundland,All,17,4615,7.718
+local,Newfoundland,All,18,9139,15.284
+local,Newfoundland,All,19,6186,10.345
+local,Newfoundland,All,20,2904,4.857
+local,Newfoundland,All,21,1640,2.743
+local,Newfoundland,All,22,848,1.418
+local,Newfoundland,All,23,492,0.823
+local,Hawaii (no DST),All,0,16863,5.875
+local,Hawaii (no DST),All,1,23087,8.043
+local,Hawaii (no DST),All,2,19551,6.811
+local,Hawaii (no DST),All,3,15884,5.534
+local,Hawaii (no DST),All,4,13792,4.805
+local,Hawaii (no DST),All,5,12032,4.192
+local,Hawaii (no DST),All,6,7448,2.595
+local,Hawaii (no DST),All,7,7453,2.597
+local,Hawaii (no DST),All,8,9534,3.321
+local,Hawaii (no DST),All,9,6361,2.216
+local,Hawaii (no DST),All,10,2804,0.977
+local,Hawaii (no DST),All,11,5747,2.002
+local,Hawaii (no DST),All,12,2441,0.85
+local,Hawaii (no DST),All,13,1509,0.526
+local,Hawaii (no DST),All,14,3093,1.078
+local,Hawaii (no DST),All,15,10469,3.647
+local,Hawaii (no DST),All,16,44914,15.647
+local,Hawaii (no DST),All,17,27735,9.662
+local,Hawaii (no DST),All,18,13084,4.558
+local,Hawaii (no DST),All,19,8416,2.932
+local,Hawaii (no DST),All,20,7692,2.68
+local,Hawaii (no DST),All,21,7925,2.761
+local,Hawaii (no DST),All,22,8689,3.027
+local,Hawaii (no DST),All,23,10516,3.664
+local,All devices,DST,0,2776886,3.418
+local,All devices,DST,1,2319963,2.855
+local,All devices,DST,2,2376945,2.926
+local,All devices,DST,3,2052730,2.527
+local,All devices,DST,4,1153468,1.42
+local,All devices,DST,5,946680,1.165
+local,All devices,DST,6,903025,1.111
+local,All devices,DST,7,705024,0.868
+local,All devices,DST,8,831583,1.024
+local,All devices,DST,9,2171420,2.673
+local,All devices,DST,10,7922701,9.751
+local,All devices,DST,11,7898139,9.721
+local,All devices,DST,12,4535691,5.583
+local,All devices,DST,13,3985685,4.906
+local,All devices,DST,14,3379001,4.159
+local,All devices,DST,15,2680486,3.299
+local,All devices,DST,16,2565597,3.158
+local,All devices,DST,17,2837778,3.493
+local,All devices,DST,18,4404580,5.421
+local,All devices,DST,19,5850880,7.201
+local,All devices,DST,20,4790876,5.897
+local,All devices,DST,21,4751148,5.848
+local,All devices,DST,22,4794445,5.901
+local,All devices,DST,23,4612704,5.677
+local,All devices,Standard,0,2113574,5.743
+local,All devices,Standard,1,1271926,3.456
+local,All devices,Standard,2,1042838,2.834
+local,All devices,Standard,3,1054317,2.865
+local,All devices,Standard,4,933499,2.537
+local,All devices,Standard,5,533622,1.45
+local,All devices,Standard,6,427957,1.163
+local,All devices,Standard,7,383617,1.042
+local,All devices,Standard,8,317930,0.864
+local,All devices,Standard,9,369925,1.005
+local,All devices,Standard,10,957187,2.601
+local,All devices,Standard,11,3558595,9.67
+local,All devices,Standard,12,3601400,9.786
+local,All devices,Standard,13,2101776,5.711
+local,All devices,Standard,14,1773000,4.818
+local,All devices,Standard,15,1528070,4.152
+local,All devices,Standard,16,1240019,3.37
+local,All devices,Standard,17,1156873,3.144
+local,All devices,Standard,18,1262588,3.431
+local,All devices,Standard,19,1983134,5.389
+local,All devices,Standard,20,2672089,7.261
+local,All devices,Standard,21,2172423,5.903
+local,All devices,Standard,22,2168154,5.892
+local,All devices,Standard,23,2175621,5.912
+local,All devices,All,0,4890460,4.143
+local,All devices,All,1,3591889,3.043
+local,All devices,All,2,3419783,2.897
+local,All devices,All,3,3107047,2.632
+local,All devices,All,4,2086967,1.768
+local,All devices,All,5,1480302,1.254
+local,All devices,All,6,1330982,1.127
+local,All devices,All,7,1088641,0.922
+local,All devices,All,8,1149513,0.974
+local,All devices,All,9,2541345,2.153
+local,All devices,All,10,8879888,7.522
+local,All devices,All,11,11456734,9.705
+local,All devices,All,12,8137091,6.893
+local,All devices,All,13,6087461,5.157
+local,All devices,All,14,5152001,4.364
+local,All devices,All,15,4208556,3.565
+local,All devices,All,16,3805616,3.224
+local,All devices,All,17,3994651,3.384
+local,All devices,All,18,5667168,4.801
+local,All devices,All,19,7834014,6.636
+local,All devices,All,20,7462965,6.322
+local,All devices,All,21,6923571,5.865
+local,All devices,All,22,6962599,5.898
+local,All devices,All,23,6788325,5.75
+utc,Arizona (no DST),DST,0,14870,4.207
+utc,Arizona (no DST),DST,1,26762,7.571
+utc,Arizona (no DST),DST,2,24468,6.922
+utc,Arizona (no DST),DST,3,7279,2.059
+utc,Arizona (no DST),DST,4,3969,1.123
+utc,Arizona (no DST),DST,5,6191,1.751
+utc,Arizona (no DST),DST,6,6080,1.72
+utc,Arizona (no DST),DST,7,1708,0.483
+utc,Arizona (no DST),DST,8,1305,0.369
+utc,Arizona (no DST),DST,9,1406,0.398
+utc,Arizona (no DST),DST,10,1518,0.429
+utc,Arizona (no DST),DST,11,7663,2.168
+utc,Arizona (no DST),DST,12,17113,4.841
+utc,Arizona (no DST),DST,13,62578,17.704
+utc,Arizona (no DST),DST,14,38266,10.826
+utc,Arizona (no DST),DST,15,13737,3.886
+utc,Arizona (no DST),DST,16,11478,3.247
+utc,Arizona (no DST),DST,17,10802,3.056
+utc,Arizona (no DST),DST,18,9157,2.591
+utc,Arizona (no DST),DST,19,9990,2.826
+utc,Arizona (no DST),DST,20,10675,3.02
+utc,Arizona (no DST),DST,21,21548,6.096
+utc,Arizona (no DST),DST,22,23878,6.755
+utc,Arizona (no DST),DST,23,21036,5.951
+utc,Arizona (no DST),Standard,0,6331,3.984
+utc,Arizona (no DST),Standard,1,12099,7.613
+utc,Arizona (no DST),Standard,2,11117,6.995
+utc,Arizona (no DST),Standard,3,3022,1.902
+utc,Arizona (no DST),Standard,4,1369,0.861
+utc,Arizona (no DST),Standard,5,2456,1.545
+utc,Arizona (no DST),Standard,6,2886,1.816
+utc,Arizona (no DST),Standard,7,636,0.4
+utc,Arizona (no DST),Standard,8,605,0.381
+utc,Arizona (no DST),Standard,9,550,0.346
+utc,Arizona (no DST),Standard,10,465,0.293
+utc,Arizona (no DST),Standard,11,3305,2.08
+utc,Arizona (no DST),Standard,12,8034,5.055
+utc,Arizona (no DST),Standard,13,27735,17.453
+utc,Arizona (no DST),Standard,14,17792,11.196
+utc,Arizona (no DST),Standard,15,6404,4.03
+utc,Arizona (no DST),Standard,16,4596,2.892
+utc,Arizona (no DST),Standard,17,4808,3.025
+utc,Arizona (no DST),Standard,18,4129,2.598
+utc,Arizona (no DST),Standard,19,4957,3.119
+utc,Arizona (no DST),Standard,20,5207,3.277
+utc,Arizona (no DST),Standard,21,10219,6.43
+utc,Arizona (no DST),Standard,22,11212,7.055
+utc,Arizona (no DST),Standard,23,8983,5.653
+utc,Central,DST,0,248300,4.311
+utc,Central,DST,1,127131,2.207
+utc,Central,DST,2,110036,1.91
+utc,Central,DST,3,139448,2.421
+utc,Central,DST,4,99989,1.736
+utc,Central,DST,5,32271,0.56
+utc,Central,DST,6,25313,0.439
+utc,Central,DST,7,26156,0.454
+utc,Central,DST,8,31409,0.545
+utc,Central,DST,9,63754,1.107
+utc,Central,DST,10,253732,4.405
+utc,Central,DST,11,949939,16.493
+utc,Central,DST,12,570493,9.905
+utc,Central,DST,13,247662,4.3
+utc,Central,DST,14,174646,3.032
+utc,Central,DST,15,186119,3.231
+utc,Central,DST,16,155291,2.696
+utc,Central,DST,17,169410,2.941
+utc,Central,DST,18,222079,3.856
+utc,Central,DST,19,444045,7.71
+utc,Central,DST,20,463187,8.042
+utc,Central,DST,21,333471,5.79
+utc,Central,DST,22,351551,6.104
+utc,Central,DST,23,334141,5.801
+utc,Central,Standard,0,153368,5.7
+utc,Central,Standard,1,117914,4.382
+utc,Central,Standard,2,64467,2.396
+utc,Central,Standard,3,53003,1.97
+utc,Central,Standard,4,65936,2.45
+utc,Central,Standard,5,50808,1.888
+utc,Central,Standard,6,19000,0.706
+utc,Central,Standard,7,15920,0.592
+utc,Central,Standard,8,15977,0.594
+utc,Central,Standard,9,18319,0.681
+utc,Central,Standard,10,33225,1.235
+utc,Central,Standard,11,115302,4.285
+utc,Central,Standard,12,426447,15.849
+utc,Central,Standard,13,258139,9.594
+utc,Central,Standard,14,118832,4.416
+utc,Central,Standard,15,84047,3.124
+utc,Central,Standard,16,89767,3.336
+utc,Central,Standard,17,75844,2.819
+utc,Central,Standard,18,82808,3.077
+utc,Central,Standard,19,103761,3.856
+utc,Central,Standard,20,204726,7.608
+utc,Central,Standard,21,208381,7.744
+utc,Central,Standard,22,153154,5.692
+utc,Central,Standard,23,161624,6.007
+utc,Eastern,DST,0,771684,2.515
+utc,Eastern,DST,1,669575,2.182
+utc,Eastern,DST,2,818416,2.667
+utc,Eastern,DST,3,796625,2.596
+utc,Eastern,DST,4,341014,1.111
+utc,Eastern,DST,5,273065,0.89
+utc,Eastern,DST,6,294579,0.96
+utc,Eastern,DST,7,291649,0.95
+utc,Eastern,DST,8,365390,1.191
+utc,Eastern,DST,9,1052310,3.429
+utc,Eastern,DST,10,3973763,12.949
+utc,Eastern,DST,11,3108850,10.13
+utc,Eastern,DST,12,1422217,4.634
+utc,Eastern,DST,13,1021625,3.329
+utc,Eastern,DST,14,1053455,3.433
+utc,Eastern,DST,15,933310,3.041
+utc,Eastern,DST,16,932588,3.039
+utc,Eastern,DST,17,1084385,3.533
+utc,Eastern,DST,18,1960009,6.387
+utc,Eastern,DST,19,2516102,8.199
+utc,Eastern,DST,20,1819203,5.928
+utc,Eastern,DST,21,1760173,5.736
+utc,Eastern,DST,22,1728582,5.633
+utc,Eastern,DST,23,1700188,5.54
+utc,Eastern,Standard,0,789905,5.667
+utc,Eastern,Standard,1,352665,2.53
+utc,Eastern,Standard,2,307267,2.204
+utc,Eastern,Standard,3,373177,2.677
+utc,Eastern,Standard,4,364148,2.612
+utc,Eastern,Standard,5,159402,1.144
+utc,Eastern,Standard,6,137690,0.988
+utc,Eastern,Standard,7,125441,0.9
+utc,Eastern,Standard,8,127185,0.912
+utc,Eastern,Standard,9,161174,1.156
+utc,Eastern,Standard,10,460565,3.304
+utc,Eastern,Standard,11,1781334,12.779
+utc,Eastern,Standard,12,1417355,10.168
+utc,Eastern,Standard,13,642932,4.612
+utc,Eastern,Standard,14,471038,3.379
+utc,Eastern,Standard,15,490289,3.517
+utc,Eastern,Standard,16,418095,2.999
+utc,Eastern,Standard,17,426835,3.062
+utc,Eastern,Standard,18,495927,3.558
+utc,Eastern,Standard,19,885497,6.352
+utc,Eastern,Standard,20,1140319,8.181
+utc,Eastern,Standard,21,814332,5.842
+utc,Eastern,Standard,22,805435,5.778
+utc,Eastern,Standard,23,791406,5.677
+utc,Hawaii (no DST),DST,0,11586,5.902
+utc,Hawaii (no DST),DST,1,15858,8.078
+utc,Hawaii (no DST),DST,2,13277,6.763
+utc,Hawaii (no DST),DST,3,11083,5.645
+utc,Hawaii (no DST),DST,4,9557,4.868
+utc,Hawaii (no DST),DST,5,8167,4.16
+utc,Hawaii (no DST),DST,6,4818,2.454
+utc,Hawaii (no DST),DST,7,5215,2.656
+utc,Hawaii (no DST),DST,8,6304,3.211
+utc,Hawaii (no DST),DST,9,4156,2.117
+utc,Hawaii (no DST),DST,10,1917,0.976
+utc,Hawaii (no DST),DST,11,3895,1.984
+utc,Hawaii (no DST),DST,12,1703,0.867
+utc,Hawaii (no DST),DST,13,1074,0.547
+utc,Hawaii (no DST),DST,14,2196,1.119
+utc,Hawaii (no DST),DST,15,7544,3.843
+utc,Hawaii (no DST),DST,16,30967,15.774
+utc,Hawaii (no DST),DST,17,18734,9.543
+utc,Hawaii (no DST),DST,18,8935,4.551
+utc,Hawaii (no DST),DST,19,5911,3.011
+utc,Hawaii (no DST),DST,20,5271,2.685
+utc,Hawaii (no DST),DST,21,5392,2.747
+utc,Hawaii (no DST),DST,22,5653,2.88
+utc,Hawaii (no DST),DST,23,7105,3.619
+utc,Hawaii (no DST),Standard,0,5277,5.817
+utc,Hawaii (no DST),Standard,1,7229,7.968
+utc,Hawaii (no DST),Standard,2,6274,6.916
+utc,Hawaii (no DST),Standard,3,4801,5.292
+utc,Hawaii (no DST),Standard,4,4235,4.668
+utc,Hawaii (no DST),Standard,5,3865,4.26
+utc,Hawaii (no DST),Standard,6,2630,2.899
+utc,Hawaii (no DST),Standard,7,2238,2.467
+utc,Hawaii (no DST),Standard,8,3230,3.56
+utc,Hawaii (no DST),Standard,9,2205,2.431
+utc,Hawaii (no DST),Standard,10,887,0.978
+utc,Hawaii (no DST),Standard,11,1852,2.041
+utc,Hawaii (no DST),Standard,12,738,0.813
+utc,Hawaii (no DST),Standard,13,435,0.479
+utc,Hawaii (no DST),Standard,14,897,0.989
+utc,Hawaii (no DST),Standard,15,2925,3.224
+utc,Hawaii (no DST),Standard,16,13947,15.374
+utc,Hawaii (no DST),Standard,17,9001,9.922
+utc,Hawaii (no DST),Standard,18,4149,4.573
+utc,Hawaii (no DST),Standard,19,2505,2.761
+utc,Hawaii (no DST),Standard,20,2421,2.669
+utc,Hawaii (no DST),Standard,21,2533,2.792
+utc,Hawaii (no DST),Standard,22,3036,3.347
+utc,Hawaii (no DST),Standard,23,3411,3.76
+utc,Mountain,DST,0,72824,8.557
+utc,Mountain,DST,1,47686,5.603
+utc,Mountain,DST,2,16673,1.959
+utc,Mountain,DST,3,14203,1.669
+utc,Mountain,DST,4,18518,2.176
+utc,Mountain,DST,5,17435,2.049
+utc,Mountain,DST,6,6586,0.774
+utc,Mountain,DST,7,3513,0.413
+utc,Mountain,DST,8,2913,0.342
+utc,Mountain,DST,9,4407,0.518
+utc,Mountain,DST,10,10648,1.251
+utc,Mountain,DST,11,36003,4.23
+utc,Mountain,DST,12,139674,16.412
+utc,Mountain,DST,13,76981,9.045
+utc,Mountain,DST,14,35177,4.133
+utc,Mountain,DST,15,21733,2.554
+utc,Mountain,DST,16,21930,2.577
+utc,Mountain,DST,17,19917,2.34
+utc,Mountain,DST,18,20896,2.455
+utc,Mountain,DST,19,26833,3.153
+utc,Mountain,DST,20,56629,6.654
+utc,Mountain,DST,21,59207,6.957
+utc,Mountain,DST,22,58968,6.929
+utc,Mountain,DST,23,61716,7.252
+utc,Mountain,Standard,0,30111,7.091
+utc,Mountain,Standard,1,38901,9.162
+utc,Mountain,Standard,2,25791,6.074
+utc,Mountain,Standard,3,8687,2.046
+utc,Mountain,Standard,4,7550,1.778
+utc,Mountain,Standard,5,9913,2.335
+utc,Mountain,Standard,6,10183,2.398
+utc,Mountain,Standard,7,3328,0.784
+utc,Mountain,Standard,8,1852,0.436
+utc,Mountain,Standard,9,1611,0.379
+utc,Mountain,Standard,10,2289,0.539
+utc,Mountain,Standard,11,6011,1.416
+utc,Mountain,Standard,12,16559,3.9
+utc,Mountain,Standard,13,69495,16.367
+utc,Mountain,Standard,14,38029,8.956
+utc,Mountain,Standard,15,16729,3.94
+utc,Mountain,Standard,16,10246,2.413
+utc,Mountain,Standard,17,9739,2.294
+utc,Mountain,Standard,18,8118,1.912
+utc,Mountain,Standard,19,10195,2.401
+utc,Mountain,Standard,20,12334,2.905
+utc,Mountain,Standard,21,28192,6.639
+utc,Mountain,Standard,22,30460,7.174
+utc,Mountain,Standard,23,28289,6.662
+utc,Newfoundland,DST,0,395,0.992
+utc,Newfoundland,DST,1,1044,2.621
+utc,Newfoundland,DST,2,591,1.484
+utc,Newfoundland,DST,3,157,0.394
+utc,Newfoundland,DST,4,68,0.171
+utc,Newfoundland,DST,5,54,0.136
+utc,Newfoundland,DST,6,40,0.1
+utc,Newfoundland,DST,7,59,0.148
+utc,Newfoundland,DST,8,346,0.869
+utc,Newfoundland,DST,9,4249,10.669
+utc,Newfoundland,DST,10,8107,20.357
+utc,Newfoundland,DST,11,2650,6.654
+utc,Newfoundland,DST,12,1486,3.731
+utc,Newfoundland,DST,13,847,2.127
+utc,Newfoundland,DST,14,818,2.054
+utc,Newfoundland,DST,15,935,2.348
+utc,Newfoundland,DST,16,1079,2.709
+utc,Newfoundland,DST,17,4052,10.175
+utc,Newfoundland,DST,18,7150,17.954
+utc,Newfoundland,DST,19,2512,6.308
+utc,Newfoundland,DST,20,1655,4.156
+utc,Newfoundland,DST,21,698,1.753
+utc,Newfoundland,DST,22,493,1.238
+utc,Newfoundland,DST,23,340,0.854
+utc,Newfoundland,Standard,0,123,0.616
+utc,Newfoundland,Standard,1,132,0.661
+utc,Newfoundland,Standard,2,435,2.178
+utc,Newfoundland,Standard,3,242,1.212
+utc,Newfoundland,Standard,4,76,0.381
+utc,Newfoundland,Standard,5,29,0.145
+utc,Newfoundland,Standard,6,24,0.12
+utc,Newfoundland,Standard,7,11,0.055
+utc,Newfoundland,Standard,8,27,0.135
+utc,Newfoundland,Standard,9,214,1.072
+utc,Newfoundland,Standard,10,2107,10.55
+utc,Newfoundland,Standard,11,4553,22.798
+utc,Newfoundland,Standard,12,997,4.992
+utc,Newfoundland,Standard,13,785,3.931
+utc,Newfoundland,Standard,14,417,2.088
+utc,Newfoundland,Standard,15,368,1.843
+utc,Newfoundland,Standard,16,507,2.539
+utc,Newfoundland,Standard,17,563,2.819
+utc,Newfoundland,Standard,18,1989,9.959
+utc,Newfoundland,Standard,19,3674,18.397
+utc,Newfoundland,Standard,20,1249,6.254
+utc,Newfoundland,Standard,21,942,4.717
+utc,Newfoundland,Standard,22,355,1.778
+utc,Newfoundland,Standard,23,152,0.761
+utc,Pacific,DST,0,309583,6.112
+utc,Pacific,DST,1,338950,6.691
+utc,Pacific,DST,2,279991,5.527
+utc,Pacific,DST,3,128683,2.54
+utc,Pacific,DST,4,114874,2.268
+utc,Pacific,DST,5,157370,3.107
+utc,Pacific,DST,6,156331,3.086
+utc,Pacific,DST,7,39158,0.773
+utc,Pacific,DST,8,26421,0.522
+utc,Pacific,DST,9,22509,0.444
+utc,Pacific,DST,10,25763,0.509
+utc,Pacific,DST,11,51905,1.025
+utc,Pacific,DST,12,205508,4.057
+utc,Pacific,DST,13,689771,13.617
+utc,Pacific,DST,14,492029,9.713
+utc,Pacific,DST,15,229680,4.534
+utc,Pacific,DST,16,152984,3.02
+utc,Pacific,DST,17,156432,3.088
+utc,Pacific,DST,18,134315,2.652
+utc,Pacific,DST,19,148684,2.935
+utc,Pacific,DST,20,179866,3.551
+utc,Pacific,DST,21,345534,6.821
+utc,Pacific,DST,22,395163,7.801
+utc,Pacific,DST,23,283916,5.605
+utc,Pacific,Standard,0,121551,5.594
+utc,Pacific,Standard,1,131434,6.049
+utc,Pacific,Standard,2,145040,6.676
+utc,Pacific,Standard,3,119081,5.481
+utc,Pacific,Standard,4,55471,2.553
+utc,Pacific,Standard,5,50462,2.323
+utc,Pacific,Standard,6,66284,3.051
+utc,Pacific,Standard,7,67378,3.101
+utc,Pacific,Standard,8,17458,0.804
+utc,Pacific,Standard,9,11057,0.509
+utc,Pacific,Standard,10,10144,0.467
+utc,Pacific,Standard,11,11488,0.529
+utc,Pacific,Standard,12,21635,0.996
+utc,Pacific,Standard,13,86071,3.961
+utc,Pacific,Standard,14,295936,13.621
+utc,Pacific,Standard,15,212625,9.786
+utc,Pacific,Standard,16,96806,4.456
+utc,Pacific,Standard,17,66608,3.066
+utc,Pacific,Standard,18,68918,3.172
+utc,Pacific,Standard,19,57796,2.66
+utc,Pacific,Standard,20,63975,2.944
+utc,Pacific,Standard,21,76633,3.527
+utc,Pacific,Standard,22,151088,6.954
+utc,Pacific,Standard,23,167766,7.722
+utc,Eastern,All,0,1561589,3.499
+utc,Eastern,All,1,1022240,2.291
+utc,Eastern,All,2,1125683,2.522
+utc,Eastern,All,3,1169802,2.621
+utc,Eastern,All,4,705162,1.58
+utc,Eastern,All,5,432467,0.969
+utc,Eastern,All,6,432269,0.969
+utc,Eastern,All,7,417090,0.935
+utc,Eastern,All,8,492575,1.104
+utc,Eastern,All,9,1213484,2.719
+utc,Eastern,All,10,4434328,9.936
+utc,Eastern,All,11,4890184,10.958
+utc,Eastern,All,12,2839572,6.363
+utc,Eastern,All,13,1664557,3.73
+utc,Eastern,All,14,1524493,3.416
+utc,Eastern,All,15,1423599,3.19
+utc,Eastern,All,16,1350683,3.027
+utc,Eastern,All,17,1511220,3.386
+utc,Eastern,All,18,2455936,5.503
+utc,Eastern,All,19,3401599,7.622
+utc,Eastern,All,20,2959522,6.632
+utc,Eastern,All,21,2574505,5.769
+utc,Eastern,All,22,2534017,5.678
+utc,Eastern,All,23,2491594,5.583
+utc,Central,All,0,401668,4.753
+utc,Central,All,1,245045,2.9
+utc,Central,All,2,174503,2.065
+utc,Central,All,3,192451,2.277
+utc,Central,All,4,165925,1.964
+utc,Central,All,5,83079,0.983
+utc,Central,All,6,44313,0.524
+utc,Central,All,7,42076,0.498
+utc,Central,All,8,47386,0.561
+utc,Central,All,9,82073,0.971
+utc,Central,All,10,286957,3.396
+utc,Central,All,11,1065241,12.606
+utc,Central,All,12,996940,11.798
+utc,Central,All,13,505801,5.986
+utc,Central,All,14,293478,3.473
+utc,Central,All,15,270166,3.197
+utc,Central,All,16,245058,2.9
+utc,Central,All,17,245254,2.902
+utc,Central,All,18,304887,3.608
+utc,Central,All,19,547806,6.483
+utc,Central,All,20,667913,7.904
+utc,Central,All,21,541852,6.412
+utc,Central,All,22,504705,5.973
+utc,Central,All,23,495765,5.867
+utc,Mountain,All,0,102935,8.069
+utc,Mountain,All,1,86587,6.788
+utc,Mountain,All,2,42464,3.329
+utc,Mountain,All,3,22890,1.794
+utc,Mountain,All,4,26068,2.043
+utc,Mountain,All,5,27348,2.144
+utc,Mountain,All,6,16769,1.315
+utc,Mountain,All,7,6841,0.536
+utc,Mountain,All,8,4765,0.374
+utc,Mountain,All,9,6018,0.472
+utc,Mountain,All,10,12937,1.014
+utc,Mountain,All,11,42014,3.293
+utc,Mountain,All,12,156233,12.247
+utc,Mountain,All,13,146476,11.482
+utc,Mountain,All,14,73206,5.739
+utc,Mountain,All,15,38462,3.015
+utc,Mountain,All,16,32176,2.522
+utc,Mountain,All,17,29656,2.325
+utc,Mountain,All,18,29014,2.274
+utc,Mountain,All,19,37028,2.903
+utc,Mountain,All,20,68963,5.406
+utc,Mountain,All,21,87399,6.851
+utc,Mountain,All,22,89428,7.01
+utc,Mountain,All,23,90005,7.055
+utc,Arizona (no DST),All,0,21201,4.138
+utc,Arizona (no DST),All,1,38861,7.584
+utc,Arizona (no DST),All,2,35585,6.945
+utc,Arizona (no DST),All,3,10301,2.01
+utc,Arizona (no DST),All,4,5338,1.042
+utc,Arizona (no DST),All,5,8647,1.688
+utc,Arizona (no DST),All,6,8966,1.75
+utc,Arizona (no DST),All,7,2344,0.457
+utc,Arizona (no DST),All,8,1910,0.373
+utc,Arizona (no DST),All,9,1956,0.382
+utc,Arizona (no DST),All,10,1983,0.387
+utc,Arizona (no DST),All,11,10968,2.141
+utc,Arizona (no DST),All,12,25147,4.908
+utc,Arizona (no DST),All,13,90313,17.626
+utc,Arizona (no DST),All,14,56058,10.94
+utc,Arizona (no DST),All,15,20141,3.931
+utc,Arizona (no DST),All,16,16074,3.137
+utc,Arizona (no DST),All,17,15610,3.046
+utc,Arizona (no DST),All,18,13286,2.593
+utc,Arizona (no DST),All,19,14947,2.917
+utc,Arizona (no DST),All,20,15882,3.1
+utc,Arizona (no DST),All,21,31767,6.2
+utc,Arizona (no DST),All,22,35090,6.848
+utc,Arizona (no DST),All,23,30019,5.859
+utc,Pacific,All,0,431134,5.956
+utc,Pacific,All,1,470384,6.499
+utc,Pacific,All,2,425031,5.872
+utc,Pacific,All,3,247764,3.423
+utc,Pacific,All,4,170345,2.353
+utc,Pacific,All,5,207832,2.871
+utc,Pacific,All,6,222615,3.076
+utc,Pacific,All,7,106536,1.472
+utc,Pacific,All,8,43879,0.606
+utc,Pacific,All,9,33566,0.464
+utc,Pacific,All,10,35907,0.496
+utc,Pacific,All,11,63393,0.876
+utc,Pacific,All,12,227143,3.138
+utc,Pacific,All,13,775842,10.719
+utc,Pacific,All,14,787965,10.886
+utc,Pacific,All,15,442305,6.111
+utc,Pacific,All,16,249790,3.451
+utc,Pacific,All,17,223040,3.081
+utc,Pacific,All,18,203233,2.808
+utc,Pacific,All,19,206480,2.853
+utc,Pacific,All,20,243841,3.369
+utc,Pacific,All,21,422167,5.833
+utc,Pacific,All,22,546251,7.547
+utc,Pacific,All,23,451682,6.24
+utc,Newfoundland,All,0,518,0.866
+utc,Newfoundland,All,1,1176,1.967
+utc,Newfoundland,All,2,1026,1.716
+utc,Newfoundland,All,3,399,0.667
+utc,Newfoundland,All,4,144,0.241
+utc,Newfoundland,All,5,83,0.139
+utc,Newfoundland,All,6,64,0.107
+utc,Newfoundland,All,7,70,0.117
+utc,Newfoundland,All,8,373,0.624
+utc,Newfoundland,All,9,4463,7.464
+utc,Newfoundland,All,10,10214,17.081
+utc,Newfoundland,All,11,7203,12.046
+utc,Newfoundland,All,12,2483,4.152
+utc,Newfoundland,All,13,1632,2.729
+utc,Newfoundland,All,14,1235,2.065
+utc,Newfoundland,All,15,1303,2.179
+utc,Newfoundland,All,16,1586,2.652
+utc,Newfoundland,All,17,4615,7.718
+utc,Newfoundland,All,18,9139,15.284
+utc,Newfoundland,All,19,6186,10.345
+utc,Newfoundland,All,20,2904,4.857
+utc,Newfoundland,All,21,1640,2.743
+utc,Newfoundland,All,22,848,1.418
+utc,Newfoundland,All,23,492,0.823
+utc,Hawaii (no DST),All,0,16863,5.875
+utc,Hawaii (no DST),All,1,23087,8.043
+utc,Hawaii (no DST),All,2,19551,6.811
+utc,Hawaii (no DST),All,3,15884,5.534
+utc,Hawaii (no DST),All,4,13792,4.805
+utc,Hawaii (no DST),All,5,12032,4.192
+utc,Hawaii (no DST),All,6,7448,2.595
+utc,Hawaii (no DST),All,7,7453,2.597
+utc,Hawaii (no DST),All,8,9534,3.321
+utc,Hawaii (no DST),All,9,6361,2.216
+utc,Hawaii (no DST),All,10,2804,0.977
+utc,Hawaii (no DST),All,11,5747,2.002
+utc,Hawaii (no DST),All,12,2441,0.85
+utc,Hawaii (no DST),All,13,1509,0.526
+utc,Hawaii (no DST),All,14,3093,1.078
+utc,Hawaii (no DST),All,15,10469,3.647
+utc,Hawaii (no DST),All,16,44914,15.647
+utc,Hawaii (no DST),All,17,27735,9.662
+utc,Hawaii (no DST),All,18,13084,4.558
+utc,Hawaii (no DST),All,19,8416,2.932
+utc,Hawaii (no DST),All,20,7692,2.68
+utc,Hawaii (no DST),All,21,7925,2.761
+utc,Hawaii (no DST),All,22,8689,3.027
+utc,Hawaii (no DST),All,23,10516,3.664
+utc,All devices,DST,0,2776886,3.418
+utc,All devices,DST,1,2319963,2.855
+utc,All devices,DST,2,2376945,2.926
+utc,All devices,DST,3,2052730,2.527
+utc,All devices,DST,4,1153468,1.42
+utc,All devices,DST,5,946680,1.165
+utc,All devices,DST,6,903022,1.111
+utc,All devices,DST,7,705019,0.868
+utc,All devices,DST,8,831560,1.023
+utc,All devices,DST,9,2171411,2.673
+utc,All devices,DST,10,7922703,9.751
+utc,All devices,DST,11,7898129,9.721
+utc,All devices,DST,12,4535687,5.583
+utc,All devices,DST,13,3985689,4.906
+utc,All devices,DST,14,3378981,4.159
+utc,All devices,DST,15,2680493,3.299
+utc,All devices,DST,16,2565612,3.158
+utc,All devices,DST,17,2837782,3.493
+utc,All devices,DST,18,4404601,5.421
+utc,All devices,DST,19,5850888,7.201
+utc,All devices,DST,20,4790888,5.897
+utc,All devices,DST,21,4751149,5.848
+utc,All devices,DST,22,4794445,5.901
+utc,All devices,DST,23,4612704,5.677
+utc,All devices,Standard,0,2113574,5.743
+utc,All devices,Standard,1,1271926,3.456
+utc,All devices,Standard,2,1042838,2.834
+utc,All devices,Standard,3,1054317,2.865
+utc,All devices,Standard,4,933499,2.537
+utc,All devices,Standard,5,533622,1.45
+utc,All devices,Standard,6,427957,1.163
+utc,All devices,Standard,7,383617,1.042
+utc,All devices,Standard,8,317930,0.864
+utc,All devices,Standard,9,369923,1.005
+utc,All devices,Standard,10,957187,2.601
+utc,All devices,Standard,11,3558595,9.67
+utc,All devices,Standard,12,3601400,9.786
+utc,All devices,Standard,13,2101766,5.711
+utc,All devices,Standard,14,1772991,4.818
+utc,All devices,Standard,15,1528070,4.152
+utc,All devices,Standard,16,1240017,3.37
+utc,All devices,Standard,17,1156873,3.144
+utc,All devices,Standard,18,1262598,3.431
+utc,All devices,Standard,19,1983145,5.389
+utc,All devices,Standard,20,2672089,7.261
+utc,All devices,Standard,21,2172425,5.903
+utc,All devices,Standard,22,2168154,5.892
+utc,All devices,Standard,23,2175621,5.912
+utc,All devices,All,0,4890460,4.143
+utc,All devices,All,1,3591889,3.043
+utc,All devices,All,2,3419783,2.897
+utc,All devices,All,3,3107047,2.632
+utc,All devices,All,4,2086967,1.768
+utc,All devices,All,5,1480302,1.254
+utc,All devices,All,6,1330979,1.127
+utc,All devices,All,7,1088636,0.922
+utc,All devices,All,8,1149490,0.974
+utc,All devices,All,9,2541334,2.153
+utc,All devices,All,10,8879890,7.522
+utc,All devices,All,11,11456724,9.705
+utc,All devices,All,12,8137087,6.893
+utc,All devices,All,13,6087455,5.157
+utc,All devices,All,14,5151972,4.364
+utc,All devices,All,15,4208563,3.565
+utc,All devices,All,16,3805629,3.224
+utc,All devices,All,17,3994655,3.384
+utc,All devices,All,18,5667199,4.801
+utc,All devices,All,19,7834033,6.636
+utc,All devices,All,20,7462977,6.322
+utc,All devices,All,21,6923574,5.865
+utc,All devices,All,22,6962599,5.898
+utc,All devices,All,23,6788325,5.75

@@ -1642,6 +1642,8 @@ def step4b_pilot(R):
                    ['non_success_events', 'distinct_codes', 'all_events'])
     lc = pd.DataFrame(last, columns=['case_id', 'transaction_code', 'last_seen', 'occurrences', 'recency_rank'])
     R.save(lc, 'pilot_last_distinct_codes')
+    # Zac's cell-34 table is ordered by case_id, recency_rank before head(15).
+    lc = lc.sort_values(['case_id', 'recency_rank']).reset_index(drop=True)
     R.compare_rows('4b', 'pilot_last_codes_head', lc.head(15), R.exp('pilot_last_codes_head'),
                    ['case_id', 'recency_rank'], ['transaction_code', 'last_seen', 'occurrences'])
     th = pd.DataFrame(three, columns=['case_id', 'raw_events', 'distinct_codes'])

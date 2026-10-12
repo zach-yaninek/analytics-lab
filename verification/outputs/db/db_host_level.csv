@@ -1,0 +1,697 @@
+host,devices_in_fleet,shared_internal_host,transacting_devices,devices_with_tickets,tickets,ticket_accounts,ticket_accounts_modal,accounts,host_class,host_class_modal_account
+(no host),151,0,101,34,60,24,24,Customer 048;Customer 299;Customer 325;Customer 328;Customer 376;Customer 377;Customer 379;Customer 547;Customer 589;Customer 629;Customer 680;Customer 717;Customer 732;Customer 733;Customer 764;Customer 769;Customer 771;Customer 780;Customer 781;Customer 783;Customer 786;Customer 787;Customer 792;Customer 799,No host (NULL),No host (NULL)
+Host 001,2,0,2,1,3,1,1,Customer 191,Single-account,Single-account
+Host 002,4,0,4,3,7,1,1,Customer 192,Single-account,Single-account
+Host 003,6,0,6,2,2,1,1,Customer 197,Single-account,Single-account
+Host 004,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 005,3,0,3,1,4,1,1,Customer 786,Single-account,Single-account
+Host 006,1,0,1,1,1,1,1,Customer 797,Single-account,Single-account
+Host 007,1,0,1,1,1,1,1,Customer 739,Single-account,Single-account
+Host 008,1,0,1,1,2,1,1,Customer 771,Single-account,Single-account
+Host 009,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 010,3,0,3,2,2,1,1,Customer 528,Single-account,Single-account
+Host 011,5,0,5,1,2,1,1,Customer 780,Single-account,Single-account
+Host 012,2,0,0,0,0,0,0,,No tickets,No tickets
+Host 013,3,0,3,1,1,1,1,Customer 792,Single-account,Single-account
+Host 014,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 015,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 016,3,0,3,1,1,1,1,Customer 746,Single-account,Single-account
+Host 017,2,0,2,1,1,1,1,Customer 723,Single-account,Single-account
+Host 018,1,0,0,0,0,0,0,,No tickets,No tickets
+Host 019,4,0,4,0,0,0,0,,No tickets,No tickets
+Host 020,7,0,7,5,13,1,1,Customer 589,Single-account,Single-account
+Host 021,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 022,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 023,2,0,2,1,2,1,1,Customer 674,Single-account,Single-account
+Host 024,2,0,2,1,1,1,1,Customer 683,Single-account,Single-account
+Host 025,2,0,2,1,1,1,1,Customer 597,Single-account,Single-account
+Host 026,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 027,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 028,6,0,6,3,3,1,1,Customer 004,Single-account,Single-account
+Host 029,23,0,23,7,20,1,1,Customer 005,Single-account,Single-account
+Host 030,3,0,3,1,1,1,1,Customer 008,Single-account,Single-account
+Host 031,8,0,7,4,5,1,1,Customer 001,Single-account,Single-account
+Host 032,11,0,11,4,8,1,1,Customer 006,Single-account,Single-account
+Host 033,4,0,4,4,11,1,1,Customer 009,Single-account,Single-account
+Host 034,7,0,7,5,7,1,1,Customer 010,Single-account,Single-account
+Host 035,6,0,6,2,7,1,1,Customer 011,Single-account,Single-account
+Host 036,12,0,12,5,12,1,1,Customer 012,Single-account,Single-account
+Host 037,4,0,4,3,4,1,1,Customer 222,Single-account,Single-account
+Host 038,11,0,11,1,1,1,1,Customer 250,Single-account,Single-account
+Host 039,10,0,10,7,19,2,2,Customer 014;Customer 015,Multi-account,Multi-account
+Host 040,50,0,50,17,22,2,2,Customer 716;Customer 717,Multi-account,Multi-account
+Host 041,16,0,14,5,8,1,1,Customer 017,Single-account,Single-account
+Host 042,2,0,2,1,1,1,1,Customer 019,Single-account,Single-account
+Host 043,3,0,3,3,7,1,1,Customer 021,Single-account,Single-account
+Host 044,7,0,7,5,8,1,1,Customer 022,Single-account,Single-account
+Host 045,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 046,2,0,2,1,4,1,1,Customer 023,Single-account,Single-account
+Host 047,11,0,11,4,5,1,1,Customer 024,Single-account,Single-account
+Host 048,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 049,2,0,2,1,2,1,1,Customer 030,Single-account,Single-account
+Host 050,12,0,12,9,15,1,1,Customer 031,Single-account,Single-account
+Host 051,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 052,12,0,12,9,25,1,1,Customer 033,Single-account,Single-account
+Host 053,14,0,14,3,8,1,1,Customer 041,Single-account,Single-account
+Host 054,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 055,5,0,4,3,7,1,1,Customer 181,Single-account,Single-account
+Host 056,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 057,3,0,3,3,7,1,1,Customer 044,Single-account,Single-account
+Host 058,17,0,17,6,9,1,1,Customer 045,Single-account,Single-account
+Host 059,10,0,10,5,5,1,1,Customer 046,Single-account,Single-account
+Host 060,37,0,37,8,9,1,1,Customer 374,Single-account,Single-account
+Host 061,15,0,15,3,5,1,1,Customer 047,Single-account,Single-account
+Host 062,17,0,16,11,30,1,1,Customer 048,Single-account,Single-account
+Host 063,8,0,7,2,3,1,1,Customer 049,Single-account,Single-account
+Host 064,5,0,5,5,11,2,2,Customer 050;Customer 051,Multi-account,Multi-account
+Host 065,7,0,6,0,0,0,0,,No tickets,No tickets
+Host 066,8,0,8,2,4,1,1,Customer 035,Single-account,Single-account
+Host 067,9,0,9,7,13,1,1,Customer 036,Single-account,Single-account
+Host 068,12,0,8,6,10,2,2,Customer 038;Customer 039,Multi-account,Multi-account
+Host 069,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 070,1,0,0,1,1,1,1,Customer 053,Single-account,Single-account
+Host 071,52,0,51,32,78,1,1,Customer 054,Single-account,Single-account
+Host 072,7,0,7,3,4,1,1,Customer 043,Single-account,Single-account
+Host 073,27,0,26,20,40,1,1,Customer 056,Single-account,Single-account
+Host 074,10,0,9,5,12,1,1,Customer 058,Single-account,Single-account
+Host 075,7,0,7,2,2,1,1,Customer 059,Single-account,Single-account
+Host 076,7,0,7,2,2,1,1,Customer 637,Single-account,Single-account
+Host 077,5,0,5,1,4,1,1,Customer 052,Single-account,Single-account
+Host 078,11,0,10,2,5,2,2,Customer 061;Customer 371,Multi-account,Multi-account
+Host 079,9,0,9,3,7,2,2,Customer 526;Customer 527,Multi-account,Multi-account
+Host 080,2,0,2,1,2,1,1,Customer 041,Single-account,Single-account
+Host 081,7,0,7,3,10,1,1,Customer 057,Single-account,Single-account
+Host 082,4,0,4,2,4,1,1,Customer 073,Single-account,Single-account
+Host 083,4,0,4,0,0,0,0,,No tickets,No tickets
+Host 084,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 085,4,0,4,4,10,2,2,Customer 063;Customer 088,Multi-account,Multi-account
+Host 086,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 087,7,0,7,0,0,0,0,,No tickets,No tickets
+Host 088,6,0,6,1,2,1,1,Customer 076,Single-account,Single-account
+Host 089,13,0,13,5,26,1,1,Customer 079,Single-account,Single-account
+Host 090,9,0,9,7,15,1,1,Customer 080,Single-account,Single-account
+Host 091,28,0,28,15,36,2,2,Customer 026;Customer 027,Multi-account,Multi-account
+Host 092,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 093,4,0,4,2,3,1,1,Customer 082,Single-account,Single-account
+Host 094,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 095,4,0,4,4,10,1,1,Customer 115,Single-account,Single-account
+Host 096,6,0,6,3,5,1,1,Customer 083,Single-account,Single-account
+Host 097,37,0,37,16,38,2,2,Customer 084;Customer 085,Multi-account,Multi-account
+Host 098,8,0,8,4,8,2,2,Customer 086;Customer 811,Multi-account,Multi-account
+Host 099,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 100,9,0,9,5,8,1,1,Customer 087,Single-account,Single-account
+Host 101,2,0,2,1,8,1,1,Customer 093,Single-account,Single-account
+Host 102,12,0,12,8,12,1,1,Customer 089,Single-account,Single-account
+Host 103,1,0,0,1,8,1,1,Customer 090,Single-account,Single-account
+Host 104,4,0,4,1,5,1,1,Customer 638,Single-account,Single-account
+Host 105,13,0,13,0,0,0,0,,No tickets,No tickets
+Host 106,6,0,6,5,7,1,1,Customer 100,Single-account,Single-account
+Host 107,2,0,2,1,1,1,1,Customer 103,Single-account,Single-account
+Host 108,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 109,8,0,8,3,4,1,1,Customer 092,Single-account,Single-account
+Host 110,5,0,5,1,1,1,1,Customer 074,Single-account,Single-account
+Host 111,7,0,7,4,8,1,1,Customer 303,Single-account,Single-account
+Host 112,12,0,12,5,16,1,1,Customer 091,Single-account,Single-account
+Host 113,1,0,1,1,1,1,1,Customer 094,Single-account,Single-account
+Host 114,7,0,7,5,6,1,1,Customer 094,Single-account,Single-account
+Host 115,10,0,10,6,12,1,1,Customer 101,Single-account,Single-account
+Host 116,30,0,30,6,9,2,2,Customer 095;Customer 102,Multi-account,Multi-account
+Host 117,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 118,5,0,5,3,7,1,1,Customer 104,Single-account,Single-account
+Host 119,15,0,15,11,41,2,2,Customer 105;Customer 839,Multi-account,Multi-account
+Host 120,12,0,11,6,13,1,1,Customer 068,Single-account,Single-account
+Host 121,8,0,1,3,11,2,2,Customer 066;Customer 067,Multi-account,Multi-account
+Host 122,7,0,6,0,0,0,0,,No tickets,No tickets
+Host 123,11,0,11,2,7,1,1,Customer 097,Single-account,Single-account
+Host 124,24,0,24,10,21,2,2,Customer 106;Customer 107,Multi-account,Multi-account
+Host 125,4,0,4,2,2,1,1,Customer 108,Single-account,Single-account
+Host 126,9,0,7,0,0,0,0,,No tickets,No tickets
+Host 127,8,0,8,5,6,1,1,Customer 110,Single-account,Single-account
+Host 128,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 129,26,0,25,12,21,2,2,Customer 476;Customer 477,Multi-account,Multi-account
+Host 130,5,0,5,2,3,1,1,Customer 112,Single-account,Single-account
+Host 131,3,0,2,2,3,1,1,Customer 111,Single-account,Single-account
+Host 132,2,0,1,2,6,1,1,Customer 569,Single-account,Single-account
+Host 133,17,0,17,7,22,1,1,Customer 373,Single-account,Single-account
+Host 134,6,0,6,1,1,1,1,Customer 505,Single-account,Single-account
+Host 135,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 136,12,0,12,2,2,2,2,Customer 118;Customer 244,Multi-account,Multi-account
+Host 137,23,0,22,6,15,3,3,Customer 070;Customer 071;Customer 072,Multi-account,Multi-account
+Host 138,6,0,3,5,10,1,1,Customer 652,Single-account,Single-account
+Host 139,5,0,5,3,8,1,1,Customer 194,Single-account,Single-account
+Host 140,13,0,13,4,5,1,1,Customer 119,Single-account,Single-account
+Host 141,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 142,7,0,7,1,1,1,1,Customer 081,Single-account,Single-account
+Host 143,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 144,13,0,13,11,21,2,2,Customer 098;Customer 099,Multi-account,Multi-account
+Host 145,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 146,8,0,8,5,11,1,1,Customer 122,Single-account,Single-account
+Host 147,5,0,5,3,4,1,1,Customer 138,Single-account,Single-account
+Host 148,11,0,11,9,25,2,2,Customer 123;Customer 124,Multi-account,Multi-account
+Host 149,3,0,3,3,8,1,1,Customer 125,Single-account,Single-account
+Host 150,3,0,2,2,2,1,1,Customer 127,Single-account,Single-account
+Host 151,3,0,3,1,2,1,1,Customer 126,Single-account,Single-account
+Host 152,4,0,3,3,5,1,1,Customer 128,Single-account,Single-account
+Host 153,8,0,7,3,9,1,1,Customer 129,Single-account,Single-account
+Host 154,4,0,4,3,11,1,1,Customer 132,Single-account,Single-account
+Host 155,3,0,3,2,12,1,1,Customer 132,Single-account,Single-account
+Host 156,6,0,6,4,12,1,1,Customer 131,Single-account,Single-account
+Host 157,5,0,5,2,7,1,1,Customer 130,Single-account,Single-account
+Host 158,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 159,10,0,10,9,21,2,2,Customer 133;Customer 135,Multi-account,Multi-account
+Host 160,7,0,7,3,6,1,1,Customer 134,Single-account,Single-account
+Host 161,12,0,11,3,5,1,1,Customer 137,Single-account,Single-account
+Host 162,30,0,30,9,12,1,1,Customer 375,Single-account,Single-account
+Host 163,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 164,23,0,23,11,18,2,2,Customer 139;Customer 140,Multi-account,Multi-account
+Host 165,2,0,2,2,7,1,1,Customer 141,Single-account,Single-account
+Host 166,14,0,14,8,30,1,1,Customer 142,Single-account,Single-account
+Host 167,2,0,2,1,1,1,1,Customer 078,Single-account,Single-account
+Host 168,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 169,16,0,16,5,10,1,1,Customer 143,Single-account,Single-account
+Host 170,2,0,2,1,1,1,1,Customer 144,Single-account,Single-account
+Host 171,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 172,6,0,6,5,9,1,1,Customer 145,Single-account,Single-account
+Host 173,4,0,4,0,0,0,0,,No tickets,No tickets
+Host 174,10,0,10,6,12,1,1,Customer 223,Single-account,Single-account
+Host 175,2,0,2,1,1,1,1,Customer 146,Single-account,Single-account
+Host 176,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 177,6,0,6,3,4,1,1,Customer 032,Single-account,Single-account
+Host 178,7,0,7,6,9,1,1,Customer 147,Single-account,Single-account
+Host 179,4,0,4,2,5,1,1,Customer 157,Single-account,Single-account
+Host 180,10,0,9,5,9,1,1,Customer 158,Single-account,Single-account
+Host 181,4,0,4,2,3,1,1,Customer 161,Single-account,Single-account
+Host 182,5,0,4,1,1,1,1,Customer 159,Single-account,Single-account
+Host 183,4,0,3,2,3,1,1,Customer 160,Single-account,Single-account
+Host 184,7,0,6,4,6,1,1,Customer 162,Single-account,Single-account
+Host 185,18,0,17,12,30,1,1,Customer 317,Single-account,Single-account
+Host 186,42,0,42,15,23,1,1,Customer 165,Single-account,Single-account
+Host 187,8,0,8,1,1,1,1,Customer 173,Single-account,Single-account
+Host 188,9,0,9,6,15,1,1,Customer 318,Single-account,Single-account
+Host 189,2,0,2,2,2,1,1,Customer 166,Single-account,Single-account
+Host 190,7,0,7,3,3,1,1,Customer 167,Single-account,Single-account
+Host 191,4,0,4,1,1,1,1,Customer 168,Single-account,Single-account
+Host 192,5,0,5,2,3,1,1,Customer 462,Single-account,Single-account
+Host 193,2,0,2,1,1,1,1,Customer 168,Single-account,Single-account
+Host 194,5,0,5,4,5,1,1,Customer 617,Single-account,Single-account
+Host 195,6,0,6,4,13,1,1,Customer 169,Single-account,Single-account
+Host 196,3,0,3,1,2,1,1,Customer 170,Single-account,Single-account
+Host 197,66,0,66,43,118,1,1,Customer 171,Single-account,Single-account
+Host 198,3,0,2,0,0,0,0,,No tickets,No tickets
+Host 199,4,0,4,1,3,1,1,Customer 172,Single-account,Single-account
+Host 200,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 201,90,0,90,42,73,7,7,Customer 488;Customer 489;Customer 490;Customer 491;Customer 492;Customer 493;Customer 494,Multi-account,Multi-account
+Host 202,2,0,2,1,4,1,1,Customer 294,Single-account,Single-account
+Host 203,5,0,5,1,6,1,1,Customer 174,Single-account,Single-account
+Host 204,5,0,5,3,4,1,1,Customer 055,Single-account,Single-account
+Host 205,4,0,3,1,3,1,1,Customer 055,Single-account,Single-account
+Host 206,16,0,16,4,5,1,1,Customer 176,Single-account,Single-account
+Host 207,2,0,2,1,5,1,1,Customer 183,Single-account,Single-account
+Host 208,23,0,23,8,10,1,1,Customer 184,Single-account,Single-account
+Host 209,4,0,4,2,2,1,1,Customer 324,Single-account,Single-account
+Host 210,13,0,10,4,6,1,1,Customer 283,Single-account,Single-account
+Host 211,17,0,16,6,6,1,1,Customer 376,Single-account,Single-account
+Host 212,34,0,33,24,60,1,1,Customer 186,Single-account,Single-account
+Host 213,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 214,2,0,2,1,1,1,1,Customer 188,Single-account,Single-account
+Host 215,5,0,5,3,5,1,1,Customer 190,Single-account,Single-account
+Host 216,2,0,2,2,2,1,1,Customer 198,Single-account,Single-account
+Host 217,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 218,4,0,4,3,3,1,1,Customer 199,Single-account,Single-account
+Host 219,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 220,5,0,5,1,1,1,1,Customer 177,Single-account,Single-account
+Host 221,9,0,9,5,9,1,1,Customer 639,Single-account,Single-account
+Host 222,2,0,2,2,2,1,1,Customer 202,Single-account,Single-account
+Host 223,1,0,1,1,1,1,1,Customer 203,Single-account,Single-account
+Host 224,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 225,4,0,4,3,3,1,1,Customer 205,Single-account,Single-account
+Host 226,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 227,6,0,6,1,1,1,1,Customer 209,Single-account,Single-account
+Host 228,7,0,7,0,0,0,0,,No tickets,No tickets
+Host 229,11,0,11,8,24,1,1,Customer 210,Single-account,Single-account
+Host 230,10,0,10,8,12,1,1,Customer 212,Single-account,Single-account
+Host 231,30,0,30,16,33,1,1,Customer 207,Single-account,Single-account
+Host 232,1,0,1,1,1,1,1,Customer 180,Single-account,Single-account
+Host 233,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 234,10,0,10,2,5,1,1,Customer 213,Single-account,Single-account
+Host 235,2,0,2,1,2,1,1,Customer 215,Single-account,Single-account
+Host 236,11,0,11,4,7,1,1,Customer 208,Single-account,Single-account
+Host 237,5,0,5,4,7,1,1,Customer 216,Single-account,Single-account
+Host 238,6,0,5,3,5,1,1,Customer 670,Single-account,Single-account
+Host 239,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 240,36,0,36,20,53,1,1,Customer 224,Single-account,Single-account
+Host 241,9,0,9,8,25,1,1,Customer 225,Single-account,Single-account
+Host 242,4,0,4,4,4,1,1,Customer 226,Single-account,Single-account
+Host 243,12,0,12,3,8,1,1,Customer 227,Single-account,Single-account
+Host 244,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 245,32,0,32,17,29,1,1,Customer 706,Single-account,Single-account
+Host 246,411,1,391,17,24,11,11,Customer 209;Customer 350;Customer 396;Customer 475;Customer 518;Customer 547;Customer 634;Customer 764;Customer 787;Customer 793;Customer 797,Shared internal host,Shared internal host
+Host 247,1,0,0,0,0,0,0,,No tickets,No tickets
+Host 248,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 249,4,0,4,3,7,1,1,Customer 217,Single-account,Single-account
+Host 250,26,0,26,16,37,4,4,Customer 218;Customer 219;Customer 220;Customer 221,Multi-account,Multi-account
+Host 251,61,0,58,30,51,4,4,Customer 201;Customer 230;Customer 231;Customer 232,Multi-account,Multi-account
+Host 252,5,0,4,3,4,1,1,Customer 233,Single-account,Single-account
+Host 253,16,0,16,8,18,1,1,Customer 377,Single-account,Single-account
+Host 254,4,0,4,3,5,1,1,Customer 234,Single-account,Single-account
+Host 255,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 256,4,0,4,2,3,1,1,Customer 239,Single-account,Single-account
+Host 257,6,0,6,4,10,1,1,Customer 239,Single-account,Single-account
+Host 258,9,0,8,2,3,1,1,Customer 237,Single-account,Single-account
+Host 259,4,0,4,1,2,1,1,Customer 243,Single-account,Single-account
+Host 260,12,0,11,3,5,1,1,Customer 229,Single-account,Single-account
+Host 261,5,0,5,4,23,1,1,Customer 251,Single-account,Single-account
+Host 262,2,0,2,1,1,1,1,Customer 252,Single-account,Single-account
+Host 263,46,0,46,26,53,1,1,Customer 253,Single-account,Single-account
+Host 264,27,0,27,8,11,1,1,Customer 246,Single-account,Single-account
+Host 265,8,0,8,2,3,1,1,Customer 254,Single-account,Single-account
+Host 266,4,0,4,1,1,1,1,Customer 248,Single-account,Single-account
+Host 267,4,0,4,2,4,1,1,Customer 428,Single-account,Single-account
+Host 268,8,0,8,5,10,1,1,Customer 256,Single-account,Single-account
+Host 269,5,0,5,5,11,1,1,Customer 272,Single-account,Single-account
+Host 270,10,0,10,4,7,1,1,Customer 267,Single-account,Single-account
+Host 271,2,0,2,2,3,1,1,Customer 261,Single-account,Single-account
+Host 272,3,0,3,1,1,1,1,Customer 262,Single-account,Single-account
+Host 273,11,0,11,6,14,1,1,Customer 268,Single-account,Single-account
+Host 274,8,0,8,1,1,1,1,Customer 270,Single-account,Single-account
+Host 275,3,0,3,1,2,1,1,Customer 273,Single-account,Single-account
+Host 276,11,0,11,9,12,1,1,Customer 269,Single-account,Single-account
+Host 277,3,0,3,1,2,1,1,Customer 271,Single-account,Single-account
+Host 278,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 279,9,0,8,4,7,1,1,Customer 263,Single-account,Single-account
+Host 280,8,0,8,4,5,1,1,Customer 258,Single-account,Single-account
+Host 281,6,0,5,2,4,2,2,Customer 259;Customer 274,Multi-account,Multi-account
+Host 282,7,0,7,0,0,0,0,,No tickets,No tickets
+Host 283,4,0,4,3,9,1,1,Customer 265,Single-account,Single-account
+Host 284,6,0,6,1,2,1,1,Customer 277,Single-account,Single-account
+Host 285,6,0,6,3,4,1,1,Customer 275,Single-account,Single-account
+Host 286,9,0,9,5,18,1,1,Customer 276,Single-account,Single-account
+Host 287,2,0,2,2,5,1,1,Customer 266,Single-account,Single-account
+Host 288,4,0,4,3,4,1,1,Customer 280,Single-account,Single-account
+Host 289,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 290,34,0,34,21,58,3,3,Customer 062;Customer 249;Customer 350,Multi-account,Multi-account
+Host 291,27,0,25,20,44,3,3,Customer 062;Customer 249;Customer 350,Multi-account,Multi-account
+Host 292,5,0,5,0,0,0,0,,No tickets,No tickets
+Host 293,30,0,30,15,21,1,1,Customer 378,Single-account,Single-account
+Host 294,16,0,16,10,13,3,3,Customer 235;Customer 240;Customer 241,Multi-account,Multi-account
+Host 295,7,0,7,1,1,1,1,Customer 282,Single-account,Single-account
+Host 296,7,0,7,5,9,2,2,Customer 260;Customer 278,Multi-account,Multi-account
+Host 297,6,0,6,3,4,1,1,Customer 279,Single-account,Single-account
+Host 298,19,0,17,9,11,1,1,Customer 296,Single-account,Single-account
+Host 299,11,0,11,6,13,1,1,Customer 287,Single-account,Single-account
+Host 300,5,0,5,2,8,1,1,Customer 289,Single-account,Single-account
+Host 301,2,0,2,2,4,1,1,Customer 290,Single-account,Single-account
+Host 302,19,0,19,12,28,1,1,Customer 291,Single-account,Single-account
+Host 303,3,0,3,2,5,1,1,Customer 292,Single-account,Single-account
+Host 304,2,0,2,2,6,1,1,Customer 700,Single-account,Single-account
+Host 305,3,0,3,1,3,1,1,Customer 288,Single-account,Single-account
+Host 306,12,0,12,6,10,1,1,Customer 242,Single-account,Single-account
+Host 307,4,0,4,3,3,1,1,Customer 386,Single-account,Single-account
+Host 308,8,0,8,1,1,1,1,Customer 555,Single-account,Single-account
+Host 309,20,0,20,9,13,1,1,Customer 379,Single-account,Single-account
+Host 310,10,0,10,6,17,1,1,Customer 385,Single-account,Single-account
+Host 311,22,0,22,8,15,1,1,Customer 295,Single-account,Single-account
+Host 312,4,0,4,0,0,0,0,,No tickets,No tickets
+Host 313,7,0,6,4,4,1,1,Customer 815,Single-account,Single-account
+Host 314,18,0,18,6,12,1,1,Customer 700,Single-account,Single-account
+Host 315,14,0,14,9,16,1,1,Customer 298,Single-account,Single-account
+Host 316,14,0,14,6,21,2,2,Customer 117;Customer 301,Multi-account,Multi-account
+Host 317,11,0,10,0,0,0,0,,No tickets,No tickets
+Host 318,4,0,4,2,5,1,1,Customer 304,Single-account,Single-account
+Host 319,4,0,1,2,3,1,1,Customer 546,Single-account,Single-account
+Host 320,18,0,18,3,3,1,1,Customer 710,Single-account,Single-account
+Host 321,6,0,6,3,6,1,1,Customer 306,Single-account,Single-account
+Host 322,36,0,34,26,67,1,1,Customer 308,Single-account,Single-account
+Host 323,4,0,4,0,0,0,0,,No tickets,No tickets
+Host 324,5,0,4,0,0,0,0,,No tickets,No tickets
+Host 325,5,0,5,4,6,1,1,Customer 309,Single-account,Single-account
+Host 326,5,0,5,3,3,1,1,Customer 310,Single-account,Single-account
+Host 327,19,0,13,8,31,5,5,Customer 311;Customer 312;Customer 313;Customer 314;Customer 315,Multi-account,Multi-account
+Host 328,8,0,7,0,0,0,0,,No tickets,No tickets
+Host 329,6,0,6,2,6,1,1,Customer 320,Single-account,Single-account
+Host 330,6,0,6,3,5,1,1,Customer 321,Single-account,Single-account
+Host 331,7,0,7,2,3,1,1,Customer 322,Single-account,Single-account
+Host 332,20,0,19,13,42,1,1,Customer 323,Single-account,Single-account
+Host 333,7,0,7,4,11,1,1,Customer 307,Single-account,Single-account
+Host 334,8,0,8,6,10,1,1,Customer 333,Single-account,Single-account
+Host 335,2,0,2,1,1,1,1,Customer 245,Single-account,Single-account
+Host 336,13,0,13,4,8,1,1,Customer 334,Single-account,Single-account
+Host 337,1,0,1,1,2,1,1,Customer 331,Single-account,Single-account
+Host 338,7,0,7,1,2,1,1,Customer 342,Single-account,Single-account
+Host 339,9,0,9,2,2,1,1,Customer 343,Single-account,Single-account
+Host 340,10,0,10,3,6,1,1,Customer 346,Single-account,Single-account
+Host 341,11,0,11,3,3,1,1,Customer 345,Single-account,Single-account
+Host 342,5,0,5,0,0,0,0,,No tickets,No tickets
+Host 343,13,0,13,5,7,1,1,Customer 693,Single-account,Single-account
+Host 344,4,0,4,2,3,1,1,Customer 618,Single-account,Single-account
+Host 345,15,0,15,1,2,1,1,Customer 380,Single-account,Single-account
+Host 346,4,0,4,1,1,1,1,Customer 326,Single-account,Single-account
+Host 347,4,0,4,2,4,1,1,Customer 712,Single-account,Single-account
+Host 348,8,0,8,2,2,1,1,Customer 362,Single-account,Single-account
+Host 349,5,0,5,0,0,0,0,,No tickets,No tickets
+Host 350,9,0,9,5,8,1,1,Customer 327,Single-account,Single-account
+Host 351,1,0,1,1,1,1,1,Customer 328,Single-account,Single-account
+Host 352,3,0,3,2,2,1,1,Customer 329,Single-account,Single-account
+Host 353,4,0,4,4,5,1,1,Customer 330,Single-account,Single-account
+Host 354,23,0,23,8,10,1,1,Customer 325,Single-account,Single-account
+Host 355,5,0,5,0,0,0,0,,No tickets,No tickets
+Host 356,11,0,11,7,17,1,1,Customer 349,Single-account,Single-account
+Host 357,12,0,12,7,8,1,1,Customer 804,Single-account,Single-account
+Host 358,8,0,8,3,3,2,2,Customer 351;Customer 352,Multi-account,Multi-account
+Host 359,22,0,22,4,9,1,1,Customer 354,Single-account,Single-account
+Host 360,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 361,18,0,18,15,37,1,1,Customer 363,Single-account,Single-account
+Host 362,4,0,3,2,3,1,1,Customer 206,Single-account,Single-account
+Host 363,25,0,25,10,19,4,4,Customer 357;Customer 358;Customer 359;Customer 361,Multi-account,Multi-account
+Host 364,4,0,4,1,3,1,1,Customer 356,Single-account,Single-account
+Host 365,46,0,46,17,20,6,6,Customer 018;Customer 113;Customer 114;Customer 364;Customer 406;Customer 640,Multi-account,Multi-account
+Host 366,3,0,3,1,2,1,1,Customer 182,Single-account,Single-account
+Host 367,1,0,0,0,0,0,0,,No tickets,No tickets
+Host 368,5,0,5,4,14,1,1,Customer 305,Single-account,Single-account
+Host 369,2,0,1,1,2,1,1,Customer 367,Single-account,Single-account
+Host 370,7,0,7,6,8,1,1,Customer 368,Single-account,Single-account
+Host 371,2,0,2,1,2,1,1,Customer 641,Single-account,Single-account
+Host 372,61,0,59,38,84,1,1,Customer 641,Single-account,Single-account
+Host 373,7,0,6,3,4,1,1,Customer 365,Single-account,Single-account
+Host 374,8,0,8,4,6,1,1,Customer 370,Single-account,Single-account
+Host 375,10,0,10,4,5,1,1,Customer 369,Single-account,Single-account
+Host 376,7,0,7,5,10,1,1,Customer 372,Single-account,Single-account
+Host 377,12,0,12,4,10,1,1,Customer 300,Single-account,Single-account
+Host 378,4,0,4,3,5,1,1,Customer 003,Single-account,Single-account
+Host 379,11,0,11,5,6,1,1,Customer 394,Single-account,Single-account
+Host 380,9,0,9,1,1,1,1,Customer 395,Single-account,Single-account
+Host 381,13,0,13,6,12,1,1,Customer 397,Single-account,Single-account
+Host 382,7,0,7,2,2,1,1,Customer 415,Single-account,Single-account
+Host 383,8,0,8,1,1,1,1,Customer 381,Single-account,Single-account
+Host 384,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 385,8,0,8,5,8,1,1,Customer 401,Single-account,Single-account
+Host 386,26,0,24,14,25,2,2,Customer 416;Customer 417,Multi-account,Multi-account
+Host 387,24,0,24,11,15,3,3,Customer 450;Customer 451;Customer 453,Multi-account,Multi-account
+Host 388,6,0,6,5,7,1,1,Customer 418,Single-account,Single-account
+Host 389,24,0,24,11,22,1,1,Customer 446,Single-account,Single-account
+Host 390,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 391,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 392,3,0,3,2,3,1,1,Customer 422,Single-account,Single-account
+Host 393,2,0,2,2,4,1,1,Customer 420,Single-account,Single-account
+Host 394,3,0,2,2,2,1,1,Customer 419,Single-account,Single-account
+Host 395,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 396,2,0,2,1,2,1,1,Customer 426,Single-account,Single-account
+Host 397,3,0,3,2,4,1,1,Customer 434,Single-account,Single-account
+Host 398,7,0,7,2,4,1,1,Customer 443,Single-account,Single-account
+Host 399,4,0,4,2,7,1,1,Customer 447,Single-account,Single-account
+Host 400,16,0,16,5,5,2,2,Customer 444;Customer 445,Multi-account,Multi-account
+Host 401,4,0,4,1,3,1,1,Customer 448,Single-account,Single-account
+Host 402,22,0,22,9,14,1,1,Customer 149,Single-account,Single-account
+Host 403,16,0,16,6,7,2,2,Customer 449;Customer 452,Multi-account,Multi-account
+Host 404,4,0,4,2,3,1,1,Customer 429,Single-account,Single-account
+Host 405,7,0,7,3,5,1,1,Customer 427,Single-account,Single-account
+Host 406,15,0,15,5,8,1,1,Customer 431,Single-account,Single-account
+Host 407,35,0,35,15,27,4,4,Customer 423;Customer 424;Customer 432;Customer 441,Multi-account,Multi-account
+Host 408,22,0,22,8,13,1,1,Customer 433,Single-account,Single-account
+Host 409,5,0,5,3,4,2,2,Customer 425;Customer 430,Multi-account,Multi-account
+Host 410,5,0,5,2,2,1,1,Customer 436,Single-account,Single-account
+Host 411,9,0,9,5,18,1,1,Customer 437,Single-account,Single-account
+Host 412,20,0,18,9,14,2,2,Customer 438;Customer 439,Multi-account,Multi-account
+Host 413,6,0,6,1,1,1,1,Customer 440,Single-account,Single-account
+Host 414,9,0,9,3,3,1,1,Customer 442,Single-account,Single-account
+Host 415,1,0,1,1,3,1,1,Customer 408,Single-account,Single-account
+Host 416,9,0,8,3,6,1,1,Customer 454,Single-account,Single-account
+Host 417,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 418,1,0,1,1,1,1,1,Customer 421,Single-account,Single-account
+Host 419,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 420,44,0,42,16,32,4,4,Customer 404;Customer 406;Customer 409;Customer 410,Multi-account,Multi-account
+Host 421,7,0,7,3,7,1,1,Customer 412,Single-account,Single-account
+Host 422,4,0,4,1,3,1,1,Customer 384,Single-account,Single-account
+Host 423,6,0,6,1,3,1,1,Customer 389,Single-account,Single-account
+Host 424,19,0,19,7,14,3,3,Customer 387;Customer 388;Customer 389,Multi-account,Multi-account
+Host 425,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 426,7,0,7,3,6,1,1,Customer 392,Single-account,Single-account
+Host 427,2,0,2,2,3,1,1,Customer 458,Single-account,Single-account
+Host 428,5,0,5,4,6,1,1,Customer 455,Single-account,Single-account
+Host 429,25,0,25,13,15,2,2,Customer 456;Customer 459,Multi-account,Multi-account
+Host 430,4,0,4,2,3,1,1,Customer 715,Single-account,Single-account
+Host 431,14,0,14,14,31,3,3,Customer 604;Customer 605;Customer 606,Multi-account,Multi-account
+Host 432,11,0,11,2,2,1,1,Customer 457,Single-account,Single-account
+Host 433,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 434,16,0,14,9,19,1,1,Customer 461,Single-account,Single-account
+Host 435,3,0,3,2,3,1,1,Customer 464,Single-account,Single-account
+Host 436,6,0,5,3,6,1,1,Customer 465,Single-account,Single-account
+Host 437,86,0,86,40,70,3,3,Customer 487;Customer 495;Customer 496,Multi-account,Multi-account
+Host 438,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 439,11,0,11,6,11,1,1,Customer 466,Single-account,Single-account
+Host 440,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 441,15,0,15,8,14,1,1,Customer 467,Single-account,Single-account
+Host 442,2,0,2,1,1,1,1,Customer 393,Single-account,Single-account
+Host 443,24,0,20,8,16,1,1,Customer 648,Single-account,Single-account
+Host 444,7,0,7,7,10,1,1,Customer 468,Single-account,Single-account
+Host 445,2,0,2,1,1,1,1,Customer 469,Single-account,Single-account
+Host 446,2,0,2,2,3,1,1,Customer 470,Single-account,Single-account
+Host 447,7,0,7,5,11,1,1,Customer 471,Single-account,Single-account
+Host 448,4,0,4,2,6,1,1,Customer 709,Single-account,Single-account
+Host 449,4,0,4,1,1,1,1,Customer 435,Single-account,Single-account
+Host 450,25,0,22,4,6,2,2,Customer 474;Customer 475,Multi-account,Multi-account
+Host 451,4,0,3,3,5,1,1,Customer 485,Single-account,Single-account
+Host 452,4,0,3,1,3,1,1,Customer 486,Single-account,Single-account
+Host 453,28,0,28,17,35,1,1,Customer 478,Single-account,Single-account
+Host 454,28,0,28,20,68,1,1,Customer 479,Single-account,Single-account
+Host 455,3,0,2,0,0,0,0,,No tickets,No tickets
+Host 456,3,0,2,2,3,1,1,Customer 480,Single-account,Single-account
+Host 457,9,0,8,8,15,1,1,Customer 481,Single-account,Single-account
+Host 458,3,0,3,3,4,1,1,Customer 482,Single-account,Single-account
+Host 459,7,0,7,4,7,1,1,Customer 463,Single-account,Single-account
+Host 460,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 461,7,0,7,4,4,1,1,Customer 484,Single-account,Single-account
+Host 462,4,0,4,2,4,1,1,Customer 484,Single-account,Single-account
+Host 463,6,0,6,5,8,1,1,Customer 473,Single-account,Single-account
+Host 464,7,0,7,4,12,1,1,Customer 698,Single-account,Single-account
+Host 465,30,0,29,18,31,4,4,Customer 497;Customer 498;Customer 500;Customer 501,Multi-account,Multi-account
+Host 466,3,0,3,1,1,1,1,Customer 193,Single-account,Single-account
+Host 467,12,0,12,8,26,2,2,Customer 502;Customer 504,Multi-account,Multi-account
+Host 468,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 469,21,0,21,5,8,3,3,Customer 506;Customer 507;Customer 642,Multi-account,Multi-account
+Host 470,27,0,27,7,11,1,1,Customer 382,Single-account,Single-account
+Host 471,2,0,2,1,1,1,1,Customer 509,Single-account,Single-account
+Host 472,8,0,8,5,19,1,1,Customer 511,Single-account,Single-account
+Host 473,1,0,1,1,2,1,1,Customer 510,Single-account,Single-account
+Host 474,4,0,3,2,3,1,1,Customer 513,Single-account,Single-account
+Host 475,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 476,25,0,24,6,8,2,2,Customer 514;Customer 515,Multi-account,Multi-account
+Host 477,17,0,17,4,6,1,1,Customer 516,Single-account,Single-account
+Host 478,3,0,2,0,0,0,0,,No tickets,No tickets
+Host 479,5,0,4,4,14,1,1,Customer 517,Single-account,Single-account
+Host 480,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 481,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 482,14,0,14,10,29,2,2,Customer 466;Customer 519,Multi-account,Multi-account
+Host 483,3,0,3,2,5,1,1,Customer 485,Single-account,Single-account
+Host 484,5,0,5,0,0,0,0,,No tickets,No tickets
+Host 485,7,0,7,5,12,1,1,Customer 520,Single-account,Single-account
+Host 486,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 487,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 488,4,0,4,1,7,1,1,Customer 062,Single-account,Single-account
+Host 489,5,0,5,1,4,1,1,Customer 607,Single-account,Single-account
+Host 490,64,0,63,29,89,1,1,Customer 529,Single-account,Single-account
+Host 491,4,0,4,2,2,1,1,Customer 531,Single-account,Single-account
+Host 492,31,0,31,10,14,1,1,Customer 530,Single-account,Single-account
+Host 493,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 494,15,0,15,7,16,1,1,Customer 523,Single-account,Single-account
+Host 495,7,0,7,2,2,1,1,Customer 522,Single-account,Single-account
+Host 496,9,0,9,2,3,1,1,Customer 524,Single-account,Single-account
+Host 497,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 498,16,0,15,9,42,1,1,Customer 536,Single-account,Single-account
+Host 499,7,0,7,2,2,1,1,Customer 537,Single-account,Single-account
+Host 500,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 501,23,0,23,6,7,2,2,Customer 538;Customer 540,Multi-account,Multi-account
+Host 502,2,0,2,1,1,1,1,Customer 541,Single-account,Single-account
+Host 503,7,0,7,3,5,1,1,Customer 568,Single-account,Single-account
+Host 504,15,0,15,4,5,1,1,Customer 116,Single-account,Single-account
+Host 505,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 506,11,0,10,2,3,1,1,Customer 542,Single-account,Single-account
+Host 507,7,0,7,2,2,1,1,Customer 543,Single-account,Single-account
+Host 508,5,0,0,2,2,1,1,Customer 545,Single-account,Single-account
+Host 509,12,0,11,7,9,2,2,Customer 544;Customer 547,Multi-account,Multi-account
+Host 510,2,0,2,1,2,1,1,Customer 548,Single-account,Single-account
+Host 511,12,0,11,6,9,1,1,Customer 549,Single-account,Single-account
+Host 512,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 513,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 514,9,0,9,5,9,1,1,Customer 845,Single-account,Single-account
+Host 515,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 516,25,0,25,11,23,4,4,Customer 550;Customer 551;Customer 672;Customer 673,Multi-account,Multi-account
+Host 517,6,0,6,3,7,1,1,Customer 552,Single-account,Single-account
+Host 518,8,0,8,2,3,1,1,Customer 553,Single-account,Single-account
+Host 519,4,0,4,2,4,1,1,Customer 576,Single-account,Single-account
+Host 520,7,0,7,3,6,1,1,Customer 556,Single-account,Single-account
+Host 521,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 522,2,0,2,2,4,1,1,Customer 577,Single-account,Single-account
+Host 523,6,0,6,5,15,1,1,Customer 557,Single-account,Single-account
+Host 524,22,0,22,8,13,2,2,Customer 040;Customer 065,Multi-account,Multi-account
+Host 525,7,0,7,0,0,0,0,,No tickets,No tickets
+Host 526,4,0,4,4,14,1,1,Customer 337,Single-account,Single-account
+Host 527,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 528,19,0,19,6,7,1,1,Customer 336,Single-account,Single-account
+Host 529,8,0,8,2,3,1,1,Customer 558,Single-account,Single-account
+Host 530,6,0,6,3,3,1,1,Customer 559,Single-account,Single-account
+Host 531,12,0,12,3,11,1,1,Customer 373,Single-account,Single-account
+Host 532,7,0,7,2,15,1,1,Customer 371,Single-account,Single-account
+Host 533,1,0,0,1,2,1,1,Customer 560,Single-account,Single-account
+Host 534,5,0,5,5,11,1,1,Customer 562,Single-account,Single-account
+Host 535,3,0,3,3,6,1,1,Customer 565,Single-account,Single-account
+Host 536,10,0,10,2,2,1,1,Customer 826,Single-account,Single-account
+Host 537,13,0,13,5,7,1,1,Customer 570,Single-account,Single-account
+Host 538,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 539,8,0,8,4,4,1,1,Customer 664,Single-account,Single-account
+Host 540,3,0,3,3,7,1,1,Customer 348,Single-account,Single-account
+Host 541,2,0,2,2,2,1,1,Customer 585,Single-account,Single-account
+Host 542,2,0,2,1,1,1,1,Customer 590,Single-account,Single-account
+Host 543,12,0,12,8,27,1,1,Customer 591,Single-account,Single-account
+Host 544,26,0,25,7,15,4,4,Customer 297;Customer 592;Customer 593;Customer 594,Multi-account,Multi-account
+Host 545,1,0,1,1,1,1,1,Customer 567,Single-account,Single-account
+Host 546,1,0,1,1,1,1,1,Customer 571,Single-account,Single-account
+Host 547,8,0,8,5,8,1,1,Customer 571,Single-account,Single-account
+Host 548,2,0,2,2,11,1,1,Customer 572,Single-account,Single-account
+Host 549,2,0,2,2,4,1,1,Customer 573,Single-account,Single-account
+Host 550,43,0,40,31,87,3,3,Customer 339;Customer 340;Customer 341,Multi-account,Multi-account
+Host 551,10,0,10,7,22,1,1,Customer 574,Single-account,Single-account
+Host 552,8,0,8,1,1,1,1,Customer 163,Single-account,Single-account
+Host 553,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 554,6,0,6,1,1,1,1,Customer 575,Single-account,Single-account
+Host 555,12,0,12,2,4,1,1,Customer 353,Single-account,Single-account
+Host 556,9,0,9,4,7,1,1,Customer 503,Single-account,Single-account
+Host 557,17,0,17,4,5,1,1,Customer 580,Single-account,Single-account
+Host 558,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 559,7,0,6,3,4,1,1,Customer 164,Single-account,Single-account
+Host 560,13,0,13,4,6,1,1,Customer 195,Single-account,Single-account
+Host 561,4,0,4,2,2,1,1,Customer 196,Single-account,Single-account
+Host 562,12,0,12,8,15,1,1,Customer 179,Single-account,Single-account
+Host 563,6,0,6,4,8,1,1,Customer 579,Single-account,Single-account
+Host 564,2,0,2,1,4,1,1,Customer 581,Single-account,Single-account
+Host 565,9,0,9,0,0,0,0,,No tickets,No tickets
+Host 566,18,0,17,8,13,1,1,Customer 583,Single-account,Single-account
+Host 567,2,0,2,1,1,1,1,Customer 534,Single-account,Single-account
+Host 568,13,0,13,3,9,1,1,Customer 584,Single-account,Single-account
+Host 569,4,0,4,2,2,1,1,Customer 665,Single-account,Single-account
+Host 570,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 571,3,0,3,1,1,1,1,Customer 595,Single-account,Single-account
+Host 572,6,0,6,2,2,1,1,Customer 595,Single-account,Single-account
+Host 573,4,0,4,2,8,1,1,Customer 595,Single-account,Single-account
+Host 574,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 575,21,0,21,8,18,1,1,Customer 588,Single-account,Single-account
+Host 576,4,0,4,1,1,1,1,Customer 596,Single-account,Single-account
+Host 577,4,0,4,3,6,1,1,Customer 598,Single-account,Single-account
+Host 578,1,0,1,1,1,1,1,Customer 589,Single-account,Single-account
+Host 579,4,0,4,4,15,1,1,Customer 599,Single-account,Single-account
+Host 580,6,0,6,2,2,1,1,Customer 600,Single-account,Single-account
+Host 581,81,0,81,35,61,2,2,Customer 601;Customer 602,Multi-account,Multi-account
+Host 582,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 583,9,0,9,6,7,1,1,Customer 532,Single-account,Single-account
+Host 584,12,0,12,1,3,1,1,Customer 533,Single-account,Single-account
+Host 585,5,0,5,3,9,1,1,Customer 535,Single-account,Single-account
+Host 586,5,0,5,3,3,1,1,Customer 620,Single-account,Single-account
+Host 587,23,0,23,6,11,1,1,Customer 691,Single-account,Single-account
+Host 588,2,0,2,1,2,1,1,Customer 563,Single-account,Single-account
+Host 589,19,0,19,11,32,1,1,Customer 611,Single-account,Single-account
+Host 590,3,0,3,3,5,1,1,Customer 628,Single-account,Single-account
+Host 591,2,0,2,2,7,1,1,Customer 627,Single-account,Single-account
+Host 592,30,0,30,14,30,2,2,Customer 625;Customer 626,Multi-account,Multi-account
+Host 593,13,0,13,9,22,2,2,Customer 612;Customer 613,Multi-account,Multi-account
+Host 594,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 595,8,0,8,4,7,1,1,Customer 624,Single-account,Single-account
+Host 596,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 597,4,0,4,1,1,1,1,Customer 631,Single-account,Single-account
+Host 598,4,0,4,3,9,1,1,Customer 633,Single-account,Single-account
+Host 599,4,0,4,1,1,1,1,Customer 632,Single-account,Single-account
+Host 600,4,0,4,2,2,1,1,Customer 636,Single-account,Single-account
+Host 601,19,0,19,11,15,1,1,Customer 634,Single-account,Single-account
+Host 602,5,0,5,1,1,1,1,Customer 635,Single-account,Single-account
+Host 603,2,0,2,1,1,1,1,Customer 623,Single-account,Single-account
+Host 604,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 605,6,0,6,6,10,1,1,Customer 645,Single-account,Single-account
+Host 606,17,0,17,12,19,4,4,Customer 236;Customer 347;Customer 646;Customer 647,Multi-account,Multi-account
+Host 607,13,0,13,7,12,2,2,Customer 529;Customer 656,Multi-account,Multi-account
+Host 608,8,0,8,2,2,1,1,Customer 689,Single-account,Single-account
+Host 609,4,0,4,3,4,1,1,Customer 649,Single-account,Single-account
+Host 610,6,0,6,1,1,1,1,Customer 650,Single-account,Single-account
+Host 611,3,0,3,3,6,1,1,Customer 653,Single-account,Single-account
+Host 612,5,0,5,1,5,1,1,Customer 654,Single-account,Single-account
+Host 613,20,0,19,10,16,1,1,Customer 655,Single-account,Single-account
+Host 614,5,0,5,2,4,1,1,Customer 694,Single-account,Single-account
+Host 615,12,0,12,5,5,2,2,Customer 608;Customer 609,Multi-account,Multi-account
+Host 616,9,0,9,6,18,1,1,Customer 657,Single-account,Single-account
+Host 617,17,0,17,14,29,1,1,Customer 701,Single-account,Single-account
+Host 618,22,0,22,10,16,3,3,Customer 228;Customer 702;Customer 703,Multi-account,Multi-account
+Host 619,13,0,12,9,25,1,1,Customer 671,Single-account,Single-account
+Host 620,6,0,6,0,0,0,0,,No tickets,No tickets
+Host 621,33,0,33,13,22,1,1,Customer 669,Single-account,Single-account
+Host 622,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 623,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 624,16,0,16,6,15,3,3,Customer 525;Customer 662;Customer 663,Multi-account,Multi-account
+Host 625,4,0,1,1,1,1,1,Customer 284,Single-account,Single-account
+Host 626,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 627,20,0,20,11,24,1,1,Customer 704,Single-account,Single-account
+Host 628,27,0,26,11,20,3,3,Customer 659;Customer 660;Customer 661,Multi-account,Multi-account
+Host 629,35,0,35,13,16,3,3,Customer 666;Customer 667;Customer 668,Multi-account,Multi-account
+Host 630,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 631,40,0,40,19,31,3,3,Customer 674;Customer 675;Customer 676,Multi-account,Multi-account
+Host 632,8,0,8,3,6,2,2,Customer 677;Customer 678,Multi-account,Multi-account
+Host 633,14,0,14,10,21,1,1,Customer 705,Single-account,Single-account
+Host 634,7,0,7,2,5,1,1,Customer 707,Single-account,Single-account
+Host 635,23,0,21,8,15,3,2,Customer 350;Customer 679;Customer 680,Multi-account,Multi-account
+Host 636,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 637,15,0,14,8,15,2,2,Customer 136;Customer 699,Multi-account,Multi-account
+Host 638,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 639,7,0,7,5,7,1,1,Customer 697,Single-account,Single-account
+Host 640,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 641,2,0,2,1,2,1,1,Customer 711,Single-account,Single-account
+Host 642,2,0,2,2,4,1,1,Customer 708,Single-account,Single-account
+Host 643,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 644,8,0,6,6,18,2,2,Customer 641;Customer 681,Multi-account,Multi-account
+Host 645,46,0,45,24,37,2,2,Customer 714;Customer 817,Multi-account,Multi-account
+Host 646,2,0,2,1,1,1,1,Customer 692,Single-account,Single-account
+Host 647,30,0,26,20,37,1,1,Customer 682,Single-account,Single-account
+Host 648,1,0,1,1,1,1,1,Customer 597,Single-account,Single-account
+Host 649,5,0,5,3,5,1,1,Customer 685,Single-account,Single-account
+Host 650,10,0,9,4,10,1,1,Customer 281,Single-account,Single-account
+Host 651,3,0,3,2,4,1,1,Customer 214,Single-account,Single-account
+Host 652,9,0,9,0,0,0,0,,No tickets,No tickets
+Host 653,18,0,18,11,19,3,3,Customer 686;Customer 687;Customer 688,Multi-account,Multi-account
+Host 654,25,0,25,11,22,1,1,Customer 718,Single-account,Single-account
+Host 655,10,0,10,0,0,0,0,,No tickets,No tickets
+Host 656,32,0,32,15,28,2,2,Customer 016;Customer 719,Multi-account,Multi-account
+Host 657,3,0,3,2,2,1,1,Customer 621,Single-account,Single-account
+Host 658,2,0,2,1,2,1,1,Customer 622,Single-account,Single-account
+Host 659,12,0,12,8,16,1,1,Customer 643,Single-account,Single-account
+Host 660,42,0,42,16,21,5,5,Customer 355;Customer 805;Customer 806;Customer 807;Customer 808,Multi-account,Multi-account
+Host 661,1,0,1,1,1,1,1,Customer 809,Single-account,Single-account
+Host 662,15,0,15,2,4,1,1,Customer 809,Single-account,Single-account
+Host 663,31,0,31,11,21,2,2,Customer 096;Customer 803,Multi-account,Multi-account
+Host 664,2,0,2,1,2,1,1,Customer 810,Single-account,Single-account
+Host 665,9,0,9,0,0,0,0,,No tickets,No tickets
+Host 666,3,0,3,3,4,1,1,Customer 812,Single-account,Single-account
+Host 667,7,0,6,3,7,1,1,Customer 813,Single-account,Single-account
+Host 668,8,0,7,4,9,1,1,Customer 814,Single-account,Single-account
+Host 669,3,0,2,2,13,1,1,Customer 817,Single-account,Single-account
+Host 670,16,0,15,8,17,1,1,Customer 816,Single-account,Single-account
+Host 671,105,0,103,55,112,1,1,Customer 029,Single-account,Single-account
+Host 672,18,0,18,5,9,3,3,Customer 819;Customer 820;Customer 821,Multi-account,Multi-account
+Host 673,4,0,4,4,6,1,1,Customer 823,Single-account,Single-account
+Host 674,4,0,4,0,0,0,0,,No tickets,No tickets
+Host 675,7,0,7,4,5,1,1,Customer 824,Single-account,Single-account
+Host 676,3,0,3,0,0,0,0,,No tickets,No tickets
+Host 677,32,0,32,12,19,1,1,Customer 825,Single-account,Single-account
+Host 678,4,0,4,1,1,1,1,Customer 829,Single-account,Single-account
+Host 679,4,0,4,3,4,1,1,Customer 830,Single-account,Single-account
+Host 680,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 681,14,0,14,7,11,1,1,Customer 828,Single-account,Single-account
+Host 682,17,0,17,8,12,2,2,Customer 187;Customer 833,Multi-account,Multi-account
+Host 683,3,0,3,3,6,1,1,Customer 835,Single-account,Single-account
+Host 684,7,0,7,7,9,1,1,Customer 836,Single-account,Single-account
+Host 685,9,0,9,5,7,1,1,Customer 837,Single-account,Single-account
+Host 686,5,0,5,1,1,1,1,Customer 838,Single-account,Single-account
+Host 687,10,0,10,9,25,2,2,Customer 644;Customer 840,Multi-account,Multi-account
+Host 688,2,0,2,0,0,0,0,,No tickets,No tickets
+Host 689,23,0,19,10,12,1,1,Customer 554,Single-account,Single-account
+Host 690,15,0,15,6,11,1,1,Customer 831,Single-account,Single-account
+Host 691,16,0,16,5,5,1,1,Customer 383,Single-account,Single-account
+Host 692,1,0,1,0,0,0,0,,No tickets,No tickets
+Host 693,8,0,8,4,12,1,1,Customer 842,Single-account,Single-account
+Host 694,26,0,26,18,38,2,2,Customer 843;Customer 844,Multi-account,Multi-account
+Host 695,5,0,5,2,5,1,1,Customer 827,Single-account,Single-account

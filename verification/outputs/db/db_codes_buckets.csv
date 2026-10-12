@@ -1,0 +1,50 @@
+transaction_code,transaction_description,bucket,provisional_fault
+00,OK,Success,0
+03,Item not available,Stock-out,0
+77,Item not stocked,Stock-out,0
+15,Blocked Door,Door issue,0
+01,Incomplete Transaction,Incomplete transaction,0
+26,Open Door Dispense,Door issue,0
+19,Deposit Door not Opened,User behavior,0
+79,Receiver Deposit Door is open,Door issue,0
+76,Receiver Packer Stopped,Operational status,0
+78,Receiver Deposit Door not completely opened,User behavior,0
+04,Half Garment,User behavior,0
+11,Door Did not Open,Mechanical fault,1
+31,Slot Doors in Improper Position,Mechanical fault,1
+18,SAM did not extend,Mechanical fault,1
+16,Bad Weight,Mechanical fault,1
+30,Main Door not Closed,Door issue,0
+20,Deposit Door not Closed,Door issue,0
+35,Lower SAM Extended,Mechanical fault,1
+34,Upper SAM Extended,Mechanical fault,1
+80,Receiver Deposit Door is open,Door issue,0
+32,SAM in Improper Position,Mechanical fault,1
+33,SAM Not Home,Mechanical fault,1
+81,Opening Door Blocked,Door issue,0
+25,No Communications with Dispenser,Electronics/software/comms,1
+41,User Door 1 is Open,Door issue,0
+17,SAM did not make it to Destination,Mechanical fault,1
+05,Already Dispensed,Electronics/software/comms,1
+42,User Door 2 is Open,Door issue,0
+48,User Door 8 is Open,Door issue,0
+43,User Door 3 is Open,Door issue,0
+44,User Door 4 is Open,Door issue,0
+45,User Door 5 is Open,Door issue,0
+47,User Door 7 is Open,Door issue,0
+46,User Door 6 is Open,Door issue,0
+28,UNMAPPED CODE 28,Undefined,0
+13,Invalid Driver Board Response,Electronics/software/comms,1
+59,Bottom Door not Locked,Door issue,0
+66,Did not reach horizontal position,Mechanical fault,1
+27,Door did not lock,Door issue,0
+61,Bottom Door not Opened,User behavior,0
+60,Top Door not Opened,User behavior,0
+67,Did not reach vertical position,Mechanical fault,1
+14,Broken Limit Switches,Mechanical fault,1
+56,Top Door not Closed,Door issue,0
+58,Top Door not Locked,Door issue,0
+57,Bottom Door not Closed,Door issue,0
+02,Door did not unlock,Mechanical fault,1
+=,UNMAPPED CODE =,Malformed,0
+30462084,UNMAPPED CODE 30462084,Malformed,0

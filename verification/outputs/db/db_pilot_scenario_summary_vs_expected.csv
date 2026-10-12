@@ -1,0 +1,4 @@
+offset_hours,tickets_expected,tickets_with_transactions_expected,tickets_with_non_success_expected,tickets_actual,tickets_with_transactions_actual,tickets_with_non_success_actual,match
+-12,30,26,26,30,26,26,True
+0,30,26,26,30,26,26,True
+12,30,26,26,30,26,26,True

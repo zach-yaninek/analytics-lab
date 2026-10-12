@@ -1,0 +1,10 @@
+table,column,pattern,n_in_first_2000
+transaction_events,external_device_id,99999 <str>,1674
+transaction_events,external_device_id,9999 <str>,324
+transaction_events,external_device_id,AAA9999 <str>,2
+transaction_events,event_time_utc,9999-99-99 99:99:99 <str>,2000
+transaction_events,transaction_time_utc,9999-99-99 99:99:99 <str>,2000
+transaction_events,transaction_time_local,9999-99-99 99:99:99 <str>,2000
+transaction_events,transaction_date_local,9999-99-99 <str>,2000
+transaction_events,event_time_offset,9.9 <float>,2000
+transaction_events,transaction_code,99 <str>,2000

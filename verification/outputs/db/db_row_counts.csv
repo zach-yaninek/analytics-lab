@@ -1,0 +1,4 @@
+table,rows,min_rowid,max_rowid,note
+transaction_events,,1.0,118047569.0,exact count comes from the step-4 scan
+devices,7183.0,,,
+transaction_codes,49.0,,,
