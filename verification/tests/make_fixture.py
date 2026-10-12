@@ -87,7 +87,9 @@ def fmt(epoch_seconds):
     return np.char.replace(np.datetime_as_string(np.asarray(epoch_seconds, dtype='datetime64[s]'), unit='s'), 'T', ' ')
 
 
-def build(out, clock='local', ingest_col='ingested_at_utc', indexes='full', scale=2.0, seed=7):
+def build(out, clock='local', ingest_col='ingested_at_utc', indexes='full', scale=2.0, seed=7, extended=False):
+    """extended=True adds the real DB's extra columns: devices(location_name, city, state, country, ...) and
+    transaction_events(event_time_utc, event_time_offset), with planted answers in fixture_truth.json['extended']."""
     rng = np.random.default_rng(seed)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
@@ -246,17 +248,45 @@ def build(out, clock='local', ingest_col='ingested_at_utc', indexes='full', scal
         db.unlink()
     con = sqlite3.connect(db)
     extra = f', {ingest_col} TEXT' if ingest_col else ''
+    dev_extra = ', location_name TEXT, city TEXT, state TEXT, country TEXT' if extended else ''
+    ev_extra = ', event_time_utc TEXT, event_time_offset REAL' if extended else ''
     con.executescript(f"""
         CREATE TABLE devices (external_device_id TEXT, device_status TEXT, machine_type TEXT, clearview_url TEXT,
-                              last_seen_utc TEXT);
+                              last_seen_utc TEXT{dev_extra});
         CREATE TABLE transaction_codes (transaction_code TEXT, transaction_description TEXT);
         CREATE TABLE transaction_events (external_device_id TEXT, transaction_date_local TEXT,
-            transaction_time_local TEXT, transaction_time_utc TEXT, transaction_code TEXT{extra});
+            transaction_time_local TEXT, transaction_time_utc TEXT, transaction_code TEXT{extra}{ev_extra});
     """)
-    con.executemany('INSERT INTO devices VALUES (?,?,?,?,?)',
-                    [(d['id'], d['status'], d['type'], d['url'], '2026-08-28 00:00:00') for d in devices])
+    planted_names = {}
+    if extended:
+        full = {'NY': 'New York', 'MA': 'Massachusetts', 'IL': 'Illinois', 'CA': 'California', 'CO': 'Colorado'}
+        rows = []
+        for i, d in enumerate(devices):
+            acct = d['acct'] if d['acct'] is not None else (((i - 72) % 30) if i < 84 else None)
+            a = accounts[acct] if acct is not None else None
+            st = a['loc'].split(',')[1].split()[0] if d['acct'] is not None else ZONES[d['zone']][1][0][0]
+            if d['acct'] is not None:
+                kind = ['exact'] * 7 + ['normalised', 'different', 'missing']
+                kind = kind[i % 10]
+                name = {'exact': a['name'], 'normalised': f"The {a['name']}, Inc.",
+                        'different': f"Fake Health System {d['zone']}", 'missing': None}[kind]
+                planted_names[d['id']] = kind
+            else:
+                name = a['name'] if a else None
+            rows.append((d['id'], d['status'], d['type'], d['url'], '2026-08-28 00:00:00', name,
+                         a['loc'].split(',')[0] if a else None, full.get(st, st) if i % 5 == 0 else st,
+                         a['country'] if a else 'USA'))
+        con.executemany('INSERT INTO devices VALUES (?,?,?,?,?,?,?,?,?)', rows)
+    else:
+        con.executemany('INSERT INTO devices VALUES (?,?,?,?,?)',
+                        [(d['id'], d['status'], d['type'], d['url'], '2026-08-28 00:00:00') for d in devices])
     con.executemany('INSERT INTO transaction_codes VALUES (?,?)', [(c, f'Fake description {c}') for c in CODES])
     cols = [devid, dl, tl, tu, code] + ([ingest] if ingest_col else [])
+    if extended:
+        hour_of_row = np.searchsorted(h_epoch, utc, side='right') - 1
+        dev_zone_idx = zone_idx[dev_i]
+        offset_h = -off_matrix[dev_zone_idx, np.clip(hour_of_row, 0, len(h_epoch) - 1)] / 3600.0
+        cols += [fmt(utc + np.minimum(latency, 600)).astype(object), offset_h.astype(float)]
     con.executemany(f'INSERT INTO transaction_events VALUES ({",".join("?" * len(cols))})', zip(*cols))
     if indexes == 'full':
         con.executescript("""
@@ -327,6 +357,10 @@ def build(out, clock='local', ingest_col='ingested_at_utc', indexes='full', scal
         'planted': {'clock': clock, 'ingest_col': ingest_col or None, 'indexes': indexes, 'seed': seed,
                     'rows': n, 'devices': len(dev), 'tickets': len(t)},
     }
+    if extended:
+        truth['extended'] = {'name_match_ticketed_devices': pd.Series(planted_names).value_counts().to_dict(),
+                             'event_time_offset_convention': 'minus the UTC offset (hours west of UTC positive)',
+                             'event_time_lag_max_seconds': 600}
     (out / 'fixture_truth.json').write_text(json.dumps(truth, indent=2, default=str))
     print(f'fixture written to {out}: {n:,} events, {len(dev)} devices, {len(t)} tickets, clock={clock}, '
           f'ingest_col={ingest_col or None}, indexes={indexes}')
@@ -341,8 +375,9 @@ def main(argv=None):
     ap.add_argument('--indexes', choices=['full', 'none'], default='full')
     ap.add_argument('--scale', type=float, default=2.0, help='multiplies the event rate (2.0 ~ 1.1M rows)')
     ap.add_argument('--seed', type=int, default=7)
+    ap.add_argument('--extended', action='store_true', help="add the real DB's location and event-time columns")
     a = ap.parse_args(argv)
-    build(a.out, a.clock, a.ingest_col, a.indexes, a.scale, a.seed)
+    build(a.out, a.clock, a.ingest_col, a.indexes, a.scale, a.seed, a.extended)
 
 
 if __name__ == '__main__':
