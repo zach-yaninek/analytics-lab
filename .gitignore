@@ -1,0 +1,10 @@
+# Raw and private data never leave the local machine
+data/
+deliverables/
+*.xlsx
+*.db
+*.db.gz
+*.db.*
+*.zip
+*.sqlite
+__pycache__/
