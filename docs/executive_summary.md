@@ -30,8 +30,7 @@ only IPA can answer.
    - 6.7% of transactions are non-success: stock-outs 2.7%, door events 1.9%, mechanical and electronic fault codes
      0.75%.
    - Some machine types log almost no fault codes (scrubex-3: 17 in 9.7 M transactions), while another logs about
-     100 per 1,000. That probably reflects which codes each family reports, so we are not yet ranking types by fault
-     rate.
+     100 per 1,000. That probably reflects which codes each family reports.
 5. **About one in four tickets is followed by another on the same machine within 30 days (23.6%).**
    - 40% of those follow-ups come within a week.
    - This measures repeat contact, not failed repairs.
