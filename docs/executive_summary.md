@@ -26,7 +26,7 @@ only IPA can answer.
 3. **The fleet ticket rate is about 7 per 100 machine-months.†** There were 4,916 unplanned tickets over 69,155
    machine-months with telemetry activity, giving 7.11. Depending on how months without transactions are treated,
    the rate is 6.5–7.8.
-4. **Most non-success telemetry is stock-outs and door events, not faults.†**
+4. **Most non-success telemetry is stock-outs and door events.†**
    - 6.7% of transactions are non-success: stock-outs 2.7%, door events 1.9%, mechanical and electronic fault codes
      0.75%.
    - Some machine types log almost no fault codes (scrubex-3: 17 in 9.7 M transactions), while another logs about
