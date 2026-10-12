@@ -19,7 +19,7 @@ only IPA can answer.
 1. **The analysis is sound and reproducible.** Three independent implementations re-derived every case-export
    figure exactly. The telemetry tables pass 85 internal consistency checks; the final re-run on the full database
    is scripted and pending.
-2. **Service workload is concentrated by product, not by customer.**
+2. **Service workload is concentrated by product and not by customer.**
    - Three model families (LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0) account for 48% of tickets.
    - The ten busiest facilities account for only 11%; the largest is Customer 171 with 123 tickets.
    - Deposit Door is the most common recorded issue: 1,124 tickets, 16% of unplanned service.
