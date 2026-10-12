@@ -74,7 +74,7 @@ def independent_last10(db, xlsx, case_ids):
         ev = pd.read_sql_query('SELECT transaction_time_utc AS tu, transaction_code AS code FROM transaction_events '
                                'WHERE external_device_id=?', con, params=(serial,))
         ev['tu'] = pd.to_datetime(ev.tu)
-        ev = ev.dropna(subset=['tu']).sort_values(['tu', 'code'])
+        ev = ev.dropna(subset=['tu']).sort_values(['tu', 'code'], ascending=[True, False])
         for r in g.itertuples():
             w = ev[(ev.tu >= r.anchor - pd.Timedelta(days=30)) & (ev.tu < r.anchor) & (ev.code != '00')].iloc[::-1]
             out[r.case_id] = ('|'.join(w.code.head(10)), '|'.join(pd.unique(w.code)[:10]))
@@ -87,6 +87,10 @@ def run_followup():
     out = BASE / 'extended'
     db, xlsx, truth = make_fixture.build(out, 'utc', '', 'full', seed=11, extended=True)
     truth = json.loads(truth.read_text())
+    con = sqlite3.connect(db)                       # privacy trap: free text typed into the state field
+    con.execute("UPDATE devices SET state='Testville01, MA 02115' WHERE external_device_id='FX100075'")
+    con.commit()
+    con.close()
     ids = sorted(common.build_maps(common.load_raw(xlsx))['case'].values())[::9][:30]
     with contextlib.redirect_stdout(io.StringIO()) as log:
         s = db_followup.run(db, xlsx, out / 'fu_out', out / 'fu_private', pilot_ids=ids)
@@ -109,6 +113,9 @@ def run_followup():
         problems.append('location name-match counts differ from planted')
     if f['F5']['share of rows where event_time_offset == minus UTC offset of device zone'] < 0.99:
         problems.append('event_time_offset convention not recovered')
+    leaks = [p.name for p in (out / 'fu_out').iterdir() if 'testville' in p.read_text(errors='ignore').lower()]
+    if leaks:
+        problems.append(f'free-text state leaked into public outputs: {leaks}')
     ok = not problems
     print(f"{'followup':15s} steps {[k for k in s['steps']]}  last-10 agree {agree}/{len(main)}  "
           f"{'OK' if ok else 'PROBLEM ' + '; '.join(problems)}")

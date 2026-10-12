@@ -75,6 +75,8 @@ STATE_NAMES = {
     'NEW BRUNSWICK': 'NB', 'PRINCE EDWARD ISLAND': 'PE', 'MANITOBA': 'MB', 'SASKATCHEWAN': 'SK', 'ALBERTA': 'AB',
     'BRITISH COLUMBIA': 'BC', 'NFLD': 'NL'}
 NAME_STOP = {'the', 'inc', 'llc', 'of', 'at', 'and', 'co', 'corp', 'corporation', 'ltd'}
+KNOWN_STATES = set(V.STATE_TZ) | set(STATE_NAMES.values())
+MIN_GROUP = 5   # publish a device state / zone only where >= MIN_GROUP locations and ticket accounts share it
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -182,6 +184,9 @@ def setup(R):
                         'city', 'state', 'country'] if c in dev_cols]
     dev = pd.read_sql_query(f'SELECT {", ".join(want)} FROM devices', conn)
     dev['device'] = dev.external_device_id.map(clean)
+    if 'state' in dev:
+        dev['state_norm'] = dev.state.map(norm_state)
+        dev['zone'] = dev.state_norm.map(zone_for_state)
     raw = common.load_raw(R.xlsx_path)
     maps = common.build_maps(raw, dev.external_device_id)
     cases = common.build_cases(raw, maps)
@@ -210,17 +215,67 @@ def to_utc_naive(opened_at):
     return local.astimezone(UTC).replace(tzinfo=None)
 
 
+def sort_events(t, c):
+    """Time ascending and, within one second, code DESCENDING, so that reading the arrays backwards gives Zac's
+    ORDER BY transaction_time_utc DESC, transaction_code (ASC) (cell 34; verify_with_db step 4b)."""
+    if not len(t):
+        return t, c
+    _, rank = np.unique(c.astype(str), return_inverse=True)
+    order = np.lexsort((-rank, t))
+    return t[order], c[order]
+
+
+EMPTY = (np.array([], dtype='datetime64[s]'), np.array([], dtype=object))
+
+
 def fetch_device_events(conn, device, lo_date, hi_date):
     rows = conn.execute('SELECT transaction_time_utc, transaction_code FROM transaction_events '
                         'WHERE external_device_id=? AND transaction_date_local>=? AND transaction_date_local<=?',
                         (device, lo_date, hi_date)).fetchall()
     rows = [r for r in rows if r[0] is not None]
     if not rows:
-        return np.array([], dtype='datetime64[s]'), np.array([], dtype=object)
+        return EMPTY
     t = np.array([r[0][:19] for r in rows], dtype='datetime64[s]')
     c = np.array([r[1] for r in rows], dtype=object)
-    order = np.lexsort((c.astype(str), t))
-    return t[order], c[order]
+    return sort_events(t, c)
+
+
+def fetch_spans_rowid_order(conn, spans, log=None, batch=900):
+    """Events for many (device, lo_date, hi_date) spans. Rowids come from the covering (device, date) index; rows
+    are then read in rowid order, i.e. one forward sweep over the table instead of random page reads (the 17 GB
+    file does not fit in a standard Colab runtime's page cache). Returns {device: (times, codes)} sorted per device."""
+    ids = []
+    for dev, lo, hi in spans:
+        ids.append(np.fromiter((r[0] for r in conn.execute(
+            'SELECT rowid FROM transaction_events WHERE external_device_id=? AND transaction_date_local>=? '
+            'AND transaction_date_local<=?', (dev, lo, hi))), dtype=np.int64))
+    ids = np.unique(np.concatenate(ids)) if ids else np.array([], dtype=np.int64)
+    if log:
+        log(f'  {len(ids):,} events to read for {len(spans):,} spans (rowid order)')
+    dmap, cmap, di, ci, tt = {}, {}, [], [], []
+    for i in range(0, len(ids), batch):
+        b = ids[i:i + batch].tolist()
+        rows = [r for r in conn.execute('SELECT external_device_id, transaction_time_utc, transaction_code '
+                                        f'FROM transaction_events WHERE rowid IN ({",".join("?" * len(b))})', b)
+                if r[1] is not None]
+        di.append(np.fromiter((dmap.setdefault(clean(r[0]), len(dmap)) for r in rows), dtype=np.int32,
+                              count=len(rows)))
+        ci.append(np.fromiter((cmap.setdefault(r[2], len(cmap)) for r in rows), dtype=np.int32, count=len(rows)))
+        tt.append(np.array([r[1][:19] for r in rows], dtype='datetime64[s]'))
+        if log and i and i % (batch * 2000) == 0:
+            log(f'  read {i:,}/{len(ids):,} events')
+    if not dmap:
+        return {}
+    di, ci, tt = np.concatenate(di), np.concatenate(ci), np.concatenate(tt)
+    cnames = np.array(list(cmap), dtype=object)
+    names = np.array(list(dmap), dtype=object)
+    order = np.argsort(di, kind='stable')
+    di, ci, tt = di[order], ci[order], tt[order]
+    cuts = np.flatnonzero(np.diff(di)) + 1
+    out = {}
+    for a, b in zip(np.r_[0, cuts], np.r_[cuts, len(di)]):
+        out[names[di[a]]] = sort_events(tt[a:b], cnames[ci[a:b]])
+    return out
 
 
 def merged_intervals(spans):
@@ -273,31 +328,36 @@ def f1_tickets(R):
     m['anchor_utc'] = pd.to_datetime(m.opened_at.map(to_utc_naive))
     m['utc_offset_added_h'] = (m.anchor_utc - pd.to_datetime(m.opened_at)).dt.total_seconds() / 3600
     m['control_anchor_utc'] = m.anchor_utc - pd.Timedelta(days=CONTROL_SHIFT_DAYS)
-    # another ticket on the same machine within [control - 30 d, control + 2 d] makes the control "not clean"
+    # A control window [c - 30 d, c) is "clean" only if no other ticket on the machine has its own 30-day lead-up
+    # overlapping it (anchor in (c - 30 d, c + 30 d)) or was opened up to 2 d before it starts. The ticket itself
+    # sits at c + 35 d and is therefore outside.
     all_anchor = cases.assign(a=pd.to_datetime(cases.opened_at.map(to_utc_naive)))[['serial', 'a']]
     by_serial = {s: np.sort(g.a.values.astype('datetime64[s]')) for s, g in all_anchor.groupby('serial')}
+    lb = np.timedelta64(LOOKBACK_DAYS, 'D')
 
     def clean_control(row):
         a = by_serial[row.serial]
-        lo = np.datetime64(row.control_anchor_utc - pd.Timedelta(days=LOOKBACK_DAYS), 's')
-        hi = np.datetime64(row.control_anchor_utc + pd.Timedelta(days=2), 's')
-        return not bool(((a >= lo) & (a <= hi)).any())
+        c = np.datetime64(row.control_anchor_utc, 's')
+        return not bool(((a >= c - lb - np.timedelta64(2, 'D')) & (a < c + lb)).any())
 
     m['control_clean'] = [clean_control(r) for r in m.itertuples()]
+    # truncated windows: they start before telemetry begins, or before the machine's first active day
+    first = dict(zip(dev.device, dev.first_active)) if 'first_active' in dev else {}
+    dev_first = m.serial.map(first)
+    main_lo = (m.anchor_utc - pd.Timedelta(days=LOOKBACK_DAYS)).dt.strftime('%Y-%m-%d')
+    ctrl_lo = (m.control_anchor_utc - pd.Timedelta(days=LOOKBACK_DAYS)).dt.strftime('%Y-%m-%d')
+    m['lookback_truncated'] = (main_lo < TELEMETRY_FIRST) | (dev_first.notna() & (dev_first > main_lo))
+    m['control_truncated'] = (ctrl_lo < TELEMETRY_FIRST) | (dev_first.notna() & (dev_first > ctrl_lo))
     span_lo = (m.control_anchor_utc - pd.Timedelta(days=LOOKBACK_DAYS + 1)).dt.strftime('%Y-%m-%d')
     span_hi = (m.anchor_utc + pd.Timedelta(days=1)).dt.strftime('%Y-%m-%d')
     m['_lo'], m['_hi'] = span_lo, span_hi
     rows, n_dev, n_rows = [], 0, 0
     devices = m.serial.unique()
+    spans = [(sr, lo, hi) for sr, g in m.groupby('serial') for lo, hi in merged_intervals(list(zip(g._lo, g._hi)))]
+    events = fetch_spans_rowid_order(conn, spans, log=R.log)
     for i, serial in enumerate(devices, 1):
         g = m[m.serial == serial]
-        times, codes = [], []
-        for lo, hi in merged_intervals(list(zip(g._lo, g._hi))):
-            t, c = fetch_device_events(conn, serial, lo, hi)
-            times.append(t)
-            codes.append(c)
-        t = np.concatenate(times) if times else np.array([], dtype='datetime64[s]')
-        c = np.concatenate(codes) if codes else np.array([], dtype=object)
+        t, c = events.get(serial, EMPTY)
         n_rows += len(t)
         n_dev += 1
         for r in g.itertuples():
@@ -306,13 +366,13 @@ def f1_tickets(R):
                     'utc_offset_added_h': r.utc_offset_added_h, 'model': r.model, 'record_type': r.record_type,
                     'status': r.status, 'service_group': r.service_group, 'trouble_code': r.trouble_code,
                     'category': r.category, 'subcategory': r.subcategory,
-                    'lookback_truncated': (r.anchor_utc - pd.Timedelta(days=LOOKBACK_DAYS)).strftime('%Y-%m-%d')
-                    < TELEMETRY_FIRST,
+                    'lookback_truncated': bool(r.lookback_truncated),
                     'after_telemetry_end': r.anchor_utc.strftime('%Y-%m-%d') > TELEMETRY_LAST}
             for gmin in GUARDS_MIN:
                 rows.append({**base, 'window': f'corrected_guard{gmin}', 'control_clean': None,
                              **summarise_window(t, c, r.anchor_utc.to_pydatetime(), gmin)})
-            rows.append({**base, 'window': f'control_minus{CONTROL_SHIFT_DAYS}d', 'control_clean': r.control_clean,
+            rows.append({**base, 'lookback_truncated': bool(r.control_truncated),
+                         'window': f'control_minus{CONTROL_SHIFT_DAYS}d', 'control_clean': r.control_clean,
                          **summarise_window(t, c, r.control_anchor_utc.to_pydatetime(), 0)})
         if i % 500 == 0:
             R.log(f'  {i:,}/{len(devices):,} machines, {n_rows:,} events read')
@@ -334,18 +394,22 @@ def f1_tickets(R):
                int((sub.distinct_codes >= 10).sum()))
         R.fact('F1', f'{label}: median distinct non-success codes in 30 d', float(sub.distinct_codes.median()))
         R.fact('F1', f'{label}: median hours from rank-1 code to anchor', float(sub.rank1_hours_before.median()))
-    # how the guard bands change the last-10 lists
-    piv = out[out.window.str.startswith('corrected')].pivot_table(index='case_id', columns='window',
-                                                                  values='last10_distinct', aggfunc='first')
+    # how the guard bands change the last-10 lists (usable tickets that have codes)
+    piv = out[out.window.str.startswith('corrected') & out.case_id.isin(usable.case_id)].pivot_table(
+        index='case_id', columns='window', values='last10_distinct', aggfunc='first')
+    has = piv['corrected_guard0'].fillna('') != ''
     for gmin in GUARDS_MIN[1:]:
         col = f'corrected_guard{gmin}'
-        R.fact('F1', f'last-10 distinct list unchanged with a {gmin}-min guard band',
-               int((piv[col] == piv['corrected_guard0']).sum()))
-    ctrl = out[(out.window == f'control_minus{CONTROL_SHIFT_DAYS}d') & out.control_clean.astype(bool)]
-    R.fact('F2', 'clean control windows', len(ctrl))
-    R.fact('F2', 'control: windows with >=1 non-success code', int((ctrl.non_success_events > 0).sum()))
-    R.fact('F2', 'control: median distinct non-success codes', float(ctrl.distinct_codes.median()) if len(ctrl)
-           else None)
+        R.fact('F1', f'last-10 distinct list unchanged with a {gmin}-min guard band (usable tickets with codes)',
+               f"{int((piv.loc[has, col] == piv.loc[has, 'corrected_guard0']).sum())}/{int(has.sum())}")
+    ctrl = out[(out.window == f'control_minus{CONTROL_SHIFT_DAYS}d') & out.control_clean.eq(True)
+               & out.lookback_truncated.eq(False) & out.case_id.isin(usable.case_id)]
+    paired = usable[usable.case_id.isin(ctrl.case_id)]
+    R.fact('F2', 'clean, complete control windows (paired with usable tickets)', len(ctrl))
+    for label, sub in [('control window', ctrl), ('same tickets, corrected window', paired)]:
+        R.fact('F2', f'{label}: >=1 non-success code', int((sub.non_success_events > 0).sum()))
+        R.fact('F2', f'{label}: median distinct non-success codes',
+               float(sub.distinct_codes.median()) if len(sub) else None)
     return f'{len(main)} tickets on {n_dev} machines; {n_rows:,} events read'
 
 
@@ -420,6 +484,8 @@ def name_match(a, b):
     if a.strip().casefold() == b.strip().casefold():
         return 'exact'
     na, nb = norm_name(a), norm_name(b)
+    if not (na and nb):
+        return 'missing'          # placeholder text such as '-' or 'Inc.'
     if na == nb:
         return 'normalised'
     if na and nb and (na in nb or nb in na):
@@ -439,14 +505,15 @@ def f4_locations(R):
     # first/last active date per device via the (device, date) index
     first_last = {}
     for d in dev.device:
-        lo, hi = conn.execute('SELECT MIN(transaction_date_local), MAX(transaction_date_local) FROM transaction_events '
-                              'WHERE external_device_id=?', (d,)).fetchone()
+        lo, hi = conn.execute('SELECT (SELECT MIN(transaction_date_local) FROM transaction_events '
+                              'WHERE external_device_id=?1), (SELECT MAX(transaction_date_local) FROM '
+                              'transaction_events WHERE external_device_id=?1)', (d,)).fetchone()
         first_last[d] = (lo, hi)
     dev['first_active'] = dev.device.map(lambda d: first_last[d][0])
     dev['last_active'] = dev.device.map(lambda d: first_last[d][1])
     dev['transacting'] = dev.first_active.notna()
-    dev['state_norm'] = dev.state.map(norm_state) if 'state' in dev else None
-    dev['zone'] = dev.state_norm.map(zone_for_state) if 'state' in dev else None
+    if 'state' not in dev:
+        dev['state_norm'], dev['zone'] = None, None
     R.state['dev'] = dev
     if 'location_name' not in dev:
         return 'no location_name column'
@@ -504,10 +571,22 @@ def f4_locations(R):
     hl = d.dropna(subset=['location', 'host']).groupby('host').location.nunique().value_counts().sort_index()
     R.save(pd.DataFrame({'hosts_per_location': lh.index, 'locations': lh.values}), 'hosts_per_location')
     R.save(pd.DataFrame({'locations_per_host': hl.index, 'hosts': hl.values}), 'locations_per_host')
-    # public device table (pseudonymous) and private crosswalk
-    pub = d[['machine_id', 'host', 'location', 'location_class', 'assigned_customer', 'customer', 'state_norm', 'zone',
-             'device_status', 'machine_type', 'first_active', 'last_active', 'transacting']].rename(
-        columns={'customer': 'ticket_customer', 'state_norm': 'device_state'})
+    # public device table (pseudonymous). Only recognised state codes are published (free text typed into the state
+    # field never leaves --private), and a state / zone only where >= MIN_GROUP locations and ticket accounts share
+    # it, so a pseudonymous customer cannot be singled out by a rare state or zone.
+    st = d.state_norm.where(d.state_norm.isin(KNOWN_STATES))
+
+    def big_enough(key):
+        g = d.groupby(key)
+        n = pd.concat([g.location.nunique(), g.customer.nunique()], axis=1).min(axis=1)
+        return set(n[n >= MIN_GROUP].index)
+
+    ok_st, ok_zone = big_enough(st), big_enough(d.zone)
+    d['state_public'] = np.where(st.isin(ok_st), st, np.where(d.state_norm.notna(), 'Suppressed', None))
+    d['zone_public'] = np.where(d.zone.isin(ok_zone), d.zone, np.where(d.zone.notna(), 'Suppressed', None))
+    pub = d[['machine_id', 'host', 'location', 'location_class', 'assigned_customer', 'customer', 'state_public',
+             'zone_public', 'device_status', 'machine_type', 'first_active', 'last_active', 'transacting']].rename(
+        columns={'customer': 'ticket_customer', 'state_public': 'device_state', 'zone_public': 'zone'})
     R.save(pub, 'devices')
     R.save(tick[['machine_id', 'location', 'location_name', 'account_real', 'customer', 'name_match', 'city',
                  't_city', 'state_norm', 't_state']].rename(columns={'location_name': 'device_location_name',
@@ -613,9 +692,9 @@ def run(db_path, xlsx_path, out_dir='fu_out', private_dir='fu_private', pilot_id
     if R.steps['setup']['status'] != 'done':
         return R.write_summary()
     R.step('F4', 'device location fields vs ticket accounts', f4_locations)
-    R.step('F1', f'last {LAST_N} codes for every device-matched ticket (+ control windows)', f1_tickets)
     R.step('F3', "Zac's pilot: equal clock vs corrected clock", f3_pilot)
     R.step('F5', 'event_time columns and whole-fleet clock check (sample)', f5_sample)
+    R.step('F1', f'last {LAST_N} codes for every device-matched ticket (+ control windows)', f1_tickets)
     R.state['conn'].close()
     s = R.write_summary()
     R.log(f"done: checks {s['check_counts']}; summary: {R.out / 'fu_summary.md'}")
