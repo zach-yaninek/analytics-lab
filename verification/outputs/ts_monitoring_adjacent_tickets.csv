@@ -1,0 +1,6 @@
+class,tickets,share_prev_same_machine_within_7d,share_prev_same_machine_within_14d,share_next_same_machine_within_7d,share_next_same_machine_within_14d
+A monitoring template,140,0.5929,0.8429,0.1929,0.2714
+B telemetry UI + code number,235,0.0979,0.1532,0.1234,0.2
+C telemetry UI mention,494,0.1073,0.1518,0.1174,0.1822
+D code number only,109,0.1835,0.2844,0.1101,0.1927
+E customer/other,6493,0.0841,0.1334,0.0923,0.1432

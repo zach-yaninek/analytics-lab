@@ -1,0 +1,11 @@
+rule_a,rule_b,cases_matching_both
+Planned work,Cancelled request,0
+Planned work,Duplicate case,0
+Planned work,No Trouble Found,0
+Planned work,Missing trouble code,0
+Cancelled request,Duplicate case,0
+Cancelled request,No Trouble Found,0
+Cancelled request,Missing trouble code,0
+Duplicate case,No Trouble Found,0
+Duplicate case,Missing trouble code,0
+No Trouble Found,Missing trouble code,0

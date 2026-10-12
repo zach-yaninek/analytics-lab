@@ -1,0 +1,8 @@
+service_group,Case Closed,Closed,Dispatch,Ricoh-Closed,Trouble Closed,All
+Cancelled request,0,0,0,0,247,247
+Duplicate case,0,0,0,0,15,15
+Missing trouble code,4,6,63,11,17,101
+No Trouble Found,0,0,0,0,577,577
+Other recorded issue,0,1,1,0,6506,6508
+Planned work,1,0,0,0,22,23
+All,5,7,64,11,7384,7471

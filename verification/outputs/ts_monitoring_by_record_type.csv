@@ -1,0 +1,8 @@
+record_type,A monitoring template,B telemetry UI + code number,C telemetry UI mention,D code number only,E customer/other,all,share_A,share_B,share_C,share_D,share_E
+scrubEx / SD Case,17,179,418,92,4988,5694,0.003,0.031,0.073,0.016,0.876
+alEx Case,4,52,58,11,1233,1358,0.003,0.038,0.043,0.008,0.908
+General Case,118,0,7,0,122,247,0.478,0.0,0.028,0.0,0.494
+ScrubBank,1,3,10,6,116,136,0.007,0.022,0.074,0.044,0.853
+ScrubExchange,0,1,1,0,16,18,0.0,0.056,0.056,0.0,0.889
+Install Case,0,0,0,0,17,17,0.0,0.0,0.0,0.0,1.0
+.,0,0,0,0,1,1,0.0,0.0,0.0,0.0,1.0

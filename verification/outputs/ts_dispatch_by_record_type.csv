@@ -1,0 +1,11 @@
+record_type,is_open,dispatch_present_False,dispatch_present_True
+.,closed,0,1
+General Case,closed,247,0
+Install Case,closed,17,0
+ScrubBank,closed,12,123
+ScrubBank,open,1,0
+ScrubExchange,closed,0,18
+alEx Case,closed,115,1232
+alEx Case,open,1,10
+scrubEx / SD Case,closed,510,5132
+scrubEx / SD Case,open,2,50

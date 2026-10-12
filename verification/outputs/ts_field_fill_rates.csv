@@ -1,0 +1,13 @@
+group,tickets,open_tickets,Trouble Code,Trouble Code Category,Trouble Code Sub Category,Trouble Resolution,Administrative Notes,Dispatch #,Case Owner,Model #,Product Name,Case Record Type,Trouble Reported,Serial #,Trouble Closed Date/Time
+open (Status=Dispatch),64,64,0.0156,0.0156,0.0156,0.4375,0.5938,0.9375,1.0,1.0,1.0,1.0,1.0,1.0,0.0
+closed (all other statuses),7407,0,0.9949,0.964,0.696,0.9183,0.642,0.8784,1.0,1.0,1.0,1.0,1.0,1.0,0.9969
+Trouble Closed,7384,0,0.9977,0.9667,0.698,0.9196,0.6421,0.8792,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+other closed (Ricoh-Closed/Closed/Case Closed),23,0,0.087,0.087,0.0435,0.5217,0.6087,0.6087,1.0,1.0,1.0,1.0,1.0,1.0,0.0
+age <7d (all statuses),118,53,0.4407,0.4407,0.3136,0.7203,0.4915,0.9576,1.0,1.0,1.0,1.0,1.0,1.0,0.4322
+age <7d Trouble Closed only,51,0,1.0,1.0,0.7059,0.9804,0.4902,0.9804,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+age 7-30d (all statuses),422,11,0.9692,0.9621,0.7062,0.9005,0.6445,0.9076,1.0,1.0,1.0,1.0,1.0,1.0,0.9692
+age 7-30d Trouble Closed only,409,0,1.0,0.9927,0.7286,0.9193,0.6333,0.9095,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+age 30-90d (all statuses),1133,0,0.9956,0.9885,0.7714,0.91,0.7026,0.7767,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+age 30-90d Trouble Closed only,1133,0,0.9956,0.9885,0.7714,0.91,0.7026,0.7767,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+age >=90d (all statuses),5798,0,0.9971,0.9595,0.6808,0.92,0.6325,0.8951,1.0,1.0,1.0,1.0,1.0,1.0,0.9988
+age >=90d Trouble Closed only,5791,0,0.9979,0.9603,0.6814,0.9209,0.6322,0.8962,1.0,1.0,1.0,1.0,1.0,1.0,1.0

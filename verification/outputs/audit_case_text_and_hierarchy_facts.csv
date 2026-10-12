@@ -1,0 +1,10 @@
+item,value
+trouble_reported_len_lt_10,2
+trouble_reported_len_lt_20,142
+trouble_resolution_present_len_lt_10,27
+trouble_reported_median_len,75.0
+subcategory_missing_E/M+Electronics,513/5438 = 9.43%
+subcategory_missing_other_codes_incl_missing,1802/2033 = 88.64%
+trouble_code_missing_among_Trouble_Closed,17/7384
+trouble_closed_missing_code_proactive_monitoring,11
+trouble_closed_missing_code_General_Case,17

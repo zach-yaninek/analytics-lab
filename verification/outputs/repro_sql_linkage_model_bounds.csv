@@ -1,0 +1,11 @@
+model,cases,matched_cases_zac_cell25,implied_unmatched,alEx_Case_record_type,min_unmatched_non_alEx_record_type
+A-LC,65,12,53,58,0
+LC-24,40,27,13,37,0
+LC-30,305,256,49,289,0
+LVD-Remote,724,492,232,0,232
+LVD-Remote-2.0,1426,1244,182,3,179
+LVLR-WOP,5,4,1,0,1
+LVRR-WOP,18,14,4,0,4
+A-MC,7,0,7,6,1
+A-SC,11,0,11,10,1
+LVD-LOCAL,7,0,7,0,7

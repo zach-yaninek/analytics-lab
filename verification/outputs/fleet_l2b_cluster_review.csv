@@ -1,0 +1,97 @@
+cluster,accounts,states,tickets,reviewed_systems_name_tier,reviewed_systems_full,verdict,segment
+L2b-001,82,39,354,1,1,confirmed,federal_veterans
+L2b-002,23,3,135,1,1,confirmed,healthcare_provider
+L2b-003,19,1,135,1,1,confirmed,healthcare_provider
+L2b-004,12,1,147,1,1,confirmed,healthcare_provider
+L2b-005,11,1,140,1,1,confirmed,healthcare_provider
+L2b-006,10,1,60,1,1,confirmed,healthcare_provider
+L2b-007,10,1,146,1,1,confirmed,healthcare_provider
+L2b-008,9,3,147,3,3,false merge (split on review),healthcare_provider
+L2b-009,9,4,22,1,1,confirmed,healthcare_provider
+L2b-010,7,2,27,1,1,confirmed,healthcare_provider
+L2b-011,7,1,47,1,1,confirmed,healthcare_provider
+L2b-012,7,2,127,1,1,confirmed,healthcare_provider
+L2b-013,7,1,155,1,1,confirmed,healthcare_provider
+L2b-014,7,1,36,1,1,confirmed,healthcare_provider
+L2b-015,6,1,30,1,1,confirmed,healthcare_provider
+L2b-016,6,1,31,1,1,confirmed,healthcare_provider
+L2b-017,5,1,98,1,1,confirmed,healthcare_provider
+L2b-018,5,1,44,1,1,confirmed,healthcare_provider
+L2b-019,5,1,31,1,1,confirmed,healthcare_provider
+L2b-020,5,1,22,1,1,confirmed,healthcare_provider
+L2b-021,5,2,33,1,1,confirmed,healthcare_provider
+L2b-022,5,1,22,1,1,confirmed,healthcare_provider
+L2b-023,5,1,51,1,1,confirmed,healthcare_provider
+L2b-024,5,1,42,1,1,confirmed,healthcare_provider
+L2b-025,4,1,34,1,1,confirmed,healthcare_provider
+L2b-026,4,2,153,1,1,confirmed,healthcare_provider
+L2b-027,4,1,26,1,1,confirmed,healthcare_provider
+L2b-028,4,1,16,1,1,confirmed,healthcare_provider
+L2b-029,4,1,30,1,1,confirmed,healthcare_provider
+L2b-030,4,1,24,1,1,confirmed,healthcare_provider
+L2b-031,4,2,80,1,1,confirmed,healthcare_provider
+L2b-032,4,3,12,3,3,false merge (split on review),healthcare_provider
+L2b-033,4,1,43,2,2,false merge (split on review),healthcare_provider
+L2b-034,4,1,20,1,1,confirmed,healthcare_provider
+L2b-035,3,1,15,1,1,confirmed,healthcare_provider
+L2b-036,3,2,28,1,1,confirmed,healthcare_provider
+L2b-037,3,1,16,1,1,confirmed,healthcare_provider
+L2b-038,3,1,27,1,1,confirmed,healthcare_provider
+L2b-039,3,3,21,1,1,confirmed,federal_military
+L2b-040,3,2,33,1,1,confirmed,healthcare_provider
+L2b-041,3,1,8,1,1,confirmed,healthcare_provider
+L2b-042,3,1,44,1,1,confirmed,healthcare_provider
+L2b-043,3,1,11,1,1,confirmed,healthcare_provider
+L2b-044,3,1,27,1,1,confirmed,healthcare_provider
+L2b-045,3,1,32,1,1,confirmed,healthcare_provider
+L2b-046,3,1,9,1,1,confirmed,healthcare_provider
+L2b-047,3,1,21,1,1,confirmed,healthcare_provider
+L2b-048,3,1,33,1,1,confirmed,healthcare_provider
+L2b-049,3,1,20,1,1,confirmed,healthcare_provider
+L2b-050,3,1,10,1,1,confirmed,healthcare_provider
+L2b-051,3,1,53,1,1,confirmed,healthcare_provider
+L2b-052,2,1,19,1,1,confirmed,healthcare_provider
+L2b-053,2,2,6,1,1,confirmed,industry_lab
+L2b-054,2,1,23,1,1,confirmed,healthcare_provider
+L2b-055,2,1,22,2,2,false merge (split on review),academic_research;healthcare_provider
+L2b-056,2,1,11,1,1,confirmed,healthcare_provider
+L2b-057,2,1,88,1,1,confirmed,healthcare_provider
+L2b-058,2,1,54,1,1,confirmed,healthcare_provider
+L2b-059,2,1,42,1,1,confirmed,healthcare_provider
+L2b-060,2,2,13,1,1,confirmed,healthcare_provider
+L2b-061,2,1,6,1,1,confirmed,healthcare_provider
+L2b-062,2,1,25,1,1,confirmed,healthcare_provider
+L2b-063,2,1,5,1,1,confirmed,healthcare_provider
+L2b-064,2,1,7,1,1,confirmed,healthcare_provider
+L2b-065,2,1,39,2,2,false merge (split on review),healthcare_provider
+L2b-066,2,2,5,2,2,false merge (split on review),healthcare_provider
+L2b-067,2,1,7,1,1,confirmed,healthcare_provider
+L2b-068,2,1,5,1,1,confirmed,federal_military
+L2b-069,2,1,81,1,1,confirmed,healthcare_provider
+L2b-070,2,1,9,1,1,confirmed,healthcare_provider
+L2b-071,2,1,23,1,1,confirmed,healthcare_provider
+L2b-072,2,1,3,1,1,confirmed,healthcare_provider
+L2b-073,2,1,12,1,1,confirmed,healthcare_provider
+L2b-074,2,1,25,1,1,confirmed,healthcare_provider
+L2b-075,2,1,29,2,2,false merge (split on review),academic_research;healthcare_provider
+L2b-076,2,1,7,1,1,confirmed,healthcare_provider
+L2b-077,2,1,10,1,1,confirmed,healthcare_provider
+L2b-078,2,2,26,1,1,confirmed,industry_lab
+L2b-079,2,1,8,1,1,confirmed,healthcare_provider
+L2b-080,2,1,14,2,2,false merge (split on review),healthcare_provider
+L2b-081,2,1,7,1,1,confirmed,healthcare_provider
+L2b-082,2,1,16,1,1,confirmed,healthcare_provider
+L2b-083,2,1,33,1,1,confirmed,healthcare_provider
+L2b-084,2,2,13,2,2,false merge (split on review),healthcare_provider
+L2b-085,2,1,65,1,1,confirmed,healthcare_provider
+L2b-086,2,1,10,2,2,false merge (split on review),healthcare_provider
+L2b-087,2,1,22,1,1,confirmed,healthcare_provider
+L2b-088,2,1,17,1,1,confirmed,healthcare_provider
+L2b-089,2,1,27,1,1,confirmed,healthcare_provider
+L2b-090,2,1,6,1,1,confirmed,healthcare_provider
+L2b-091,2,1,3,1,1,confirmed,healthcare_provider
+L2b-092,2,1,6,1,1,confirmed,healthcare_provider
+L2b-093,2,1,11,1,1,confirmed,healthcare_provider
+L2b-094,2,1,2,1,1,confirmed,healthcare_provider
+L2b-095,2,2,14,1,1,confirmed,healthcare_provider
+L2b-096,2,1,12,2,2,false merge (split on review),healthcare_provider

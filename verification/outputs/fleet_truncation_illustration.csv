@@ -1,0 +1,7 @@
+true_tickets_per_machine,share_of_fleet_ticketed_pct,naive_tickets_per_ticketed_machine,note
+0.1,9.5,1.051,"Poisson, equal machines, homogeneous rate. True rates differ 20x (0.1 vs 2.0) but naive rates differ 2.20x"
+0.25,22.1,1.13,"Poisson, equal machines, homogeneous rate. True rates differ 20x (0.1 vs 2.0) but naive rates differ 2.20x"
+0.5,39.3,1.271,"Poisson, equal machines, homogeneous rate. True rates differ 20x (0.1 vs 2.0) but naive rates differ 2.20x"
+0.85,57.3,1.484,"Poisson, equal machines, homogeneous rate. True rates differ 20x (0.1 vs 2.0) but naive rates differ 2.20x"
+1.0,63.2,1.582,"Poisson, equal machines, homogeneous rate. True rates differ 20x (0.1 vs 2.0) but naive rates differ 2.20x"
+2.0,86.5,2.313,"Poisson, equal machines, homogeneous rate. True rates differ 20x (0.1 vs 2.0) but naive rates differ 2.20x"

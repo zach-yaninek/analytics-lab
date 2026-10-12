@@ -1,0 +1,7 @@
+window,season,weekday_tickets,weekdays,tickets_before_06,tickets_06h,tickets_07h,tickets_08h,share_07h,first_ticket_of_day_median,first_ticket_of_day_p10,first_ticket_of_day_p90,days_first_ticket_07h,days_first_ticket_before_07,minutes_after_07_of_first_ticket_median
+full period,DST (EDT),4982,192,0,1,406,600,0.0815,7.38,7.08,8.23,157,1,23.0
+full period,Standard (EST),2347,89,2,0,191,295,0.0814,7.45,7.07,8.31,65,2,27.0
+fall: 4 wk before,DST (EDT),569,20,0,1,37,83,0.065,7.29,7.1,8.2,14,1,17.5
+fall: 4 wk after,Standard (EST),489,19,2,0,34,66,0.0695,7.62,6.65,8.62,10,2,37.0
+spring: 4 wk before,Standard (EST),552,20,0,0,60,68,0.1087,7.45,7.1,8.12,17,0,27.0
+spring: 4 wk after,DST (EDT),517,20,0,0,63,61,0.1219,7.3,7.11,7.74,19,0,18.0

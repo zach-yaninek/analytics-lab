@@ -1,0 +1,26 @@
+item,value
+pilot_planned_work,5
+pilot_not_in_unplanned_population,5
+pilot_service_groups,"{'Other recorded issue': 20, 'Planned work': 5, 'Missing trouble code': 3, 'No Trouble Found': 2}"
+pilot_no_tx_service_groups,{'Other recorded issue': 4}
+pilot_no_tx_strata,"{'Electronics': 2, 'Repair/Investigate': 2}"
+pilot_no_tx_record_types,"{'General Case': 2, 'scrubEx / SD Case': 1, 'alEx Case': 1}"
+pilot_proactive_monitoring,5
+pilot_customer_initiated_recorded_issue,17
+pilot_no_tx_proactive_monitoring,2
+pilot_record_type_General_Case,9
+population_proactive_monitoring_pct,1.77
+window_proactive_monitoring_pct,1.79
+pilot_status,{'Trouble Closed': 30}
+pilot_resolution_missing,9
+window_tickets,6360
+window_strata,11
+window_share_of_tickets_in_strata_E/M+Electronics,74.21
+pilot_share_E/M+Electronics,20.0
+window_share_rare_strata_PM_Install_RI_Canopy,0.2
+pilot_share_rare_strata_PM_Install_RI_Canopy,30.0
+lower_bound_reason,2025-09-02 minus 32-day extraction buffer = 2025-08-01 (first telemetry date)
+lower_bound_minus_32d,2025-08-01
+anchor_isoformat_roundtrip_equal,True
+shifted_window_bounds_all_19_chars,True
+sample_key,sha256('15072' + T#####) - depends on pseudonym order of Case Numbers

@@ -1,0 +1,3 @@
+dispatch_number_present,tickets,median_open_to_close_h,share_closed_within_4h,share_No_Trouble_Found,share_FCR_in_trouble_reported,share_service_group_planned,top_trouble_codes
+False,892,141.12,0.139,0.1693,0.2982,0.0224,"{'Miscellaneous': 514, 'Electro/Mechanical': 171, 'Electronics': 84, 'Network': 50}"
+True,6492,58.33,0.0154,0.0656,0.412,0.0003,"{'Electro/Mechanical': 3578, 'Electronics': 1603, 'Miscellaneous': 670, 'Network': 433}"

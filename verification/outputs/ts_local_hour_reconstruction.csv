@@ -1,0 +1,15 @@
+subset,zone,n,recorded_median,recorded_p10,local_median_if_US_Eastern,local_p10_if_US_Eastern,local_share_before_07_if_US_Eastern,local_median_if_US_Central,local_p10_if_US_Central,local_share_before_07_if_US_Central
+all,Newfoundland,11,8.77,7.1,10.27,8.6,0.0,11.27,9.6,0.0
+all,Eastern,5463,10.88,7.98,10.88,7.98,0.001,11.88,8.98,0.001
+all,Central,1060,11.96,8.85,10.96,7.85,0.029,11.96,8.85,0.0
+all,Mountain,170,13.23,9.26,11.23,7.26,0.088,12.23,8.26,0.018
+all,Arizona (no DST),51,13.72,10.4,10.77,7.5,0.059,11.77,8.5,0.02
+all,Pacific,702,12.97,9.7,9.97,6.7,0.135,10.97,7.7,0.046
+all,Hawaii (no DST),14,14.18,9.96,8.68,4.26,0.214,9.68,5.26,0.214
+weekday_reactive,Newfoundland,11,8.77,7.1,10.27,8.6,0.0,11.27,9.6,0.0
+weekday_reactive,Eastern,5235,10.87,7.95,10.87,7.95,0.001,11.87,8.95,0.0
+weekday_reactive,Central,1020,11.99,8.87,10.99,7.87,0.03,11.99,8.87,0.0
+weekday_reactive,Mountain,159,13.38,9.41,11.38,7.41,0.082,12.38,8.41,0.019
+weekday_reactive,Arizona (no DST),51,13.72,10.4,10.77,7.5,0.059,11.77,8.5,0.02
+weekday_reactive,Pacific,679,13.0,9.8,10.0,6.8,0.124,11.0,7.8,0.04
+weekday_reactive,Hawaii (no DST),12,14.82,13.39,9.32,7.39,0.083,10.32,8.39,0.083

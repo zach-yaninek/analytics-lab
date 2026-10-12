@@ -1,0 +1,12 @@
+level,rule,count,evidence_type,note
+L0 account,distinct cleaned Account Name,845,data,"Zac's ""customer"" unit; every account has exactly one address string"
+L1 site,"distinct address string (City,State ZIP+4 / postal code)",837,data,address field has no street line; ZIP+4 and Canadian postal codes are building-level
+L1 site,distinct City+State+ZIP5 (any organisation),725,data,merges different organisations that share a ZIP5; lower bound on sites
+L2a system,"first distinctive name token, same state",550,data (algorithmic),conservative across states; still contains same-state false merges
+L2b system,"first distinctive name token, any state",488,data (algorithmic),allows multi-state systems; contains cross-state false merges
+L3a system,reviewed: brand evident in names/addresses only,436,data + manual review,"splits algorithmic false merges, adds name-evident members"
+L3b system,reviewed: + documented affiliations (external knowledge),320,inferred (external knowledge),best estimate of operating health systems; unverified by IPA
+L1 site,distinct reviewed system + City+State+ZIP5 (campus within system),796,inferred (external knowledge),accounts of one system in one ZIP5 treated as one campus
+L3b sensitivity,"reviewed, each federal veterans facility its own system",401,inferred,
+L3b sensitivity,"reviewed, each federal veterans and military facility its own system",416,inferred,
+L3b sensitivity,"reviewed, healthcare accounts only (industry/lab accounts dropped)",312,inferred,10 industry/lab accounts dropped

@@ -1,0 +1,49 @@
+fact,value
+missing_code_total,101
+missing_code_status_Dispatch,63
+missing_code_status_not_Trouble_Closed,84
+missing_code_opened_2026_08,79
+missing_code_among_Trouble_Closed,17
+trouble_closed_total,7384
+non_trouble_closed_total,87
+non_trouble_closed_in_unplanned,86
+non_trouble_closed_opened_2026_08,80
+non_trouble_closed_missing_close_time,87
+trouble_closed_missing_close_time,0
+aug2026_tickets,541
+aug2026_not_trouble_closed,80
+Closed_status_months_distinct,7
+record_type_dot,1
+record_type_dot_service_group,Other recorded issue
+install_case_total,17
+install_case_with_repair_trouble_code,14
+installation_code_total,3
+installation_code_and_install_case,3
+pm_code_total,6
+ntf_in_category,577
+ntf_trouble_codes,Miscellaneous
+label_hit[no trouble] in category,No Trouble Found=577
+label_hit[cancel] in category,Cancelled Request=247
+label_hit[duplicate] in category,Duplicate Case=15
+label_hit[install] in trouble_code,Installation=3
+label_hit[install] in record_type,Install Case=17
+label_hit[preventa] in trouble_code,Preventative Maintenance=6
+label_hit[pm] in category,Paid PM=2
+label_hit[contract] in subcategory,Out of contract=2; Service Contract=1
+status[Case Closed] resolution_present / dispatch_no_present / n,5 / 4 / 5
+status[Closed] resolution_present / dispatch_no_present / n,0 / 0 / 7
+status[Dispatch] resolution_present / dispatch_no_present / n,28 / 60 / 64
+status[Ricoh-Closed] resolution_present / dispatch_no_present / n,7 / 10 / 11
+status[Trouble Closed] resolution_present / dispatch_no_present / n,6790 / 6492 / 7384
+NTF / could-not-reproduce wording in resolution/admin notes: tickets,159
+NTF / could-not-reproduce wording in resolution/admin notes: labelled No Trouble Found,84
+"NTF / could-not-reproduce wording in resolution/admin notes: NOT labelled No Trouble Found, in unplanned population",75
+labelled No Trouble Found without such wording,493
+cancel wording (upper bound; may cite another case) in resolution/admin notes: tickets,42
+cancel wording (upper bound; may cite another case) in resolution/admin notes: labelled Cancelled Request,19
+"cancel wording (upper bound; may cite another case) in resolution/admin notes: NOT labelled Cancelled Request, in unplanned population",20
+labelled Cancelled Request without such wording,228
+duplicate-case wording in resolution/admin notes: tickets,15
+duplicate-case wording in resolution/admin notes: labelled Duplicate Case,4
+"duplicate-case wording in resolution/admin notes: NOT labelled Duplicate Case, in unplanned population",8
+labelled Duplicate Case without such wording,11

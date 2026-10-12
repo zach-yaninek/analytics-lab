@@ -1,0 +1,12 @@
+test,H_local,H_fixed_DST_wall_clock,H_UTC_or_nonDST_fixed,observed
+"Pacific vs Eastern opening-hour shift, weekday reactive (KS-min, 95% CI)",0,3,3,"1.95 [1.75, 2.25]"
+"Central vs Eastern shift, weekday reactive (KS-min, 95% CI)",0,1,1,"1.05 [0.85, 1.25]"
+"Mountain vs Eastern shift, weekday reactive (KS-min, 95% CI)",0,2,2,"2.15 [1.6, 2.8]"
+"Desk-driven control: monitoring-template tickets, Pacific minus Eastern median hour (95% CI)",-3,0,0,"-0.38 [-0.85, 0.1] (n=12)"
+"Desk-driven control: monitoring-template tickets, all non-Eastern minus Eastern median hour (95% CI)",-1.77,0,0,"-0.33 [-0.75, 0.32] (n=39)"
+Close timestamps (desk closes the record): Pacific minus Eastern median weekday close hour (95% CI),"-3 if desk-entered, 0 if tech-entered","0 if desk-entered, +3 if tech-entered",same as fixed,"-0.18 [-0.36, -0.08]"
+"Eastern hospitals: standard-time minus DST-time opening hours (KS-min, 95% CI)",0,0,1,"-0.05 [-0.25, 0.15]"
+Weekday desk-opening edge hour in DST vs standard season,same,same,moves by 1h,"full period DST (EDT): first ticket of day median 7.38h, 0/1/406/600 tickets in <06/06h/07h/08h; full period Standard (EST): first ticket of day median 7.45h, 2/0/191/295 tickets in <06/06h/07h/08h; fall: 4 wk before DST (EDT): first ticket of day median 7.29h, 0/1/37/83 tickets in <06/06h/07h/08h; fall: 4 wk after Standard (EST): first ticket of day median 7.62h, 2/0/34/66 tickets in <06/06h/07h/08h; spring: 4 wk before Standard (EST): first ticket of day median 7.45h, 0/0/60/68 tickets in <06/06h/07h/08h; spring: 4 wk after DST (EDT): first ticket of day median 7.3h, 0/0/63/61 tickets in <06/06h/07h/08h"
+"Arizona (no DST): DiD of mean hour, (AZ-E)summer - (AZ-E)winter",0,1,1,"0.72 [-0.99, 2.57], perm p=0.4035, n=37+14"
+Arizona+Hawaii pooled DiD of mean hour,0,1,1,"0.34 [-1.21, 1.94], perm p=0.66, n=47+18"
+Arizona level: summer minus winter mean hour,0,1,0,0.8

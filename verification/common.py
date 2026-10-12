@@ -34,8 +34,10 @@ TEXT_FIELDS = [('Trouble Reported', 'reported'), ('Trouble Resolution', 'resolut
 
 
 def clean(x):
-    """Zac's identifier cleaner: strip whitespace, blank -> None."""
-    return None if x is None or str(x).strip() == '' else str(x).strip()
+    """Zac's identifier cleaner: strip whitespace, blank -> None (NaN-safe under pandas 3)."""
+    if x is None or (isinstance(x, float) and pd.isna(x)):
+        return None
+    return None if str(x).strip() == '' else str(x).strip()
 
 
 def sha256_file(path):
@@ -51,7 +53,10 @@ def load_raw(path=XLS):
     ws = openpyxl.load_workbook(path, read_only=True, data_only=True)[SHEET]
     rows = ws.values
     headers = next(rows)
-    return pd.DataFrame([r for r in rows if any(v is not None for v in r)], columns=headers)
+    frame = pd.DataFrame([r for r in rows if any(v is not None for v in r)], columns=headers)
+    # pandas 3 turns blank text cells into NaN in str-dtype columns; Zac's Colab (pandas 2)
+    # kept object columns holding None. Restore that so clean() and SQL NULLs behave as in Colab.
+    return frame.astype(object).where(frame.notna(), None)
 
 
 def _timestamp(value):

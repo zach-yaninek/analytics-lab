@@ -1,0 +1,13 @@
+field,classification,evidence,caveat
+Trouble Reported,available at open (intake text; may carry first-call troubleshooting),present 100.0% open / 100.0% closed; past-tense repair words 1.2% vs 38.5% in Trouble Resolution; 'FCR' in 40.2% (on 46/64 open tickets); 'Device FW' suffix on 59% of open tickets; dates after the opening date in 9 tickets. Edit history not in export.,Target leakage risk: telemetry codes typed into text (see D)
+Model # / Product Name / Serial #,available at open (asset attributes),present 100% open and closed,value at export; asset reassignment not visible
+Case Record Type,available at open (likely),present 100% open and closed; open tickets are all device record types,General Case/Install Case never carry a Dispatch #
+Case Owner,"available at open, value is owner at export","present 100%; 6 owners hold the 64 open tickets, all also own closed tickets",reassignment history not in export; not a sensible feature
+Dispatch #,assigned early but outcome-correlated (do not use as a feature),present 93.8% open / 87.8% closed; 26/27 tickets opened in the last 24h already have one; never on General/Install Case; absent tickets close slower and are more often No Trouble Found,presence encodes record type and whether a technician was dispatched
+Trouble Code,"filled at closure (label, not feature)",present 1.6% open / 99.5% closed,
+Trouble Code Category,filled at closure (label),present 1.6% open / 96.4% closed,
+Trouble Code Sub Category,filled at closure (label),present 1.6% open / 69.6% closed,
+Trouble Resolution,filled during/after the repair (leakage),present 43.8% open / 91.8% closed,
+Administrative Notes,appended over the ticket life (leakage),"present 59.4% open / 64.2% closed; of 4536 dated notes, 89.7% contain an entry dated after the opening date, 64.5% 2+ days after; only 21.0% start on the opening date; 93.0% of multi-entry notes are newest-first logs",
+Trouble Closed Date/Time,filled at closure,present 0.0% open / 99.7% closed (only Trouble Closed rows have it),
+Status,snapshot at export,"open tickets are all Status=Dispatch, all opened 2026-08",

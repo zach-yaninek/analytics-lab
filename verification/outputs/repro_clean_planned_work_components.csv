@@ -1,0 +1,6 @@
+component,cases
+Trouble Code = Preventative Maintenance,6
+Trouble Code = Installation,3
+Case Record Type = Install Case,17
+Install Case with a different (non-planned) trouble code,14
+Union = Planned work,23

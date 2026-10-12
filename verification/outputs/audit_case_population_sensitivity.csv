@@ -1,0 +1,13 @@
+variant,unplanned_population,eligible_tickets,machines,repeat_tickets,repeat_pct,delta_repeat_pct_pts,same_category_repeats,same_category_repeat_pct
+V0 Zac baseline (cell 15/31),7186,6665,3495,1574,23.62,0.0,515,7.73
+V1 drop open (status Dispatch),7122,6665,3495,1574,23.62,0.0,515,7.73
+V2 drop all non-Trouble-Closed statuses,7100,6659,3492,1573,23.62,0.0,515,7.73
+V3 drop No Trouble Found,6609,6134,3339,1342,21.88,-1.74,504,8.22
+V4 drop Missing trouble code,7085,6643,3487,1563,23.53,-0.09,517,7.78
+V5 drop proactive monitoring tickets,7055,6535,3491,1444,22.1,-1.52,529,8.09
+V6 drop record type General Case,6942,6428,3444,1409,21.92,-1.7,525,8.17
+"V7 = V2 + V3 + V5 (closed, coded-as-found, customer-initiated)",6436,6041,3332,1253,20.74,-2.88,513,8.49
+V8 = V7 + drop Missing trouble code + General Case,6347,5955,3300,1217,20.44,-3.18,514,8.63
+C1 collapse follow-ups within 1h of previous ticket (episode de-dup),7173,6653,3495,1562,23.48,-0.14,506,7.61
+C24 collapse follow-ups within 24h of previous ticket (episode de-dup),7102,6584,3495,1491,22.65,-0.97,482,7.32
+S1 same-category uses ANY ticket within 30 d (not just next),7186,6665,3495,1574,23.62,0.0,587,8.81

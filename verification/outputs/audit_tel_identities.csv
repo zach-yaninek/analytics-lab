@@ -1,0 +1,141 @@
+id,cell,check,kind,zac_printed,computed,status,note
+B01,4,lookup has no code assigned to two buckets,identity,0,0,PASS,
+B02,4,every two-digit code '00'..'99' is in the lookup (100 codes),identity,100,100,PASS,
+B03,4,lookup contains nothing except two-digit strings,identity,0,0,PASS,
+B04,4,"values that would be bucketed 'Malformed' (lookup.get(x,'Malformed'))",logic,,"{""5"": ""Malformed"", ""005"": ""Malformed"", "" 05"": ""Malformed"", ""05 "": ""Malformed"", ""100"": ""Malformed"", """": ""Malformed"", ""dictionary NULL"": ""Malformed"", ""int 5"": ""Malformed""}",FLAG,"the 6 Malformed transactions carry a NON-NULL code that is in IPA's dictionary but is not a 2-digit string (e.g. '5','100',' 05', int 5). A NULL *telemetry* code is excluded: it cannot match the LEFT JOIN and would print an 11th, NULL-bucket row in cell 23 (10 rows printed), and cell-37 check 5 (groupby drops NaN keys) would fail."
+B05,23,bucket transactions sum to all transactions,identity,118047569,118047569,PASS,also proves no duplicated dictionary code is used (a duplicate would inflate the LEFT JOIN sum)
+B06,23,non-success = total - Success (code 00 only),identity,7881510,7881510,PASS,
+B07,23,non-success = sum of the 9 non-Success buckets,identity,7881510,7881510,PASS,
+B08,23,non-success %,rounding,6.68,6.676554,PASS,
+B09,23,narrow faults = Mechanical + Electronics,identity,889519,889519,PASS,
+B10,23,"narrow faults per 1,000",rounding,7.54,7.535259,PASS,
+B11,39,finding 7: narrow faults %,rounding,0.75,0.753526,PASS,
+B12.0,23,all_transaction_pct for Success,rounding,93.32,93.323446,PASS,
+B12.1,23,all_transaction_pct for Stock-out,rounding,2.74,2.741769,PASS,
+B12.2,23,all_transaction_pct for Door issue,rounding,1.87,1.874641,PASS,
+B12.3,23,all_transaction_pct for Mechanical fault,rounding,0.72,0.715207,PASS,
+B12.4,23,all_transaction_pct for User behavior,rounding,0.67,0.67434,PASS,
+B12.5,23,all_transaction_pct for Incomplete transaction,rounding,0.4,0.400845,PASS,
+B12.6,23,all_transaction_pct for Operational status,rounding,0.23,0.227227,PASS,
+B12.7,23,all_transaction_pct for Electronics/software/comms,rounding,0.04,0.038319,PASS,
+B12.8,23,all_transaction_pct for Undefined,rounding,0.0,0.004201,PASS,
+B12.9,23,all_transaction_pct for Malformed,rounding,0.0,5e-06,PASS,
+B13,23,"code 05 count implied by 7.54 -> 7.43 per 1,000 (integer interval)",derived,,"[11,836, 13,015]",INFO,"= 26.2-28.8% of the Electronics bucket; Electronics without 05 = 32,220-33,399"
+B14,23,implied code-05 count fits inside the Electronics bucket,bound,"<=45,235",11836-13015,PASS,
+B15,9,dictionary rows (codes) = distinct telemetry codes (source_code_totals),identity,49,49,PASS,"with B05 and no NULL-bucket row, the 49 dictionary codes and the 49 telemetry codes are the same set; so at most 48 of the 100 lookup codes occur, and the Malformed code(s) are in IPA's own dictionary"
+A01,6/37,events whose local and UTC clock strings differ (IS NOT is NULL-safe),derived,,155,INFO,1.31 per million; 99.99987% identical -> the two columns are the same clock and one label is wrong. Includes rows where exactly one side is NULL (local NULL counts as differing).
+A02,6,month is substr(transaction_date_local) but pilot windows use transaction_time_utc,logic,,"no check that transaction_date_local = substr(transaction_time_utc,1,10)",FLAG,"with A01 the clocks are probably equal, but date_local is a third column never compared; one COUNT(*) WHERE transaction_date_local<>substr(transaction_time_utc,1,10) settles it"
+A03,11,MIN/MAX of transaction_date_local are ISO dates,derived,,2025-08-01..2026-08-28,INFO,text MIN/MAX would surface 'MM/DD/YYYY' or alphabetic dates; ISO extremes imply consistent ISO format at least in the first character; months outside Aug25-Aug26 cannot exist
+A04,11/27,transactions outside Aug 2025-Jul 2026 (= Aug 1-28 2026),derived,,8702869,INFO,"310,817/day vs Jul 2026 known-host cohort 314,239/day -> Aug 2026 looks complete through the 28th; correctly excluded from rates"
+A05,9,pilot_window_counts rows = 30 tickets x 3 offsets,identity,90,90,PASS,
+A06,9/27,machine-month-code rows >= active machine-months (Aug25-Jul26 + Aug26),bound,418188,70057,PASS,"average distinct codes per active machine-month in [5.43, 5.97]"
+L01,11,matched_pct,rounding,81.82,81.823049,PASS,
+L02,11,unmatched tickets message = cases - matched,identity,1358,1358,PASS,
+L03,11,case table rows (rebuilt) = linkage cases,identity,7471,7471,PASS,
+L04,11,distinct ticket serials (rebuilt) = case_machines,identity,3773,3773,PASS,
+L05,4,"blank serials in workbook (sorted() over {None,str} would have crashed cell 4)",identity,0,0,PASS,
+L06,11,ticket serials with no device match,derived,,732,INFO,"19.4% of ticket serials; 1,358 tickets"
+L07,9/11,dictionary devices with zero transactions in the whole extract,derived,,232,INFO,"cell 37 check 8 proves every transacting machine is in the dictionary, so 7,183-6,951 never transact"
+L08,25,matched cases per fully-printed model <= its ticket count,bound,,"{""A-LC"": ""12/65"", ""LC-24"": ""27/40"", ""LC-30"": ""256/305"", ""LVD-Remote"": ""492/724"", ""LVD-Remote-2.0"": ""1244/1426"", ""LVLR-WOP"": ""4/5"", ""LVRR-WOP"": ""14/18""}",PASS,
+L09,25,models that sort inside the printed range but have no row (must have 0 matched cases),derived,,"[""A-MC"", ""A-SC"", ""LVD-LOCAL""]",INFO,"consistent with repro_sql_linkage_model_bounds.csv (A-MC, A-SC, LVD-LOCAL unmatched)"
+M01,25,COUNT(DISTINCT machine_type) counts 'Unknown' as a type (7 fully printed models),logic,16,"multi-type incl. Unknown=['A-LC', 'LC-30', 'LVD-Remote', 'LVD-Remote-2.0']; excl. Unknown=['LVD-Remote', 'LVD-Remote-2.0']",FLAG,2 of the 4 visible multi-type models are multi-type only because of 'Unknown'; the printed 16 is an upper bound (true count <= 14)
+M02,25,"customers with >=2 distinct ticket serials (upper bound before matching for ""spanning >1 host"")",derived,31,632,INFO,of 845 customers
+M03,25,serials appearing under >1 customer label; customers involved; their tickets,derived,83,8 serials; 14 customers; 32 tickets,INFO,"each such serial, if matched and hosted, links its host to >=2 customers by itself (<= 8 of the 83)"
+M04,25,synthetic: customer with own host + 1 machine on shared internal host,synthetic,,"customers spanning >1 host = 2 (A: own+internal, B: trailing-slash variant)",FLAG,Zac's SQL counts the internal host as an observed host and treats URL spelling variants as different hosts; expected 0 genuine multi-host customers here
+M05,25,synthetic: model with one real type + Unknown,synthetic,,models spanning >1 type = 1 (M1: scrubex-2 + Unknown),FLAG,expected 0 genuine multi-type models (M2 is mlc-1 only)
+M06,4/27,synthetic: empty-string clearview_url and case/scheme variant of the internal URL,synthetic,,"''-> host='Host 001', shared=0; upper-case internal -> host='Host 002', shared=0",FLAG,"'' is not NULL, gets a Host label and lands in the 'Known nonshared hosts' cohort; the shared flag only strips '/', so case/whitespace/http variants of the internal URL are not excluded"
+R01,27,host-excluded active machine-months / tickets / transactions / zero-ticket months,derived,,"902 / 17 / 400,097 / 886",INFO,"444 tx per excluded mm vs 1,575 kept; ticket rate 1.88 vs 7.11 per 100 mm; All-represented rate = 7.04, so the host exclusion moves the headline by only +0.07"
+R02,27,tickets >= ticket-bearing machine-months (both cohorts),bound,4933>=4210; 4916>=4194,1.172 tickets per ticket-bearing mm,PASS,
+R03,27,excluded ticket-bearing mm <= excluded tickets,bound,16<=17,17,PASS,
+R04,27/29,exclusion reasons sum = Zac case_monthly unplanned Aug25-Jul26,identity,6664,6664,PASS,
+R05,27,exclusion reasons sum = rebuilt unplanned tickets Aug25-Jul26 (workbook),identity,6664,6664,PASS,
+R06,27/37,'Included in comparison' = Known-host cohort tickets,identity,4916,4916,PASS,
+R07,27,All-represented tickets = Included + host-excluded tickets in ACTIVE months,identity,4933,4933,PASS,
+R08,27,host-excluded tickets that fall in months with NO transactions (hidden by CASE precedence),logic,"66 host-excluded, 17 differ between cohorts",49,FLAG,"the CASE tests shared/missing host BEFORE 'no transactions', so the 479 counts silent months for known-host devices only; device-matched tickets in silent months = 479 + 49 = 528"
+R09,27,device-matched tickets = All-represented tickets + tickets in silent months,identity,5461,5461,PASS,
+R10,27,share of device-matched tickets in silent machine-months: known-host vs host-excluded devices,derived,,8.9% vs 74.2%,INFO,host-excluded devices are mostly non-reporting; the 17 tickets that differ are not the 66 that are excluded
+R11,27,unplanned Aug25-Jul26 tickets with no device match,derived,,1203 (18.05%),INFO,close to the all-ticket 18.18% unmatched rate
+R12,27,rate if the 479 silent-month tickets are added back with their own machine-months,logic,7.11,"[7.748, 7.801] per 100 (vs 7.109)",FLAG,+0.64 to +0.69 (+9.0%); dropping both numerator and denominator of a down-all-month machine biases the active-month rate DOWN
+R13,27,rate per installed machine-month if every cohort machine were installed all 12 months,derived,7.11,"[6.47, 7.01] per 100",INFO,"cohort machines in [6,413, 6,951] -> silent zero-ticket months in [7,801, 14,257]; adding those pulls the rate DOWN, so the net direction depends on install dates (not in the data)"
+R14,27,overall comparison rate = Known cohort tickets / mm,rounding,7.11,7.108669,PASS,
+R15.00,27,"sbsx-51: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,20.69/5.57,20.6897/5.5672; 10.29 mo/machine,PASS,
+R15.01,27,"sd-49: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,9.08/99.75,9.0753/99.7514; 11.02 mo/machine,PASS,
+R15.02,27,"scrubex-7: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,8.21/0.0,8.2101/0.0000; 11.66 mo/machine,PASS,
+R15.03,27,"scrubex2.0-2: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,8.1/13.14,8.1028/13.1365; 10.52 mo/machine,PASS,
+R15.04,27,"scrubex2.0-3: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,8.02/0.12,8.0244/0.1210; 10.39 mo/machine,PASS,
+R15.05,27,"alex2.0-3: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,7.92/5.43,7.9226/5.4327; 10.66 mo/machine,PASS,
+R15.06,27,"alex2.0-1: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,7.45/2.44,7.4489/2.4366; 10.85 mo/machine,PASS,
+R15.07,27,"scrubex2.0-4: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,7.24/4.89,7.2442/4.8949; 10.34 mo/machine,PASS,
+R15.08,27,"scrubex-2: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,6.76/14.03,6.7597/14.0293; 11.29 mo/machine,PASS,
+R15.09,27,"mlc-1: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,6.57/20.97,6.5658/20.9674; 11.46 mo/machine,PASS,
+R15.10,27,"scrubex-1: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,6.34/12.19,6.3403/12.1896; 11.12 mo/machine,PASS,
+R15.11,27,"scrubex2.0-5: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,5.54/4.76,5.5417/4.7569; 10.50 mo/machine,PASS,
+R15.12,27,"scrubex-4: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,4.92/5.19,4.9240/5.1929; 11.32 mo/machine,PASS,
+R15.13,27,"scrubex-3: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,4.49/0.0,4.4858/0.0017; 11.10 mo/machine,PASS,
+R15.14,27,"scrubex-5: rate/100, faults/1000, machines<=mm<=12*machines, chart screen",row arithmetic,3.94/7.36,3.9446/7.3570; 11.44 mo/machine,PASS,
+R16,27,printed 15 rows are sorted by rate descending,bound,,,PASS,
+R17,27,"sum of the 15 printed types <= Known cohort (mm, tickets, tx, machines<=6,951)",bound,Known cohort,"15-type sums mm=68,126 tickets=4,856 tx=107,501,995 machines=6,327",PASS,
+R18,27,unprinted types (Unknown + small types): mm / tickets / tx / rate,derived,,"1,029 / 60 / 1,442,608 / 5.83 per 100",INFO,printed rows cover 98.5% of mm and 98.8% of tickets
+R19,29,Known-cohort fault transactions implied by the monthly table,derived,,"822,182 +- 545",INFO,"overall 7.547 per 1,000 vs cell-23 all-data 7.535"
+R20,27/29,faults of the 15 printed types <= implied cohort faults,bound,"821,637..822,727","818,199",PASS,"unprinted types carry 3,438..4,528 faults over 1,442,608 tx"
+R21,23/29,faults outside the Known cohort Aug25-Jul26 are plausible (0 <= faults <= tx),bound,"9,102,966 tx","66,792..67,882 faults = 7.40 per 1,000 (Aug 2026 + host-excluded)",PASS,
+R22,27,"types with <=0.12 narrow-fault codes per 1,000 transactions (code support differs by type)",derived,,"['scrubex-7', 'scrubex2.0-3', 'scrubex-3']: 1251 tickets (25.4% of cohort), 17,977 mm",INFO,for these types a narrow-fault label is almost never observable -> classifier label prior depends on type
+R23,27,sd-49 share of cohort narrow faults vs share of transactions,derived,,5.3% of faults from 0.40% of transactions,INFO,
+T01,29,sum of monthly active machine-months = Known cohort,identity,69155,69155,PASS,
+T02,29,sum of monthly tickets = Known cohort,identity,4916,4916,PASS,
+T03,29,sum of monthly transactions = Known cohort,identity,108944603,108944603,PASS,
+T04,29,every monthly tickets_per_100 = 100*tickets/mm (rounded),row arithmetic,12 rows,,PASS,
+T05,29,printed min monthly rate,rounding,5.95,5.947581,PASS,
+T06,29,printed max monthly rate,rounding,8.31,8.31425,PASS,
+T07,29,"case_monthly all_tickets sum = 7,471",identity,7471,7471,PASS,
+T08,29,case_monthly unplanned sum = cell-15 unplanned population,identity,7186,7186,PASS,
+T09,29,"case_monthly reproduced from workbook (13 months, both columns)",identity,True,True,PASS,
+T10,29,cohort tickets <= unplanned tickets in every month,bound,,,PASS,
+T11,29,"share of unplanned tickets that reach the comparison cohort, by month",derived,,"{""2025-08"": 65.2, ""2025-09"": 75.3, ""2025-10"": 75.0, ""2025-11"": 74.0, ""2025-12"": 76.5, ""2026-01"": 76.6, ""2026-02"": 71.0, ""2026-03"": 73.2, ""2026-04"": 75.3, ""2026-05"": 73.0, ""2026-06"": 73.2, ""2026-07"": 76.6}",INFO,pooled 73.8%; Aug 2025 z=-4.6 (others -1.5..1.6); the first month loses an unusual share of tickets - cause (no match / silent month) not printed
+T12.4,27/29,unplanned Aug25-Jul26 tickets whose month changes under a +/-4h case-vs-telemetry clock shift,derived,,4 (0.06%),INFO,upper bound on tickets that could be mis-joined to the wrong machine-month
+T12.6,27/29,unplanned Aug25-Jul26 tickets whose month changes under a +/-6h case-vs-telemetry clock shift,derived,,9 (0.14%),INFO,upper bound on tickets that could be mis-joined to the wrong machine-month
+T13,27,share of the 479 'no transactions in ticket month' tickets a +/-6h clock mismatch could explain,derived,,<= 9 (1.9%),INFO,under the plausible offsets (C03) the silent-month exclusion is not a clock artifact; under +/-12h it could be up to 193
+T12.12,27/29,unplanned Aug25-Jul26 tickets whose month changes under a +/-12h case-vs-telemetry clock shift,derived,,193 (2.90%),INFO,upper bound on tickets that could be mis-joined to the wrong machine-month
+C01,4/34,"median case-clock opening hour by hospital time zone (n, median, opened before 07:00)",derived,,"{""Arizona"": [51, 13.72, 0], ""Central"": [1067, 12.0, 0], ""Eastern"": [5478, 10.88, 4], ""Hawaii"": [14, 14.18, 0], ""Mountain"": [148, 13.52, 0], ""Pacific"": [702, 12.97, 0]}",INFO,"7460/7471 tickets mapped (split-zone states assigned to majority zone). Medians rise westward (Eastern 10.9 -> Pacific 13.0): the case clock is ONE fixed zone (service desk / exporter), not hospital-local time"
+C02,4/34,case opening timestamps with non-zero seconds (case clock has minute precision),identity,0,0,PASS,
+C03,4/34,"shift of the 5th-percentile opening hour across DST changes (3 weeks either side), hours",derived,,"{""2025-11-02"": 0.28, ""2026-03-08"": -0.21}",INFO,"a UTC case clock would shift by about +1h in Nov and -1h in Mar; observed shifts are small, so the case clock observes DST (a US civil zone). If telemetry is true UTC, delta = +4..+6h; if it is hospital-local, delta = 0 to -3h (-6h Hawaii) relative to an Eastern case clock"
+C04,8/34,hospital time zones of the 26 pilot tickets with events / all 30,derived,,"{""Eastern"": 23, ""Central"": 2, ""Arizona"": 1} / {""Eastern"": 27, ""Central"": 2, ""Arizona"": 1}",INFO,
+P01,8,all 30 printed pilot case_ids exist in the rebuilt case table,identity,30,30,PASS,
+P02,8,pilot anchors lie inside the eligibility window '2025-09-02'..'2026-07-31 23:59:59',bound,,2025-09-08 07:47:00..2026-07-30 14:38:00,PASS,
+P03,8,eligibility window keeps the whole extraction range inside telemetry coverage,bound,2025-08-01..2026-08-28,2025-08-01..2026-08-02,PASS,earliest eligible date minus 32 days equals the first telemetry date exactly
+P04,8,"extraction buffer covers every window for any local-vs-UTC shift in [-14h, +14h]",bound,,min slack 29.6h (start) / 22.5h (end),PASS,
+P05,8/34,Python window bounds == SQLite window bounds for all 90 windows,identity,0,0,PASS,this equality is ALL that cell-37 check 9 can establish
+P06,34,tickets with all_events>0 at offset 0 = summary,identity,26,26,PASS,
+P07,34,tickets with non_success>0 at offset 0 = summary,identity,26,26,PASS,
+P08,34,per-ticket: distinct<=non_success<=all_events; distinct<=48; labels consistent,bound,,30 rows,PASS,
+P09,9/34,offset-0 window non-success events <= pilot_events extracted,bound,4736,4060,PASS,ratio 0.8573 vs 30/35 days = 0.8571 (extraction spans 35 calendar dates); consistent with date_local and utc being one clock
+P10.T00705,34,T00705: occurrences over its 5 listed codes = window non_success (distinct=5),identity,93,93,PASS,
+P10.T00783,34,T00783: occurrences over its 5 listed codes = window non_success (distinct=5),identity,82,82,PASS,
+P10.T00951,34,T00951: occurrences over its 5 listed codes = window non_success (distinct=5),identity,82,82,PASS,
+P11,34/4,printed bucket of each listed code = cell-4 lookup,identity,15,15,PASS,
+P12,34,listed last_seen strictly descending within ticket and ranks 1..5,bound,,,PASS,
+P13,34,hours between the most recent non-success code and case opening (offset 0),logic,,"{""T00705"": 15.73, ""T00783"": 2.34, ""T00951"": 13.5}",FLAG,"rank-1/last-three codes are only computed at offset 0, which is right only if telemetry is hospital-local AND the case clock is the hospital zone (23/26 pilot tickets are Eastern, C04). If the telemetry clock is true UTC the anchor should be +4..+6h (C03): for T00783 (gap 2.3h) every event logged in the 4-6h before the real opening is missing from its last-codes list; for a hospital >=3h west of the case clock its rank-1 code would be logged after opening. The +/-12h scenarios test only counts>0"
+P14,34,tickets with >=3 non-success events at offset 0,identity,26,26,PASS,
+P15,34,'25 of 26 repeated' >= tickets forced to repeat (window has <=2 distinct codes),bound,25,5,PASS,
+P16,34/27,4/30 pilot tickets have no transactions in any window vs silent-month share in cell 27,derived,,4/30 = 13.3% vs 9.7%,INFO,P(>=4 of 30) = 0.33; not an anomaly
+P17,34,minimum per-ticket all_events among tickets with any events (offset 0),derived,,62,INFO,"a 12h shift keeps 29.5 of 30 days, so ""26/26 in all scenarios"" is near-certain by construction (the scenario test has almost no power). Only per-scenario totals are printed, so it is not shown that the same 26 tickets qualify in each scenario"
+S01,6/37,"synthetic: month shifted by +20 days; cell-6 assert and cell-37 checks 5, 6, 7",synthetic,,"correct SQL passes=(True, True, True, True); broken SQL passes=(True, True, True, True); events moved to a wrong month=3,245/5,000",FLAG,"all four still pass: they compare COUNT(*) of one table with itself and detect only lost or duplicated rows, never a wrong month, machine or clock"
+S02,27,"synthetic: 2 tickets per device (active Jan + silent Feb) on known, shared and missing hosts",synthetic,,"cohorts=[('All represent', 3), ('Known nonshar', 1)]; exclusions={'Shared/internal host': 2, 'Missing host': 2, 'No transactions in ticket month': 1, 'No device match': 1, 'Included in comparison': 1}",FLAG,All-minus-Known = 2 tickets (the active-month ones) while 4 tickets are host-excluded; the 2 silent-month host tickets never reach 'No transactions'. Real data: 17 vs 66 -> 49 hidden silent-month tickets
+S03,34/37,synthetic: cell-37 check 9 with telemetry deliberately on a different clock,synthetic,,reconciles=True for 6 windows,FLAG,"both sides read the same events with the same anchors, so the check passes whatever the true clock offset; it validates string-vs-datetime arithmetic only"
+S04,15/37,cell-37 check 4 with the Install-Case clause removed from the CASE,synthetic,,"groups still sum to 7,471; Planned work would be 9 instead of 23",FLAG,"any CASE with an ELSE partitions all rows, so the check cannot fail"
+V01,37,number of checks printed,identity,14,14,PASS,
+V02,37,check 1: Distinct case identifiers,check-classification,Pass,meaningful,INFO,casemap is a dict: duplicate Case Numbers would collide
+V03,37,check 2: Distinct device identifiers,check-classification,Pass,redundant,FLAG,already asserted in cell 4 (external_device_id.is_unique) and the map is injective
+V04,37,check 3: No lost or multiplied case rows,check-classification,Pass,tautological given 2,FLAG,LEFT JOIN on a unique key cannot multiply or drop rows
+V05,37,check 4: Service groups reconcile,check-classification,Pass,tautological,FLAG,CASE ... ELSE partitions every row (S04)
+V06,37,check 5: Every telemetry code reconciles to independent raw SQL,check-classification,Pass,weak,FLAG,same table counted twice; detects only lost/duplicated rows (S01)
+V07,37,check 6: All source transactions represented,check-classification,Pass,tautological,FLAG,manifest['telemetry_rows'] is SUM(n) of the same table
+V08,37,check 7: No missing transaction dates in aggregate,check-classification,Pass,meaningful,INFO,real data property (NULL utc/date_local)
+V09,37,check 8: Every aggregate machine is in dictionary,check-classification,Pass,meaningful,INFO,real data property
+V10,37,check 9: All provisional-window counts reconcile,check-classification,Pass,weak,FLAG,"same events, same anchors; cannot detect a wrong clock (S03, P05)"
+V11,37,check 10: Rate numerator reconciles to direct eligible-case join,check-classification,Pass,weak,FLAG,two joins over the same keys and month definition; detects duplicate keys only
+V12,37,check 11: Workload totals reconcile,check-classification,Pass,tautological,FLAG,GROUP BY totals always equal COUNT(*)
+V13,37,check 12: Independent repeat-contact calculation,check-classification,Pass,meaningful,INFO,separate pandas re-implementation of the filter and LEAD
+V14,37,check 13: Independent missing-subcategory count,check-classification,Pass,tautological,FLAG,same column counted twice
+V15,37,check 14: Original database preserved during extraction,check-classification,Pass,near-tautological,FLAG,source opened with mode=ro + query_only; size/mtime only
+V16,37,identities NOT checked in cell 37 that would test logic rather than arithmetic,logic,,bucket coverage / Malformed listing; exclusion reasons sum to the unplanned Aug-Jul total (R04); per-type rows sum to the cohort; transaction_date_local vs time_utc date agreement (A02); shared-host URL normalisation / empty-string hosts (M06); pilot window covers the clock-offset range (P04),FLAG,

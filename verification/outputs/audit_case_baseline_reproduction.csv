@@ -1,0 +1,13 @@
+metric,zac_printed,recomputed,match
+service_group Other recorded issue,6508,6508,True
+service_group No Trouble Found,577,577,True
+service_group Cancelled request,247,247,True
+service_group Missing trouble code,101,101,True
+service_group Planned work,23,23,True
+service_group Duplicate case,15,15,True
+unplanned population,7186,7186,True
+repeat eligible_tickets,6665,6665,True
+repeat machines,3495,3495,True
+repeat_tickets,1574,1574,True
+same_category_repeats,515,515,True
+simultaneous_followups,0,0,True

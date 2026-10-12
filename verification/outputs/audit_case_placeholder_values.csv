@@ -1,0 +1,20 @@
+column,present_after_clean,placeholder_values_counted_present,whitespace_only_cells,values_with_outer_whitespace
+Date/Time Opened,7471,0,0,0
+Account Name,7471,0,0,0
+"Hospital City, State, Zip",7471,0,0,0
+Shipping Country,7471,0,0,0
+Case Number,7471,0,0,0
+Status,7471,0,0,0
+Dispatch #,6566,0,0,0
+Serial #,7471,0,0,0
+Model #,7471,0,0,0
+Product Name,7471,0,0,0
+Case Record Type,7471,1,0,0
+Case Owner,7471,0,0,0
+Trouble Reported,7471,0,0,23
+Administrative Notes,4793,0,0,0
+Trouble Code,7370,0,0,0
+Trouble Code Category,7141,0,0,0
+Trouble Code Sub Category,5156,0,0,0
+Trouble Resolution,6830,1,0,6
+Trouble Closed Date/Time,7384,0,0,0

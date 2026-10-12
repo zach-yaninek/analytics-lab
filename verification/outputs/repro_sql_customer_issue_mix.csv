@@ -1,0 +1,3640 @@
+customer,category,cases
+Customer 001,Curtain,2
+Customer 001,No Trouble Found,1
+Customer 001,Main Door,1
+Customer 001,Computer Board,1
+Customer 002,[Missing],1
+Customer 003,Network Settings,2
+Customer 003,IP/Reprogramming,2
+Customer 003,Power Supply,1
+Customer 004,User Door,2
+Customer 004,Packer,1
+Customer 005,Deposit Door,9
+Customer 005,SAM,3
+Customer 005,No Trouble Found,3
+Customer 005,Computer Board,2
+Customer 005,Touchscreen,1
+Customer 005,Service Door,1
+Customer 005,Packer,1
+Customer 006,User Door,2
+Customer 006,Touchscreen,1
+Customer 006,Service Door,1
+Customer 006,SAM,1
+Customer 006,No Trouble Found,1
+Customer 006,Deposit Door,1
+Customer 006,Cable disconnected/Loose,1
+Customer 007,User Door,2
+Customer 007,Deposit Door,2
+Customer 007,Service Door,1
+Customer 008,User Door,1
+Customer 009,SAM,5
+Customer 009,No Trouble Found,2
+Customer 009,Main Door,2
+Customer 009,Deposit Door,2
+Customer 009,[Missing],1
+Customer 010,Computer Board,3
+Customer 010,Touchscreen,1
+Customer 010,SAM,1
+Customer 010,No Trouble Found,1
+Customer 010,Deposit Door,1
+Customer 011,No Trouble Found,3
+Customer 011,Network Intermittent,2
+Customer 011,User Door,1
+Customer 011,Touchscreen,1
+Customer 011,Power Supply,1
+Customer 011,Drawers,1
+Customer 011,Credit Issues,1
+Customer 012,Deposit Door,8
+Customer 012,[Missing],4
+Customer 012,User Door,2
+Customer 012,Loading Error,2
+Customer 012,SAM,1
+Customer 012,Main Door,1
+Customer 013,Touchscreen,2
+Customer 013,Computer Board,2
+Customer 013,[Missing],2
+Customer 013,SAM,1
+Customer 013,Parts Order,1
+Customer 013,Main Door,1
+Customer 013,Issue,1
+Customer 013,Deposit Door,1
+Customer 014,Touchscreen,2
+Customer 014,Deposit Door,2
+Customer 014,Service Door,1
+Customer 014,Loading Error,1
+Customer 015,Touchscreen,4
+Customer 015,No Trouble Found,2
+Customer 015,Main Door,2
+Customer 015,Computer Board,2
+Customer 015,Improper Use,1
+Customer 015,Deposit Door,1
+Customer 015,Decoder,1
+Customer 016,Computer Board,2
+Customer 016,Deposit Door,1
+Customer 016,[Missing],1
+Customer 017,Deposit Door,3
+Customer 017,[Missing],3
+Customer 017,Curtain,2
+Customer 017,Weight Scale,1
+Customer 017,Touchscreen,1
+Customer 017,SAM,1
+Customer 017,Credit Issues,1
+Customer 017,Camera,1
+Customer 018,Packer,1
+Customer 019,SAM,1
+Customer 020,Touchscreen,1
+Customer 020,Packer,1
+Customer 021,No Trouble Found,2
+Customer 021,Issue,2
+Customer 021,SAM,1
+Customer 021,IP/Reprogramming,1
+Customer 021,Badge Reader,1
+Customer 022,Deposit Door,3
+Customer 022,SAM,2
+Customer 022,Touchscreen,1
+Customer 022,Main Door,1
+Customer 022,Loading Error,1
+Customer 022,[Missing],1
+Customer 023,User Door,1
+Customer 023,SAM,1
+Customer 023,Power,1
+Customer 023,Computer Board,1
+Customer 024,Packer,3
+Customer 024,Deposit Door,2
+Customer 025,Main Door,1
+Customer 026,Deposit Door,13
+Customer 026,Touchscreen,4
+Customer 026,No Trouble Found,3
+Customer 026,[Missing],3
+Customer 026,SAM,2
+Customer 026,Computer Board,2
+Customer 026,User Access,1
+Customer 026,Service Door,1
+Customer 026,Main Door,1
+Customer 027,No Trouble Found,3
+Customer 027,Touchscreen,1
+Customer 027,Loading Error,1
+Customer 027,Computer Board,1
+Customer 028,SAM,1
+Customer 029,Curtain,24
+Customer 029,Counterweight System,24
+Customer 029,Computer Board,15
+Customer 029,Main Door,11
+Customer 029,Touchscreen,6
+Customer 029,No Trouble Found,6
+Customer 029,Deposit Door,5
+Customer 029,Power Supply,4
+Customer 029,Badge Reader,4
+Customer 029,User Door,3
+Customer 029,Network Intermittent,3
+Customer 029,[Missing],3
+Customer 029,SAM,2
+Customer 029,Packer,1
+Customer 029,Improper Use,1
+Customer 029,Drawers,1
+Customer 029,Dead Data Jack,1
+Customer 030,Deposit Door,1
+Customer 030,Computer Board,1
+Customer 031,Touchscreen,5
+Customer 031,Deposit Door,5
+Customer 031,Power,2
+Customer 031,Main Door,1
+Customer 031,Badge Reader,1
+Customer 031,[Missing],1
+Customer 032,Deposit Door,3
+Customer 032,No Trouble Found,1
+Customer 033,Main Door,4
+Customer 033,Counterweight System,4
+Customer 033,User Door,3
+Customer 033,SAM,2
+Customer 033,Physical Damage,2
+Customer 033,IP/Reprogramming,2
+Customer 033,Computer Board,2
+Customer 033,No Trouble Found,1
+Customer 033,Network Settings,1
+Customer 033,Deposit Door,1
+Customer 033,Curtain,1
+Customer 034,User Door,1
+Customer 034,Deposit Door,1
+Customer 035,Touchscreen,2
+Customer 035,No Trouble Found,1
+Customer 035,Deposit Door,1
+Customer 036,No Trouble Found,3
+Customer 036,Network Settings,2
+Customer 036,Loading Error,2
+Customer 036,Deposit Door,2
+Customer 036,[Missing],2
+Customer 036,Touchscreen,1
+Customer 036,SAM,1
+Customer 036,Network Intermittent,1
+Customer 036,Main Door,1
+Customer 036,Loader Board,1
+Customer 036,Computer Board,1
+Customer 036,Badge Reader,1
+Customer 038,Power Supply,3
+Customer 038,User Door,1
+Customer 038,SAM,1
+Customer 038,Power,1
+Customer 038,Main Door,1
+Customer 038,Computer Board,1
+Customer 039,Touchscreen,1
+Customer 039,Network Settings,1
+Customer 039,[Missing],1
+Customer 040,Deposit Door,1
+Customer 041,Power,8
+Customer 041,No Trouble Found,3
+Customer 041,Deposit Door,3
+Customer 041,Power Supply,1
+Customer 041,Network Settings,1
+Customer 041,Main Door,1
+Customer 041,Credit Issues,1
+Customer 041,[Missing],1
+Customer 042,Touchscreen,1
+Customer 043,Touchscreen,2
+Customer 043,Parts Order,1
+Customer 043,Deposit Door,1
+Customer 044,Service Door,2
+Customer 044,User Door,1
+Customer 044,Power Supply,1
+Customer 044,Deposit Door,1
+Customer 044,Computer Board,1
+Customer 044,[Missing],1
+Customer 045,Power Supply,4
+Customer 045,User Door,1
+Customer 045,No Trouble Found,1
+Customer 045,Main Door,1
+Customer 045,Dead Data Jack,1
+Customer 045,Computer Board,1
+Customer 046,User Door,2
+Customer 046,Power,1
+Customer 046,Network Settings,1
+Customer 046,Computer Board,1
+Customer 047,User Door,2
+Customer 047,Main Door,2
+Customer 047,Deposit Door,1
+Customer 048,No Trouble Found,5
+Customer 048,Network Settings,4
+Customer 048,Deposit Door,4
+Customer 048,Power Supply,3
+Customer 048,Main Door,3
+Customer 048,Curtain,3
+Customer 048,Power,2
+Customer 048,Camera,2
+Customer 048,Touchscreen,1
+Customer 048,Service Door,1
+Customer 048,Network Intermittent,1
+Customer 048,Loading Error,1
+Customer 048,IP/Reprogramming,1
+Customer 048,Computer Board,1
+Customer 048,Cable disconnected/Loose,1
+Customer 048,[Missing],1
+Customer 049,User Door,1
+Customer 049,No Trouble Found,1
+Customer 049,[Missing],1
+Customer 050,User Door,4
+Customer 050,Touchscreen,2
+Customer 050,Power,1
+Customer 050,Deposit Door,1
+Customer 051,No Trouble Found,1
+Customer 052,Touchscreen,2
+Customer 052,Computer Board,2
+Customer 053,No Trouble Found,1
+Customer 054,Curtain,32
+Customer 054,User Access,7
+Customer 054,Packer,6
+Customer 054,No Trouble Found,5
+Customer 054,Main Door,5
+Customer 054,[Missing],5
+Customer 054,Improper Use,3
+Customer 054,Deposit Door,3
+Customer 054,Computer Board,3
+Customer 054,User Door,2
+Customer 054,Touchscreen,1
+Customer 054,SAM,1
+Customer 054,Power Supply,1
+Customer 054,Physical Damage,1
+Customer 054,Loading Error,1
+Customer 054,Dead Data Jack,1
+Customer 055,Network Settings,4
+Customer 055,SAM,2
+Customer 055,Computer Board,2
+Customer 055,No Trouble Found,1
+Customer 055,Curtain,1
+Customer 056,Computer Board,15
+Customer 056,Deposit Door,5
+Customer 056,No Trouble Found,4
+Customer 056,Main Door,4
+Customer 056,Network Intermittent,3
+Customer 056,Touchscreen,2
+Customer 056,SAM,2
+Customer 056,Badge Reader,2
+Customer 056,[Missing],2
+Customer 056,User Door,1
+Customer 056,Power,1
+Customer 056,Packer,1
+Customer 056,Network Settings,1
+Customer 056,Loading Error,1
+Customer 057,Deposit Door,6
+Customer 057,User Door,1
+Customer 057,Computer Board,1
+Customer 057,Camera,1
+Customer 057,[Missing],1
+Customer 058,SAM,4
+Customer 058,Deposit Door,3
+Customer 058,Main Door,1
+Customer 058,Curtain,1
+Customer 058,Badge Reader,1
+Customer 059,SAM,1
+Customer 059,Computer Board,1
+Customer 060,No Trouble Found,1
+Customer 060,Dead Data Jack,1
+Customer 060,Computer Board,1
+Customer 061,Main Door,4
+Customer 061,User Door,3
+Customer 061,Computer Board,2
+Customer 062,Curtain,16
+Customer 062,No Trouble Found,8
+Customer 062,Deposit Door,8
+Customer 062,Network Intermittent,4
+Customer 062,Main Door,3
+Customer 062,Loading Error,3
+Customer 062,Counterweight System,3
+Customer 062,Cable disconnected/Loose,3
+Customer 062,User Door,2
+Customer 062,SAM,2
+Customer 062,Network Settings,2
+Customer 062,Issue,2
+Customer 062,Improper Use,2
+Customer 062,Dead Data Jack,2
+Customer 062,[Missing],2
+Customer 062,User Access,1
+Customer 062,Touchscreen,1
+Customer 062,Service Door,1
+Customer 062,IP/Reprogramming,1
+Customer 062,Computer Board,1
+Customer 062,Badge Reader,1
+Customer 063,SAM,1
+Customer 064,Deposit Door,1
+Customer 065,Deposit Door,3
+Customer 065,[Missing],3
+Customer 065,Main Door,2
+Customer 065,Computer Board,2
+Customer 065,No Trouble Found,1
+Customer 066,Packer,4
+Customer 066,User Door,2
+Customer 066,No Trouble Found,1
+Customer 066,Network Settings,1
+Customer 066,Loader Board,1
+Customer 066,Firewall,1
+Customer 066,Deposit Door,1
+Customer 066,Computer Board,1
+Customer 067,Deposit Door,1
+Customer 068,Touchscreen,5
+Customer 068,SAM,3
+Customer 068,Curtain,2
+Customer 068,No Trouble Found,1
+Customer 068,Deposit Door,1
+Customer 068,[Missing],1
+Customer 069,Main Door,1
+Customer 070,User Door,1
+Customer 070,Badge Reader,1
+Customer 071,No Trouble Found,1
+Customer 071,Computer Board,1
+Customer 072,User Door,4
+Customer 072,Main Door,2
+Customer 072,SAM,1
+Customer 072,Power Supply,1
+Customer 072,Deposit Door,1
+Customer 073,Dead Data Jack,2
+Customer 073,Main Door,1
+Customer 073,Deposit Door,1
+Customer 074,No Trouble Found,1
+Customer 075,No Trouble Found,1
+Customer 075,Network Intermittent,1
+Customer 075,Loading Error,1
+Customer 075,Dead Data Jack,1
+Customer 075,Curtain,1
+Customer 075,[Missing],1
+Customer 076,Touchscreen,2
+Customer 077,User Door,1
+Customer 078,Main Door,1
+Customer 079,Power Supply,5
+Customer 079,Computer Board,5
+Customer 079,User Door,4
+Customer 079,Touchscreen,2
+Customer 079,SAM,2
+Customer 079,No Trouble Found,2
+Customer 079,[Missing],2
+Customer 079,Training,1
+Customer 079,Power,1
+Customer 079,Improper Use,1
+Customer 079,IP/Reprogramming,1
+Customer 080,Touchscreen,4
+Customer 080,Deposit Door,4
+Customer 080,Computer Board,2
+Customer 080,User Door,1
+Customer 080,SAM,1
+Customer 080,Main Door,1
+Customer 080,Decoder,1
+Customer 080,Camera,1
+Customer 081,[Missing],1
+Customer 082,Packer,2
+Customer 082,Computer Board,1
+Customer 083,User Door,1
+Customer 083,Packer,1
+Customer 083,Loading Error,1
+Customer 083,Computer Board,1
+Customer 084,Computer Board,3
+Customer 084,Network Settings,1
+Customer 084,Main Door,1
+Customer 085,Deposit Door,7
+Customer 085,SAM,4
+Customer 085,Packer,4
+Customer 085,User Door,3
+Customer 085,No Trouble Found,3
+Customer 085,Computer Board,3
+Customer 085,Main Door,2
+Customer 085,Loading Error,2
+Customer 085,Touchscreen,1
+Customer 085,Service Door,1
+Customer 085,Power Supply,1
+Customer 085,Improper Use,1
+Customer 085,IP/Reprogramming,1
+Customer 085,Camera,1
+Customer 085,Badge Reader,1
+Customer 085,[Missing],1
+Customer 086,Touchscreen,4
+Customer 086,User Door,1
+Customer 086,Power Supply,1
+Customer 086,No Trouble Found,1
+Customer 087,No Trouble Found,2
+Customer 087,Deposit Door,2
+Customer 087,Loading Error,1
+Customer 087,Issue,1
+Customer 087,Dead Data Jack,1
+Customer 087,Computer Board,1
+Customer 088,Loading Error,2
+Customer 088,Deposit Door,2
+Customer 088,Loader Board,1
+Customer 088,Computer Board,1
+Customer 089,Touchscreen,3
+Customer 089,Network Settings,3
+Customer 089,User Door,2
+Customer 089,Deposit Door,2
+Customer 089,SAM,1
+Customer 089,Parts Order,1
+Customer 090,SAM,3
+Customer 090,Main Door,2
+Customer 090,Power Supply,1
+Customer 090,No Trouble Found,1
+Customer 090,[Missing],1
+Customer 091,Deposit Door,5
+Customer 091,Computer Board,3
+Customer 091,User Door,2
+Customer 091,Loading Error,2
+Customer 091,Touchscreen,1
+Customer 091,Service Door,1
+Customer 091,SAM,1
+Customer 091,Packer,1
+Customer 092,SAM,4
+Customer 092,Deposit Door,1
+Customer 092,[Missing],1
+Customer 093,Deposit Door,6
+Customer 093,[Missing],1
+Customer 094,Touchscreen,3
+Customer 094,Firewall,1
+Customer 094,Deposit Door,1
+Customer 094,Computer Board,1
+Customer 094,Cable disconnected/Loose,1
+Customer 095,SAM,3
+Customer 095,User Door,1
+Customer 095,Packer,1
+Customer 095,No Trouble Found,1
+Customer 096,SAM,1
+Customer 096,[Missing],1
+Customer 097,No Trouble Found,2
+Customer 097,Main Door,2
+Customer 097,SAM,1
+Customer 097,Network Settings,1
+Customer 097,Computer Board,1
+Customer 098,Power Supply,5
+Customer 098,Touchscreen,2
+Customer 098,Power,2
+Customer 098,No Trouble Found,1
+Customer 098,Loader Board,1
+Customer 098,Device Not Found,1
+Customer 098,[Missing],1
+Customer 099,Computer Board,4
+Customer 099,Deposit Door,3
+Customer 099,Packer,2
+Customer 099,User Door,1
+Customer 099,Touchscreen,1
+Customer 099,Main Door,1
+Customer 099,Loading Error,1
+Customer 099,Loader Board,1
+Customer 099,[Missing],1
+Customer 100,Main Door,3
+Customer 100,Deposit Door,3
+Customer 100,User Door,1
+Customer 101,Touchscreen,5
+Customer 101,Deposit Door,5
+Customer 101,Packer,1
+Customer 101,Computer Board,1
+Customer 102,Deposit Door,3
+Customer 103,Packer,1
+Customer 104,Touchscreen,4
+Customer 104,User Door,1
+Customer 104,No Trouble Found,1
+Customer 105,Deposit Door,15
+Customer 105,No Trouble Found,4
+Customer 105,Power Supply,3
+Customer 105,User Door,2
+Customer 105,Power,2
+Customer 105,[Missing],2
+Customer 105,Service Door,1
+Customer 105,SAM,1
+Customer 105,Issue,1
+Customer 106,[Missing],4
+Customer 106,Main Door,3
+Customer 106,Deposit Door,2
+Customer 106,User Door,1
+Customer 106,Training,1
+Customer 106,Touchscreen,1
+Customer 106,SAM,1
+Customer 106,Packer,1
+Customer 106,No Trouble Found,1
+Customer 106,Cable disconnected/Loose,1
+Customer 107,SAM,2
+Customer 107,Main Door,1
+Customer 108,Network Settings,1
+Customer 108,Deposit Door,1
+Customer 109,Network Settings,2
+Customer 109,Computer Board,2
+Customer 109,Power Supply,1
+Customer 109,IP/Reprogramming,1
+Customer 109,Firewall,1
+Customer 109,Camera,1
+Customer 110,Deposit Door,3
+Customer 110,Touchscreen,1
+Customer 110,Power,1
+Customer 110,Physical Damage,1
+Customer 111,Curtain,2
+Customer 111,Main Door,1
+Customer 112,SAM,1
+Customer 112,Deposit Door,1
+Customer 112,[Missing],1
+Customer 113,Touchscreen,1
+Customer 113,Power Supply,1
+Customer 114,Deposit Door,3
+Customer 114,User Door,1
+Customer 115,Deposit Door,6
+Customer 115,Touchscreen,3
+Customer 115,Computer Board,1
+Customer 116,SAM,3
+Customer 116,User Door,2
+Customer 117,Deposit Door,4
+Customer 117,Main Door,2
+Customer 117,SAM,1
+Customer 117,Packer,1
+Customer 117,Issue,1
+Customer 117,Badge Reader,1
+Customer 119,Loading Error,2
+Customer 119,Deposit Door,2
+Customer 119,Computer Board,1
+Customer 120,No Trouble Found,1
+Customer 121,Main Door,1
+Customer 122,Deposit Door,4
+Customer 122,Main Door,2
+Customer 122,Service Door,1
+Customer 122,Power,1
+Customer 122,Computer Board,1
+Customer 122,Cable disconnected/Loose,1
+Customer 123,Deposit Door,12
+Customer 123,Computer Board,3
+Customer 123,No Trouble Found,2
+Customer 123,Service Door,1
+Customer 123,Packer,1
+Customer 123,Loading Error,1
+Customer 123,Badge Reader,1
+Customer 124,Deposit Door,2
+Customer 124,User Door,1
+Customer 124,Loading Error,1
+Customer 125,Deposit Door,4
+Customer 125,Touchscreen,2
+Customer 125,Packer,2
+Customer 126,Main Door,1
+Customer 126,Deposit Door,1
+Customer 126,Computer Board,1
+Customer 126,Badge Reader,1
+Customer 127,No Trouble Found,1
+Customer 127,Network Intermittent,1
+Customer 128,Curtain,2
+Customer 128,Main Door,1
+Customer 128,Issue,1
+Customer 128,Cable disconnected/Loose,1
+Customer 129,No Trouble Found,2
+Customer 129,Dead Data Jack,2
+Customer 129,Curtain,2
+Customer 129,Power,1
+Customer 129,Improper Use,1
+Customer 129,Computer Board,1
+Customer 130,Packer,2
+Customer 130,No Trouble Found,2
+Customer 130,User Door,1
+Customer 130,Service Door,1
+Customer 130,Deposit Door,1
+Customer 131,Power Supply,5
+Customer 131,Power,5
+Customer 131,Network Intermittent,1
+Customer 131,Deposit Door,1
+Customer 132,[Missing],4
+Customer 132,Computer Board,3
+Customer 132,SAM,2
+Customer 132,No Trouble Found,2
+Customer 132,Loader Board,2
+Customer 132,IP/Reprogramming,2
+Customer 132,User Door,1
+Customer 132,Touchscreen,1
+Customer 132,Service Door,1
+Customer 132,Power Supply,1
+Customer 132,Power,1
+Customer 132,Network Settings,1
+Customer 132,Network Intermittent,1
+Customer 132,Deposit Door,1
+Customer 133,No Trouble Found,1
+Customer 133,Deposit Door,1
+Customer 133,[Missing],1
+Customer 134,Power Supply,1
+Customer 134,Packer,1
+Customer 134,Network Settings,1
+Customer 134,Main Door,1
+Customer 134,[Missing],1
+Customer 135,No Trouble Found,4
+Customer 135,Deposit Door,4
+Customer 135,User Door,3
+Customer 135,Touchscreen,1
+Customer 135,SAM,1
+Customer 135,Packer,1
+Customer 135,Network Settings,1
+Customer 135,Network Intermittent,1
+Customer 135,Decoder,1
+Customer 135,Computer Board,1
+Customer 136,Deposit Door,2
+Customer 137,Touchscreen,2
+Customer 137,SAM,1
+Customer 137,No Trouble Found,1
+Customer 137,[Missing],1
+Customer 138,User Door,1
+Customer 138,Power,1
+Customer 138,Computer Board,1
+Customer 138,[Missing],1
+Customer 139,Deposit Door,3
+Customer 139,[Missing],3
+Customer 139,No Trouble Found,2
+Customer 139,User Door,1
+Customer 139,SAM,1
+Customer 139,Power Supply,1
+Customer 139,Computer Board,1
+Customer 140,User Door,2
+Customer 140,Touchscreen,2
+Customer 140,No Trouble Found,1
+Customer 140,[Missing],1
+Customer 141,SAM,2
+Customer 141,Power Supply,2
+Customer 141,Power,1
+Customer 141,Deposit Door,1
+Customer 141,Computer Board,1
+Customer 142,Deposit Door,9
+Customer 142,Touchscreen,8
+Customer 142,Computer Board,4
+Customer 142,Loader Board,2
+Customer 142,IP/Reprogramming,2
+Customer 142,User Door,1
+Customer 142,No Trouble Found,1
+Customer 142,Network Intermittent,1
+Customer 142,Main Door,1
+Customer 142,[Missing],1
+Customer 143,Power Supply,2
+Customer 143,Packer,2
+Customer 143,No Trouble Found,2
+Customer 143,Network Settings,2
+Customer 143,Main Door,1
+Customer 143,[Missing],1
+Customer 144,Power Supply,1
+Customer 145,Touchscreen,2
+Customer 145,SAM,2
+Customer 145,Loading Error,2
+Customer 145,No Trouble Found,1
+Customer 145,Main Door,1
+Customer 145,Drawers,1
+Customer 146,Deposit Door,1
+Customer 147,Computer Board,8
+Customer 147,Touchscreen,1
+Customer 148,Deposit Door,1
+Customer 149,Deposit Door,6
+Customer 149,No Trouble Found,3
+Customer 149,User Door,1
+Customer 149,Touchscreen,1
+Customer 149,SAM,1
+Customer 149,Packer,1
+Customer 149,Main Door,1
+Customer 149,Computer Board,1
+Customer 149,Badge Reader,1
+Customer 150,User Door,1
+Customer 150,Main Door,1
+Customer 151,Computer Board,4
+Customer 151,Touchscreen,3
+Customer 151,Network Intermittent,1
+Customer 151,Dead Data Jack,1
+Customer 151,Badge Reader,1
+Customer 152,Touchscreen,2
+Customer 152,Computer Board,2
+Customer 152,User Door,1
+Customer 152,Main Door,1
+Customer 152,Deposit Door,1
+Customer 153,SAM,1
+Customer 153,Main Door,1
+Customer 153,Deposit Door,1
+Customer 154,Computer Board,1
+Customer 155,Computer Board,2
+Customer 155,Touchscreen,1
+Customer 155,Packer,1
+Customer 155,Issue,1
+Customer 155,Deposit Door,1
+Customer 156,Service Door,1
+Customer 156,Power Supply,1
+Customer 157,Touchscreen,2
+Customer 157,Deposit Door,2
+Customer 157,No Trouble Found,1
+Customer 158,Touchscreen,4
+Customer 158,Computer Board,2
+Customer 158,User Door,1
+Customer 158,No Trouble Found,1
+Customer 158,Deposit Door,1
+Customer 159,SAM,1
+Customer 160,Touchscreen,2
+Customer 160,Deposit Door,1
+Customer 161,User Door,1
+Customer 161,Packer,1
+Customer 161,Improper Use,1
+Customer 162,Touchscreen,3
+Customer 162,Parts Order,1
+Customer 162,No Trouble Found,1
+Customer 162,Loader Board,1
+Customer 163,Service Door,1
+Customer 164,Touchscreen,2
+Customer 164,SAM,1
+Customer 164,Cable disconnected/Loose,1
+Customer 165,User Door,4
+Customer 165,Main Door,3
+Customer 165,Deposit Door,3
+Customer 165,Computer Board,3
+Customer 165,Touchscreen,2
+Customer 165,SAM,2
+Customer 165,[Missing],2
+Customer 165,Power,1
+Customer 165,No Trouble Found,1
+Customer 165,Decoder,1
+Customer 166,Main Door,1
+Customer 166,Deposit Door,1
+Customer 167,User Door,1
+Customer 167,Loader Board,1
+Customer 168,Touchscreen,1
+Customer 168,No Trouble Found,1
+Customer 169,Computer Board,3
+Customer 169,No Trouble Found,2
+Customer 169,Deposit Door,2
+Customer 169,Packer,1
+Customer 169,Main Door,1
+Customer 169,Improper Use,1
+Customer 169,IP/Reprogramming,1
+Customer 169,[Missing],1
+Customer 170,SAM,1
+Customer 170,Main Door,1
+Customer 171,Curtain,31
+Customer 171,Main Door,20
+Customer 171,Counterweight System,13
+Customer 171,Power Supply,11
+Customer 171,SAM,8
+Customer 171,Computer Board,7
+Customer 171,No Trouble Found,5
+Customer 171,Packer,4
+Customer 171,Deposit Door,4
+Customer 171,Parts Order,3
+Customer 171,Power,2
+Customer 171,Physical Damage,2
+Customer 171,IP/Reprogramming,2
+Customer 171,Weight Scale,1
+Customer 171,User Door,1
+Customer 171,Improper Use,1
+Customer 171,Dead Data Jack,1
+Customer 171,Credit Issues,1
+Customer 171,Camera,1
+Customer 171,[Missing],1
+Customer 172,Deposit Door,2
+Customer 172,Touchscreen,1
+Customer 173,Network Intermittent,1
+Customer 173,Computer Board,1
+Customer 174,Deposit Door,5
+Customer 174,[Missing],1
+Customer 175,No Trouble Found,1
+Customer 175,[Missing],1
+Customer 176,User Door,1
+Customer 176,Power Supply,1
+Customer 176,Network Settings,1
+Customer 176,Main Door,1
+Customer 176,Deposit Door,1
+Customer 177,Loading Error,1
+Customer 178,Main Door,3
+Customer 178,User Door,1
+Customer 179,No Trouble Found,4
+Customer 179,Deposit Door,3
+Customer 179,SAM,2
+Customer 179,Loading Error,2
+Customer 179,Touchscreen,1
+Customer 179,Packer,1
+Customer 179,Improper Use,1
+Customer 179,[Missing],1
+Customer 180,Deposit Door,1
+Customer 181,Main Door,3
+Customer 181,User Door,1
+Customer 181,No Trouble Found,1
+Customer 181,Firewall,1
+Customer 181,Deposit Door,1
+Customer 182,Main Door,1
+Customer 182,Deposit Door,1
+Customer 183,Main Door,2
+Customer 183,User Door,1
+Customer 183,Network Settings,1
+Customer 184,Deposit Door,4
+Customer 184,Computer Board,2
+Customer 184,Touchscreen,1
+Customer 184,SAM,1
+Customer 184,Power,1
+Customer 184,Main Door,1
+Customer 185,User Door,3
+Customer 185,Loading Error,3
+Customer 185,Deposit Door,2
+Customer 185,SAM,1
+Customer 185,Badge Reader,1
+Customer 185,[Missing],1
+Customer 186,Deposit Door,21
+Customer 186,Curtain,11
+Customer 186,Computer Board,8
+Customer 186,Main Door,4
+Customer 186,No Trouble Found,3
+Customer 186,User Door,1
+Customer 186,Network Settings,1
+Customer 186,IP/Reprogramming,1
+Customer 186,Cable disconnected/Loose,1
+Customer 187,Touchscreen,1
+Customer 187,Deposit Door,1
+Customer 188,User Door,1
+Customer 188,User Access,1
+Customer 188,SAM,1
+Customer 188,Network Intermittent,1
+Customer 189,SAM,1
+Customer 190,Touchscreen,3
+Customer 191,User Door,4
+Customer 191,SAM,4
+Customer 191,Deposit Door,3
+Customer 191,Service Door,2
+Customer 191,Touchscreen,1
+Customer 191,Packer,1
+Customer 191,No Trouble Found,1
+Customer 191,Improper Use,1
+Customer 191,Computer Board,1
+Customer 192,SAM,4
+Customer 192,User Door,2
+Customer 192,Computer Board,1
+Customer 193,Improper Use,1
+Customer 194,Touchscreen,4
+Customer 194,Packer,2
+Customer 194,SAM,1
+Customer 194,Cable disconnected/Loose,1
+Customer 195,Main Door,3
+Customer 195,Packer,1
+Customer 195,Deposit Door,1
+Customer 195,Computer Board,1
+Customer 196,SAM,1
+Customer 197,Computer Board,2
+Customer 197,Deposit Door,1
+Customer 197,Badge Reader,1
+Customer 198,No Trouble Found,2
+Customer 198,Issue,1
+Customer 198,Improper Use,1
+Customer 198,Computer Board,1
+Customer 199,No Trouble Found,2
+Customer 199,Loading Error,1
+Customer 200,IP/Reprogramming,1
+Customer 200,[Missing],1
+Customer 201,Loader Board,1
+Customer 201,Issue,1
+Customer 202,Touchscreen,1
+Customer 202,No Trouble Found,1
+Customer 203,Deposit Door,2
+Customer 203,User Door,1
+Customer 203,SAM,1
+Customer 203,No Trouble Found,1
+Customer 204,Main Door,2
+Customer 205,Curtain,1
+Customer 205,Computer Board,1
+Customer 205,Camera,1
+Customer 206,Deposit Door,2
+Customer 206,Network Settings,1
+Customer 207,User Door,8
+Customer 207,Deposit Door,7
+Customer 207,Main Door,5
+Customer 207,Computer Board,5
+Customer 207,SAM,2
+Customer 207,Power Supply,2
+Customer 207,Drawers,2
+Customer 207,Touchscreen,1
+Customer 207,No Trouble Found,1
+Customer 208,No Trouble Found,3
+Customer 208,[Missing],3
+Customer 208,Power Supply,2
+Customer 208,Touchscreen,1
+Customer 208,Loader Board,1
+Customer 208,Deposit Door,1
+Customer 208,Cable disconnected/Loose,1
+Customer 209,SAM,2
+Customer 209,No Trouble Found,1
+Customer 209,Deposit Door,1
+Customer 209,Cable disconnected/Loose,1
+Customer 210,Computer Board,5
+Customer 210,Deposit Door,4
+Customer 210,Service Door,3
+Customer 210,Packer,3
+Customer 210,[Missing],3
+Customer 210,User Door,2
+Customer 210,No Trouble Found,2
+Customer 210,Network Settings,1
+Customer 210,IP/Reprogramming,1
+Customer 212,Deposit Door,5
+Customer 212,User Door,2
+Customer 212,Main Door,2
+Customer 212,Power Supply,1
+Customer 212,Power,1
+Customer 212,[Missing],1
+Customer 213,Physical Damage,2
+Customer 213,SAM,1
+Customer 213,Deposit Door,1
+Customer 214,Touchscreen,3
+Customer 214,Deposit Door,1
+Customer 215,User Door,1
+Customer 215,Main Door,1
+Customer 216,SAM,5
+Customer 216,Deposit Door,2
+Customer 216,No Trouble Found,1
+Customer 217,Deposit Door,2
+Customer 217,User Door,1
+Customer 217,SAM,1
+Customer 217,Parts Order,1
+Customer 217,Packer,1
+Customer 217,Network Settings,1
+Customer 218,Computer Board,4
+Customer 218,Touchscreen,3
+Customer 218,No Trouble Found,3
+Customer 218,SAM,2
+Customer 218,Packer,2
+Customer 218,Power Supply,1
+Customer 218,Loading Error,1
+Customer 219,User Door,1
+Customer 219,SAM,1
+Customer 219,Packer,1
+Customer 219,Network Intermittent,1
+Customer 219,Computer Board,1
+Customer 220,Computer Board,5
+Customer 220,Power Supply,2
+Customer 220,Power,1
+Customer 220,No Trouble Found,1
+Customer 220,Main Door,1
+Customer 220,Loading Error,1
+Customer 221,User Door,1
+Customer 221,SAM,1
+Customer 221,Computer Board,1
+Customer 222,Touchscreen,1
+Customer 222,Network Intermittent,1
+Customer 222,Deposit Door,1
+Customer 222,Computer Board,1
+Customer 223,SAM,4
+Customer 223,No Trouble Found,3
+Customer 223,User Door,1
+Customer 223,Loading Error,1
+Customer 223,Device Not Found,1
+Customer 223,Deposit Door,1
+Customer 223,[Missing],1
+Customer 224,Touchscreen,21
+Customer 224,Deposit Door,8
+Customer 224,SAM,6
+Customer 224,Computer Board,5
+Customer 224,Packer,4
+Customer 224,Power Supply,2
+Customer 224,[Missing],2
+Customer 224,User Door,1
+Customer 224,User Access,1
+Customer 224,No Trouble Found,1
+Customer 224,Main Door,1
+Customer 224,Improper Use,1
+Customer 225,SAM,6
+Customer 225,Main Door,3
+Customer 225,Deposit Door,3
+Customer 225,[Missing],3
+Customer 225,No Trouble Found,2
+Customer 225,Loading Error,2
+Customer 225,Computer Board,2
+Customer 225,User Door,1
+Customer 225,Touchscreen,1
+Customer 225,Service Door,1
+Customer 225,Loader Board,1
+Customer 226,Touchscreen,1
+Customer 226,SAM,1
+Customer 226,Deposit Door,1
+Customer 226,Computer Board,1
+Customer 227,SAM,7
+Customer 227,User Door,1
+Customer 228,Power Supply,2
+Customer 228,SAM,1
+Customer 228,Network Intermittent,1
+Customer 228,Deposit Door,1
+Customer 228,[Missing],1
+Customer 229,Touchscreen,1
+Customer 229,SAM,1
+Customer 229,Network Settings,1
+Customer 229,Network Intermittent,1
+Customer 229,Badge Reader,1
+Customer 230,SAM,9
+Customer 230,Curtain,6
+Customer 230,Touchscreen,5
+Customer 230,No Trouble Found,4
+Customer 230,Main Door,3
+Customer 230,Improper Use,2
+Customer 230,Counterweight System,2
+Customer 230,Troubleshooting,1
+Customer 230,Service Door,1
+Customer 230,Power Supply,1
+Customer 230,Physical Damage,1
+Customer 230,Network Settings,1
+Customer 230,Drawers,1
+Customer 230,Device Not Found,1
+Customer 230,Deposit Door,1
+Customer 230,Dead Data Jack,1
+Customer 230,Computer Board,1
+Customer 231,Computer Board,3
+Customer 231,No Trouble Found,2
+Customer 231,Main Door,1
+Customer 231,Curtain,1
+Customer 231,Counterweight System,1
+Customer 232,Network Intermittent,2
+Customer 232,SAM,1
+Customer 232,No Trouble Found,1
+Customer 232,Main Door,1
+Customer 233,Loading Error,1
+Customer 233,Curtain,1
+Customer 233,Computer Board,1
+Customer 233,[Missing],1
+Customer 234,No Trouble Found,2
+Customer 234,Computer Board,2
+Customer 234,Deposit Door,1
+Customer 235,Deposit Door,1
+Customer 236,IP/Reprogramming,2
+Customer 236,User Door,1
+Customer 236,No Trouble Found,1
+Customer 236,Main Door,1
+Customer 236,Computer Board,1
+Customer 237,No Trouble Found,2
+Customer 237,Computer Board,1
+Customer 238,Firewall,2
+Customer 238,Computer Board,1
+Customer 239,Computer Board,4
+Customer 239,Network Settings,2
+Customer 239,User Door,1
+Customer 239,No Trouble Found,1
+Customer 239,Loading Error,1
+Customer 239,Dead Data Jack,1
+Customer 239,Camera,1
+Customer 239,[Missing],1
+Customer 240,No Trouble Found,1
+Customer 240,Deposit Door,1
+Customer 241,Touchscreen,4
+Customer 241,Improper Use,2
+Customer 241,SAM,1
+Customer 241,Power,1
+Customer 241,Main Door,1
+Customer 241,Loader Board,1
+Customer 242,Computer Board,3
+Customer 242,Touchscreen,2
+Customer 242,Deposit Door,2
+Customer 242,SAM,1
+Customer 242,Power Supply,1
+Customer 242,No Trouble Found,1
+Customer 242,Main Door,1
+Customer 242,Camera,1
+Customer 242,[Missing],1
+Customer 243,Main Door,6
+Customer 243,Curtain,5
+Customer 243,Touchscreen,3
+Customer 243,Packer,2
+Customer 243,No Trouble Found,2
+Customer 243,[Missing],2
+Customer 243,User Door,1
+Customer 243,Network Settings,1
+Customer 243,Firewall,1
+Customer 243,Counterweight System,1
+Customer 244,Computer Board,1
+Customer 245,Touchscreen,1
+Customer 245,Main Door,1
+Customer 245,Deposit Door,1
+Customer 245,Credit Issues,1
+Customer 246,IP/Reprogramming,3
+Customer 246,Network Intermittent,2
+Customer 246,Dead Data Jack,2
+Customer 246,Touchscreen,1
+Customer 246,SAM,1
+Customer 246,Network Settings,1
+Customer 246,Deposit Door,1
+Customer 247,Touchscreen,2
+Customer 247,No Trouble Found,2
+Customer 247,User Door,1
+Customer 247,SAM,1
+Customer 247,Loading Error,1
+Customer 247,Badge Reader,1
+Customer 247,[Missing],1
+Customer 248,Main Door,2
+Customer 249,Deposit Door,5
+Customer 249,SAM,2
+Customer 249,Main Door,2
+Customer 249,Badge Reader,2
+Customer 249,[Missing],2
+Customer 249,Power,1
+Customer 249,Packer,1
+Customer 249,No Trouble Found,1
+Customer 249,Loading Error,1
+Customer 249,Curtain,1
+Customer 249,Cable disconnected/Loose,1
+Customer 250,Power Supply,1
+Customer 251,Packer,7
+Customer 251,No Trouble Found,5
+Customer 251,Deposit Door,4
+Customer 251,Loading Error,2
+Customer 251,Computer Board,2
+Customer 251,User Door,1
+Customer 251,SAM,1
+Customer 251,Camera,1
+Customer 252,Touchscreen,1
+Customer 253,Computer Board,13
+Customer 253,User Door,7
+Customer 253,Deposit Door,7
+Customer 253,Main Door,6
+Customer 253,Touchscreen,4
+Customer 253,Power Supply,4
+Customer 253,No Trouble Found,4
+Customer 253,Issue,3
+Customer 253,User Access,1
+Customer 253,SAM,1
+Customer 253,Power,1
+Customer 253,Network Intermittent,1
+Customer 253,Loader Board,1
+Customer 254,No Trouble Found,3
+Customer 255,Main Door,2
+Customer 255,Computer Board,2
+Customer 255,[Missing],2
+Customer 255,SAM,1
+Customer 256,Deposit Door,3
+Customer 256,Computer Board,3
+Customer 256,Touchscreen,1
+Customer 256,Packer,1
+Customer 256,Main Door,1
+Customer 256,[Missing],1
+Customer 257,Deposit Door,2
+Customer 257,User Door,1
+Customer 257,Touchscreen,1
+Customer 258,Touchscreen,2
+Customer 258,Packer,1
+Customer 258,Main Door,1
+Customer 258,Deposit Door,1
+Customer 260,SAM,1
+Customer 260,No Trouble Found,1
+Customer 261,User Door,1
+Customer 261,No Trouble Found,1
+Customer 261,Computer Board,1
+Customer 262,Issue,1
+Customer 263,User Door,3
+Customer 263,SAM,2
+Customer 263,Touchscreen,1
+Customer 263,Packer,1
+Customer 263,No Trouble Found,1
+Customer 264,Touchscreen,1
+Customer 265,Deposit Door,3
+Customer 265,Badge Reader,2
+Customer 265,Touchscreen,1
+Customer 265,Parts Order,1
+Customer 265,No Trouble Found,1
+Customer 266,Main Door,2
+Customer 266,Network Settings,1
+Customer 266,Deposit Door,1
+Customer 266,[Missing],1
+Customer 267,Network Settings,3
+Customer 267,No Trouble Found,1
+Customer 267,Deposit Door,1
+Customer 267,Dead Data Jack,1
+Customer 267,Computer Board,1
+Customer 267,[Missing],1
+Customer 268,Touchscreen,4
+Customer 268,SAM,3
+Customer 268,No Trouble Found,3
+Customer 268,Power Supply,2
+Customer 268,Packer,1
+Customer 268,Deposit Door,1
+Customer 269,Touchscreen,2
+Customer 269,SAM,2
+Customer 269,No Trouble Found,2
+Customer 269,Deposit Door,2
+Customer 269,User Door,1
+Customer 269,Packer,1
+Customer 269,Main Door,1
+Customer 269,IP/Reprogramming,1
+Customer 270,Deposit Door,1
+Customer 271,Touchscreen,2
+Customer 272,Deposit Door,5
+Customer 272,Main Door,3
+Customer 272,Touchscreen,2
+Customer 272,SAM,2
+Customer 273,SAM,2
+Customer 273,User Door,1
+Customer 273,Loading Error,1
+Customer 273,[Missing],1
+Customer 274,Deposit Door,2
+Customer 275,Deposit Door,2
+Customer 275,Packer,1
+Customer 275,[Missing],1
+Customer 276,Deposit Door,4
+Customer 276,No Trouble Found,2
+Customer 276,Main Door,2
+Customer 276,[Missing],2
+Customer 276,Touchscreen,1
+Customer 276,Power Supply,1
+Customer 276,Power,1
+Customer 276,Network Settings,1
+Customer 276,Loading Error,1
+Customer 276,Improper Use,1
+Customer 276,Computer Board,1
+Customer 276,Cable disconnected/Loose,1
+Customer 276,Badge Reader,1
+Customer 277,SAM,1
+Customer 278,No Trouble Found,2
+Customer 278,[Missing],1
+Customer 279,User Door,1
+Customer 279,Touchscreen,1
+Customer 279,Service Door,1
+Customer 279,Packer,1
+Customer 279,[Missing],1
+Customer 280,User Door,1
+Customer 280,Touchscreen,1
+Customer 280,Main Door,1
+Customer 280,Deposit Door,1
+Customer 281,No Trouble Found,4
+Customer 281,Deposit Door,3
+Customer 281,User Door,1
+Customer 281,Loading Error,1
+Customer 281,[Missing],1
+Customer 282,Main Door,1
+Customer 283,No Trouble Found,2
+Customer 283,[Missing],2
+Customer 283,SAM,1
+Customer 283,Computer Board,1
+Customer 284,Deposit Door,1
+Customer 285,User Door,1
+Customer 285,Computer Board,1
+Customer 286,SAM,1
+Customer 286,[Missing],1
+Customer 287,Deposit Door,7
+Customer 287,Touchscreen,5
+Customer 287,User Door,2
+Customer 287,Badge Reader,1
+Customer 287,[Missing],1
+Customer 288,SAM,2
+Customer 288,[Missing],1
+Customer 289,Dead Data Jack,2
+Customer 289,Computer Board,2
+Customer 289,Network Settings,1
+Customer 289,Network Intermittent,1
+Customer 289,Deposit Door,1
+Customer 289,[Missing],1
+Customer 290,SAM,1
+Customer 290,Packer,1
+Customer 290,No Trouble Found,1
+Customer 290,Deposit Door,1
+Customer 291,Main Door,9
+Customer 291,No Trouble Found,5
+Customer 291,Deposit Door,4
+Customer 291,Curtain,3
+Customer 291,User Door,2
+Customer 291,Packer,2
+Customer 291,Power,1
+Customer 291,Issue,1
+Customer 291,Camera,1
+Customer 292,Touchscreen,2
+Customer 292,Service Door,1
+Customer 292,No Trouble Found,1
+Customer 292,Main Door,1
+Customer 293,Deposit Door,5
+Customer 293,SAM,4
+Customer 293,Training,1
+Customer 293,No Trouble Found,1
+Customer 294,SAM,2
+Customer 294,Touchscreen,1
+Customer 295,User Door,3
+Customer 295,SAM,2
+Customer 295,Main Door,2
+Customer 295,Deposit Door,2
+Customer 295,Touchscreen,1
+Customer 295,Power Supply,1
+Customer 295,Packer,1
+Customer 295,Badge Reader,1
+Customer 296,Dead Data Jack,4
+Customer 296,SAM,3
+Customer 296,Curtain,3
+Customer 296,Computer Board,3
+Customer 296,Service Door,1
+Customer 296,Power Supply,1
+Customer 296,No Trouble Found,1
+Customer 296,Network Settings,1
+Customer 296,Improper Use,1
+Customer 296,Counterweight System,1
+Customer 297,No Trouble Found,2
+Customer 297,Badge Reader,2
+Customer 297,Network Intermittent,1
+Customer 297,Loader Board,1
+Customer 297,Computer Board,1
+Customer 297,[Missing],1
+Customer 298,Network Settings,3
+Customer 298,[Missing],3
+Customer 298,Network Intermittent,2
+Customer 298,Main Door,2
+Customer 298,SAM,1
+Customer 298,Power Supply,1
+Customer 298,Loading Error,1
+Customer 298,Loader Board,1
+Customer 298,Credit Issues,1
+Customer 298,Computer Board,1
+Customer 299,User Door,2
+Customer 299,SAM,2
+Customer 300,SAM,3
+Customer 300,Computer Board,2
+Customer 300,Badge Reader,2
+Customer 300,User Door,1
+Customer 300,Touchscreen,1
+Customer 300,Deposit Door,1
+Customer 300,[Missing],1
+Customer 301,Main Door,4
+Customer 301,No Trouble Found,3
+Customer 301,[Missing],2
+Customer 301,User Door,1
+Customer 301,Computer Board,1
+Customer 302,No Trouble Found,2
+Customer 302,User Door,1
+Customer 302,Troubleshooting,1
+Customer 302,Parts Order,1
+Customer 302,Network Intermittent,1
+Customer 302,Issue,1
+Customer 302,Firewall,1
+Customer 303,Main Door,3
+Customer 303,Packer,2
+Customer 303,Deposit Door,2
+Customer 303,Badge Reader,1
+Customer 304,SAM,3
+Customer 304,No Trouble Found,1
+Customer 305,Deposit Door,6
+Customer 305,Power,3
+Customer 305,No Trouble Found,3
+Customer 305,SAM,1
+Customer 305,Power Supply,1
+Customer 306,Power Supply,3
+Customer 306,Main Door,1
+Customer 306,Loading Error,1
+Customer 306,[Missing],1
+Customer 307,Service Door,3
+Customer 307,User Door,2
+Customer 307,Main Door,2
+Customer 307,Power Supply,1
+Customer 307,No Trouble Found,1
+Customer 307,Issue,1
+Customer 307,[Missing],1
+Customer 308,Deposit Door,16
+Customer 308,Computer Board,14
+Customer 308,SAM,8
+Customer 308,No Trouble Found,7
+Customer 308,Curtain,5
+Customer 308,User Door,4
+Customer 308,Touchscreen,3
+Customer 308,Main Door,3
+Customer 308,[Missing],3
+Customer 308,Physical Damage,2
+Customer 308,Service Door,1
+Customer 308,Packer,1
+Customer 308,Loader Board,1
+Customer 308,Dead Data Jack,1
+Customer 308,Cable disconnected/Loose,1
+Customer 309,Network Intermittent,2
+Customer 309,Main Door,2
+Customer 309,User Door,1
+Customer 309,Service Door,1
+Customer 310,Computer Board,3
+Customer 311,Counterweight System,1
+Customer 312,Computer Board,1
+Customer 313,Parts Order,1
+Customer 314,Curtain,15
+Customer 314,No Trouble Found,4
+Customer 314,[Missing],4
+Customer 314,Main Door,3
+Customer 314,Loading Error,1
+Customer 315,Curtain,1
+Customer 316,Deposit Door,6
+Customer 316,Main Door,2
+Customer 316,User Door,1
+Customer 316,No Trouble Found,1
+Customer 317,Touchscreen,8
+Customer 317,No Trouble Found,4
+Customer 317,Main Door,3
+Customer 317,Curtain,3
+Customer 317,User Door,2
+Customer 317,Power Supply,2
+Customer 317,Loading Error,2
+Customer 317,Deposit Door,2
+Customer 317,Network Intermittent,1
+Customer 317,Computer Board,1
+Customer 317,Cable disconnected/Loose,1
+Customer 317,[Missing],1
+Customer 318,Touchscreen,6
+Customer 318,Deposit Door,6
+Customer 318,SAM,5
+Customer 318,Packer,2
+Customer 318,Issue,2
+Customer 318,Computer Board,2
+Customer 318,No Trouble Found,1
+Customer 318,Main Door,1
+Customer 318,Improper Use,1
+Customer 318,Firewall,1
+Customer 318,Decoder,1
+Customer 318,[Missing],1
+Customer 319,SAM,1
+Customer 319,Main Door,1
+Customer 320,User Door,1
+Customer 320,Service Door,1
+Customer 320,Deposit Door,1
+Customer 320,Computer Board,1
+Customer 320,[Missing],1
+Customer 321,User Door,3
+Customer 321,SAM,2
+Customer 321,Computer Board,2
+Customer 321,Power Supply,1
+Customer 321,Issue,1
+Customer 321,Deposit Door,1
+Customer 322,User Door,4
+Customer 322,SAM,2
+Customer 322,Deposit Door,1
+Customer 323,Deposit Door,14
+Customer 323,SAM,8
+Customer 323,Touchscreen,4
+Customer 323,User Door,3
+Customer 323,Packer,3
+Customer 323,[Missing],3
+Customer 323,Computer Board,2
+Customer 323,Service Door,1
+Customer 323,No Trouble Found,1
+Customer 323,Camera,1
+Customer 324,Touchscreen,1
+Customer 324,Main Door,1
+Customer 325,User Door,2
+Customer 325,Touchscreen,2
+Customer 325,Packer,2
+Customer 325,Deposit Door,2
+Customer 325,SAM,1
+Customer 325,Network Intermittent,1
+Customer 325,Dead Data Jack,1
+Customer 326,Touchscreen,1
+Customer 327,No Trouble Found,2
+Customer 327,[Missing],2
+Customer 327,SAM,1
+Customer 327,Power,1
+Customer 327,Deposit Door,1
+Customer 327,Computer Board,1
+Customer 328,Physical Damage,1
+Customer 328,No Trouble Found,1
+Customer 329,User Door,1
+Customer 329,Deposit Door,1
+Customer 330,Touchscreen,1
+Customer 330,Loading Error,1
+Customer 330,Deposit Door,1
+Customer 330,Cable disconnected/Loose,1
+Customer 331,Touchscreen,3
+Customer 331,SAM,1
+Customer 332,Deposit Door,2
+Customer 332,User Door,1
+Customer 332,User Access,1
+Customer 332,Touchscreen,1
+Customer 332,Loading Error,1
+Customer 332,Badge Reader,1
+Customer 332,[Missing],1
+Customer 333,Issue,4
+Customer 333,Computer Board,3
+Customer 333,Main Door,2
+Customer 333,Deposit Door,2
+Customer 333,Training,1
+Customer 333,No Trouble Found,1
+Customer 333,Network Settings,1
+Customer 333,Network Intermittent,1
+Customer 334,Deposit Door,5
+Customer 334,Packer,1
+Customer 334,No Trouble Found,1
+Customer 334,IP/Reprogramming,1
+Customer 335,Parts Order,1
+Customer 335,Computer Board,1
+Customer 336,User Door,1
+Customer 336,Touchscreen,1
+Customer 336,SAM,1
+Customer 336,Power,1
+Customer 336,No Trouble Found,1
+Customer 336,Network Settings,1
+Customer 336,Deposit Door,1
+Customer 337,Deposit Door,5
+Customer 337,User Door,4
+Customer 337,Touchscreen,2
+Customer 337,Main Door,2
+Customer 337,Drawers,1
+Customer 337,Cable disconnected/Loose,1
+Customer 337,[Missing],1
+Customer 338,Main Door,1
+Customer 339,Curtain,24
+Customer 339,[Missing],4
+Customer 339,Touchscreen,2
+Customer 339,Power Supply,2
+Customer 339,Improper Use,2
+Customer 339,SAM,1
+Customer 339,No Trouble Found,1
+Customer 339,Main Door,1
+Customer 339,Device Not Found,1
+Customer 339,Counterweight System,1
+Customer 340,Curtain,8
+Customer 340,Main Door,5
+Customer 340,No Trouble Found,2
+Customer 340,Deposit Door,1
+Customer 340,Computer Board,1
+Customer 340,[Missing],1
+Customer 341,Curtain,14
+Customer 341,No Trouble Found,5
+Customer 341,Dead Data Jack,3
+Customer 341,Computer Board,3
+Customer 341,Cable disconnected/Loose,3
+Customer 341,User Door,2
+Customer 341,SAM,2
+Customer 341,Network Settings,2
+Customer 341,Network Intermittent,1
+Customer 341,Loading Error,1
+Customer 341,Improper Use,1
+Customer 341,IP/Reprogramming,1
+Customer 341,Counterweight System,1
+Customer 342,Deposit Door,1
+Customer 342,Computer Board,1
+Customer 343,Main Door,5
+Customer 343,Counterweight System,3
+Customer 343,Power,1
+Customer 343,[Missing],1
+Customer 344,[Missing],1
+Customer 345,SAM,2
+Customer 345,Power Supply,1
+Customer 345,Deposit Door,1
+Customer 346,Touchscreen,1
+Customer 346,SAM,1
+Customer 346,Power Supply,1
+Customer 347,[Missing],5
+Customer 347,Computer Board,4
+Customer 347,Main Door,3
+Customer 347,No Trouble Found,2
+Customer 347,Loading Error,1
+Customer 348,Deposit Door,4
+Customer 348,Touchscreen,1
+Customer 348,Packer,1
+Customer 349,Deposit Door,7
+Customer 349,SAM,3
+Customer 349,No Trouble Found,2
+Customer 349,Touchscreen,1
+Customer 349,Issue,1
+Customer 349,Computer Board,1
+Customer 349,[Missing],1
+Customer 350,Deposit Door,6
+Customer 350,No Trouble Found,5
+Customer 350,Touchscreen,3
+Customer 350,SAM,3
+Customer 350,[Missing],3
+Customer 350,Network Intermittent,2
+Customer 350,Decoder,2
+Customer 350,Network Settings,1
+Customer 350,Main Door,1
+Customer 350,Computer Board,1
+Customer 350,Badge Reader,1
+Customer 351,Deposit Door,1
+Customer 351,Computer Board,1
+Customer 352,User Door,1
+Customer 353,User Door,1
+Customer 353,User Access,1
+Customer 353,Packer,1
+Customer 353,Deposit Door,1
+Customer 354,Network Intermittent,2
+Customer 354,Deposit Door,2
+Customer 354,User Door,1
+Customer 354,No Trouble Found,1
+Customer 354,Computer Board,1
+Customer 354,Badge Reader,1
+Customer 355,SAM,1
+Customer 356,No Trouble Found,2
+Customer 356,Power Supply,1
+Customer 357,No Trouble Found,5
+Customer 357,Network Settings,4
+Customer 357,Network Intermittent,2
+Customer 357,Computer Board,2
+Customer 357,Power Supply,1
+Customer 357,Loading Error,1
+Customer 357,Issue,1
+Customer 357,Decoder,1
+Customer 357,Badge Reader,1
+Customer 357,[Missing],1
+Customer 358,Touchscreen,1
+Customer 358,Main Door,1
+Customer 358,Computer Board,1
+Customer 358,Badge Reader,1
+Customer 359,User Door,1
+Customer 359,Main Door,1
+Customer 360,Firewall,1
+Customer 361,Network Settings,1
+Customer 362,SAM,1
+Customer 362,Computer Board,1
+Customer 363,Deposit Door,14
+Customer 363,SAM,7
+Customer 363,User Door,3
+Customer 363,No Trouble Found,3
+Customer 363,Decoder,2
+Customer 363,Computer Board,2
+Customer 363,Touchscreen,1
+Customer 363,Power Supply,1
+Customer 363,Packer,1
+Customer 363,Network Settings,1
+Customer 363,Main Door,1
+Customer 363,[Missing],1
+Customer 364,User Door,1
+Customer 365,Network Settings,1
+Customer 365,Curtain,1
+Customer 365,Counterweight System,1
+Customer 367,Computer Board,1
+Customer 368,User Door,1
+Customer 368,Touchscreen,1
+Customer 368,SAM,1
+Customer 368,Main Door,1
+Customer 368,Deposit Door,1
+Customer 369,Touchscreen,1
+Customer 369,SAM,1
+Customer 369,Main Door,1
+Customer 369,Deposit Door,1
+Customer 369,[Missing],1
+Customer 370,SAM,3
+Customer 370,Main Door,1
+Customer 370,Deposit Door,1
+Customer 371,No Trouble Found,5
+Customer 371,User Door,4
+Customer 371,Main Door,4
+Customer 371,[Missing],2
+Customer 371,SAM,1
+Customer 371,Packer,1
+Customer 371,Curtain,1
+Customer 372,Curtain,7
+Customer 372,Main Door,2
+Customer 372,User Door,1
+Customer 373,Curtain,22
+Customer 373,SAM,3
+Customer 373,No Trouble Found,2
+Customer 373,User Access,1
+Customer 373,Touchscreen,1
+Customer 373,Physical Damage,1
+Customer 373,Credit Issues,1
+Customer 373,Counterweight System,1
+Customer 373,Cable disconnected/Loose,1
+Customer 374,Curtain,6
+Customer 374,User Door,1
+Customer 374,Computer Board,1
+Customer 375,SAM,2
+Customer 375,Packer,2
+Customer 375,Cable disconnected/Loose,2
+Customer 375,Power Supply,1
+Customer 375,Network Settings,1
+Customer 375,Network Intermittent,1
+Customer 375,IP/Reprogramming,1
+Customer 375,Firewall,1
+Customer 375,Computer Board,1
+Customer 375,[Missing],1
+Customer 376,Touchscreen,1
+Customer 376,No Trouble Found,1
+Customer 376,Dead Data Jack,1
+Customer 376,Curtain,1
+Customer 376,Computer Board,1
+Customer 377,Curtain,9
+Customer 377,Network Settings,2
+Customer 377,Main Door,2
+Customer 377,Computer Board,2
+Customer 377,Touchscreen,1
+Customer 377,Physical Damage,1
+Customer 377,Counterweight System,1
+Customer 377,[Missing],1
+Customer 378,Weight Scale,4
+Customer 378,No Trouble Found,3
+Customer 378,Curtain,3
+Customer 378,Network Intermittent,2
+Customer 378,Computer Board,2
+Customer 378,User Door,1
+Customer 378,Main Door,1
+Customer 378,Firewall,1
+Customer 378,Dead Data Jack,1
+Customer 378,Cable disconnected/Loose,1
+Customer 378,[Missing],1
+Customer 379,Curtain,9
+Customer 379,Computer Board,2
+Customer 379,Touchscreen,1
+Customer 379,SAM,1
+Customer 379,No Trouble Found,1
+Customer 379,Deposit Door,1
+Customer 379,Counterweight System,1
+Customer 380,Curtain,2
+Customer 381,SAM,1
+Customer 381,Counterweight System,1
+Customer 382,Curtain,4
+Customer 382,SAM,2
+Customer 382,User Door,1
+Customer 382,Main Door,1
+Customer 383,Weight Scale,1
+Customer 383,Touchscreen,1
+Customer 383,Network Settings,1
+Customer 383,Curtain,1
+Customer 384,Security Updates,1
+Customer 384,Network Intermittent,1
+Customer 384,Firewall,1
+Customer 385,SAM,5
+Customer 385,Computer Board,5
+Customer 385,No Trouble Found,3
+Customer 385,Packer,2
+Customer 385,Deposit Door,1
+Customer 385,[Missing],1
+Customer 386,Service Door,1
+Customer 386,Deposit Door,1
+Customer 386,[Missing],1
+Customer 387,SAM,1
+Customer 388,Touchscreen,2
+Customer 388,Deposit Door,2
+Customer 388,No Trouble Found,1
+Customer 388,Computer Board,1
+Customer 388,Camera,1
+Customer 389,SAM,3
+Customer 389,User Door,2
+Customer 389,No Trouble Found,2
+Customer 389,Deposit Door,2
+Customer 389,Touchscreen,1
+Customer 389,Packer,1
+Customer 389,Network Settings,1
+Customer 389,Main Door,1
+Customer 389,Computer Board,1
+Customer 390,Packer,1
+Customer 391,User Door,3
+Customer 391,Service Door,1
+Customer 391,Physical Damage,1
+Customer 392,Computer Board,4
+Customer 392,Deposit Door,2
+Customer 392,User Door,1
+Customer 393,Deposit Door,1
+Customer 394,No Trouble Found,2
+Customer 394,Main Door,2
+Customer 394,Counterweight System,2
+Customer 395,Computer Board,1
+Customer 396,User Door,2
+Customer 396,Main Door,1
+Customer 396,Deposit Door,1
+Customer 397,Touchscreen,4
+Customer 397,Deposit Door,3
+Customer 397,SAM,2
+Customer 397,User Door,1
+Customer 397,Network Intermittent,1
+Customer 397,Computer Board,1
+Customer 398,User Door,2
+Customer 398,No Trouble Found,1
+Customer 398,Main Door,1
+Customer 399,Touchscreen,7
+Customer 399,Network Settings,2
+Customer 399,User Door,1
+Customer 399,Main Door,1
+Customer 399,[Missing],1
+Customer 400,Power Supply,2
+Customer 400,Main Door,1
+Customer 400,Deposit Door,1
+Customer 401,User Door,2
+Customer 401,Touchscreen,2
+Customer 401,Power Supply,1
+Customer 401,Loading Error,1
+Customer 401,Deposit Door,1
+Customer 401,Badge Reader,1
+Customer 402,Packer,1
+Customer 402,Loader Board,1
+Customer 403,Computer Board,5
+Customer 403,No Trouble Found,2
+Customer 403,Main Door,2
+Customer 403,User Access,1
+Customer 403,Touchscreen,1
+Customer 403,SAM,1
+Customer 403,Power,1
+Customer 403,Packer,1
+Customer 403,Firewall,1
+Customer 403,Counterweight System,1
+Customer 403,Badge Reader,1
+Customer 404,Curtain,9
+Customer 404,Computer Board,4
+Customer 404,Packer,3
+Customer 404,Main Door,3
+Customer 404,SAM,2
+Customer 404,No Trouble Found,2
+Customer 404,Counterweight System,2
+Customer 404,Service Door,1
+Customer 404,Deposit Door,1
+Customer 404,Decoder,1
+Customer 404,Badge Reader,1
+Customer 404,[Missing],1
+Customer 405,Credit Issues,3
+Customer 405,Cable disconnected/Loose,3
+Customer 405,SAM,2
+Customer 405,IP/Reprogramming,2
+Customer 405,Decoder,2
+Customer 405,[Missing],2
+Customer 405,Network Settings,1
+Customer 405,Network Intermittent,1
+Customer 405,Issue,1
+Customer 405,Curtain,1
+Customer 406,SAM,5
+Customer 406,Computer Board,4
+Customer 406,Curtain,2
+Customer 406,Badge Reader,2
+Customer 406,Power Supply,1
+Customer 406,Decoder,1
+Customer 407,Service Door,1
+Customer 407,Deposit Door,1
+Customer 408,Service Door,3
+Customer 408,Touchscreen,2
+Customer 408,Power Supply,2
+Customer 408,SAM,1
+Customer 408,Power,1
+Customer 408,Packer,1
+Customer 408,No Trouble Found,1
+Customer 408,Drawers,1
+Customer 408,Deposit Door,1
+Customer 408,Computer Board,1
+Customer 409,User Door,3
+Customer 409,Curtain,2
+Customer 409,Computer Board,2
+Customer 409,Touchscreen,1
+Customer 409,Network Settings,1
+Customer 409,Main Door,1
+Customer 409,Counterweight System,1
+Customer 410,Curtain,5
+Customer 410,SAM,1
+Customer 410,Network Settings,1
+Customer 411,User Door,1
+Customer 411,Touchscreen,1
+Customer 411,SAM,1
+Customer 411,No Trouble Found,1
+Customer 411,Main Door,1
+Customer 411,Loading Error,1
+Customer 411,Improper Use,1
+Customer 411,Computer Board,1
+Customer 411,Cable disconnected/Loose,1
+Customer 411,[Missing],1
+Customer 412,Curtain,4
+Customer 412,SAM,3
+Customer 412,Computer Board,3
+Customer 412,User Door,1
+Customer 412,Touchscreen,1
+Customer 412,Power Supply,1
+Customer 412,Power,1
+Customer 412,Parts Order,1
+Customer 412,Badge Reader,1
+Customer 413,Packer,1
+Customer 413,Network Intermittent,1
+Customer 413,Curtain,1
+Customer 413,Computer Board,1
+Customer 414,Service Door,1
+Customer 415,Deposit Door,1
+Customer 415,Dead Data Jack,1
+Customer 416,Deposit Door,8
+Customer 416,User Door,2
+Customer 416,Main Door,2
+Customer 416,SAM,1
+Customer 416,Power Supply,1
+Customer 416,Power,1
+Customer 416,Packer,1
+Customer 416,No Trouble Found,1
+Customer 416,Loading Error,1
+Customer 416,Improper Use,1
+Customer 416,Curtain,1
+Customer 416,Computer Board,1
+Customer 416,Camera,1
+Customer 417,User Door,1
+Customer 417,Main Door,1
+Customer 417,Loading Error,1
+Customer 418,SAM,3
+Customer 418,Deposit Door,2
+Customer 418,Touchscreen,1
+Customer 418,Computer Board,1
+Customer 419,Main Door,1
+Customer 419,Deposit Door,1
+Customer 420,Deposit Door,2
+Customer 420,Touchscreen,1
+Customer 420,No Trouble Found,1
+Customer 421,SAM,4
+Customer 421,Packer,4
+Customer 421,User Door,1
+Customer 421,Service Door,1
+Customer 421,Network Settings,1
+Customer 421,Deposit Door,1
+Customer 421,Dead Data Jack,1
+Customer 421,[Missing],1
+Customer 422,Deposit Door,2
+Customer 423,Power,1
+Customer 424,User Door,3
+Customer 424,Deposit Door,1
+Customer 425,Touchscreen,1
+Customer 425,SAM,1
+Customer 425,No Trouble Found,1
+Customer 426,Touchscreen,1
+Customer 426,Main Door,1
+Customer 427,SAM,2
+Customer 427,Issue,2
+Customer 427,[Missing],1
+Customer 428,User Door,2
+Customer 428,Network Intermittent,2
+Customer 429,User Door,1
+Customer 429,No Trouble Found,1
+Customer 429,Main Door,1
+Customer 430,Network Settings,1
+Customer 431,Deposit Door,5
+Customer 431,User Door,1
+Customer 431,Packer,1
+Customer 431,Computer Board,1
+Customer 432,User Door,6
+Customer 432,Computer Board,6
+Customer 432,Power Supply,3
+Customer 432,Touchscreen,2
+Customer 432,Packer,2
+Customer 432,Service Door,1
+Customer 432,SAM,1
+Customer 432,Power,1
+Customer 432,No Trouble Found,1
+Customer 432,Network Settings,1
+Customer 432,IP/Reprogramming,1
+Customer 432,Deposit Door,1
+Customer 433,SAM,4
+Customer 433,[Missing],3
+Customer 433,Main Door,2
+Customer 433,Deposit Door,2
+Customer 433,No Trouble Found,1
+Customer 433,Computer Board,1
+Customer 434,Touchscreen,2
+Customer 434,Vendex Issues,1
+Customer 434,Deposit Door,1
+Customer 435,Network Settings,5
+Customer 435,Main Door,3
+Customer 435,Computer Board,2
+Customer 435,User Door,1
+Customer 435,SAM,1
+Customer 435,IP/Reprogramming,1
+Customer 435,Dead Data Jack,1
+Customer 436,No Trouble Found,1
+Customer 436,Deposit Door,1
+Customer 437,Main Door,5
+Customer 437,Deposit Door,3
+Customer 437,No Trouble Found,2
+Customer 437,Computer Board,2
+Customer 437,Touchscreen,1
+Customer 437,Network Settings,1
+Customer 437,Camera,1
+Customer 437,[Missing],1
+Customer 438,Main Door,6
+Customer 438,Computer Board,4
+Customer 438,User Door,1
+Customer 438,Network Settings,1
+Customer 438,Network Intermittent,1
+Customer 438,Drawers,1
+Customer 438,Deposit Door,1
+Customer 438,Badge Reader,1
+Customer 439,User Door,2
+Customer 439,Network Intermittent,2
+Customer 439,Power Supply,1
+Customer 439,Dead Data Jack,1
+Customer 439,Computer Board,1
+Customer 439,Cable disconnected/Loose,1
+Customer 440,Computer Board,1
+Customer 441,Deposit Door,1
+Customer 442,Deposit Door,2
+Customer 442,User Door,1
+Customer 443,SAM,2
+Customer 443,Main Door,2
+Customer 444,Touchscreen,1
+Customer 444,Packer,1
+Customer 444,No Trouble Found,1
+Customer 445,Curtain,2
+Customer 446,Deposit Door,12
+Customer 446,SAM,2
+Customer 446,No Trouble Found,2
+Customer 446,Touchscreen,1
+Customer 446,Power Supply,1
+Customer 446,Loader Board,1
+Customer 446,Issue,1
+Customer 446,IP/Reprogramming,1
+Customer 446,Computer Board,1
+Customer 447,SAM,3
+Customer 447,IP/Reprogramming,2
+Customer 447,[Missing],2
+Customer 448,SAM,2
+Customer 448,Main Door,1
+Customer 449,Touchscreen,1
+Customer 449,Power Supply,1
+Customer 449,Deposit Door,1
+Customer 450,Touchscreen,1
+Customer 450,Deposit Door,1
+Customer 451,Deposit Door,5
+Customer 451,No Trouble Found,3
+Customer 451,Network Intermittent,3
+Customer 451,IP/Reprogramming,1
+Customer 452,Deposit Door,2
+Customer 452,Touchscreen,1
+Customer 452,Computer Board,1
+Customer 453,Deposit Door,1
+Customer 454,SAM,3
+Customer 454,Touchscreen,2
+Customer 454,Main Door,1
+Customer 455,SAM,1
+Customer 455,Network Settings,1
+Customer 455,Main Door,1
+Customer 455,Deposit Door,1
+Customer 455,Computer Board,1
+Customer 456,SAM,1
+Customer 457,Parts Order,1
+Customer 457,No Trouble Found,1
+Customer 458,SAM,4
+Customer 458,User Door,3
+Customer 458,Touchscreen,2
+Customer 458,No Trouble Found,2
+Customer 458,Deposit Door,2
+Customer 458,Computer Board,2
+Customer 458,Main Door,1
+Customer 458,Loading Error,1
+Customer 458,Loader Board,1
+Customer 459,Deposit Door,4
+Customer 459,Touchscreen,3
+Customer 459,Main Door,3
+Customer 459,SAM,2
+Customer 459,Camera,1
+Customer 459,[Missing],1
+Customer 460,Improper Use,1
+Customer 461,Touchscreen,4
+Customer 461,Deposit Door,4
+Customer 461,SAM,3
+Customer 461,User Door,2
+Customer 461,Packer,2
+Customer 461,No Trouble Found,1
+Customer 461,Firewall,1
+Customer 461,Cable disconnected/Loose,1
+Customer 462,Deposit Door,2
+Customer 462,[Missing],1
+Customer 463,No Trouble Found,2
+Customer 463,Main Door,2
+Customer 463,User Door,1
+Customer 463,Power Supply,1
+Customer 463,Deposit Door,1
+Customer 464,Deposit Door,3
+Customer 465,Loader Board,2
+Customer 465,Computer Board,2
+Customer 465,Deposit Door,1
+Customer 465,Badge Reader,1
+Customer 466,Deposit Door,5
+Customer 466,No Trouble Found,4
+Customer 466,User Door,2
+Customer 466,Network Settings,2
+Customer 466,Main Door,2
+Customer 466,IP/Reprogramming,2
+Customer 466,Loading Error,1
+Customer 466,Issue,1
+Customer 466,Computer Board,1
+Customer 466,Camera,1
+Customer 467,Deposit Door,5
+Customer 467,No Trouble Found,2
+Customer 467,User Door,1
+Customer 467,SAM,1
+Customer 467,Packer,1
+Customer 467,Network Intermittent,1
+Customer 467,Main Door,1
+Customer 467,Loader Board,1
+Customer 467,Dead Data Jack,1
+Customer 467,Badge Reader,1
+Customer 468,User Door,2
+Customer 468,Touchscreen,2
+Customer 468,Deposit Door,2
+Customer 468,No Trouble Found,1
+Customer 468,Main Door,1
+Customer 468,[Missing],1
+Customer 469,Computer Board,1
+Customer 470,SAM,1
+Customer 470,Main Door,1
+Customer 471,Deposit Door,12
+Customer 471,Service Door,5
+Customer 471,Packer,5
+Customer 471,No Trouble Found,4
+Customer 471,SAM,1
+Customer 471,Loading Error,1
+Customer 471,Computer Board,1
+Customer 472,User Door,1
+Customer 472,Main Door,1
+Customer 472,Computer Board,1
+Customer 473,Deposit Door,2
+Customer 473,User Door,1
+Customer 473,SAM,1
+Customer 473,Curtain,1
+Customer 473,[Missing],1
+Customer 474,SAM,1
+Customer 475,Badge Reader,2
+Customer 475,Loading Error,1
+Customer 475,Deposit Door,1
+Customer 475,Curtain,1
+Customer 475,Computer Board,1
+Customer 476,Network Intermittent,3
+Customer 476,Curtain,3
+Customer 476,Computer Board,3
+Customer 476,Touchscreen,2
+Customer 476,No Trouble Found,2
+Customer 476,Dead Data Jack,2
+Customer 476,SAM,1
+Customer 476,Power Supply,1
+Customer 476,Packer,1
+Customer 476,Loader Board,1
+Customer 476,Firewall,1
+Customer 476,Counterweight System,1
+Customer 476,Cable disconnected/Loose,1
+Customer 476,[Missing],1
+Customer 477,Main Door,1
+Customer 477,Curtain,1
+Customer 478,Computer Board,8
+Customer 478,Main Door,6
+Customer 478,SAM,3
+Customer 478,No Trouble Found,3
+Customer 478,User Door,2
+Customer 478,Touchscreen,2
+Customer 478,Network Intermittent,2
+Customer 478,Deposit Door,2
+Customer 478,Curtain,2
+Customer 478,Counterweight System,2
+Customer 478,[Missing],2
+Customer 478,Improper Use,1
+Customer 478,Firewall,1
+Customer 478,Dead Data Jack,1
+Customer 479,Counterweight System,13
+Customer 479,Main Door,9
+Customer 479,Packer,8
+Customer 479,Weight Scale,7
+Customer 479,SAM,5
+Customer 479,No Trouble Found,5
+Customer 479,Curtain,5
+Customer 479,Computer Board,4
+Customer 479,User Door,3
+Customer 479,Power Supply,3
+Customer 479,Loading Error,2
+Customer 479,Deposit Door,2
+Customer 479,[Missing],2
+Customer 479,Touchscreen,1
+Customer 479,Network Intermittent,1
+Customer 479,IP/Reprogramming,1
+Customer 480,Power Supply,1
+Customer 480,Curtain,1
+Customer 481,No Trouble Found,2
+Customer 481,Network Intermittent,2
+Customer 481,Deposit Door,2
+Customer 481,Curtain,2
+Customer 481,Touchscreen,1
+Customer 481,Power,1
+Customer 481,Main Door,1
+Customer 481,Dead Data Jack,1
+Customer 481,Computer Board,1
+Customer 481,Cable disconnected/Loose,1
+Customer 481,[Missing],1
+Customer 482,Service Door,1
+Customer 482,No Trouble Found,1
+Customer 482,Network Intermittent,1
+Customer 482,Computer Board,1
+Customer 483,User Door,1
+Customer 484,[Missing],3
+Customer 484,Counterweight System,2
+Customer 484,User Door,1
+Customer 484,Curtain,1
+Customer 484,Cable disconnected/Loose,1
+Customer 485,Curtain,3
+Customer 485,User Door,2
+Customer 485,Touchscreen,1
+Customer 485,Firewall,1
+Customer 485,Deposit Door,1
+Customer 485,Badge Reader,1
+Customer 486,Curtain,1
+Customer 487,Main Door,5
+Customer 487,Computer Board,2
+Customer 487,SAM,1
+Customer 487,Power,1
+Customer 487,Network Intermittent,1
+Customer 487,Curtain,1
+Customer 488,SAM,1
+Customer 489,Main Door,12
+Customer 489,Curtain,9
+Customer 489,No Trouble Found,7
+Customer 489,Computer Board,7
+Customer 489,Counterweight System,4
+Customer 489,Power,3
+Customer 489,Deposit Door,3
+Customer 489,User Door,2
+Customer 489,User Access,2
+Customer 489,SAM,2
+Customer 489,Packer,2
+Customer 489,Network Settings,2
+Customer 489,Network Intermittent,2
+Customer 489,Weight Scale,1
+Customer 489,Parts Order,1
+Customer 489,Cable disconnected/Loose,1
+Customer 490,Power,1
+Customer 490,Network Settings,1
+Customer 490,IP/Reprogramming,1
+Customer 490,[Missing],1
+Customer 491,SAM,1
+Customer 491,Main Door,1
+Customer 492,Computer Board,1
+Customer 493,Network Settings,2
+Customer 493,SAM,1
+Customer 493,No Trouble Found,1
+Customer 493,Computer Board,1
+Customer 494,Deposit Door,1
+Customer 495,Main Door,20
+Customer 495,Curtain,9
+Customer 495,Counterweight System,5
+Customer 495,Computer Board,5
+Customer 495,No Trouble Found,4
+Customer 495,Power,3
+Customer 495,Network Settings,2
+Customer 495,SAM,1
+Customer 495,Power Supply,1
+Customer 495,Network Intermittent,1
+Customer 495,Badge Reader,1
+Customer 495,[Missing],1
+Customer 496,Main Door,3
+Customer 496,No Trouble Found,1
+Customer 496,Computer Board,1
+Customer 497,Packer,2
+Customer 497,SAM,1
+Customer 497,No Trouble Found,1
+Customer 498,Touchscreen,1
+Customer 499,Loader Board,1
+Customer 499,Computer Board,1
+Customer 500,Packer,6
+Customer 500,Loading Error,3
+Customer 500,SAM,2
+Customer 500,No Trouble Found,2
+Customer 500,Network Intermittent,2
+Customer 500,Deposit Door,2
+Customer 500,Curtain,2
+Customer 500,User Door,1
+Customer 500,Service Door,1
+Customer 500,Main Door,1
+Customer 500,Drawers,1
+Customer 500,Badge Reader,1
+Customer 501,Badge Reader,1
+Customer 502,Deposit Door,9
+Customer 502,SAM,3
+Customer 502,Power Supply,2
+Customer 502,Power,2
+Customer 503,User Door,4
+Customer 503,User Access,1
+Customer 503,No Trouble Found,1
+Customer 503,Deposit Door,1
+Customer 504,User Door,3
+Customer 504,SAM,3
+Customer 504,Main Door,2
+Customer 504,Computer Board,2
+Customer 505,Service Door,1
+Customer 506,No Trouble Found,2
+Customer 506,Touchscreen,1
+Customer 506,Physical Damage,1
+Customer 506,Deposit Door,1
+Customer 507,Deposit Door,1
+Customer 508,User Door,3
+Customer 508,No Trouble Found,2
+Customer 508,Touchscreen,1
+Customer 508,Service Door,1
+Customer 508,Deposit Door,1
+Customer 508,Computer Board,1
+Customer 508,[Missing],1
+Customer 509,Touchscreen,1
+Customer 510,Main Door,4
+Customer 510,User Door,3
+Customer 511,SAM,7
+Customer 511,User Door,3
+Customer 511,No Trouble Found,2
+Customer 511,Main Door,2
+Customer 511,Touchscreen,1
+Customer 511,Power Supply,1
+Customer 511,Drawers,1
+Customer 511,Computer Board,1
+Customer 511,[Missing],1
+Customer 512,Computer Board,6
+Customer 512,Deposit Door,3
+Customer 512,User Door,1
+Customer 512,Power Supply,1
+Customer 512,Network Intermittent,1
+Customer 512,Loader Board,1
+Customer 513,SAM,1
+Customer 513,Deposit Door,1
+Customer 514,SAM,3
+Customer 514,Network Settings,1
+Customer 514,Network Intermittent,1
+Customer 514,Deposit Door,1
+Customer 515,SAM,1
+Customer 515,Deposit Door,1
+Customer 516,Touchscreen,2
+Customer 516,Computer Board,2
+Customer 516,Deposit Door,1
+Customer 517,Curtain,6
+Customer 517,Main Door,2
+Customer 517,Computer Board,2
+Customer 517,User Door,1
+Customer 517,Loading Error,1
+Customer 517,Counterweight System,1
+Customer 517,Badge Reader,1
+Customer 518,SAM,1
+Customer 518,Main Door,1
+Customer 519,Deposit Door,17
+Customer 519,No Trouble Found,4
+Customer 519,Computer Board,3
+Customer 519,Camera,3
+Customer 519,Power,1
+Customer 519,Main Door,1
+Customer 519,IP/Reprogramming,1
+Customer 520,SAM,3
+Customer 520,User Door,2
+Customer 520,Power,1
+Customer 520,No Trouble Found,1
+Customer 520,Deposit Door,1
+Customer 520,Dead Data Jack,1
+Customer 520,Camera,1
+Customer 520,Cable disconnected/Loose,1
+Customer 520,[Missing],1
+Customer 521,IP/Reprogramming,1
+Customer 522,Deposit Door,1
+Customer 523,Deposit Door,8
+Customer 523,SAM,5
+Customer 523,No Trouble Found,3
+Customer 523,[Missing],2
+Customer 523,User Door,1
+Customer 523,Packer,1
+Customer 523,Network Settings,1
+Customer 523,Main Door,1
+Customer 523,Loading Error,1
+Customer 523,Credit Issues,1
+Customer 523,Computer Board,1
+Customer 524,[Missing],4
+Customer 524,Computer Board,2
+Customer 524,Touchscreen,1
+Customer 524,SAM,1
+Customer 524,Power Supply,1
+Customer 524,Power,1
+Customer 524,Parts Order,1
+Customer 524,No Trouble Found,1
+Customer 524,Main Door,1
+Customer 524,Counterweight System,1
+Customer 524,Camera,1
+Customer 525,Deposit Door,3
+Customer 525,User Door,2
+Customer 525,Service Door,1
+Customer 525,Packer,1
+Customer 525,Main Door,1
+Customer 525,Computer Board,1
+Customer 526,Packer,2
+Customer 526,Improper Use,1
+Customer 527,SAM,2
+Customer 527,Touchscreen,1
+Customer 527,No Trouble Found,1
+Customer 528,Touchscreen,1
+Customer 528,No Trouble Found,1
+Customer 528,Main Door,1
+Customer 529,Computer Board,26
+Customer 529,Touchscreen,19
+Customer 529,No Trouble Found,14
+Customer 529,Deposit Door,7
+Customer 529,SAM,6
+Customer 529,[Missing],4
+Customer 529,User Door,3
+Customer 529,Main Door,3
+Customer 529,Loading Error,3
+Customer 529,Firewall,2
+Customer 529,Power,1
+Customer 529,Parts Order,1
+Customer 529,Network Settings,1
+Customer 529,Network Intermittent,1
+Customer 530,Deposit Door,8
+Customer 530,User Door,2
+Customer 530,Main Door,2
+Customer 531,Deposit Door,2
+Customer 532,Deposit Door,3
+Customer 532,No Trouble Found,2
+Customer 532,User Door,1
+Customer 532,Main Door,1
+Customer 533,Curtain,2
+Customer 533,[Missing],1
+Customer 534,User Door,1
+Customer 534,Service Door,1
+Customer 534,Parts Order,1
+Customer 534,Main Door,1
+Customer 534,Issue,1
+Customer 534,Deposit Door,1
+Customer 534,Computer Board,1
+Customer 534,[Missing],1
+Customer 535,Touchscreen,2
+Customer 535,Deposit Door,2
+Customer 535,Computer Board,2
+Customer 535,Power Supply,1
+Customer 535,Network Settings,1
+Customer 535,IP/Reprogramming,1
+Customer 536,Curtain,25
+Customer 536,Main Door,5
+Customer 536,Computer Board,4
+Customer 536,Counterweight System,3
+Customer 536,SAM,1
+Customer 536,Power Supply,1
+Customer 536,No Trouble Found,1
+Customer 536,[Missing],1
+Customer 537,Touchscreen,1
+Customer 537,Deposit Door,1
+Customer 538,User Door,2
+Customer 538,Power Supply,2
+Customer 538,Main Door,1
+Customer 540,SAM,2
+Customer 540,Power Supply,1
+Customer 540,Computer Board,1
+Customer 540,[Missing],1
+Customer 541,Deposit Door,1
+Customer 542,User Door,2
+Customer 542,Computer Board,1
+Customer 543,Network Intermittent,1
+Customer 543,Firewall,1
+Customer 544,Computer Board,2
+Customer 544,Network Settings,1
+Customer 545,Touchscreen,2
+Customer 546,SAM,4
+Customer 546,Computer Board,1
+Customer 547,Main Door,3
+Customer 547,Deposit Door,2
+Customer 547,Power Supply,1
+Customer 547,Network Settings,1
+Customer 547,Dead Data Jack,1
+Customer 547,Curtain,1
+Customer 548,Service Door,2
+Customer 549,Main Door,6
+Customer 549,User Door,1
+Customer 549,SAM,1
+Customer 549,Deposit Door,1
+Customer 549,Computer Board,1
+Customer 550,User Door,1
+Customer 550,Deposit Door,1
+Customer 551,Computer Board,9
+Customer 551,Packer,5
+Customer 551,Deposit Door,3
+Customer 551,[Missing],3
+Customer 551,No Trouble Found,2
+Customer 551,Network Settings,2
+Customer 551,User Door,1
+Customer 551,Touchscreen,1
+Customer 551,Power Supply,1
+Customer 551,Physical Damage,1
+Customer 551,Network Intermittent,1
+Customer 551,Improper Use,1
+Customer 552,Deposit Door,3
+Customer 552,No Trouble Found,2
+Customer 552,Main Door,1
+Customer 552,Computer Board,1
+Customer 553,User Door,2
+Customer 553,Packer,1
+Customer 554,Dead Data Jack,3
+Customer 554,Curtain,2
+Customer 554,Computer Board,2
+Customer 554,User Door,1
+Customer 554,SAM,1
+Customer 554,Deposit Door,1
+Customer 554,Counterweight System,1
+Customer 554,Cable disconnected/Loose,1
+Customer 555,Touchscreen,1
+Customer 556,No Trouble Found,2
+Customer 556,Service Door,1
+Customer 556,SAM,1
+Customer 556,Deposit Door,1
+Customer 557,Packer,3
+Customer 557,No Trouble Found,2
+Customer 557,Computer Board,2
+Customer 557,Power Supply,1
+Customer 558,Touchscreen,1
+Customer 558,Packer,1
+Customer 558,[Missing],1
+Customer 559,Touchscreen,1
+Customer 559,No Trouble Found,1
+Customer 559,Main Door,1
+Customer 560,SAM,2
+Customer 561,Deposit Door,3
+Customer 561,Touchscreen,2
+Customer 561,No Trouble Found,2
+Customer 561,Main Door,1
+Customer 561,Loading Error,1
+Customer 562,No Trouble Found,5
+Customer 562,Deposit Door,3
+Customer 562,Touchscreen,1
+Customer 562,SAM,1
+Customer 562,[Missing],1
+Customer 563,Power Supply,1
+Customer 563,Power,1
+Customer 564,User Door,2
+Customer 564,SAM,1
+Customer 564,Power Supply,1
+Customer 564,No Trouble Found,1
+Customer 564,[Missing],1
+Customer 565,No Trouble Found,2
+Customer 565,Touchscreen,1
+Customer 565,Main Door,1
+Customer 565,Deposit Door,1
+Customer 565,Computer Board,1
+Customer 566,Main Door,1
+Customer 567,Main Door,1
+Customer 568,Touchscreen,4
+Customer 569,Curtain,4
+Customer 569,Main Door,1
+Customer 570,User Door,2
+Customer 570,Badge Reader,2
+Customer 570,Touchscreen,1
+Customer 570,SAM,1
+Customer 570,Computer Board,1
+Customer 571,Network Intermittent,2
+Customer 571,User Door,1
+Customer 571,User Access,1
+Customer 571,Touchscreen,1
+Customer 571,Loading Error,1
+Customer 571,[Missing],1
+Customer 572,No Trouble Found,5
+Customer 572,Deposit Door,3
+Customer 572,Touchscreen,1
+Customer 572,Power Supply,1
+Customer 572,Drawers,1
+Customer 573,Curtain,3
+Customer 573,Main Door,1
+Customer 574,Touchscreen,5
+Customer 574,Main Door,4
+Customer 574,Power Supply,3
+Customer 574,No Trouble Found,2
+Customer 574,Loader Board,2
+Customer 574,Computer Board,2
+Customer 574,[Missing],2
+Customer 574,Weight Scale,1
+Customer 574,Counterweight System,1
+Customer 575,Computer Board,1
+Customer 575,[Missing],1
+Customer 576,Power Supply,1
+Customer 576,No Trouble Found,1
+Customer 576,Main Door,1
+Customer 576,Loading Error,1
+Customer 577,Computer Board,2
+Customer 577,Packer,1
+Customer 577,No Trouble Found,1
+Customer 578,Firewall,2
+Customer 578,[Missing],2
+Customer 578,No Trouble Found,1
+Customer 578,Computer Board,1
+Customer 579,Deposit Door,6
+Customer 579,User Door,1
+Customer 579,Loading Error,1
+Customer 580,Deposit Door,3
+Customer 580,Packer,2
+Customer 581,User Door,1
+Customer 581,Loading Error,1
+Customer 581,Loader Board,1
+Customer 581,Deposit Door,1
+Customer 582,SAM,1
+Customer 582,Loader Board,1
+Customer 582,[Missing],1
+Customer 583,Curtain,4
+Customer 583,Deposit Door,2
+Customer 583,Badge Reader,2
+Customer 583,User Door,1
+Customer 583,Parts Order,1
+Customer 583,No Trouble Found,1
+Customer 583,[Missing],1
+Customer 584,Computer Board,3
+Customer 584,Power Supply,2
+Customer 584,No Trouble Found,1
+Customer 584,Issue,1
+Customer 584,Badge Reader,1
+Customer 584,[Missing],1
+Customer 585,Loader Board,1
+Customer 585,Deposit Door,1
+Customer 587,Deposit Door,9
+Customer 587,Main Door,4
+Customer 587,User Door,2
+Customer 587,SAM,2
+Customer 587,Camera,2
+Customer 587,[Missing],2
+Customer 587,Service Door,1
+Customer 587,Network Intermittent,1
+Customer 588,Deposit Door,5
+Customer 588,User Door,4
+Customer 588,Network Intermittent,2
+Customer 588,[Missing],2
+Customer 588,Touchscreen,1
+Customer 588,SAM,1
+Customer 588,Parts Order,1
+Customer 588,No Trouble Found,1
+Customer 588,Firewall,1
+Customer 589,Deposit Door,5
+Customer 589,User Door,3
+Customer 589,Touchscreen,2
+Customer 589,No Trouble Found,2
+Customer 589,[Missing],2
+Customer 589,SAM,1
+Customer 589,Network Settings,1
+Customer 589,Main Door,1
+Customer 590,No Trouble Found,1
+Customer 591,User Door,8
+Customer 591,Deposit Door,4
+Customer 591,[Missing],4
+Customer 591,No Trouble Found,3
+Customer 591,SAM,2
+Customer 591,Packer,1
+Customer 591,Main Door,1
+Customer 591,Computer Board,1
+Customer 591,Badge Reader,1
+Customer 592,Computer Board,2
+Customer 592,Touchscreen,1
+Customer 592,No Trouble Found,1
+Customer 593,Packer,4
+Customer 593,User Door,3
+Customer 593,Touchscreen,3
+Customer 593,Loading Error,2
+Customer 593,Deposit Door,2
+Customer 593,SAM,1
+Customer 593,Parts Order,1
+Customer 593,Network Intermittent,1
+Customer 593,Improper Use,1
+Customer 593,Computer Board,1
+Customer 593,[Missing],1
+Customer 594,Computer Board,1
+Customer 595,Computer Board,9
+Customer 595,Deposit Door,4
+Customer 595,User Door,3
+Customer 595,Main Door,3
+Customer 595,Camera,3
+Customer 595,SAM,1
+Customer 595,Issue,1
+Customer 595,Curtain,1
+Customer 595,Badge Reader,1
+Customer 596,SAM,1
+Customer 597,SAM,1
+Customer 597,Computer Board,1
+Customer 598,Touchscreen,2
+Customer 598,Deposit Door,2
+Customer 598,Packer,1
+Customer 598,Main Door,1
+Customer 599,Deposit Door,3
+Customer 599,Touchscreen,2
+Customer 599,Packer,2
+Customer 599,No Trouble Found,2
+Customer 599,Computer Board,2
+Customer 599,[Missing],1
+Customer 600,User Door,1
+Customer 600,No Trouble Found,1
+Customer 601,IP/Reprogramming,1
+Customer 602,Main Door,8
+Customer 602,[Missing],7
+Customer 602,Counterweight System,6
+Customer 602,User Door,5
+Customer 602,Deposit Door,5
+Customer 602,SAM,4
+Customer 602,Power,4
+Customer 602,Network Settings,3
+Customer 602,Curtain,3
+Customer 602,Power Supply,2
+Customer 602,Computer Board,2
+Customer 602,Cable disconnected/Loose,2
+Customer 602,Weight Scale,1
+Customer 602,Touchscreen,1
+Customer 602,Packer,1
+Customer 602,Loader Board,1
+Customer 602,IP/Reprogramming,1
+Customer 602,Firewall,1
+Customer 602,Camera,1
+Customer 603,SAM,1
+Customer 603,Packer,1
+Customer 604,Deposit Door,5
+Customer 604,Computer Board,4
+Customer 604,[Missing],2
+Customer 604,Packer,1
+Customer 604,Main Door,1
+Customer 605,SAM,3
+Customer 605,Main Door,3
+Customer 605,Computer Board,3
+Customer 605,Power Supply,2
+Customer 605,Touchscreen,1
+Customer 605,Service Door,1
+Customer 605,Power,1
+Customer 605,No Trouble Found,1
+Customer 605,Deposit Door,1
+Customer 605,Badge Reader,1
+Customer 605,[Missing],1
+Customer 606,Computer Board,1
+Customer 607,SAM,2
+Customer 607,Power Supply,1
+Customer 607,Main Door,1
+Customer 608,Power Supply,1
+Customer 608,Main Door,1
+Customer 608,Computer Board,1
+Customer 609,Power,1
+Customer 609,Main Door,1
+Customer 610,User Door,2
+Customer 610,Network Intermittent,2
+Customer 610,Main Door,2
+Customer 610,Computer Board,2
+Customer 610,Touchscreen,1
+Customer 610,Cable disconnected/Loose,1
+Customer 610,[Missing],1
+Customer 611,Deposit Door,6
+Customer 611,SAM,5
+Customer 611,Touchscreen,3
+Customer 611,No Trouble Found,3
+Customer 611,User Access,2
+Customer 611,Packer,2
+Customer 611,[Missing],2
+Customer 611,User Door,1
+Customer 611,Power Supply,1
+Customer 611,Network Settings,1
+Customer 611,Main Door,1
+Customer 611,Computer Board,1
+Customer 611,Badge Reader,1
+Customer 612,No Trouble Found,3
+Customer 612,Deposit Door,3
+Customer 612,User Door,2
+Customer 612,Touchscreen,2
+Customer 612,Main Door,2
+Customer 612,SAM,1
+Customer 612,Improper Use,1
+Customer 612,IP/Reprogramming,1
+Customer 613,Touchscreen,2
+Customer 613,Main Door,2
+Customer 613,No Trouble Found,1
+Customer 613,Deposit Door,1
+Customer 613,Badge Reader,1
+Customer 614,Power Supply,1
+Customer 616,IP/Reprogramming,1
+Customer 616,[Missing],1
+Customer 617,Deposit Door,2
+Customer 617,Parts Order,1
+Customer 617,Main Door,1
+Customer 617,Badge Reader,1
+Customer 618,User Door,2
+Customer 618,Deposit Door,1
+Customer 619,Deposit Door,1
+Customer 619,Computer Board,1
+Customer 619,Camera,1
+Customer 620,SAM,1
+Customer 620,Main Door,1
+Customer 620,Drawers,1
+Customer 621,Main Door,1
+Customer 621,Dead Data Jack,1
+Customer 622,Touchscreen,1
+Customer 622,No Trouble Found,1
+Customer 623,No Trouble Found,1
+Customer 624,Deposit Door,3
+Customer 624,[Missing],2
+Customer 624,SAM,1
+Customer 624,Loader Board,1
+Customer 625,Deposit Door,6
+Customer 625,User Door,4
+Customer 625,Computer Board,4
+Customer 625,Power Supply,3
+Customer 625,Touchscreen,2
+Customer 625,SAM,2
+Customer 625,Network Settings,2
+Customer 625,Power,1
+Customer 625,Packer,1
+Customer 625,Main Door,1
+Customer 625,Loading Error,1
+Customer 626,User Door,1
+Customer 626,Main Door,1
+Customer 626,Deposit Door,1
+Customer 627,Deposit Door,2
+Customer 627,Computer Board,2
+Customer 627,Network Settings,1
+Customer 627,Dead Data Jack,1
+Customer 627,Badge Reader,1
+Customer 628,Touchscreen,2
+Customer 628,SAM,1
+Customer 628,Power Supply,1
+Customer 628,Loading Error,1
+Customer 629,Curtain,1
+Customer 630,No Trouble Found,1
+Customer 630,Main Door,1
+Customer 630,Deposit Door,1
+Customer 631,[Missing],1
+Customer 632,No Trouble Found,1
+Customer 633,Deposit Door,4
+Customer 633,Touchscreen,2
+Customer 633,Physical Damage,1
+Customer 633,Computer Board,1
+Customer 633,[Missing],1
+Customer 634,Deposit Door,5
+Customer 634,Computer Board,4
+Customer 634,No Trouble Found,2
+Customer 634,[Missing],2
+Customer 634,Touchscreen,1
+Customer 634,Power Supply,1
+Customer 634,Power,1
+Customer 634,Main Door,1
+Customer 634,Loading Error,1
+Customer 634,Counterweight System,1
+Customer 635,Network Settings,1
+Customer 636,SAM,1
+Customer 636,Deposit Door,1
+Customer 637,Deposit Door,1
+Customer 637,Badge Reader,1
+Customer 638,Deposit Door,4
+Customer 638,Power,1
+Customer 639,SAM,4
+Customer 639,Deposit Door,4
+Customer 639,No Trouble Found,1
+Customer 640,Deposit Door,3
+Customer 640,User Door,2
+Customer 640,Packer,1
+Customer 640,No Trouble Found,1
+Customer 640,Main Door,1
+Customer 640,Drawers,1
+Customer 640,Computer Board,1
+Customer 640,[Missing],1
+Customer 641,Curtain,40
+Customer 641,Computer Board,15
+Customer 641,SAM,6
+Customer 641,Main Door,4
+Customer 641,Deposit Door,4
+Customer 641,Touchscreen,3
+Customer 641,Loading Error,3
+Customer 641,Badge Reader,3
+Customer 641,[Missing],3
+Customer 641,User Door,2
+Customer 641,Service Door,2
+Customer 641,Loader Board,2
+Customer 641,Parts Order,1
+Customer 641,No Trouble Found,1
+Customer 641,Improper Use,1
+Customer 641,Dead Data Jack,1
+Customer 641,Counterweight System,1
+Customer 642,Deposit Door,1
+Customer 643,Packer,4
+Customer 643,User Door,3
+Customer 643,Computer Board,3
+Customer 643,SAM,2
+Customer 643,Deposit Door,2
+Customer 643,Badge Reader,1
+Customer 643,[Missing],1
+Customer 644,Deposit Door,9
+Customer 644,SAM,7
+Customer 644,User Door,2
+Customer 644,No Trouble Found,2
+Customer 644,Touchscreen,1
+Customer 644,Power Supply,1
+Customer 644,Power,1
+Customer 644,[Missing],1
+Customer 645,User Door,2
+Customer 645,Touchscreen,2
+Customer 645,SAM,2
+Customer 645,No Trouble Found,2
+Customer 645,Parts Order,1
+Customer 645,Computer Board,1
+Customer 646,Deposit Door,1
+Customer 646,Camera,1
+Customer 647,Computer Board,16
+Customer 647,No Trouble Found,7
+Customer 647,Main Door,3
+Customer 647,[Missing],3
+Customer 647,User Door,2
+Customer 647,Touchscreen,1
+Customer 647,Power Supply,1
+Customer 647,Packer,1
+Customer 648,Deposit Door,4
+Customer 648,Main Door,3
+Customer 648,Network Settings,2
+Customer 648,Computer Board,2
+Customer 648,Badge Reader,2
+Customer 648,SAM,1
+Customer 648,Firewall,1
+Customer 648,[Missing],1
+Customer 649,User Door,3
+Customer 649,Computer Board,1
+Customer 650,User Door,1
+Customer 651,Touchscreen,5
+Customer 652,Deposit Door,3
+Customer 652,Main Door,2
+Customer 652,User Door,1
+Customer 652,IP/Reprogramming,1
+Customer 652,Curtain,1
+Customer 652,Badge Reader,1
+Customer 652,[Missing],1
+Customer 653,Deposit Door,4
+Customer 653,Power Supply,1
+Customer 653,Drawers,1
+Customer 653,Badge Reader,1
+Customer 654,Loading Error,3
+Customer 654,User Door,2
+Customer 654,Main Door,1
+Customer 654,Curtain,1
+Customer 655,Curtain,9
+Customer 655,Network Settings,1
+Customer 655,Main Door,1
+Customer 655,Dead Data Jack,1
+Customer 655,Computer Board,1
+Customer 655,Cable disconnected/Loose,1
+Customer 655,Badge Reader,1
+Customer 655,[Missing],1
+Customer 656,Touchscreen,3
+Customer 656,Main Door,2
+Customer 656,[Missing],2
+Customer 656,SAM,1
+Customer 656,Packer,1
+Customer 656,No Trouble Found,1
+Customer 656,Deposit Door,1
+Customer 657,Touchscreen,5
+Customer 657,IP/Reprogramming,4
+Customer 657,Deposit Door,2
+Customer 657,Badge Reader,2
+Customer 657,User Door,1
+Customer 657,Power Supply,1
+Customer 657,No Trouble Found,1
+Customer 657,Main Door,1
+Customer 657,Computer Board,1
+Customer 658,Dead Data Jack,1
+Customer 659,User Door,1
+Customer 659,Computer Board,1
+Customer 659,[Missing],1
+Customer 660,Touchscreen,2
+Customer 660,Power Supply,1
+Customer 660,Deposit Door,1
+Customer 661,User Door,4
+Customer 661,Deposit Door,3
+Customer 661,Main Door,2
+Customer 661,Touchscreen,1
+Customer 661,SAM,1
+Customer 661,Packer,1
+Customer 661,Computer Board,1
+Customer 661,[Missing],1
+Customer 662,No Trouble Found,1
+Customer 662,Deposit Door,1
+Customer 662,Camera,1
+Customer 663,Deposit Door,3
+Customer 664,Computer Board,2
+Customer 664,User Door,1
+Customer 664,Network Intermittent,1
+Customer 665,Deposit Door,2
+Customer 666,Main Door,3
+Customer 666,Deposit Door,2
+Customer 666,User Door,1
+Customer 667,Deposit Door,1
+Customer 668,Computer Board,3
+Customer 668,Touchscreen,1
+Customer 668,SAM,1
+Customer 668,Packer,1
+Customer 668,Main Door,1
+Customer 668,Deposit Door,1
+Customer 668,Badge Reader,1
+Customer 669,User Door,4
+Customer 669,Deposit Door,4
+Customer 669,Touchscreen,3
+Customer 669,SAM,2
+Customer 669,Parts Order,2
+Customer 669,Main Door,2
+Customer 669,Badge Reader,2
+Customer 669,Packer,1
+Customer 669,No Trouble Found,1
+Customer 669,Cable disconnected/Loose,1
+Customer 670,Network Settings,2
+Customer 670,Touchscreen,1
+Customer 670,Power,1
+Customer 670,Badge Reader,1
+Customer 671,Network Settings,4
+Customer 671,[Missing],4
+Customer 671,SAM,3
+Customer 671,User Door,2
+Customer 671,Packer,2
+Customer 671,Main Door,2
+Customer 671,Issue,2
+Customer 671,Deposit Door,2
+Customer 671,Power,1
+Customer 671,No Trouble Found,1
+Customer 671,Curtain,1
+Customer 671,Badge Reader,1
+Customer 672,Touchscreen,1
+Customer 673,SAM,1
+Customer 673,Main Door,1
+Customer 674,Deposit Door,6
+Customer 674,User Door,2
+Customer 674,SAM,2
+Customer 674,Network Settings,2
+Customer 674,No Trouble Found,1
+Customer 674,Credit Issues,1
+Customer 674,Computer Board,1
+Customer 675,User Door,4
+Customer 675,Main Door,4
+Customer 675,Curtain,2
+Customer 675,Computer Board,2
+Customer 675,Power Supply,1
+Customer 675,IP/Reprogramming,1
+Customer 675,Dead Data Jack,1
+Customer 676,Badge Reader,2
+Customer 676,Computer Board,1
+Customer 677,Touchscreen,1
+Customer 677,SAM,1
+Customer 677,No Trouble Found,1
+Customer 677,Loader Board,1
+Customer 678,Power Supply,1
+Customer 678,Computer Board,1
+Customer 679,Main Door,1
+Customer 680,User Door,3
+Customer 680,[Missing],3
+Customer 680,Training,1
+Customer 680,Network Settings,1
+Customer 680,Main Door,1
+Customer 680,Deposit Door,1
+Customer 681,Curtain,9
+Customer 681,Counterweight System,2
+Customer 681,No Trouble Found,1
+Customer 682,User Door,7
+Customer 682,Touchscreen,7
+Customer 682,Deposit Door,6
+Customer 682,[Missing],3
+Customer 682,SAM,2
+Customer 682,Network Settings,2
+Customer 682,Packer,1
+Customer 682,No Trouble Found,1
+Customer 682,Network Intermittent,1
+Customer 682,IP/Reprogramming,1
+Customer 682,Firewall,1
+Customer 682,Curtain,1
+Customer 682,Computer Board,1
+Customer 682,Cable disconnected/Loose,1
+Customer 683,Computer Board,1
+Customer 685,SAM,1
+Customer 685,No Trouble Found,1
+Customer 685,Network Intermittent,1
+Customer 685,Computer Board,1
+Customer 685,Cable disconnected/Loose,1
+Customer 686,User Door,1
+Customer 686,Power Supply,1
+Customer 687,User Door,1
+Customer 687,SAM,1
+Customer 687,Power,1
+Customer 687,Drawers,1
+Customer 688,SAM,2
+Customer 688,Power Supply,2
+Customer 688,Main Door,2
+Customer 688,Deposit Door,2
+Customer 688,[Missing],2
+Customer 688,User Door,1
+Customer 688,Touchscreen,1
+Customer 688,Computer Board,1
+Customer 689,User Door,1
+Customer 689,Service Door,1
+Customer 690,Loader Board,1
+Customer 690,Deposit Door,1
+Customer 691,Deposit Door,2
+Customer 691,User Door,1
+Customer 691,Touchscreen,1
+Customer 691,Power Supply,1
+Customer 691,No Trouble Found,1
+Customer 691,Network Intermittent,1
+Customer 691,Main Door,1
+Customer 691,Computer Board,1
+Customer 691,Cable disconnected/Loose,1
+Customer 692,User Door,3
+Customer 692,Curtain,1
+Customer 693,Badge Reader,2
+Customer 693,User Door,1
+Customer 693,SAM,1
+Customer 693,Network Settings,1
+Customer 693,Main Door,1
+Customer 693,Dead Data Jack,1
+Customer 694,User Door,1
+Customer 694,Parts Order,1
+Customer 694,Network Intermittent,1
+Customer 694,Cable disconnected/Loose,1
+Customer 695,No Trouble Found,5
+Customer 695,Network Intermittent,3
+Customer 695,Deposit Door,2
+Customer 695,Computer Board,2
+Customer 695,Badge Reader,2
+Customer 695,[Missing],2
+Customer 695,Packer,1
+Customer 696,User Door,2
+Customer 696,SAM,2
+Customer 696,Main Door,2
+Customer 696,Deposit Door,2
+Customer 696,No Trouble Found,1
+Customer 697,Touchscreen,2
+Customer 697,Deposit Door,2
+Customer 697,Service Door,1
+Customer 697,Loading Error,1
+Customer 697,[Missing],1
+Customer 698,Deposit Door,6
+Customer 698,User Door,3
+Customer 698,Touchscreen,1
+Customer 698,No Trouble Found,1
+Customer 698,Computer Board,1
+Customer 699,Deposit Door,6
+Customer 699,User Door,1
+Customer 699,Touchscreen,1
+Customer 699,Power Supply,1
+Customer 699,Packer,1
+Customer 699,No Trouble Found,1
+Customer 699,Computer Board,1
+Customer 699,[Missing],1
+Customer 700,Main Door,3
+Customer 700,Deposit Door,3
+Customer 700,Computer Board,3
+Customer 700,[Missing],3
+Customer 700,Touchscreen,2
+Customer 700,SAM,2
+Customer 700,Counterweight System,1
+Customer 700,Badge Reader,1
+Customer 701,Touchscreen,3
+Customer 701,SAM,3
+Customer 701,Deposit Door,3
+Customer 701,[Missing],3
+Customer 701,User Door,2
+Customer 701,Power,2
+Customer 701,Packer,2
+Customer 701,No Trouble Found,2
+Customer 701,Main Door,2
+Customer 701,Service Door,1
+Customer 701,Power Supply,1
+Customer 701,Credit Issues,1
+Customer 701,Computer Board,1
+Customer 702,User Access,1
+Customer 703,Deposit Door,5
+Customer 703,SAM,4
+Customer 704,SAM,6
+Customer 704,User Door,4
+Customer 704,No Trouble Found,3
+Customer 704,Computer Board,3
+Customer 704,Physical Damage,2
+Customer 704,Loading Error,2
+Customer 704,Touchscreen,1
+Customer 704,Packer,1
+Customer 704,Main Door,1
+Customer 704,Device Not Found,1
+Customer 704,Deposit Door,1
+Customer 704,Camera,1
+Customer 705,Deposit Door,8
+Customer 705,SAM,5
+Customer 705,Computer Board,3
+Customer 705,User Door,2
+Customer 705,Touchscreen,2
+Customer 705,Main Door,2
+Customer 705,Service Door,1
+Customer 705,Packer,1
+Customer 705,Network Settings,1
+Customer 705,Badge Reader,1
+Customer 706,Deposit Door,8
+Customer 706,User Door,4
+Customer 706,Touchscreen,4
+Customer 706,Main Door,4
+Customer 706,Computer Board,3
+Customer 706,SAM,2
+Customer 706,Packer,2
+Customer 706,User Access,1
+Customer 706,No Trouble Found,1
+Customer 706,Loader Board,1
+Customer 707,User Door,2
+Customer 707,SAM,1
+Customer 707,Camera,1
+Customer 707,[Missing],1
+Customer 708,Main Door,1
+Customer 708,Loader Board,1
+Customer 708,Issue,1
+Customer 708,[Missing],1
+Customer 709,User Door,5
+Customer 709,Main Door,1
+Customer 710,User Door,2
+Customer 710,SAM,1
+Customer 710,Main Door,1
+Customer 711,User Door,1
+Customer 711,Power Supply,1
+Customer 711,No Trouble Found,1
+Customer 712,User Door,2
+Customer 712,SAM,1
+Customer 712,Main Door,1
+Customer 713,No Trouble Found,1
+Customer 714,Curtain,16
+Customer 714,No Trouble Found,5
+Customer 714,[Missing],4
+Customer 714,Touchscreen,3
+Customer 714,Badge Reader,3
+Customer 714,SAM,2
+Customer 714,Power Supply,1
+Customer 714,Physical Damage,1
+Customer 714,Main Door,1
+Customer 714,Improper Use,1
+Customer 715,Deposit Door,2
+Customer 715,No Trouble Found,1
+Customer 716,Touchscreen,1
+Customer 717,Deposit Door,6
+Customer 717,SAM,5
+Customer 717,Computer Board,4
+Customer 717,Packer,2
+Customer 717,Network Settings,2
+Customer 717,Touchscreen,1
+Customer 717,Service Door,1
+Customer 717,No Trouble Found,1
+Customer 717,IP/Reprogramming,1
+Customer 717,Cable disconnected/Loose,1
+Customer 718,Deposit Door,6
+Customer 718,Touchscreen,5
+Customer 718,Camera,2
+Customer 718,Training,1
+Customer 718,SAM,1
+Customer 718,Power Supply,1
+Customer 718,No Trouble Found,1
+Customer 718,Main Door,1
+Customer 718,Loading Error,1
+Customer 718,Issue,1
+Customer 718,Dead Data Jack,1
+Customer 718,Computer Board,1
+Customer 718,Badge Reader,1
+Customer 718,[Missing],1
+Customer 719,Deposit Door,6
+Customer 719,User Door,5
+Customer 719,Touchscreen,4
+Customer 719,SAM,3
+Customer 719,No Trouble Found,3
+Customer 719,Packer,2
+Customer 719,Main Door,2
+Customer 719,Computer Board,2
+Customer 720,SAM,1
+Customer 720,Badge Reader,1
+Customer 720,[Missing],1
+Customer 721,Loader Board,1
+Customer 721,IP/Reprogramming,1
+Customer 722,No Trouble Found,1
+Customer 723,SAM,1
+Customer 723,Deposit Door,1
+Customer 724,Main Door,1
+Customer 725,Deposit Door,1
+Customer 726,No Trouble Found,2
+Customer 726,Parts Order,1
+Customer 726,Network Intermittent,1
+Customer 727,Computer Board,3
+Customer 727,Main Door,2
+Customer 727,User Door,1
+Customer 727,Touchscreen,1
+Customer 728,Main Door,1
+Customer 729,Power,1
+Customer 729,Main Door,1
+Customer 730,Decoder,1
+Customer 731,Deposit Door,1
+Customer 732,SAM,1
+Customer 733,Network Intermittent,1
+Customer 733,Dead Data Jack,1
+Customer 733,Computer Board,1
+Customer 734,Touchscreen,1
+Customer 735,Main Door,3
+Customer 735,SAM,2
+Customer 735,Curtain,2
+Customer 735,Badge Reader,2
+Customer 735,Power Supply,1
+Customer 735,No Trouble Found,1
+Customer 735,Network Intermittent,1
+Customer 735,Deposit Door,1
+Customer 735,Cable disconnected/Loose,1
+Customer 735,[Missing],1
+Customer 736,No Trouble Found,1
+Customer 737,Loading Error,1
+Customer 737,Badge Reader,1
+Customer 738,Network Settings,1
+Customer 738,Deposit Door,1
+Customer 738,Computer Board,1
+Customer 739,No Trouble Found,2
+Customer 739,Touchscreen,1
+Customer 740,User Door,1
+Customer 740,Deposit Door,1
+Customer 741,Deposit Door,1
+Customer 742,Touchscreen,1
+Customer 743,User Door,1
+Customer 744,Power Supply,1
+Customer 744,Network Settings,1
+Customer 745,Computer Board,3
+Customer 745,Touchscreen,1
+Customer 746,Touchscreen,1
+Customer 747,Dead Data Jack,1
+Customer 748,Touchscreen,4
+Customer 748,User Door,1
+Customer 748,Packer,1
+Customer 748,Deposit Door,1
+Customer 750,Touchscreen,2
+Customer 751,Computer Board,4
+Customer 751,Touchscreen,1
+Customer 751,Network Settings,1
+Customer 751,Network Intermittent,1
+Customer 751,Badge Reader,1
+Customer 752,SAM,1
+Customer 752,Packer,1
+Customer 752,No Trouble Found,1
+Customer 753,Power Supply,3
+Customer 753,Touchscreen,1
+Customer 753,Issue,1
+Customer 754,Touchscreen,2
+Customer 754,SAM,1
+Customer 754,Power,1
+Customer 754,No Trouble Found,1
+Customer 754,Main Door,1
+Customer 754,Loading Error,1
+Customer 754,Loader Board,1
+Customer 754,Deposit Door,1
+Customer 754,Decoder,1
+Customer 754,Curtain,1
+Customer 754,Counterweight System,1
+Customer 754,Camera,1
+Customer 755,Touchscreen,2
+Customer 756,No Trouble Found,1
+Customer 757,Touchscreen,2
+Customer 757,Network Settings,1
+Customer 757,Main Door,1
+Customer 757,Curtain,1
+Customer 758,User Door,2
+Customer 758,Deposit Door,2
+Customer 758,SAM,1
+Customer 758,Main Door,1
+Customer 759,Power Supply,1
+Customer 760,Loading Error,1
+Customer 761,Badge Reader,1
+Customer 762,Network Intermittent,1
+Customer 762,Curtain,1
+Customer 763,Touchscreen,1
+Customer 763,SAM,1
+Customer 764,Touchscreen,5
+Customer 764,Computer Board,3
+Customer 764,Badge Reader,3
+Customer 764,No Trouble Found,2
+Customer 764,Deposit Door,2
+Customer 764,SAM,1
+Customer 764,Network Intermittent,1
+Customer 764,Main Door,1
+Customer 764,Firewall,1
+Customer 765,User Door,1
+Customer 765,Deposit Door,1
+Customer 765,[Missing],1
+Customer 766,Computer Board,1
+Customer 767,Touchscreen,4
+Customer 767,Deposit Door,1
+Customer 770,Deposit Door,1
+Customer 771,SAM,2
+Customer 771,Deposit Door,1
+Customer 772,Touchscreen,2
+Customer 772,No Trouble Found,1
+Customer 772,Network Intermittent,1
+Customer 772,IP/Reprogramming,1
+Customer 773,Main Door,1
+Customer 773,Dead Data Jack,1
+Customer 774,SAM,2
+Customer 774,Deposit Door,1
+Customer 775,No Trouble Found,1
+Customer 776,Curtain,2
+Customer 776,Computer Board,2
+Customer 776,No Trouble Found,1
+Customer 776,Decoder,1
+Customer 777,Main Door,1
+Customer 778,Main Door,1
+Customer 778,Improper Use,1
+Customer 778,Deposit Door,1
+Customer 779,Computer Board,3
+Customer 779,Network Settings,2
+Customer 779,Network Intermittent,1
+Customer 779,Main Door,1
+Customer 779,Loading Error,1
+Customer 779,IP/Reprogramming,1
+Customer 779,Badge Reader,1
+Customer 779,[Missing],1
+Customer 780,SAM,4
+Customer 780,User Door,2
+Customer 780,No Trouble Found,2
+Customer 780,Deposit Door,1
+Customer 780,Cable disconnected/Loose,1
+Customer 781,Network Settings,5
+Customer 781,SAM,2
+Customer 781,Camera,2
+Customer 781,Network Intermittent,1
+Customer 781,Main Door,1
+Customer 781,Deposit Door,1
+Customer 782,Touchscreen,1
+Customer 783,Network Settings,2
+Customer 783,No Trouble Found,1
+Customer 783,Deposit Door,1
+Customer 784,No Trouble Found,1
+Customer 785,SAM,2
+Customer 785,No Trouble Found,2
+Customer 785,Power Supply,1
+Customer 785,[Missing],1
+Customer 786,Touchscreen,7
+Customer 786,User Door,1
+Customer 786,Packer,1
+Customer 787,No Trouble Found,3
+Customer 787,Main Door,2
+Customer 787,Dead Data Jack,2
+Customer 787,Touchscreen,1
+Customer 787,SAM,1
+Customer 787,Power Supply,1
+Customer 787,Network Settings,1
+Customer 787,Improper Use,1
+Customer 787,Curtain,1
+Customer 787,Computer Board,1
+Customer 787,[Missing],1
+Customer 788,User Door,2
+Customer 788,Deposit Door,1
+Customer 790,Loading Error,2
+Customer 790,No Trouble Found,1
+Customer 790,Deposit Door,1
+Customer 791,Touchscreen,1
+Customer 791,Deposit Door,1
+Customer 792,No Trouble Found,2
+Customer 792,Network Intermittent,2
+Customer 792,Main Door,2
+Customer 792,Computer Board,2
+Customer 792,Power Supply,1
+Customer 792,Network Settings,1
+Customer 793,Computer Board,1
+Customer 794,No Trouble Found,4
+Customer 794,Deposit Door,3
+Customer 794,Packer,1
+Customer 794,Network Settings,1
+Customer 794,[Missing],1
+Customer 795,User Door,1
+Customer 795,Power Supply,1
+Customer 795,Network Intermittent,1
+Customer 795,IP/Reprogramming,1
+Customer 796,No Trouble Found,1
+Customer 797,Loading Error,2
+Customer 797,User Access,1
+Customer 797,Touchscreen,1
+Customer 797,Deposit Door,1
+Customer 797,Dead Data Jack,1
+Customer 797,Computer Board,1
+Customer 797,Badge Reader,1
+Customer 798,Touchscreen,2
+Customer 798,No Trouble Found,1
+Customer 798,Network Settings,1
+Customer 799,Physical Damage,1
+Customer 799,Packer,1
+Customer 799,Deposit Door,1
+Customer 799,Computer Board,1
+Customer 800,SAM,1
+Customer 800,Loader Board,1
+Customer 800,Deposit Door,1
+Customer 800,Computer Board,1
+Customer 801,Computer Board,2
+Customer 801,User Door,1
+Customer 801,SAM,1
+Customer 801,Power,1
+Customer 801,Deposit Door,1
+Customer 801,Dead Data Jack,1
+Customer 802,Loading Error,6
+Customer 802,Decoder,1
+Customer 803,Deposit Door,8
+Customer 803,Power Supply,6
+Customer 803,User Door,2
+Customer 803,SAM,2
+Customer 803,Computer Board,2
+Customer 803,Power,1
+Customer 803,Main Door,1
+Customer 804,User Door,1
+Customer 804,Touchscreen,1
+Customer 804,Power,1
+Customer 804,Packer,1
+Customer 804,No Trouble Found,1
+Customer 804,Loading Error,1
+Customer 804,Deposit Door,1
+Customer 804,Computer Board,1
+Customer 805,Touchscreen,3
+Customer 806,Touchscreen,1
+Customer 807,Touchscreen,1
+Customer 808,No Trouble Found,3
+Customer 808,Touchscreen,2
+Customer 808,SAM,2
+Customer 808,Deposit Door,2
+Customer 808,Computer Board,2
+Customer 808,User Door,1
+Customer 808,Service Door,1
+Customer 808,Parts Order,1
+Customer 808,Packer,1
+Customer 809,Power Supply,1
+Customer 809,Network Settings,1
+Customer 809,Loading Error,1
+Customer 809,Computer Board,1
+Customer 810,User Door,1
+Customer 810,Deposit Door,1
+Customer 811,Touchscreen,1
+Customer 812,Service Door,1
+Customer 812,Packer,1
+Customer 812,No Trouble Found,1
+Customer 812,Main Door,1
+Customer 813,User Door,2
+Customer 813,Touchscreen,1
+Customer 813,Service Door,1
+Customer 813,Packer,1
+Customer 813,Deposit Door,1
+Customer 813,[Missing],1
+Customer 814,Deposit Door,4
+Customer 814,Touchscreen,3
+Customer 814,Power,1
+Customer 814,No Trouble Found,1
+Customer 815,SAM,1
+Customer 815,Network Settings,1
+Customer 815,Network Intermittent,1
+Customer 815,Deposit Door,1
+Customer 816,Deposit Door,5
+Customer 816,SAM,3
+Customer 816,Computer Board,3
+Customer 816,Packer,2
+Customer 816,Main Door,1
+Customer 816,Loading Error,1
+Customer 816,Curtain,1
+Customer 817,SAM,4
+Customer 817,User Door,2
+Customer 817,Main Door,2
+Customer 817,Power,1
+Customer 817,No Trouble Found,1
+Customer 817,Loading Error,1
+Customer 817,Curtain,1
+Customer 817,[Missing],1
+Customer 818,User Door,1
+Customer 818,Power Supply,1
+Customer 819,User Door,1
+Customer 819,SAM,1
+Customer 819,No Trouble Found,1
+Customer 820,Training,1
+Customer 821,Deposit Door,4
+Customer 821,User Door,1
+Customer 821,Packer,1
+Customer 822,SAM,7
+Customer 822,Packer,2
+Customer 822,Main Door,2
+Customer 822,Deposit Door,2
+Customer 822,User Door,1
+Customer 822,No Trouble Found,1
+Customer 822,Improper Use,1
+Customer 822,Computer Board,1
+Customer 822,[Missing],1
+Customer 823,IP/Reprogramming,4
+Customer 823,No Trouble Found,1
+Customer 823,Deposit Door,1
+Customer 824,Packer,1
+Customer 824,No Trouble Found,1
+Customer 824,Dead Data Jack,1
+Customer 824,Computer Board,1
+Customer 824,[Missing],1
+Customer 825,User Door,3
+Customer 825,SAM,3
+Customer 825,Main Door,3
+Customer 825,Deposit Door,3
+Customer 825,No Trouble Found,2
+Customer 825,Firewall,2
+Customer 825,Service Door,1
+Customer 825,Power Supply,1
+Customer 825,Computer Board,1
+Customer 825,Badge Reader,1
+Customer 826,No Trouble Found,2
+Customer 827,User Door,4
+Customer 827,Badge Reader,1
+Customer 828,User Door,3
+Customer 828,Deposit Door,2
+Customer 828,SAM,1
+Customer 828,No Trouble Found,1
+Customer 828,Main Door,1
+Customer 828,Computer Board,1
+Customer 829,Power,1
+Customer 830,Computer Board,3
+Customer 830,Touchscreen,1
+Customer 831,Curtain,8
+Customer 831,Main Door,2
+Customer 831,User Door,1
+Customer 831,Deposit Door,1
+Customer 832,Deposit Door,3
+Customer 832,Loader Board,2
+Customer 832,Computer Board,2
+Customer 833,Deposit Door,4
+Customer 833,User Door,3
+Customer 833,Computer Board,2
+Customer 833,Touchscreen,1
+Customer 833,No Trouble Found,1
+Customer 834,User Access,1
+Customer 835,Main Door,2
+Customer 835,Deposit Door,2
+Customer 835,No Trouble Found,1
+Customer 835,Loader Board,1
+Customer 836,Touchscreen,3
+Customer 836,Badge Reader,3
+Customer 836,No Trouble Found,1
+Customer 836,Deposit Door,1
+Customer 836,[Missing],1
+Customer 837,Deposit Door,4
+Customer 837,Dead Data Jack,2
+Customer 837,Touchscreen,1
+Customer 838,[Missing],1
+Customer 839,Deposit Door,7
+Customer 839,User Door,1
+Customer 839,No Trouble Found,1
+Customer 840,No Trouble Found,1
+Customer 841,No Trouble Found,1
+Customer 842,No Trouble Found,3
+Customer 842,SAM,2
+Customer 842,Packer,2
+Customer 842,Deposit Door,2
+Customer 842,Touchscreen,1
+Customer 842,Issue,1
+Customer 842,[Missing],1
+Customer 843,User Door,3
+Customer 843,Main Door,3
+Customer 843,Deposit Door,3
+Customer 843,Touchscreen,2
+Customer 843,Computer Board,2
+Customer 843,Service Door,1
+Customer 843,SAM,1
+Customer 843,Power Supply,1
+Customer 843,Power,1
+Customer 843,No Trouble Found,1
+Customer 844,User Door,6
+Customer 844,Deposit Door,6
+Customer 844,Power Supply,3
+Customer 844,Touchscreen,2
+Customer 844,Computer Board,2
+Customer 844,SAM,1
+Customer 844,Packer,1
+Customer 844,No Trouble Found,1
+Customer 844,Badge Reader,1
+Customer 845,Touchscreen,4
+Customer 845,User Door,1
+Customer 845,SAM,1
+Customer 845,Packer,1
+Customer 845,Main Door,1
+Customer 845,Deposit Door,1

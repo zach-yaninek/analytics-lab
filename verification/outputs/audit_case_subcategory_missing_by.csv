@@ -1,0 +1,60 @@
+dimension,value,tickets,subcategory_missing,subcategory_missing_pct
+trouble_code,Canopy,2,2,100.0
+trouble_code,Electro/Mechanical,3751,391,10.4
+trouble_code,Electronics,1687,122,7.2
+trouble_code,Installation,3,3,100.0
+trouble_code,Miscellaneous,1184,1129,95.4
+trouble_code,Network,484,484,100.0
+trouble_code,Operator Error,158,42,26.6
+trouble_code,Preventative Maintenance,6,3,50.0
+trouble_code,Repair/Investigate,4,4,100.0
+trouble_code,Software,91,34,37.4
+trouble_code,[Missing],101,101,100.0
+record_type,.,1,0,0.0
+record_type,General Case,247,232,93.9
+record_type,Install Case,17,8,47.1
+record_type,ScrubBank,136,55,40.4
+record_type,ScrubExchange,18,3,16.7
+record_type,alEx Case,1358,439,32.3
+record_type,scrubEx / SD Case,5694,1578,27.7
+category,Annual,2,1,50.0
+category,Badge Reader,114,12,10.5
+category,Cable disconnected/Loose,51,51,100.0
+category,Camera,40,10,25.0
+category,Cancelled Request,247,247,100.0
+category,Computer Board,679,27,4.0
+category,Counterweight System,112,10,8.9
+category,Credit Issues,13,6,46.2
+category,Curtain,512,35,6.8
+category,Dead Data Jack,64,64,100.0
+category,Decoder,18,4,22.2
+category,Deposit Door,1124,42,3.7
+category,Device Not Found,5,5,100.0
+category,Drawers,16,1,6.2
+category,Duplicate Case,15,15,100.0
+category,Firewall,30,30,100.0
+category,IP/Reprogramming,65,65,100.0
+category,Improper Use,41,18,43.9
+category,Issue,42,15,35.7
+category,Loader Board,47,5,10.6
+category,Loading Error,116,23,19.8
+category,Main Door,570,74,13.0
+category,Network Intermittent,114,114,100.0
+category,Network Settings,151,151,100.0
+category,No Trouble Found,577,577,100.0
+category,Packer,227,18,7.9
+category,Paid PM,2,0,0.0
+category,Parts Order,30,30,100.0
+category,Physical Damage,24,24,100.0
+category,Power,96,41,42.7
+category,Power Supply,201,28,13.9
+category,SAM,589,68,11.5
+category,Security Updates,1,1,100.0
+category,Service Door,73,5,6.8
+category,Touchscreen,564,26,4.6
+category,Training,7,3,42.9
+category,Troubleshooting,2,2,100.0
+category,User Access,26,8,30.8
+category,User Door,516,126,24.4
+category,Vendex Issues,1,0,0.0
+category,Weight Scale,17,3,17.6

@@ -1,0 +1,13 @@
+category,ipa_summary_rank,ipa_summary_cases,full_export_count,zac_issue_mix_cases,zac_issue_mix_rank,diff_ipa_minus_zac,planned_work_tickets_in_category
+Deposit Door,1.0,1124.0,1124,1124,1,0.0,0
+Computer Board,2.0,679.0,679,679,2,0.0,0
+SAM,3.0,589.0,589,588,3,1.0,1
+Main Door,4.0,570.0,570,568,5,2.0,2
+Touchscreen,5.0,564.0,564,562,6,2.0,2
+User Door,6.0,516.0,516,515,7,1.0,1
+Curtain,7.0,512.0,512,510,8,2.0,2
+Packer,8.0,227.0,227,227,10,0.0,0
+Power Supply,9.0,201.0,201,200,11,1.0,1
+Network Settings,10.0,151.0,151,151,12,0.0,0
+No Trouble Found,,,577,577,4,,0
+[Missing],,,330,325,9,,0

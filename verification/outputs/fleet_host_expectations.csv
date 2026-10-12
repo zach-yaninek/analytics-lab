@@ -1,0 +1,14 @@
+measure,value,source
+Zac: customers spanning >1 observed host,31.0,Zac printed
+customers with >=2 ticketed serials (upper bound on eligible customers),632.0,data
+31 as % of eligible customers (lower bound on rate),4.91,derived
+Zac: hosts linked to >1 case customer,83.0,Zac printed
+max contribution of the shared internal host to the 83,1.0,logic (counted once in GROUP BY host)
+Zac: in-window unplanned tickets on the shared internal host,18.0,Zac printed
+name-tier systems with >=2 accounts (expected multi-customer hosts if one host per system),109.0,inferred
+name-tier systems with >=2 accounts and >=3 ticketed machines,108.0,inferred
+reviewed systems with >=2 accounts (expected multi-customer hosts if one host per system),134.0,inferred
+reviewed systems with >=2 accounts and >=3 ticketed machines,131.0,inferred
+reviewed non-federal systems with >=2 accounts,132.0,inferred
+federal veterans facility accounts (one host or many? decides 1 vs 0 of the 83),82.0,data
+federal military facility accounts,16.0,inferred

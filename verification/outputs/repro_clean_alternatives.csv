@@ -1,0 +1,45 @@
+topic,alternative_reading,metric,literal_value,alternative_value,delta,note
+1.1 identifiers,case-fold and collapse internal whitespace instead of strip-only,customers,845,845,0,Text says only whitespace is stripped.
+1.1 identifiers,case-fold and collapse internal whitespace instead of strip-only,case_machines,3773,3773,0,Text says only whitespace is stripped.
+1.1 identifiers,case-fold and collapse internal whitespace instead of strip-only,models,31,31,0,Text says only whitespace is stripped.
+1.2 completeness,count only empty cells (ignore blank-string rule),Trouble Reported missing,0,0,0,
+1.2 completeness,count only empty cells (ignore blank-string rule),Model # missing,0,0,0,
+1.2 completeness,count only empty cells (ignore blank-string rule),Trouble Code missing,101,101,0,
+1.2 completeness,count only empty cells (ignore blank-string rule),Trouble Code Category missing,330,330,0,
+1.2 completeness,count only empty cells (ignore blank-string rule),Trouble Code Sub Category missing,2315,2315,0,
+1.2 completeness,count only empty cells (ignore blank-string rule),Trouble Resolution missing,641,641,0,
+1.2 hierarchy,missing subcategory treated as a combination value,multi-category combos,6,12,6,"e.g. Miscellaneous/[Missing] spans Cancelled Request, Duplicate Case, NTF, Parts Order ..."
+1.2 hierarchy,missing category counted as a distinct category value,multi-category combos,6,6,0,
+1.3 planned work,planned = trouble code PM/Installation only (ignore Install Case record type),Planned work cases,23,9,-14,"Text explicitly says an install record type is planned, so the literal reading includes it."
+1.3 planned work,planned = trouble code PM/Installation only (ignore Install Case record type),unplanned population,7186,7200,14,
+1.3 planned work,planned = PM/Installation codes + Install Case + categories Paid PM/Annual,Planned work cases,23,23,0,Paid PM / Annual categories already sit under the PM trouble code.
+1.3 missing group,"""missing broad code"" read as missing Trouble Code Category instead of Trouble Code",Missing group cases,101,325,224,Unplanned population unchanged (both are inside it).
+1.3 unplanned,also exclude No Trouble Found,unplanned population,7186,6609,-577,Text explicitly keeps NTF in; shown for scale only.
+1.3 unplanned,also exclude Missing trouble code,unplanned population,7186,7085,-101,Text explicitly keeps missing labels in; shown for scale only.
+2.1 concentration,"50% threshold as strictly greater than half (> 3,735.5 equals >= 3,736)",customers for 50%,126,126,0,"N is odd, so identical."
+2.1 concentration,unplanned tickets only as the base,customers for 50%,126,122,-4,
+2.1 concentration,unplanned tickets only as the base,top-10 customer share %,11.20,11.40,0.20,
+2.2 issue mix,all cases as the base instead of unplanned,Deposit Door share %,15.64,15.04,-0.60,
+4.1 repeat,calendar-day difference (date(next) - date(current) <= 30),eligible tickets,6665,6665,0,
+4.1 repeat,calendar-day difference (date(next) - date(current) <= 30),repeat tickets,1574,1582,8,
+4.1 repeat,calendar-day difference (date(next) - date(current) <= 30),repeat %,23.62,23.74,0.12,
+4.1 repeat,calendar-day difference (date(next) - date(current) <= 30),same-category repeats,515,516,1,
+4.1 repeat,strict window (gap < 30 days),eligible tickets,6665,6665,0,
+4.1 repeat,strict window (gap < 30 days),repeat tickets,1574,1574,0,
+4.1 repeat,strict window (gap < 30 days),repeat %,23.62,23.62,0.00,
+4.1 repeat,strict window (gap < 30 days),same-category repeats,515,515,0,
+4.1 repeat,eligibility cutoff opened < 2026-08-01,eligible tickets,6665,6664,-1,
+4.1 repeat,eligibility cutoff opened < 2026-08-01,repeat tickets,1574,1574,0,
+4.1 repeat,eligibility cutoff opened < 2026-08-01,repeat %,23.62,23.62,0.00,
+4.1 repeat,eligibility cutoff opened < 2026-08-01,same-category repeats,515,515,0,
+4.1 repeat,eligibility cutoff opened <= last opening - 30 days (2026-08-01 17:45),eligible tickets,6665,6665,0,
+4.1 repeat,eligibility cutoff opened <= last opening - 30 days (2026-08-01 17:45),repeat tickets,1574,1574,0,
+4.1 repeat,eligibility cutoff opened <= last opening - 30 days (2026-08-01 17:45),repeat %,23.62,23.62,0.00,
+4.1 repeat,eligibility cutoff opened <= last opening - 30 days (2026-08-01 17:45),same-category repeats,515,515,0,
+4.1 repeat,same-category also counts missing==missing,same-category repeats,515,528,13,
+4.1 repeat,LEAD over all tickets (next ticket may be planned/cancelled/duplicate); index unplanned,repeat tickets,1574,1595,21,
+4.1 repeat,LEAD over all tickets (next ticket may be planned/cancelled/duplicate); index unplanned,same-category repeats,515,511,-4,
+4.1 repeat,all tickets as both index and follow-up (no unplanned filter),eligible tickets,6665,6931,266,
+4.1 repeat,all tickets as both index and follow-up (no unplanned filter),repeat tickets,1574,1677,103,
+4.1 repeat,all tickets as both index and follow-up (no unplanned filter),simultaneous follow-ups,0,1,1,Exactly 1 same-machine pair shares an opening timestamp in the full export; 0 such pair(s) among unplanned tickets.
+4.1 repeat,"machines counted over all unplanned tickets, not only eligible index tickets",machines,3495,3685,190,

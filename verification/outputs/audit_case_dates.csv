@@ -1,0 +1,19 @@
+check,value
+opened_values_by_python_type,{'Timestamp': 7471}
+closed_values_by_python_type,"{'datetime': 7383, 'NoneType': 87, 'str': 1}"
+closed_text_values,1
+closed_text_value_parses_to,2025-11-21 07:11:00
+zac_vectorised_equals_elementwise_opened,True
+zac_vectorised_equals_elementwise_closed,True
+opened_nonzero_seconds_or_microseconds,0
+closed_nonzero_seconds_or_microseconds,0
+closed_missing,87
+closed_missing_status_breakdown,"{'Dispatch': 64, 'Ricoh-Closed': 11, 'Closed': 7, 'Case Closed': 5}"
+closed_before_opened,0
+closed_equal_opened,16
+closed_within_1h,122
+median_open_to_close_hours,67.38
+closed_after_last_opened_ticket,9
+latest_close,2026-09-01 08:05:00
+closed_at_used_in_any_notebook_cell_after_4,False
+status_used_in_any_notebook_cell_after_4,False

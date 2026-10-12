@@ -1,0 +1,22 @@
+pattern_variant,tickets,of_which_monitoring_template,of_which_telemetry_ui_mention
+starts 'Monitoring'/'Monitor' (proactive template),128,128,118
+'Monitoring - Daily' cadence tag,134,134,117
+'(14 Days)'/'14 day' monitoring-window tag,58,58,46
+'Poll'/'Poll Position' slot tag,64,64,50
+pipe-delimited template ('a | b | c'),544,74,118
+pipe template ending in a system name (Clearview/Clarify/Canopy),71,70,71
+'found ... during monitoring',1,1,0
+mentions clearView,146,81,146
+mentions clariFy,611,38,611
+mentions Canopy,168,62,168
+mentions IoT,5,5,5
+'error(s) in clearView/clariFy',143,0,143
+'not communicating/connecting/showing ... clearView',13,0,13
+explicit numeric error/code reference,350,6,240
+'Device FW: x.y.z' suffix (system-appended),2765,0,376
+'All Errors/All Issues' scope tag,41,41,39
+'SAM' error family,683,17,117
+'Power'/'Inactivity' issue tag,29,4,4
+'Communication Issues' tag,14,3,3
+'Deposit Door Errors' tag,14,3,8
+'FCR' first-call troubleshooting,3001,0,584

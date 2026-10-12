@@ -1,0 +1,12 @@
+top_share_of_machines,machines,repeats,share_of_all_repeats_pct,eligible_tickets,share_of_eligible_pct
+1%,35.0,270.0,17.15,365.0,5.48
+5%,175.0,745.0,47.33,1174.0,17.61
+10%,350.0,1075.0,68.3,1867.0,28.01
+20%,699.0,1424.0,90.47,2857.0,42.87
+machines_with_eligible_ticket,3495.0,,,,
+machines_with_ge1_repeat,849.0,,,,
+machines_with_ge1_repeat_pct,24.29,,,,
+machines_with_exactly_1_eligible_ticket,1968.0,,,,
+machine_weighted_mean_repeat_pct,11.75,,,,
+max_repeats_one_machine,21.0,,,,
+repeat_pct_excluding_top5pct_machines,15.1,,,,
