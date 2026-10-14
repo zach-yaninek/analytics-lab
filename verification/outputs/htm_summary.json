@@ -1,0 +1,660 @@
+{
+  "generated_by": "verification/high_ticket_machines.py",
+  "seed": 15072,
+  "n_sim": 1000,
+  "definitions": {
+    "period": [
+      "2025-08-01",
+      "2026-07-31"
+    ],
+    "min_type_months": 100,
+    "q_cut": 0.05,
+    "workload_rank": 185,
+    "fixed_threshold": 6,
+    "episode_gaps_days": [
+      3,
+      7,
+      14
+    ],
+    "shared_internal_host": [
+      "Host 246"
+    ]
+  },
+  "D1_workload": {
+    "tickets": 7186,
+    "machines": 3685,
+    "rank_k": 185,
+    "threshold": 5,
+    "outsized_machines": 247,
+    "outsized_ticket_share": 0.2264,
+    "fixed_machines": 147,
+    "fixed_ticket_share": 0.1568,
+    "ge10": 21,
+    "max": 23,
+    "top5_share": 0.1833,
+    "top10_share": 0.2943,
+    "top20_share": 0.4564
+  },
+  "D2_exposure": {
+    "devices": 6621,
+    "devices_with_exposure": 6423,
+    "exposure_months_total": 71559,
+    "tickets": 5395,
+    "tickets_on_zero_exposure_devices": 172,
+    "devices_with_tickets": 2783,
+    "unplanned_tickets_in_period": 6664,
+    "in_period_device_matched": 5461,
+    "overall_rate_per_100_months": 7.5392,
+    "zac_overall_rate_per_100_active_months": 7.1087,
+    "pooled_small_types": [
+      "alc-1",
+      "alex2.0-0",
+      "alexsd-49",
+      "package name: alexsd-49",
+      "scrubex-6",
+      "scrubex2.0-0",
+      "sd2.0-49"
+    ],
+    "pooled_small_rate_per_100_months": 103.6765,
+    "rate_outliers_poisson": 118,
+    "rate_outliers_nb_kept": 2,
+    "rate_outliers_nb_kept_y_form_alpha": 2,
+    "nb_outliers_total": 2,
+    "alpha_nb_by_group": {
+      "(pooled small types)": 0.7472,
+      "Unknown": 0.5979,
+      "alex2.0-1": 1.6627,
+      "alex2.0-2": 1.9401,
+      "alex2.0-3": 3.8053,
+      "alex2.0-4": 1.3405,
+      "mlc-1": 1.279,
+      "sbsx-49": 0.04,
+      "sbsx-51": 0.9593,
+      "scrubex-1": 3.4832,
+      "scrubex-2": 1.0577,
+      "scrubex-3": 2.0509,
+      "scrubex-4": 1.6698,
+      "scrubex-5": 3.4886,
+      "scrubex-7": 1.6783,
+      "scrubex2.0-2": 1.0609,
+      "scrubex2.0-3": 1.3725,
+      "scrubex2.0-4": 1.0601,
+      "scrubex2.0-5": 1.1586,
+      "sd-49": 0.6873
+    },
+    "alpha_estimator": "max(0, sum((y - E)^2 - E) / sum(E^2)) per rate group, devices with E > 0",
+    "rate_numerator": "all population tickets in the period (literal D2), incl. zero-exposure devices",
+    "exposed_numerator_variant": {
+      "overall_rate_per_100_months": 7.2989,
+      "pooled_small_rate_per_100_months": 16.1765,
+      "rate_outliers_poisson": 120,
+      "rate_outliers_nb_kept": 2,
+      "chronic_outliers": 114,
+      "high_volume_expected": 92,
+      "rate_outlier_only": 6,
+      "chronic_overlap_with_main": 113,
+      "chronic_only_in_variant": [
+        "M07828"
+      ]
+    }
+  },
+  "D3_classes": {
+    "none": 6410,
+    "chronic_outlier": 113,
+    "high_volume_expected": 93,
+    "rate_outlier_only": 5
+  },
+  "chronic_outlier_ids": [
+    "M00071",
+    "M00087",
+    "M00089",
+    "M00155",
+    "M00325",
+    "M00449",
+    "M00487",
+    "M00549",
+    "M00564",
+    "M00623",
+    "M00639",
+    "M00789",
+    "M00791",
+    "M00863",
+    "M00945",
+    "M00956",
+    "M01003",
+    "M01070",
+    "M01232",
+    "M01300",
+    "M01497",
+    "M01507",
+    "M01554",
+    "M01626",
+    "M02168",
+    "M02303",
+    "M02335",
+    "M02341",
+    "M02386",
+    "M02399",
+    "M02405",
+    "M02459",
+    "M02541",
+    "M02545",
+    "M02686",
+    "M02758",
+    "M02847",
+    "M02848",
+    "M02859",
+    "M02922",
+    "M02975",
+    "M02984",
+    "M03003",
+    "M03152",
+    "M03209",
+    "M03292",
+    "M03299",
+    "M03346",
+    "M03471",
+    "M03472",
+    "M03488",
+    "M03513",
+    "M03529",
+    "M03629",
+    "M03630",
+    "M03637",
+    "M03656",
+    "M03708",
+    "M03729",
+    "M03753",
+    "M03975",
+    "M03991",
+    "M04114",
+    "M04325",
+    "M04340",
+    "M04446",
+    "M04448",
+    "M04468",
+    "M04496",
+    "M04510",
+    "M04523",
+    "M04534",
+    "M04581",
+    "M04582",
+    "M04641",
+    "M04651",
+    "M04657",
+    "M04659",
+    "M04663",
+    "M04764",
+    "M04791",
+    "M04825",
+    "M04995",
+    "M05125",
+    "M05132",
+    "M05187",
+    "M05220",
+    "M05229",
+    "M05241",
+    "M05332",
+    "M05361",
+    "M05428",
+    "M05548",
+    "M05572",
+    "M05599",
+    "M05629",
+    "M05807",
+    "M05904",
+    "M05917",
+    "M05930",
+    "M06292",
+    "M06293",
+    "M06456",
+    "M06465",
+    "M06943",
+    "M06954",
+    "M07004",
+    "M07012",
+    "M07237",
+    "M07420",
+    "M07787",
+    "M07830",
+    "M07876"
+  ],
+  "D3_exposure_diagnostics_by_class": {
+    "chronic_outlier": {
+      "devices": 113,
+      "tickets_in_period": 819,
+      "tickets_before_first_active": 21,
+      "devices_with_ticket_before_first_active": 5,
+      "tickets_after_last_active": 17,
+      "devices_exposure_lt12_months": 22
+    },
+    "high_volume_expected": {
+      "devices": 93,
+      "tickets_in_period": 445,
+      "tickets_before_first_active": 1,
+      "devices_with_ticket_before_first_active": 1,
+      "tickets_after_last_active": 12,
+      "devices_exposure_lt12_months": 23
+    },
+    "none": {
+      "devices": 6410,
+      "tickets_in_period": 4113,
+      "tickets_before_first_active": 123,
+      "devices_with_ticket_before_first_active": 99,
+      "tickets_after_last_active": 52,
+      "devices_exposure_lt12_months": 1496
+    },
+    "rate_outlier_only": {
+      "devices": 5,
+      "tickets_in_period": 18,
+      "tickets_before_first_active": 8,
+      "devices_with_ticket_before_first_active": 3,
+      "tickets_after_last_active": 10,
+      "devices_exposure_lt12_months": 5
+    }
+  },
+  "D4_concentration": {
+    "devices": 6621,
+    "tickets_obs": 5395,
+    "tickets_null_mean": 5397.528,
+    "top5_share_obs": 0.3288,
+    "top5_share_null_median": 0.2224,
+    "top5_share_null_p95": 0.2281,
+    "top5_share_null_max": 0.2367,
+    "top5_share_p_value": 0.001,
+    "gini_obs": 0.7254,
+    "gini_null_median": 0.6015,
+    "gini_null_p95": 0.6093,
+    "ge6_obs": 106,
+    "ge6_null_median": 15.0,
+    "ge6_null_p95": 18.0,
+    "ge6_null_max": 24
+  },
+  "D4_variants": {
+    "E_pos_only": {
+      "devices": 6423,
+      "tickets_obs": 5223,
+      "top5_share_obs": 0.3268,
+      "top5_share_null_median": 0.2168,
+      "top5_share_null_p95": 0.2225,
+      "gini_obs": 0.7243,
+      "gini_null_median": 0.5893,
+      "gini_null_p95": 0.5973,
+      "ge6_obs": 102,
+      "ge6_null_median": 15.0,
+      "ge6_null_p95": 18.0
+    },
+    "exposed_numerator_all_devices": {
+      "devices": 6621,
+      "tickets_obs": 5395,
+      "top5_share_obs": 0.3288,
+      "top5_share_null_median": 0.2092,
+      "top5_share_null_p95": 0.2139,
+      "gini_obs": 0.7254,
+      "gini_null_median": 0.5955,
+      "gini_null_p95": 0.6037,
+      "ge6_obs": 106,
+      "ge6_null_median": 3.0,
+      "ge6_null_p95": 6.0
+    },
+    "exposed_numerator_E_pos_only": {
+      "devices": 6423,
+      "tickets_obs": 5223,
+      "top5_share_obs": 0.3268,
+      "top5_share_null_median": 0.2036,
+      "top5_share_null_p95": 0.2082,
+      "gini_obs": 0.7243,
+      "gini_null_median": 0.5831,
+      "gini_null_p95": 0.5914,
+      "ge6_obs": 102,
+      "ge6_null_median": 3.0,
+      "ge6_null_p95": 6.0
+    }
+  },
+  "D5_episodes": {
+    "outsized": {
+      "machines": 247,
+      "tickets": 1627,
+      "tickets_per_machine_median": 6.0,
+      "episodes_per_machine_median_3d": 5.0,
+      "episodes_per_machine_mean_3d": 5.9231,
+      "followup_share_3d": 0.1008,
+      "episodes_per_machine_median_7d": 5.0,
+      "episodes_per_machine_mean_7d": 5.1538,
+      "followup_share_7d": 0.2176,
+      "episodes_per_machine_median_14d": 4.0,
+      "episodes_per_machine_mean_14d": 4.332,
+      "followup_share_14d": 0.3423,
+      "followup_share_7d_random_timing": [
+        0.1054,
+        0.0934,
+        0.1186
+      ]
+    },
+    "other": {
+      "machines": 3438,
+      "tickets": 5559,
+      "tickets_per_machine_median": 1.0,
+      "episodes_per_machine_median_3d": 1.0,
+      "episodes_per_machine_mean_3d": 1.5742,
+      "followup_share_3d": 0.0264,
+      "episodes_per_machine_median_7d": 1.0,
+      "episodes_per_machine_mean_7d": 1.5233,
+      "followup_share_7d": 0.0579,
+      "episodes_per_machine_median_14d": 1.0,
+      "episodes_per_machine_mean_14d": 1.4735,
+      "followup_share_14d": 0.0887,
+      "followup_share_7d_random_timing": [
+        0.0189,
+        0.0158,
+        0.0227
+      ]
+    },
+    "chronic": {
+      "machines": 113,
+      "tickets": 859,
+      "tickets_per_machine_median": 7.0,
+      "episodes_per_machine_median_3d": 6.0,
+      "episodes_per_machine_mean_3d": 6.6637,
+      "followup_share_3d": 0.1234,
+      "episodes_per_machine_median_7d": 6.0,
+      "episodes_per_machine_mean_7d": 5.7522,
+      "followup_share_7d": 0.2433,
+      "episodes_per_machine_median_14d": 5.0,
+      "episodes_per_machine_mean_14d": 4.6726,
+      "followup_share_14d": 0.3853
+    }
+  },
+  "clustering": {
+    "outsized_machines": 247,
+    "customers_holding": 165,
+    "customers_holding_null_median": 192.0,
+    "top5_customers_share_of_outsized": 0.1215,
+    "top5_customers_share_null_median": 0.081,
+    "top5_customers_share_null_p95": 0.1012,
+    "hosts_holding": 136,
+    "hosts_holding_null_median": 148.0,
+    "customers_with_2plus_outsized": 45,
+    "customers_with_2plus_outsized_null_median": 39.0,
+    "customers_with_2plus_outsized_null_p95": 46.0,
+    "outsized_matched": 206,
+    "outsized_on_shared_host": 0,
+    "outsized_on_null_host": 0,
+    "outsized_in_exposure_population": 206,
+    "chronic_customers_holding": 82,
+    "chronic_hosts_holding": 82
+  },
+  "sensitivity_excl_monitoring": {
+    "monitoring_tickets_excluded_unplanned": 137,
+    "workload_tickets": 7049,
+    "workload_machines": 3681,
+    "workload_threshold": 5,
+    "workload_outsized_machines": 229,
+    "workload_outsized_share": 0.2068,
+    "ge6_machines": 122,
+    "ge10_machines": 18,
+    "max": 19,
+    "top5_share_185": 0.1756,
+    "exposure_tickets": 5285,
+    "overall_rate_per_100_months": 7.3855,
+    "pooled_small_rate_per_100_months": 99.2647,
+    "rate_outliers_poisson": 93,
+    "rate_outliers_nb": 4,
+    "chronic_outliers": 87,
+    "high_volume_expected": 102,
+    "rate_outlier_only": 6,
+    "chronic_overlap_with_main": 87,
+    "chronic_dropped_vs_main": [
+      "M00155",
+      "M00549",
+      "M00564",
+      "M01070",
+      "M01232",
+      "M01497",
+      "M01507",
+      "M02341",
+      "M02847",
+      "M02922",
+      "M03209",
+      "M03346",
+      "M04340",
+      "M04446",
+      "M05132",
+      "M05241",
+      "M05428",
+      "M05548",
+      "M05807",
+      "M05930",
+      "M06292",
+      "M06456",
+      "M06465",
+      "M07237",
+      "M07420",
+      "M07787"
+    ],
+    "chronic_added_vs_main": [],
+    "top5_share_obs": 0.3177,
+    "top5_share_null_median": 0.224,
+    "top5_share_null_p95": 0.229,
+    "gini_obs": 0.7213,
+    "gini_null_median": 0.6047,
+    "gini_null_p95": 0.6129,
+    "ge6_obs": 86,
+    "ge6_null_median": 14.0,
+    "ge6_null_p95": 17.0
+  },
+  "sensitivity_text": "Excluding the 137 monitoring-template unplanned tickets (7,049 tickets on 3,681 machines): workload threshold 5 tickets -> 229 outsized machines (20.7% of tickets; top 5% hold 17.6%; >=6: 122; >=10: 18; max 19). Exposure tickets 5,285; overall rate 7.39 per 100 months (pooled small types 99.3). Rate outliers 93 (Poisson), 4 also under NB; chronic 87, high-volume-expected 102, rate-outlier-only 6; the chronic set is a subset of the main run's (87 shared, 26 dropped, 0 added). D4 over all exposure-population devices: top-5% share 0.318 vs null median 0.224 (p95 0.229); Gini 0.721 vs 0.605 (p95 0.613); >=6 86 vs null median 14 (p95 17). Conclusion unchanged.",
+  "category_diff_pp_outsized_minus_other": {
+    "Touchscreen": -4.38,
+    "User Door": -3.31,
+    "Counterweight System": 1.01,
+    "No Trouble Found": 1.06,
+    "Packer": 1.64,
+    "[Missing]": 2.66,
+    "Curtain": 4.65
+  },
+  "checks": {
+    "PASS": 33,
+    "FAIL": 0
+  },
+  "check_list": [
+    {
+      "check": "unplanned tickets (service_cases)",
+      "expected": 7186,
+      "actual": 7186,
+      "status": "PASS"
+    },
+    {
+      "check": "ticketed machines (unplanned)",
+      "expected": 3685,
+      "actual": 3685,
+      "status": "PASS"
+    },
+    {
+      "check": "monitoring-template tickets (all tickets)",
+      "expected": 138,
+      "actual": 138,
+      "status": "PASS"
+    },
+    {
+      "check": "telemetry devices",
+      "expected": 7183,
+      "actual": 7183,
+      "status": "PASS"
+    },
+    {
+      "check": "shared internal host identified",
+      "expected": 1,
+      "actual": 1,
+      "status": "PASS"
+    },
+    {
+      "check": "device-matched tickets in fu_ticket_last10",
+      "expected": 6113,
+      "actual": 6113,
+      "status": "PASS"
+    },
+    {
+      "check": "serial -> telemetry id is one-to-one",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "check": "top 5% (185 machines) ticket share",
+      "expected": 0.183,
+      "actual": 0.183,
+      "status": "PASS"
+    },
+    {
+      "check": "top 10% ticket share",
+      "expected": 0.294,
+      "actual": 0.294,
+      "status": "PASS"
+    },
+    {
+      "check": "top 20% ticket share",
+      "expected": 0.456,
+      "actual": 0.456,
+      "status": "PASS"
+    },
+    {
+      "check": "machines with >=6 unplanned tickets",
+      "expected": 147,
+      "actual": 147,
+      "status": "PASS"
+    },
+    {
+      "check": "machines with >=10 unplanned tickets",
+      "expected": 21,
+      "actual": 21,
+      "status": "PASS"
+    },
+    {
+      "check": "max unplanned tickets on one machine",
+      "expected": 23,
+      "actual": 23,
+      "status": "PASS"
+    },
+    {
+      "check": "sum expected (all devices) = sum observed (literal D2 numerator)",
+      "expected": 5395,
+      "actual": 5395.0,
+      "status": "PASS"
+    },
+    {
+      "check": "workload-outsized machines >= threshold of the 185th machine",
+      "expected": 247,
+      "actual": 247,
+      "status": "PASS"
+    },
+    {
+      "check": "every exposure device has months in [0, 12]",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "check": "exposure population excludes shared/NULL host",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "check": "chronic = outsized AND rate outlier",
+      "expected": 113,
+      "actual": 113,
+      "status": "PASS"
+    },
+    {
+      "check": "NB-kept outliers <= Poisson outliers",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "check": "D2 exposure devices / months / tickets",
+      "expected": "(6621, 71559, 5395)",
+      "actual": "(6621, 71559, 5395)",
+      "status": "PASS"
+    },
+    {
+      "check": "D2 Poisson rate outliers (literal numerator)",
+      "expected": 118,
+      "actual": 118,
+      "status": "PASS"
+    },
+    {
+      "check": "D2 Poisson outliers kept under NB (E-form and y-form alpha)",
+      "expected": "(2, 2)",
+      "actual": "(2, 2)",
+      "status": "PASS"
+    },
+    {
+      "check": "D3 chronic / high-volume-expected / rate-outlier-only",
+      "expected": "(113, 93, 5)",
+      "actual": "(113, 93, 5)",
+      "status": "PASS"
+    },
+    {
+      "check": "D4 null covers every exposure-population device (top 5% = 332)",
+      "expected": "(6621, 332)",
+      "actual": "(6621, 332)",
+      "status": "PASS"
+    },
+    {
+      "check": "episode counts never exceed tickets",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "check": "episodes monotone in gap (3d >= 7d >= 14d)",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "check": "pre-ticket rows are usable unplanned tickets",
+      "expected": 5312,
+      "actual": 5312,
+      "status": "PASS"
+    },
+    {
+      "check": "lorenz curve ends at 1",
+      "expected": 1.0,
+      "actual": 1.0,
+      "status": "PASS"
+    },
+    {
+      "check": "customer table: outsized machines sum",
+      "expected": 247,
+      "actual": 247,
+      "status": "PASS"
+    },
+    {
+      "check": "customer table: chronic machines sum",
+      "expected": 113,
+      "actual": 113,
+      "status": "PASS"
+    },
+    {
+      "check": "every customer with an outsized/chronic machine has a real name (private)",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "check": "public text columns: no real serial / account / case number (cell or token)",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "check": "chronic ids are M##### pseudonyms",
+      "expected": true,
+      "actual": true,
+      "status": "PASS"
+    }
+  ]
+}

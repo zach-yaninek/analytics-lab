@@ -1,0 +1,318 @@
+group,field,value,tickets,share
+workload_outsized,trouble_code,Canopy,1,0.0006
+workload_outsized,trouble_code,Electro/Mechanical,893,0.5489
+workload_outsized,trouble_code,Electronics,335,0.2059
+workload_outsized,trouble_code,Miscellaneous,252,0.1549
+workload_outsized,trouble_code,Network,80,0.0492
+workload_outsized,trouble_code,Operator Error,26,0.016
+workload_outsized,trouble_code,Repair/Investigate,4,0.0025
+workload_outsized,trouble_code,Software,12,0.0074
+workload_outsized,trouble_code,[Missing],24,0.0148
+workload_outsized,category,Badge Reader,23,0.0141
+workload_outsized,category,Cable disconnected/Loose,7,0.0043
+workload_outsized,category,Camera,14,0.0086
+workload_outsized,category,Computer Board,148,0.091
+workload_outsized,category,Counterweight System,38,0.0234
+workload_outsized,category,Curtain,174,0.1069
+workload_outsized,category,Dead Data Jack,8,0.0049
+workload_outsized,category,Decoder,3,0.0018
+workload_outsized,category,Deposit Door,250,0.1537
+workload_outsized,category,Device Not Found,1,0.0006
+workload_outsized,category,Drawers,2,0.0012
+workload_outsized,category,Firewall,2,0.0012
+workload_outsized,category,IP/Reprogramming,15,0.0092
+workload_outsized,category,Improper Use,4,0.0025
+workload_outsized,category,Issue,5,0.0031
+workload_outsized,category,Loader Board,10,0.0061
+workload_outsized,category,Loading Error,22,0.0135
+workload_outsized,category,Main Door,125,0.0768
+workload_outsized,category,Network Intermittent,21,0.0129
+workload_outsized,category,Network Settings,26,0.016
+workload_outsized,category,No Trouble Found,144,0.0885
+workload_outsized,category,Packer,72,0.0443
+workload_outsized,category,Parts Order,4,0.0025
+workload_outsized,category,Physical Damage,8,0.0049
+workload_outsized,category,Power,23,0.0141
+workload_outsized,category,Power Supply,55,0.0338
+workload_outsized,category,SAM,128,0.0787
+workload_outsized,category,Service Door,27,0.0166
+workload_outsized,category,Touchscreen,72,0.0443
+workload_outsized,category,Training,2,0.0012
+workload_outsized,category,Troubleshooting,1,0.0006
+workload_outsized,category,User Access,5,0.0031
+workload_outsized,category,User Door,75,0.0461
+workload_outsized,category,Weight Scale,6,0.0037
+workload_outsized,category,[Missing],107,0.0658
+workload_outsized,subcategory,Aperture/Adjustment,1,0.0006
+workload_outsized,subcategory,Arms/Adjustment,31,0.0191
+workload_outsized,subcategory,Bent Rod,1,0.0006
+workload_outsized,subcategory,Board Replacement,3,0.0018
+workload_outsized,subcategory,Cable/Alignment/Replacement,11,0.0068
+workload_outsized,subcategory,Calibration/Replacement,5,0.0031
+workload_outsized,subcategory,Circuit Breaker Reset Switch,28,0.0172
+workload_outsized,subcategory,Cleared Memory/Forced Download,46,0.0283
+workload_outsized,subcategory,Closed Switch/Adjustment/Replacement,35,0.0215
+workload_outsized,subcategory,Closing Door properly,1,0.0006
+workload_outsized,subcategory,Connection/Badges,12,0.0074
+workload_outsized,subcategory,Connector Reseat/Replace,55,0.0338
+workload_outsized,subcategory,Counterweight/Weight Adjustment,13,0.008
+workload_outsized,subcategory,Damage/Vandalisum,3,0.0018
+workload_outsized,subcategory,Damper/Replacement,36,0.0221
+workload_outsized,subcategory,Damper/Replacement/Adjustment,66,0.0406
+workload_outsized,subcategory,Door Closed Switch/Adjustment,12,0.0074
+workload_outsized,subcategory,Door Lock/Adjustment,33,0.0203
+workload_outsized,subcategory,Door Lock/Replacement,28,0.0172
+workload_outsized,subcategory,Door check/Adjustment/Replacement,6,0.0037
+workload_outsized,subcategory,Drawer Slides/Replacement,2,0.0012
+workload_outsized,subcategory,Drive Cable/Spring Adjustment,8,0.0049
+workload_outsized,subcategory,Drive Screw/Pulley/Adjustment,1,0.0006
+workload_outsized,subcategory,Drive Screw/Pulley/Replacement,5,0.0031
+workload_outsized,subcategory,End User,2,0.0012
+workload_outsized,subcategory,Extend Motor/Replacement,13,0.008
+workload_outsized,subcategory,Extender/Adjustment,13,0.008
+workload_outsized,subcategory,Firmware,41,0.0252
+workload_outsized,subcategory,Firmware Upgrade,2,0.0012
+workload_outsized,subcategory,Home Switch/Adjustment,33,0.0203
+workload_outsized,subcategory,Home Switch/Replacement,5,0.0031
+workload_outsized,subcategory,Leveling/Adjustment,4,0.0025
+workload_outsized,subcategory,Linen /other Obstruction,7,0.0043
+workload_outsized,subcategory,Loader Training,6,0.0037
+workload_outsized,subcategory,Loader board not updated,2,0.0012
+workload_outsized,subcategory,Local Power,17,0.0104
+workload_outsized,subcategory,Lock Adjustment,13,0.008
+workload_outsized,subcategory,Lock Switch/Adjustment/Replacement,20,0.0123
+workload_outsized,subcategory,Lower Latch/Adjustment/Replacement,3,0.0018
+workload_outsized,subcategory,Packer Full,2,0.0012
+workload_outsized,subcategory,Photo Sensors,3,0.0018
+workload_outsized,subcategory,Power Connection/Adjustment,8,0.0049
+workload_outsized,subcategory,Power/Adjustment,17,0.0104
+workload_outsized,subcategory,Prox/Adjustment/Replacement,63,0.0387
+workload_outsized,subcategory,Rail/Adjustment,16,0.0098
+workload_outsized,subcategory,Rail/Replacement,2,0.0012
+workload_outsized,subcategory,Replacement,73,0.0449
+workload_outsized,subcategory,Replacement/ Compatability,6,0.0037
+workload_outsized,subcategory,Replacement/Adjustment,160,0.0983
+workload_outsized,subcategory,SD Card/Replacement,11,0.0068
+workload_outsized,subcategory,Slot Door/Adjustment/Replacement,17,0.0104
+workload_outsized,subcategory,Software,1,0.0006
+workload_outsized,subcategory,SoleNoid/Replacement,2,0.0012
+workload_outsized,subcategory,Solenoid/Adjustment,12,0.0074
+workload_outsized,subcategory,Switch Adjustment,56,0.0344
+workload_outsized,subcategory,Switch/Replacement,3,0.0018
+workload_outsized,subcategory,Switch/Replacement/Adjustment,29,0.0178
+workload_outsized,subcategory,T Handle Lock Switch,4,0.0025
+workload_outsized,subcategory,Training,12,0.0074
+workload_outsized,subcategory,User Info,1,0.0006
+workload_outsized,subcategory,Voltage Adjustment,13,0.008
+workload_outsized,subcategory,[Missing],493,0.303
+other_ticketed,trouble_code,Canopy,1,0.0002
+other_ticketed,trouble_code,Electro/Mechanical,2852,0.513
+other_ticketed,trouble_code,Electronics,1348,0.2425
+other_ticketed,trouble_code,Miscellaneous,667,0.12
+other_ticketed,trouble_code,Network,403,0.0725
+other_ticketed,trouble_code,Operator Error,132,0.0237
+other_ticketed,trouble_code,Software,79,0.0142
+other_ticketed,trouble_code,[Missing],77,0.0139
+other_ticketed,category,Badge Reader,90,0.0162
+other_ticketed,category,Cable disconnected/Loose,44,0.0079
+other_ticketed,category,Camera,26,0.0047
+other_ticketed,category,Computer Board,531,0.0955
+other_ticketed,category,Counterweight System,74,0.0133
+other_ticketed,category,Credit Issues,13,0.0023
+other_ticketed,category,Curtain,336,0.0604
+other_ticketed,category,Dead Data Jack,56,0.0101
+other_ticketed,category,Decoder,15,0.0027
+other_ticketed,category,Deposit Door,874,0.1572
+other_ticketed,category,Device Not Found,4,0.0007
+other_ticketed,category,Drawers,14,0.0025
+other_ticketed,category,Firewall,28,0.005
+other_ticketed,category,IP/Reprogramming,49,0.0088
+other_ticketed,category,Improper Use,37,0.0067
+other_ticketed,category,Issue,37,0.0067
+other_ticketed,category,Loader Board,37,0.0067
+other_ticketed,category,Loading Error,94,0.0169
+other_ticketed,category,Main Door,443,0.0797
+other_ticketed,category,Network Intermittent,93,0.0167
+other_ticketed,category,Network Settings,125,0.0225
+other_ticketed,category,No Trouble Found,433,0.0779
+other_ticketed,category,Packer,155,0.0279
+other_ticketed,category,Parts Order,25,0.0045
+other_ticketed,category,Physical Damage,14,0.0025
+other_ticketed,category,Power,73,0.0131
+other_ticketed,category,Power Supply,145,0.0261
+other_ticketed,category,SAM,460,0.0827
+other_ticketed,category,Security Updates,1,0.0002
+other_ticketed,category,Service Door,46,0.0083
+other_ticketed,category,Touchscreen,490,0.0881
+other_ticketed,category,Training,5,0.0009
+other_ticketed,category,Troubleshooting,1,0.0002
+other_ticketed,category,User Access,21,0.0038
+other_ticketed,category,User Door,440,0.0792
+other_ticketed,category,Vendex Issues,1,0.0002
+other_ticketed,category,Weight Scale,11,0.002
+other_ticketed,category,[Missing],218,0.0392
+other_ticketed,subcategory,Adjustment - EPROM - Dip Switches,6,0.0011
+other_ticketed,subcategory,Aperture/Adjustment,2,0.0004
+other_ticketed,subcategory,Arms/Adjustment,55,0.0099
+other_ticketed,subcategory,Bent Rod,3,0.0005
+other_ticketed,subcategory,Board Replacement,7,0.0013
+other_ticketed,subcategory,Cable Replacement,5,0.0009
+other_ticketed,subcategory,Cable/Alignment/Replacement,32,0.0058
+other_ticketed,subcategory,Calibration/Replacement,9,0.0016
+other_ticketed,subcategory,Circuit Breaker Reset Switch,63,0.0113
+other_ticketed,subcategory,Cleared Memory/Forced Download,174,0.0313
+other_ticketed,subcategory,Closed Switch/Adjustment/Replacement,192,0.0345
+other_ticketed,subcategory,Connection/Badges,60,0.0108
+other_ticketed,subcategory,Connector Reseat/Replace,380,0.0684
+other_ticketed,subcategory,Counterweight/Weight Adjustment,17,0.0031
+other_ticketed,subcategory,Credit/Access/Refund,1,0.0002
+other_ticketed,subcategory,Credits Adjustment,1,0.0002
+other_ticketed,subcategory,Damage/Vandalisum,38,0.0068
+other_ticketed,subcategory,Damper/Replacement,156,0.0281
+other_ticketed,subcategory,Damper/Replacement/Adjustment,207,0.0372
+other_ticketed,subcategory,Door Closed Switch/Adjustment,15,0.0027
+other_ticketed,subcategory,Door Lock,1,0.0002
+other_ticketed,subcategory,Door Lock/Adjustment,126,0.0227
+other_ticketed,subcategory,Door Lock/Replacement,98,0.0176
+other_ticketed,subcategory,Door check/Adjustment/Replacement,12,0.0022
+other_ticketed,subcategory,Door not closed,4,0.0007
+other_ticketed,subcategory,Drawer Slides/Replacement,13,0.0023
+other_ticketed,subcategory,Drive Cable/Spring Adjustment,45,0.0081
+other_ticketed,subcategory,Drive Motor/Replacement,14,0.0025
+other_ticketed,subcategory,Drive Screw/Pulley/Adjustment,16,0.0029
+other_ticketed,subcategory,Drive Screw/Pulley/Replacement,8,0.0014
+other_ticketed,subcategory,End User,9,0.0016
+other_ticketed,subcategory,Extend Motor/Replacement,23,0.0041
+other_ticketed,subcategory,Extender/Adjustment,29,0.0052
+other_ticketed,subcategory,Firmware,151,0.0272
+other_ticketed,subcategory,Firmware Upgrade,6,0.0011
+other_ticketed,subcategory,Home Switch/Adjustment,92,0.0165
+other_ticketed,subcategory,Home Switch/Replacement,15,0.0027
+other_ticketed,subcategory,Leveling/Adjustment,18,0.0032
+other_ticketed,subcategory,Linen /other Obstruction,33,0.0059
+other_ticketed,subcategory,Loader Training,22,0.004
+other_ticketed,subcategory,Loader board not updated,8,0.0014
+other_ticketed,subcategory,Local Power,59,0.0106
+other_ticketed,subcategory,Lock Adjustment,44,0.0079
+other_ticketed,subcategory,Lock Switch/Adjustment/Replacement,92,0.0165
+other_ticketed,subcategory,Lower Latch/Adjustment/Replacement,7,0.0013
+other_ticketed,subcategory,Packer Full,12,0.0022
+other_ticketed,subcategory,Photo Sensors,21,0.0038
+other_ticketed,subcategory,Power Connection/Adjustment,17,0.0031
+other_ticketed,subcategory,Power/Adjustment,57,0.0103
+other_ticketed,subcategory,Prox/Adjustment/Replacement,174,0.0313
+other_ticketed,subcategory,Rail/Adjustment,77,0.0139
+other_ticketed,subcategory,Rail/Replacement,4,0.0007
+other_ticketed,subcategory,Replacement,219,0.0394
+other_ticketed,subcategory,Replacement/ Compatability,23,0.0041
+other_ticketed,subcategory,Replacement/Adjustment,308,0.0554
+other_ticketed,subcategory,SD Card/Replacement,62,0.0112
+other_ticketed,subcategory,Slot Door/Adjustment/Replacement,58,0.0104
+other_ticketed,subcategory,Software,20,0.0036
+other_ticketed,subcategory,SoleNoid/Replacement,16,0.0029
+other_ticketed,subcategory,Solenoid/Adjustment,44,0.0079
+other_ticketed,subcategory,Switch Adjustment,250,0.045
+other_ticketed,subcategory,Switch/Replacement,7,0.0013
+other_ticketed,subcategory,Switch/Replacement/Adjustment,83,0.0149
+other_ticketed,subcategory,T Handle Lock Switch,47,0.0085
+other_ticketed,subcategory,Training,52,0.0094
+other_ticketed,subcategory,User Info,17,0.0031
+other_ticketed,subcategory,Voltage Adjustment,73,0.0131
+other_ticketed,subcategory,Wi-Fi Programming,1,0.0002
+other_ticketed,subcategory,[Missing],1549,0.2786
+chronic_outlier,trouble_code,Electro/Mechanical,488,0.5681
+chronic_outlier,trouble_code,Electronics,166,0.1932
+chronic_outlier,trouble_code,Miscellaneous,138,0.1607
+chronic_outlier,trouble_code,Network,37,0.0431
+chronic_outlier,trouble_code,Operator Error,12,0.014
+chronic_outlier,trouble_code,Repair/Investigate,2,0.0023
+chronic_outlier,trouble_code,Software,4,0.0047
+chronic_outlier,trouble_code,[Missing],12,0.014
+chronic_outlier,category,Badge Reader,9,0.0105
+chronic_outlier,category,Cable disconnected/Loose,5,0.0058
+chronic_outlier,category,Camera,10,0.0116
+chronic_outlier,category,Computer Board,63,0.0733
+chronic_outlier,category,Counterweight System,22,0.0256
+chronic_outlier,category,Curtain,133,0.1548
+chronic_outlier,category,Dead Data Jack,5,0.0058
+chronic_outlier,category,Decoder,1,0.0012
+chronic_outlier,category,Deposit Door,156,0.1816
+chronic_outlier,category,Device Not Found,1,0.0012
+chronic_outlier,category,Drawers,2,0.0023
+chronic_outlier,category,Firewall,1,0.0012
+chronic_outlier,category,IP/Reprogramming,4,0.0047
+chronic_outlier,category,Improper Use,2,0.0023
+chronic_outlier,category,Issue,1,0.0012
+chronic_outlier,category,Loader Board,4,0.0047
+chronic_outlier,category,Loading Error,10,0.0116
+chronic_outlier,category,Main Door,54,0.0629
+chronic_outlier,category,Network Intermittent,10,0.0116
+chronic_outlier,category,Network Settings,12,0.014
+chronic_outlier,category,No Trouble Found,80,0.0931
+chronic_outlier,category,Packer,34,0.0396
+chronic_outlier,category,Physical Damage,2,0.0023
+chronic_outlier,category,Power,8,0.0093
+chronic_outlier,category,Power Supply,35,0.0407
+chronic_outlier,category,SAM,47,0.0547
+chronic_outlier,category,Service Door,9,0.0105
+chronic_outlier,category,Touchscreen,38,0.0442
+chronic_outlier,category,Training,1,0.0012
+chronic_outlier,category,User Access,2,0.0023
+chronic_outlier,category,User Door,31,0.0361
+chronic_outlier,category,Weight Scale,4,0.0047
+chronic_outlier,category,[Missing],63,0.0733
+chronic_outlier,subcategory,Arms/Adjustment,13,0.0151
+chronic_outlier,subcategory,Board Replacement,2,0.0023
+chronic_outlier,subcategory,Cable/Alignment/Replacement,5,0.0058
+chronic_outlier,subcategory,Calibration/Replacement,4,0.0047
+chronic_outlier,subcategory,Circuit Breaker Reset Switch,16,0.0186
+chronic_outlier,subcategory,Cleared Memory/Forced Download,12,0.014
+chronic_outlier,subcategory,Closed Switch/Adjustment/Replacement,17,0.0198
+chronic_outlier,subcategory,Closing Door properly,1,0.0012
+chronic_outlier,subcategory,Connection/Badges,7,0.0081
+chronic_outlier,subcategory,Connector Reseat/Replace,29,0.0338
+chronic_outlier,subcategory,Counterweight/Weight Adjustment,8,0.0093
+chronic_outlier,subcategory,Damage/Vandalisum,1,0.0012
+chronic_outlier,subcategory,Damper/Replacement,23,0.0268
+chronic_outlier,subcategory,Damper/Replacement/Adjustment,42,0.0489
+chronic_outlier,subcategory,Door Closed Switch/Adjustment,2,0.0023
+chronic_outlier,subcategory,Door Lock/Adjustment,16,0.0186
+chronic_outlier,subcategory,Door Lock/Replacement,11,0.0128
+chronic_outlier,subcategory,Door check/Adjustment/Replacement,2,0.0023
+chronic_outlier,subcategory,Drawer Slides/Replacement,2,0.0023
+chronic_outlier,subcategory,Drive Cable/Spring Adjustment,6,0.007
+chronic_outlier,subcategory,End User,1,0.0012
+chronic_outlier,subcategory,Extend Motor/Replacement,5,0.0058
+chronic_outlier,subcategory,Extender/Adjustment,6,0.007
+chronic_outlier,subcategory,Firmware,25,0.0291
+chronic_outlier,subcategory,Firmware Upgrade,1,0.0012
+chronic_outlier,subcategory,Home Switch/Adjustment,12,0.014
+chronic_outlier,subcategory,Home Switch/Replacement,2,0.0023
+chronic_outlier,subcategory,Leveling/Adjustment,1,0.0012
+chronic_outlier,subcategory,Linen /other Obstruction,4,0.0047
+chronic_outlier,subcategory,Loader Training,1,0.0012
+chronic_outlier,subcategory,Local Power,6,0.007
+chronic_outlier,subcategory,Lock Adjustment,7,0.0081
+chronic_outlier,subcategory,Lock Switch/Adjustment/Replacement,9,0.0105
+chronic_outlier,subcategory,Lower Latch/Adjustment/Replacement,3,0.0035
+chronic_outlier,subcategory,Packer Full,2,0.0023
+chronic_outlier,subcategory,Photo Sensors,2,0.0023
+chronic_outlier,subcategory,Power Connection/Adjustment,7,0.0081
+chronic_outlier,subcategory,Power/Adjustment,8,0.0093
+chronic_outlier,subcategory,Prox/Adjustment/Replacement,35,0.0407
+chronic_outlier,subcategory,Rail/Adjustment,10,0.0116
+chronic_outlier,subcategory,Replacement,40,0.0466
+chronic_outlier,subcategory,Replacement/ Compatability,1,0.0012
+chronic_outlier,subcategory,Replacement/Adjustment,125,0.1455
+chronic_outlier,subcategory,SD Card/Replacement,6,0.007
+chronic_outlier,subcategory,Slot Door/Adjustment/Replacement,5,0.0058
+chronic_outlier,subcategory,SoleNoid/Replacement,1,0.0012
+chronic_outlier,subcategory,Solenoid/Adjustment,4,0.0047
+chronic_outlier,subcategory,Switch Adjustment,37,0.0431
+chronic_outlier,subcategory,Switch/Replacement,2,0.0023
+chronic_outlier,subcategory,Switch/Replacement/Adjustment,6,0.007
+chronic_outlier,subcategory,T Handle Lock Switch,2,0.0023
+chronic_outlier,subcategory,Training,4,0.0047
+chronic_outlier,subcategory,User Info,1,0.0012
+chronic_outlier,subcategory,Voltage Adjustment,6,0.007
+chronic_outlier,subcategory,[Missing],253,0.2945
