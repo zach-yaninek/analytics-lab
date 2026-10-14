@@ -46,7 +46,8 @@ python3 -I verification/tests/run_fixture_tests.py # self-test of the DB script 
 python3 -I verification/verify_with_db.py --db data/raw/ipa_transaction_events_202508_202608.db \
     --xlsx "data/raw/IPA_CaseHistory_Aug 2025-Aug2026.xlsx" --out verification/outputs/db --private data/private/db
 python3 -I verification/high_ticket_machines.py   # ~20 s, no DB; ends by drawing the htm_* figures
-python3 -I verification/plots/htm_03_observed_vs_expected.py   # redraw one chart (any htm_0N_*.py)
+python3 -I verification/plots/run_all.py                        # redraw every chart and run the chart checks
+python3 -I verification/plots/htm_03_observed_vs_expected.py   # redraw one chart (any htm_NN_*.py)
 ```
 
 Requires Python 3.12+ with pandas, numpy and openpyxl; matplotlib for the figures (skipped with a message if it is

@@ -30,7 +30,8 @@ NOT_MATCHED = '(not device-matched)'
 
 
 def poisson_interval(k, z=Z):
-    """Byar's approximation to the exact Poisson interval for a count k (accurate to a few % even for small k)."""
+    """Byar's approximation to the exact Poisson interval for a count k: within 1% of the exact limits for k >= 5
+    (the lower limit is too low for k < 5; every type shown has at least 10 tickets)."""
     k = np.asarray(k, float)
     lo = np.where(k > 0, k * (1 - 1 / (9 * np.maximum(k, 1)) - z / (3 * np.sqrt(np.maximum(k, 1)))) ** 3, 0.0)
     hi = (k + 1) * (1 - 1 / (9 * (k + 1)) + z / (3 * np.sqrt(k + 1))) ** 3
@@ -70,10 +71,9 @@ def plot(out_dir=style.FIG_DIR):
     ax.hlines(y, d.lo, d.hi, color=style.GRAY_LIGHT, lw=2, zorder=2)
     ax.scatter(d.rate, y, s=60, c=colors, edgecolors=style.SURFACE, linewidths=1.4, zorder=3)
     for yi, row in zip(y, d.itertuples()):
-        x = row.hi + 0.4
-        if fleet - 1.3 < x < fleet + 0.3:  # the label would sit on the fleet line: move it just right of the line
-            x = fleet + 0.3
-        ax.text(x, yi, f'{row.rate:.1f}', va='center', ha='left', fontsize=9.5,
+        # Right of the interval, unless that lands on the fleet line: then left of the interval.
+        x, ha = (row.lo - 0.4, 'right') if fleet - 1.3 < row.hi + 0.4 < fleet + 0.3 else (row.hi + 0.4, 'left')
+        ax.text(x, yi, f'{row.rate:.1f}', va='center', ha=ha, fontsize=9.5,
                 color=style.INK if row.raw_top else style.INK2, weight='bold' if row.raw_top else 'normal')
     ax.text(fleet + 0.3, len(d) - 0.35, f'Fleet: {fleet:.1f}', va='bottom', ha='left', fontsize=9.5,
             color=style.INK2)
@@ -93,22 +93,33 @@ def plot(out_dir=style.FIG_DIR):
               loc='lower right')
 
     top = d.iloc[-1]
-    raw_rates = d[d.raw_top].sort_values('rate', ascending=False).rate
+    top3 = d[d.raw_top].sort_values('rate', ascending=False)
+    vs_fleet = ', '.join(f'{100 * (v / fleet - 1):+.0f}%' for v in top3.rate)
+    # Small types with mostly non-transacting devices: no measurable exposure rather than just a small one.
+    unmeasured = small[(small.zero_exposure_devices >= small.devices / 2) & (small.tickets_used_for_rate >= 10)]
+    unmeasured_txt = ''.join(f' {u.machine_type} ({u.devices} devices, {u.zero_exposure_devices} with no '
+                             f'transaction in the window; {u.tickets_used_for_rate} tickets) has almost no '
+                             f'measurable exposure.'
+                             for u in unmeasured.itertuples())
+    ex = top3.iloc[0]
+    ex_raw = int(raw.loc[raw.value == ex.machine_type, 'unplanned_tickets'].iloc[0])
     style.frame(
         fig,
-        f'Per machine-month, {top.machine_type} has the highest ticket rate: {top.rate:.1f}, '
+        f'Of {len(d)} well-measured types, {top.machine_type} has the highest ticket rate: '
         f'{top.rate / fleet:.1f}× the fleet',
-        f'Unplanned tickets per 100 machine-months by telemetry machine type, {style.period_text(S)}: '
-        f'{int(d.tickets_used_for_rate.sum()):,} tickets over {int(d.exposure_months.sum()):,} machine-months. '
-        f'Adjusting for exposure, the three types with the most tickets sit near the fleet rate of {fleet:.1f} '
-        f'({", ".join(f"{v:.1f}" for v in raw_rates)}): their lead in raw counts is mostly fleet size.',
-        notes=[f'The fleet rate of {fleet:.1f} per 100 machine-months is about {12 * fleet / 100:.1f} tickets per '
-               f'machine per year. The Poisson interval understates uncertainty because machines of one type differ '
-               f'from each other (see chart 3). Tickets include those on devices with no machine-months '
-               f'({int(r.tickets_on_zero_exposure_devices.sum())} fleet-wide).',
-               f'Not shown: {len(small)} types with fewer than {min_months} machine-months ('
-               f'{int(small.exposure_months.sum()):,} machine-months, {int(small.tickets_used_for_rate.sum())} '
-               f'tickets in all); their rates are too unstable to compare.',
+        f'Unplanned tickets per 100 machine-months by telemetry machine type, {style.period_text(S)}, for the '
+        f'{len(d)} types with at least {min_months} machine-months. Fleet rate {fleet:.1f} = '
+        f'{int(r.tickets_used_for_rate.sum()):,} tickets over {int(r.exposure_months.sum()):,} machine-months, all '
+        f'types. The three types with the most tickets run only modestly above it ({vs_fleet}): their lead in raw '
+        f'counts is mostly fleet size.',
+        notes=[f'The fleet rate is about {12 * fleet / 100:.1f} tickets per machine per year. The Poisson interval '
+               f'understates uncertainty because machines of one type differ from each other (see chart 3). Tickets '
+               f'on devices with 0 machine-months: {int(r.tickets_on_zero_exposure_devices.sum())} fleet-wide.',
+               f'Not shown: {len(small)} types with fewer than {min_months} machine-months '
+               f'({int(small.exposure_months.sum()):,} machine-months, {int(small.tickets_used_for_rate.sum())} '
+               f'tickets in all); their rates are too unstable to compare.{unmeasured_txt}',
+               f'Tickets here cover {style.period_text(S)} on the exposure population, so counts are lower than in '
+               f'chart 9 (e.g. {ex.machine_type}: {int(ex.tickets_used_for_rate):,} here, {ex_raw:,} in chart 9).',
                'Source: htm_type_rates.csv; raw counts from htm_type_mix.csv.'],
         definitions=[style.machine_month_definition(S)])
     return [style.save(fig, out_dir / 'htm_10_ticket_rate_by_machine_type.png')]

@@ -112,7 +112,8 @@ def plot(out_dir=style.FIG_DIR):
     style.frame(
         fig,
         f'One category makes up half or more of the tickets on {n_dom} of {len(mach)} chronic outliers',
-        f'Unplanned tickets by category (case-export serials, {style.period_text(S, "case_export_period")}) for the {len(rows)} '
+        f'Unplanned tickets by category (case-export serials, {style.period_text(S, "case_export_period")}) '
+        f'for the {len(rows)} '
         f'chronic-outlier machines with the most tickets. Columns: the {N_COLS} most frequent categories across all '
         f'{len(mach)} chronic outliers, with their totals.',
         definitions=[style.chronic_definition(S)],

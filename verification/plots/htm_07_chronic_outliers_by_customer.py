@@ -96,7 +96,8 @@ def draw(S, c, path, names=None):
              + (f'; names from {NAMES.relative_to(style.ROOT)}' if names is not None else '')
              + '; thresholds from htm_summary.json.']
     subtitle = [f'{n_mach} chronic-outlier machines across {n_cust} customers (tickets counted over the case export, '
-                f'{style.period_text(S, "case_export_period")}; rate test on {style.period_text(S)}). {which} shown against their devices in the '
+                f'{style.period_text(S, "case_export_period")}; rate test over {style.period_text(S)}). '
+                f'{which} shown against their devices in the '
                 f'exposure population (customer hosts).']
     if names is not None:
         # First line of the subtitle, so the warning is read before the chart (frame() wraps each item separately).

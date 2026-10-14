@@ -2,7 +2,7 @@
 
 *Script: `verification/high_ticket_machines.py` (33 self-checks; it runs locally in about 20 s from the workbook and
 the committed `fu_*` and `db_*` CSVs, with no database). Figures: `verification/outputs/figures/htm_*.png`, drawn
-by one plain matplotlib script per chart in `verification/plots/` (`htm_01_*.py` … `htm_10_*.py`; `run_all.py` draws
+by one plain matplotlib script per chart in `verification/plots/` (charts 6 and 9 each write two figures) (`htm_01_*.py` … `htm_10_*.py`; `run_all.py` draws
 them all). Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
 as coming from the review pass.*
 
@@ -51,7 +51,7 @@ Combining the two views (D3):
 | Class | Machines | Meaning |
 |---|---|---|
 | **Chronic outlier** | **113** | Workload-outsized **and** a rate outlier |
-| Workload-outsized only | 93 | Workload-outsized, but not a rate outlier: high volume, as expected for the type and the months active |
+| Workload-outsized only | 93 | Workload-outsized, but not a significant rate outlier (q ≥ 0.05). Most still log well above their expected count (median about 5×) but miss the cut; 9 have no exposure months and were not tested |
 | Rate outlier only | 5 | A rate outlier that is not workload-outsized: few tickets but very short exposure |
 
 The workload view's top 5% hold 18.3% of tickets, and its top 10% and top 20% hold 29.4% and 45.6%. 147 machines have
@@ -137,7 +137,7 @@ predict; another ~40 are borderline."
   | Customer 171 | 4 | 67 |
   | Customer 054 | 4 | 52 |
 
-  Chronic machines cluster by customer no more than high-volume machines in general (review). For the 247 workload-outsized
+  Chronic machines cluster by customer no more than workload-outsized machines in general (review). For the 247 workload-outsized
   machines, the top five customers hold 12.2% against 8.1% by chance (95th percentile 10.1%).
 
 ![Chronic outliers by customer](../verification/outputs/figures/htm_07_chronic_outliers_by_customer.png)
@@ -146,7 +146,7 @@ predict; another ~40 are borderline."
 ## D. Episodes (D5)
 Tickets on the same machine no more than 7 days apart count as one episode.
 
-| | Workload-outsized (247) | Other machines (3,438) |
+| | Workload-outsized (247) | Other ticketed machines (3,438) |
 |---|---|---|
 | Median tickets / episodes per machine | 6 / 5 | 1 / 1 |
 | Follow-up share (tickets within an existing episode) | **21.8%** | 5.8% |
@@ -164,7 +164,7 @@ From `fu_ticket_last10.csv`: 30-day lookback on the corrected clock, 5,312 usabl
 | Group | Events in 30 days (median) | Non-success codes per 1,000, ticket window | Same, clean control 35 days earlier (paired) |
 |---|---|---|---|
 | Chronic (768 tickets) | 1,838 | 104.9 (paired: 68.8) | 48.5 |
-| Workload-outsized, not chronic | 1,413 | 97.1 (paired: 76.5) | 54.9 |
+| Workload-outsized only (not chronic) | 1,413 | 97.1 (paired: 76.5) | 54.9 |
 | Other machines | 1,473 | 67.6 (paired: 62.9) | 41.4 |
 
 - Chronic machines are busier and noisier at all times.
@@ -191,8 +191,11 @@ of that type are installed. Chart 10 adjusts for this with machine-months.
   first to its last transaction within Aug 2025–Jul 2026, both included, so a machine active all year adds 12.
 - **Adjusting for exposure with machine-months** (chart 10, `htm_type_rates.csv`) changes the reading:
   - those three types are also 48% of the exposure-population devices and of their machine-months;
-  - their rates are 8.5, 8.2 and 7.6 tickets per 100 machine-months, close to the fleet's 7.5. Their lead in raw
-    counts is mostly fleet size;
+  - their rates are 8.5, 8.2 and 7.6 tickets per 100 machine-months, only modestly above the fleet's 7.5 (+12%, +9%,
+    +0%; the first two are above it even allowing for chance). Their 52% share of tickets against 48% of
+    machine-months shows their lead in raw counts is mostly fleet size;
+  - sd2.0-49, 10th by raw count, is not in chart 10: 88 of its 89 devices never transact in the window, so its
+    exposure cannot be measured from telemetry;
   - the highest rate among types with at least 100 machine-months is sbsx-51: 21.9 per 100 machine-months, on 33
     devices.
 

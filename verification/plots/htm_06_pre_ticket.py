@@ -155,10 +155,10 @@ def plot(out_dir=style.FIG_DIR):
         ax.legend(loc='lower right', handlelength=2.2, frameon=True, facecolor=style.SURFACE, edgecolor='none',
                   framealpha=1)
 
-        beyond_txt = ', '.join(f'{g.short} {beyond[g.key]}' for g in GROUPS)
+        beyond_txt = ', '.join(f'{g.short}\u00a0{beyond[g.key]}' for g in GROUPS)
         if spec.key == 'events':
             zero = {g.key: (pt.loc[pt.group == g.key, col] == 0).mean() for g in GROUPS}
-            zero_txt = ', '.join(f'{g.short} {style.pct(zero[g.key])}' for g in GROUPS)
+            zero_txt = ', '.join(f'{g.short}\u00a0{style.pct(zero[g.key])}' for g in GROUPS)
             title = (f'Chronic outliers were busier before tickets: median {med["chronic"]:,.0f} events vs '
                      f'{med["other"]:,.0f}')
             population = f'({sum(n.values()):,} tickets)'
@@ -171,7 +171,7 @@ def plot(out_dir=style.FIG_DIR):
             title = (f'Chronic outliers logged more non-success events: median {med["chronic"]:.0f} vs '
                      f'{med["other"]:.0f} per 1,000')
             # No-break spaces (\u00a0) keep each paired comparison, the counts and the offset whole when frame() wraps.
-            paired_txt = ', '.join(f'{g.short} {paired[g.key][0]:.1f}\u00a0vs\u00a0{paired[g.key][1]:.1f}'
+            paired_txt = ', '.join(f'{g.short}\u00a0{paired[g.key][0]:.1f}\u00a0vs\u00a0{paired[g.key][1]:.1f}'
                                    for g in GROUPS)
             population = f'that logged at least one event ({sum(n.values()):,}\u00a0of\u00a0{usable:,}\u00a0tickets)'
             earlier = f'{S["definitions"]["control_offset_days"]}\u00a0days earlier'

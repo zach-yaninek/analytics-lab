@@ -112,11 +112,13 @@ def plot(out_dir=style.FIG_DIR):
         f'Outsized machines\' tickets are {gap}-day follow-ups {ratio:.1f}× as often '
         f'({style.pct(share["outsized"][gap])} vs {style.pct(share["other"][gap])})',
         f'All {sum(tickets.values()):,} unplanned tickets on {len(ep):,} machines (case-export serials), '
-        f'{style.period_text(S, "case_export_period")}. A ticket is a follow-up if it opens within {gap} days of the machine\'s previous '
+        f'{style.period_text(S, "case_export_period")}. '
+        f'A ticket is a follow-up if it opens within {gap} days of the machine\'s previous '
         f'ticket (sensitivity: {lo_gap} and {hi_gap} days).',
         definitions=[style.outsized_definition(S)],
         notes=[f'Random timing: each machine\'s tickets placed uniformly at random over the period '
-               f'({S["definitions"]["n_sim_episodes"]} draws, a rough null). More tickets alone produce more follow-ups: '
+               f'({S["definitions"]["n_sim_episodes"]} draws, a rough null). '
+               f'More tickets alone produce more follow-ups: '
                f'{style.pct(rts["outsized"])} for outsized machines and {style.pct(rts["other"])} for the rest.',
                'Source: htm_episodes.csv; random timing and threshold from htm_summary.json (D5, D1).'])
     return [style.save(fig, out_dir / PNG)]

@@ -83,7 +83,8 @@ def plot(out_dir=style.FIG_DIR):
         fig,
         f'Outsized machines\' model mix differs from the rest by about {max_gap:.0f} points at most',
         f'Share of machines by model: {n_out:,} workload-outsized vs {n_oth:,} other ticketed machines (case-export '
-        f'serials), unplanned tickets {style.period_text(S, "case_export_period")}. The {min(N_SHOWN, len(m))} models with the largest gap, '
+        f'serials), unplanned tickets {style.period_text(S, "case_export_period")}. '
+        f'The {min(N_SHOWN, len(m))} models with the largest gap, '
         f'sorted by gap.',
         definitions=[style.outsized_definition(S)],
         notes=notes)

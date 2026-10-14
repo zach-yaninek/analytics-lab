@@ -87,17 +87,21 @@ def chronic_definition(S=None):
     S = S or summary()
     w, d = S['D1_workload'], S['definitions']
     return (f'Chronic outlier = a machine that is both workload-outsized ({w["threshold"]} or more unplanned '
-            f'tickets, the top {d["top_share"]:.0%} of ticketed machines, ties included) and a rate outlier (more '
-            f'tickets than its machine type\'s rate × months active predicts, small types pooled; Poisson test, '
-            f'Benjamini-Hochberg q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a defect.')
+            f'tickets in the case export, {period_text(S, "case_export_period")}: the top {d["top_share"]:.0%} of '
+            f'ticketed machines, ties included) and a rate outlier (more tickets from {period_text(S)} than its '
+            f'machine type\'s rate × months active predicts, small types pooled; Poisson test, Benjamini-Hochberg '
+            f'q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a defect.')
 
 
 def machine_month_definition(S=None):
     S = S or summary()
-    return (f'Machine-month = one month of a machine being in service. Each telemetry device counts the calendar '
-            f'months from its first to its last transaction within {period_text(S)}, both included (quiet months in '
-            f'between count too), so a machine active all year adds 12. Devices on the shared internal host or with '
-            f'no host are excluded.')
+    lo, hi = (pd.Timestamp(x) for x in S['definitions']['period'])
+    n_months = (hi.year - lo.year) * 12 + hi.month - lo.month + 1
+    return (f'Machine-month = one month of a machine in service. Each telemetry device counts the months of '
+            f'{period_text(S)} that fall within its first-to-last-transaction span, both end months included and quiet '
+            f'months in between too, so a machine active throughout adds {n_months}. Devices with no transaction in '
+            f'that window count 0 months but stay in the device counts and rates. Devices on the shared internal host '
+            f'or with no host are excluded.')
 
 
 def check(name, expected, actual, tol=0.0):

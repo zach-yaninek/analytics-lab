@@ -10,6 +10,7 @@ can rank high simply because many of its machines are installed. Chart 10 (htm_1
 shows the exposure-adjusted rates per 100 machine-months by telemetry type.
 
 Inputs:  verification/outputs/htm_type_mix.csv (field = model / machine_type: unplanned_tickets per value)
+         verification/outputs/htm_machine_counts.csv (model and machine_type per machine, for the proxy note)
          verification/outputs/htm_summary.json (D1_workload: total tickets and machines, for consistency checks)
 Run:     cd /home/user/analytics-lab && python3 -I verification/plots/htm_09_tickets_by_type.py
 """
@@ -25,8 +26,21 @@ N_SHOWN = 12      # bars before the tail is grouped as "Other"
 N_HIGHLIGHT = 3   # top bars in emphasis blue; the titles say "Three" and the subtitles name them
 NOT_MATCHED = '(not device-matched)'
 
-DISCLAIMER = ('Not adjusted for fleet size: these are raw ticket counts, so a type can rank high simply because many '
-              'machines of that type are installed.')
+def disclaimer(noun):
+    return (f'Not adjusted for fleet size: these are raw ticket counts, so a {noun} can rank high simply because many '
+            f'machines of that {noun} are installed.')
+
+
+def proxy_note(models):
+    """For each model, its most common telemetry type among device-matched machines (model -> type share)."""
+    mc = style.load('machine_counts')
+    mc = mc[mc.machine_type.notna() & mc.model.isin(models)]
+    parts = []
+    for model in models:
+        vc = mc.loc[mc.model == model, 'machine_type'].value_counts()
+        parts.append(f'{model} = {vc.index[0]} for {vc.iloc[0]:,} of {vc.sum():,} machines')
+    return ('For these three models, telemetry type is a near one-to-one stand-in (' + '; '.join(parts) +
+            '), so chart 10\'s rates for those types approximate the models\' rates.')
 
 
 def tickets_by(field):
@@ -73,14 +87,15 @@ def plot(out_dir=style.FIG_DIR):
     written.append(draw(
         m, total, 'models',
         f'Three models generate {style.pct(top.unplanned_tickets.sum() / total, 0)} of unplanned tickets',
-        f'Raw counts, not adjusted for fleet size (see the note below). Blue: {", ".join(top.value)}. '
-        f'All {total:,} unplanned tickets on {S["machines"]:,} ticketed machines (case-export '
-        f'serials), {style.period_text(S_all, "case_export_period")}. Excludes planned work, cancelled and duplicate cases. Share of all '
-        f'unplanned tickets in brackets.',
-        [f'Each machine is counted under its most frequently recorded model. Other = the {len(m) - N_SHOWN} models '
-         f'with the fewest tickets.', 'Source: htm_type_mix.csv (field = model).'],
-        DISCLAIMER + ' The number of installed machines per model is not in the data (model is recorded only on '
-        'tickets), so per-machine rates by model cannot be computed.',
+        f'Raw counts, not adjusted for fleet size (see the note below). All {total:,} unplanned tickets on '
+        f'{S["machines"]:,} ticketed machines (case-export serials), '
+        f'{style.period_text(S_all, "case_export_period")}; excludes planned work, cancelled and duplicate cases. '
+        f'Share of all unplanned tickets in brackets; blue = the three models with the most tickets.',
+        [proxy_note(top.value.tolist()),
+         f'Each machine is counted under the model recorded on its tickets. Other = the {len(m) - N_SHOWN} models '
+         f'with the fewest tickets.', 'Source: htm_type_mix.csv (field = model), htm_machine_counts.csv.'],
+        disclaimer('model') + ' The number of installed machines per model is not in the data (model is recorded '
+        'only on tickets), so per-machine rates by model cannot be computed directly.',
         out_dir / 'htm_09_tickets_by_model.png'))
 
     # By telemetry machine type: only tickets whose serial matches a telemetry device.
@@ -94,13 +109,13 @@ def plot(out_dir=style.FIG_DIR):
         t, matched, 'types',
         f'Three telemetry types generate {style.pct(top.unplanned_tickets.sum() / matched, 0)} of device-matched '
         f'tickets',
-        f'Raw counts, not adjusted for fleet size (see the note below). Blue: {", ".join(top.value)}. '
-        f'{matched:,} unplanned tickets whose serial matches a telemetry device, '
-        f'{style.period_text(S_all, "case_export_period")}. Share of device-matched tickets in brackets.',
+        f'Raw counts, not adjusted for fleet size (see the note below). The {matched:,} unplanned tickets whose '
+        f'serial matches a telemetry device, {style.period_text(S_all, "case_export_period")}. Share of these '
+        f'tickets in brackets; blue = the three types with the most tickets.',
         [f'Not shown: {unmatched:,} tickets on machines not matched to a telemetry device. Other = the '
          f'{len(t) - N_SHOWN} types with the fewest tickets.',
          'Source: htm_type_mix.csv (field = machine_type).'],
-        DISCLAIMER + ' Chart 10 adjusts for this: ticket rates per 100 machine-months by telemetry type '
+        disclaimer('type') + ' Chart 10 adjusts for this: ticket rates per 100 machine-months by telemetry type '
         '(htm_10_ticket_rate_by_machine_type.png).',
         out_dir / 'htm_09_tickets_by_machine_type.png'))
     return written

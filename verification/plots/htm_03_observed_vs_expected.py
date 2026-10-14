@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Chart 3: observed vs expected unplanned tickets per device, coloured by outlier class.
 
-Each device in the exposure population (shared internal host and devices with no host excluded) is one point: its observed unplanned tickets in the
-period against the count its machine type's rate x months active predicts. Chronic outliers (workload-outsized and
-rate outlier), rate outliers only and workload-outsized-only devices are drawn over the other devices, with the
+Each device in the exposure population (shared internal host and devices with no host excluded) is one point:
+its observed unplanned tickets in the period against the count its machine type's rate x months active predicts.
+Chronic outliers (workload-outsized and rate outlier), rate outliers only and workload-outsized-only devices
+(workload-outsized but not a significant rate outlier) are drawn over the other devices, with the
 observed = expected line for reference. The title states the chronic outliers' median observed vs expected count.
 The footer explains why some workload-outsized devices sit below the ticket threshold on this axis: the threshold
 counts the serial's tickets over the whole case export, the y-axis the device's tickets in the period.
@@ -36,7 +37,7 @@ JITTER = 0.22   # vertical jitter (tickets) to show overlapping integer counts
 CLASSES = [
     ('chronic_outlier', 'Chronic outlier', style.BLUE),
     ('rate_outlier_only', 'Rate outlier only', style.ORANGE),
-    ('high_volume_expected', 'Workload-outsized only', style.AQUA),  # high volume, as expected for its exposure
+    ('high_volume_expected', 'Workload-outsized only', style.AQUA),  # outsized, but not a significant rate outlier
 ]
 NAME = {c: n for c, n, _ in CLASSES}
 
@@ -45,14 +46,15 @@ def count_phrase(n, what):
     return f'{n} {what}' if n == 1 else f'{n} {what}s'
 
 
-def class_definition(d, untested):
+def class_definition(S, d, untested):
     """One line defining the two non-chronic classes."""
     hv0 = int(((d['class'] == 'high_volume_expected') & (d.expected == 0)).sum())
-    zero_txt = (f', including {hv0} {"untested " if untested else ""}devices with zero exposure months (x = 0)'
-                if hv0 else '')
+    zero_txt = (f'; the class also holds {hv0} {"untested " if untested else ""}devices with zero exposure months '
+                f'(x\u00a0=\u00a00)' if hv0 else '')
     return (f'{NAME["rate_outlier_only"]} = a rate outlier that is not workload-outsized. '
-            f'{NAME["high_volume_expected"]} = workload-outsized but not a rate outlier: high volume, as expected for '
-            f'its type and months active{zero_txt}.')
+            f'{NAME["high_volume_expected"]} = workload-outsized but not a significant rate outlier '
+            f'(q\u00a0≥\u00a0{S["definitions"]["q_cut"]:g}): most still log well above their expected count but miss the '
+            f'cut{zero_txt}.')
 
 
 def threshold_note(S, d):
@@ -61,7 +63,8 @@ def threshold_note(S, d):
     thr = S['D1_workload']['threshold']
     low = d.tickets_obs < thr
     counts = [(int((low & (d['class'] == 'chronic_outlier')).sum()), 'chronic outlier'),
-              (int((low & (d['class'] == 'high_volume_expected')).sum()), f'{NAME["high_volume_expected"].lower()} device')]
+              (int((low & (d['class'] == 'high_volume_expected')).sum()),
+               f'{NAME["high_volume_expected"].lower()} device')]
     text = ('Workload-outsized counts the serial\'s unplanned tickets over the whole case export, not the device\'s '
             'tickets in the period plotted here')
     if any(n for n, _ in counts):
@@ -150,7 +153,7 @@ def plot(out_dir=style.FIG_DIR):
         f'{len(d):,} devices in the exposure population (shared internal host and devices with no host excluded), '
         f'unplanned tickets {style.period_text(S)}. '
         f'Points above the line logged more tickets than their type\'s rate × months active predicts.',
-        definitions=[style.chronic_definition(S), class_definition(d, untested)],
+        definitions=[style.chronic_definition(S), class_definition(S, d, untested)],
         notes=[threshold_note(S, d),
                f'Points jittered vertically by up to {JITTER} to show overlap. {len(zero)} devices with zero '
                f'exposure months sit at x = 0{" (not tested)" if untested else ""}.{hidden_note(S, hidden)}',
