@@ -147,11 +147,11 @@ def frame(fig, title, subtitle, notes=(), definitions=()):
     fig.get_layout_engine().set(rect=(left, bottom_band / h, 1 - left - right, 1 - (top_band + bottom_band) / h))
 
 
-def save(fig, path):
-    """Save at DPI, record every drawn text string (TEXTS, for privacy and definition checks), close the figure."""
+def save(fig, path, dpi=DPI):
+    """Save at dpi, record every drawn text string (TEXTS, for privacy and definition checks), close the figure."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=DPI, metadata={'Software': None})
+    fig.savefig(path, dpi=dpi, metadata={'Software': None})
     TEXTS[path] = [t.get_text() for t in fig.findobj(Text) if t.get_text()]
     plt.close(fig)
     try:

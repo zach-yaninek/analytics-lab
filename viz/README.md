@@ -11,7 +11,9 @@ viz/
     ipa_style.py        the sheet + page layout (title band, footer), palette constants, save()
   high_ticket/          high-ticket-machine charts (docs/05); htm.py = their data and term definitions
   zac_notebook/         Zac's 10 notebook figures, rebuilt in this style; zac_data.py = data and definitions
+  slides/               a simplified 16:9 version of every chart for PowerPoint; slides.py = shared page setup
   figures/              rendered PNGs (pseudonymous)
+    slides/             the slide versions and speaker_notes.md
   run_all.py            redraw everything and run the checks
 ```
 
@@ -61,7 +63,8 @@ number on the chart equals that number in the data" assertions.
 - **Titles state the finding** ("Deposit Door is the most common recorded issue: 16% of unplanned tickets"), not
   the topic. Compute the numbers in the title from the data.
 - **Define terms on the chart.** If a chart uses a defined term (chronic outlier, workload-outsized,
-  machine-month, unplanned, repeat contact, …), its definition is the first footer line.
+  machine-month, unplanned, repeat contact, …), its definition is the first footer line. (Slide versions move the
+  definitions to their speaker notes instead; see below.)
 - **Emphasis is blue, context is gray.** Colour only what the title talks about.
 - **At most three categorical colours:** blue `#2a78d6`, orange `#eb6834`, aqua `#1baf7a`, in that order. They are
   validated as distinguishable on this surface. Aqua is light, so every aqua mark needs a label or legend entry.
@@ -114,12 +117,41 @@ committed reproductions of Zac's tables:
 
 Neither set needs the database. Only the real-name variants read the gitignored workbook.
 
+## Slide versions
+
+`slides/` redraws every chart above as a less busy version for PowerPoint, on the assumption that the presenter says
+the definitions and caveats aloud. Each `slides/<chart>_slide.py` reads the same data and keeps the full chart's
+title (the finding), marks, colours and fonts. What changes:
+
+- **16:9 page** (10 × 5.625 in, 200 dpi): every slide scales the same when it fills a slide, so text sizes match
+  across the deck.
+- **One-line subtitle**: what is plotted, and when.
+- **No footer**: no definitions, notes or sources on the chart. They go to `figures/slides/speaker_notes.md`, which
+  lists for each slide the definitions and caveats its full chart prints, with the numbers computed from the data.
+- **Fewer labels in the plot**: no counts in legends and axis labels, value labels without the secondary number
+  (e.g. counts but not shares), secondary annotations dropped. Each script's docstring says what it leaves out.
+- **Fewer rows where a slide cannot hold them**: chart 7 shows the customers with 3 or more chronic outliers (the full
+  chart: 2 or more), chart 8 the 10 chronic outliers with the most tickets (the full chart: 30).
+
+The slides keep the full charts' file names, in `figures/slides/`. The full charts remain the reference: when a
+number on a slide is questioned, the full chart's footer has the answer.
+
+`slides/run_all.py` checks the numbers as the full charts do, and also that every slide's title is drawn on its full
+chart (so both state the same finding with the same numbers), that every term a slide uses is defined in its speaker
+notes, and that no real customer name appears on a pseudonymous slide or in the notes. The real-name variants of
+charts 7 and zac_02 go to `deliverables/` (gitignored) with the privacy warning as a muted footer line.
+
+To change the page size or resolution for a different slide layout, edit `WIDTH`, `HEIGHT` and `DPI` in
+`slides/slides.py`; `S.save(fig, path, dpi=...)` takes the resolution for any chart.
+
 ## Running
 
 ```bash
 python3 -I viz/run_all.py                                  # every chart, then the checks
 python3 -I viz/high_ticket/run_all.py                      # one section
 python3 -I viz/zac_notebook/zac_04_issue_mix.py            # one chart
+python3 -I viz/slides/run_all.py                           # the slide versions and their speaker notes
+python3 -I viz/slides/zac_04_issue_mix_slide.py            # one slide
 ```
 
 Each section's `run_all.py` runs three checks:
@@ -127,7 +159,8 @@ Each section's `run_all.py` runs three checks:
 - **Definitions:** every chart that uses a defined term draws its definition.
 - **Privacy:** no real customer name or serial appears on a pseudonymous figure.
 
-A failed definition or privacy check stops the run with an error.
+A failed definition or privacy check stops the run with an error. The slides section runs the same three checks,
+with the speaker notes standing in for the footer, plus the title check described under Slide versions.
 
 **Requirements:** Python 3.12+, pandas, numpy and matplotlib. The real-name variants also need openpyxl and the
 workbook in `data/raw/`.
