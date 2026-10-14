@@ -2,8 +2,14 @@
 
 *Script: `verification/high_ticket_machines.py` (33 self-checks; it runs locally in about 20 s from the workbook and
 the committed `fu_*` and `db_*` CSVs, with no database). Figures: `verification/outputs/figures/htm_*.png`, drawn
-by `verification/plot_high_ticket_machines.py`. Every number below is in `verification/outputs/htm_summary.json` or
-an `htm_*.csv`, unless it is marked as coming from the review pass.*
+by one plain matplotlib script per chart in `verification/plots/` (`htm_01_*.py` … `htm_10_*.py`; `run_all.py` draws
+them all). Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
+as coming from the review pass.*
+
+**Terms.** *Workload-outsized*: 5 or more unplanned tickets, the top 5% of ticketed machines. *Chronic outlier*: a
+machine that is both workload-outsized and a rate outlier, i.e. it has more tickets than its machine type's rate ×
+months active predicts (Poisson test, Benjamini–Hochberg q < 0.05). This is a screening flag for follow-up, not proof
+of a defect. Every chart that uses either term prints its definition.
 
 **How this was checked.** An independent clean-room build reproduced the populations, the outlier classes (the same
 113 IDs) and the episode counts. Four skeptic reviews then examined stability, concentration against chance,
@@ -170,6 +176,29 @@ From `fu_ticket_last10.csv`: 30-day lookback on the corrected clock, 5,312 usabl
   because frequent tickets leave few clean 35-day-earlier windows.
 
 ![Pre-ticket non-success rate](../verification/outputs/figures/htm_06_pre_ticket_nonsuccess.png)
+
+## F. Which machine types generate the most tickets
+**Charts 9 show raw counts, which are not adjusted for fleet size.** A type can rank high simply because many machines
+of that type are installed. Chart 10 adjusts for this with machine-months.
+
+- **By model**, as recorded on tickets: LVD-Remote-2.0, LVRR-WP-2.0 and MV-2.0 generate 49% of the 7,186 unplanned
+  tickets (1,393, 1,211 and 897).
+  - Model is recorded only on tickets, so the number of installed machines per model is unknown.
+  - Per-machine rates by model therefore cannot be computed from these data.
+- **By telemetry machine type:** scrubex2.0-2, scrubex2.0-3 and scrubex2.0-4 generate 52% of the 5,921 tickets
+  matched to a telemetry device.
+- **Machine-month:** one month of a machine in service. Each telemetry device counts the calendar months from its
+  first to its last transaction within Aug 2025–Jul 2026, both included, so a machine active all year adds 12.
+- **Adjusting for exposure with machine-months** (chart 10, `htm_type_rates.csv`) changes the reading:
+  - those three types are also 48% of the exposure-population devices and of their machine-months;
+  - their rates are 8.5, 8.2 and 7.6 tickets per 100 machine-months, close to the fleet's 7.5. Their lead in raw
+    counts is mostly fleet size;
+  - the highest rate among types with at least 100 machine-months is sbsx-51: 21.9 per 100 machine-months, on 33
+    devices.
+
+![Tickets by model](../verification/outputs/figures/htm_09_tickets_by_model.png)
+![Tickets by telemetry machine type](../verification/outputs/figures/htm_09_tickets_by_machine_type.png)
+![Ticket rate per 100 machine-months by machine type](../verification/outputs/figures/htm_10_ticket_rate_by_machine_type.png)
 
 ## Questions for IPA
 1. **Field check of the robust core.**

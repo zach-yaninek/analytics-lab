@@ -20,8 +20,11 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   audits (`audit_case_logic.py`, `audit_telemetry_consistency.py`), `customer_fleet_audit.py`,
   `timestamp_semantics.py`, `flags.py` (canonical monitoring-ticket and telemetry-mention flags) and
   `verify_with_db.py` (everything that needs the telemetry DB), `db_followup.py` (last-10 codes per ticket on the
-  corrected clock; also needs the DB), and `high_ticket_machines.py` with `plot_high_ticket_machines.py` (local only,
-  reads the committed `fu_*`/`db_*` outputs).
+  corrected clock; also needs the DB), and `high_ticket_machines.py` (local only, reads the committed
+  `fu_*`/`db_*` outputs).
+- `verification/plots/`: one plain matplotlib script per high-ticket-machine chart (`htm_01_*.py` … `htm_10_*.py`),
+  each runnable on its own; `style.py` holds the shared palette, layout and term definitions; `run_all.py` draws
+  every chart and checks definitions, numbers and privacy.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py`.
 - `verification/outputs/`: pseudonymous aggregate outputs; `figures/` holds the charts.
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
@@ -43,6 +46,7 @@ python3 -I verification/tests/run_fixture_tests.py # self-test of the DB script 
 python3 -I verification/verify_with_db.py --db data/raw/ipa_transaction_events_202508_202608.db \
     --xlsx "data/raw/IPA_CaseHistory_Aug 2025-Aug2026.xlsx" --out verification/outputs/db --private data/private/db
 python3 -I verification/high_ticket_machines.py   # ~20 s, no DB; ends by drawing the htm_* figures
+python3 -I verification/plots/htm_03_observed_vs_expected.py   # redraw one chart (any htm_0N_*.py)
 ```
 
 Requires Python 3.12+ with pandas, numpy and openpyxl; matplotlib for the figures (skipped with a message if it is

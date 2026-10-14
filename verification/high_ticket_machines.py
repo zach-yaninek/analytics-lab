@@ -69,9 +69,10 @@ numbers. Numeric columns (counts, rates) are not scanned; no id is stored as a n
 
 Run:  cd /home/user/analytics-lab && python3 -I verification/high_ticket_machines.py
 Deterministic: fixed seed, stable sorts. Exit status 1 if any check fails.
-Figures: the run ends by calling plot_high_ticket_machines.main(), which reads only the htm_* outputs and writes
-verification/outputs/figures/htm_NN_*.png (pseudonymous) plus one real-name chart to deliverables/ (gitignored).
-Skipped with a message if matplotlib is not installed.
+Figures: the run ends by calling verification/plots/run_all.py (one plain matplotlib script per chart, each also
+runnable on its own). They read only the htm_* outputs and write verification/outputs/figures/htm_NN_*.png
+(pseudonymous) plus one real-name chart to deliverables/ (gitignored). Skipped with a message if matplotlib is not
+installed.
 """
 import sys
 from pathlib import Path
@@ -1110,7 +1111,7 @@ def main():
 
 
 def plots():
-    """Draw the figures last, from the htm_* outputs just written (verification/plot_high_ticket_machines.py).
+    """Draw the figures last, from the htm_* outputs just written (verification/plots/run_all.py).
     Skipped with a message if matplotlib is missing. Returns 1 if plotting failed, else 0."""
     try:
         import matplotlib  # noqa: F401
@@ -1118,7 +1119,8 @@ def plots():
         print('Plots skipped: matplotlib is not installed (the htm_* tables above are complete without them).')
         return 0
     try:
-        from plot_high_ticket_machines import main as plot_main
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'plots'))
+        from run_all import main as plot_main
         plot_main()
     except Exception as exc:  # report, but keep the analysis outputs and their check status
         print(f'Plots failed: {type(exc).__name__}: {exc}')
