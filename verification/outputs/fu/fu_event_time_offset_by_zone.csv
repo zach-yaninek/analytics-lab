@@ -1,0 +1,18 @@
+zone,period,offset,rows
+Arizona (no DST),DST,0.0,13547
+Arizona (no DST),Standard,0.0,6030
+Central,DST,0.0,160150
+Central,Standard,0.0,76140
+Eastern,DST,-4.0,1
+Eastern,DST,0.0,708686
+Eastern,Standard,0.0,320521
+Hawaii (no DST),DST,0.0,13773
+Hawaii (no DST),Standard,0.0,4803
+Mountain,DST,0.0,15250
+Mountain,Standard,0.0,8400
+Newfoundland,DST,0.0,455
+Newfoundland,Standard,0.0,227
+Pacific,DST,0.0,122611
+Pacific,Standard,0.0,48840
+Unknown,DST,0.0,502
+Unknown,Standard,0.0,64

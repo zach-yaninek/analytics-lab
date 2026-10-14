@@ -1,0 +1,5 @@
+location_class,locations,devices,ticketed_devices,transacting_devices,share_of_fleet_pct
+Multi-account,7,66,44,65,0.92
+No location,0,451,15,405,6.28
+No tickets,172,495,0,478,6.89
+Single-account,668,6171,2982,6003,85.91

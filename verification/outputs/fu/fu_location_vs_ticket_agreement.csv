@@ -1,0 +1,12 @@
+comparison,result,ticketed_devices,share_pct
+name_match,exact,2972,97.73
+name_match,normalised,38,1.25
+name_match,different,15,0.49
+name_match,missing,15,0.49
+name_match,contained,1,0.03
+state_match,same,3011,99.01
+state_match,missing,25,0.82
+state_match,different,5,0.16
+city_match,same,3019,99.28
+city_match,missing,16,0.53
+city_match,different,6,0.2

@@ -1,0 +1,17 @@
+test,zone,period,shift_h,rows
+zone vs Eastern,Central,DST,0.87,160150
+zone vs Eastern,Mountain,DST,2.04,15250
+zone vs Eastern,Arizona (no DST),DST,2.97,13547
+zone vs Eastern,Pacific,DST,3.05,122611
+zone vs Eastern,Hawaii (no DST),DST,5.93,13773
+zone vs Eastern,Central,Standard,0.74,76140
+zone vs Eastern,Mountain,Standard,1.7,8400
+zone vs Eastern,Arizona (no DST),Standard,1.72,6030
+zone vs Eastern,Pacific,Standard,2.62,48840
+zone vs Eastern,Hawaii (no DST),Standard,4.67,4803
+Standard vs DST,Eastern,Std-DST,1.12,1029208
+Standard vs DST,Central,Std-DST,1.02,236290
+Standard vs DST,Mountain,Std-DST,0.8,23650
+Standard vs DST,Arizona (no DST),Std-DST,-0.08,19577
+Standard vs DST,Pacific,Std-DST,0.73,171451
+Standard vs DST,Hawaii (no DST),Std-DST,-0.14,18576
