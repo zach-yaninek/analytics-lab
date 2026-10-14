@@ -50,10 +50,13 @@ def sha256_file(path):
 
 def load_raw(path=XLS):
     """Read the case sheet the way cell 4 does (read-only, cached values, drop all-blank rows)."""
-    ws = openpyxl.load_workbook(path, read_only=True, data_only=True)[SHEET]
-    rows = ws.values
-    headers = next(rows)
-    frame = pd.DataFrame([r for r in rows if any(v is not None for v in r)], columns=headers)
+    wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    try:
+        rows = wb[SHEET].values
+        headers = next(rows)
+        frame = pd.DataFrame([r for r in rows if any(v is not None for v in r)], columns=headers)
+    finally:
+        wb.close()  # read-only workbooks keep the file open until closed
     # pandas 3 turns blank text cells into NaN in str-dtype columns; Zac's Colab (pandas 2)
     # kept object columns holding None. Restore that so clean() and SQL NULLs behave as in Colab.
     return frame.astype(object).where(frame.notna(), None)
