@@ -7,15 +7,44 @@ account-to-system map are kept in `data/private/fleet_private_*.csv` (gitignored
 telemetry DB is not in this container); **[inferred]** = our reasoning or outside knowledge, not verified by IPA;
 **[pending DB]** = decided by the checks in §7 once the DB arrives.
 
+> **Update, 14 October 2026.** This document was written on 12 October from the case export and Zac's device
+> dictionary, before the full-database run. The original text below is kept as the dated record; superseded
+> statements are marked *[Updated 14 Oct]*. What the database added:
+> - **The device table has a location name, and it matches the ticket account.** Source: `db_followup.py` F4, in
+>   `verification/outputs/fu/fu_summary.md` and `fu_location_vs_ticket_agreement.csv`.
+>   - `devices.location_name` equals the ticket's account for 99% of ticketed devices: 2,972 exact and 38 after
+>     normalising, of 3,041.
+>   - It attributes **6,171 of 7,183 devices (86%)**, including machines that never had a ticket, to one account
+>     each, across 666 accounts.
+>   - Customer-level (facility) exposure rates therefore look feasible for most of the fleet. The caveats:
+>     - it is a current snapshot, not history;
+>     - accounts are facilities, not health systems;
+>     - IPA should confirm the field comes from the asset record.
+>   - No customer-level rate has been computed yet.
+> - **Host as a key** (`verification/outputs/db/db_host_class_fleet_share.csv`, `db_accounts_per_host.csv`,
+>   `db_hosts_per_account.csv`):
+>   - At account level, single-account hosts hold 59.6% of the fleet and multi-account hosts 27.2%, so host is not a
+>     facility key.
+>   - Most accounts sit on one host: 645 of 671.
+>   - The system-level test in §7 (D4/D5) still needs IPA's instance-to-organisation list.
+> - **Unmatched ticket serials** (`db_unmatched_near_match.csv`, `db_unmatched_profile.csv`):
+>   - None of the 732 matches after case, character or leading-zero normalisation, so simple formatting differences
+>     do not explain them.
+>   - The unmatched share is highest for the ScrubExchange (83%) and ScrubBank (40%) record types.
+> - **Zac's 16 / 31 / 83 reproduce on the database.** Excluding the shared internal host and devices with no host
+>   gives 14 / 26 / 82 (`db_mapping_summary_variants.csv`).
+
 **Bottom line.**
 - Zac's call is right: with the case export and device dictionary as delivered, we cannot report exposure rates per
-  customer account.
-- No field links devices to accounts. Ticket serials reach only 3,041 of 7,183 devices (42%; at most 52.5% even if
+  customer account. *[Updated 14 Oct: the database's device location name changes this for 86% of devices; see the
+  Update above.]*
+- No field links devices to accounts. *[Updated 14 Oct: `devices.location_name` in the source database does.]* Ticket serials reach only 3,041 of 7,183 devices (42%; at most 52.5% even if
   every unmatched serial were recovered).
 - `Account Name` behaves as a facility that nests in a few hundred health systems.
 - His 31/83/16 crosswalk counts include counting artefacts, but they are consistent with clearView instances that
   serve more than one facility.
-- Per-clearView-instance rates need no ownership data and can be computed once the DB arrives. Labelling them as
+- Per-clearView-instance rates need no ownership data and can be computed once the DB arrives. *[Updated 14 Oct: the
+  location name is now the better route to customer rates.]* Labelling them as
   customer or system rates needs IPA's parent-account and instance-to-organisation mapping, or the full asset list.
 - These conclusions were re-derived by independent reviewers (data/derived/workflowB_result.json, K2a–K2j), and
   the corrections they found are folded in below.
@@ -220,11 +249,11 @@ machine-level heterogeneity, assuming all dictionary devices were in service for
 |---|---|
 | Ticket workload (counts) by facility account | Supported. Counts only, not rates |
 | Rates by telemetry `machine_type` (Zac §3.3) | Supported; denominators come from telemetry, not tickets |
-| Customer-specific exposure rates from tickets | **Not supported.** At most 42% fleet coverage; denominator conditions on failure |
+| Customer-specific exposure rates from tickets | **Not supported.** At most 42% fleet coverage; denominator conditions on failure. *[Updated 14 Oct: from the device location name instead, feasible for 86% of devices pending IPA's confirmation.]* |
 | "Tickets per machine" by customer from tickets | **Not supported.** ≥1.0 by construction and tracks workload |
 | Facility = owner of a fleet | **Not supported.** Facilities nest in a few hundred systems; roughly half to four-fifths of tickets are in multi-account systems, depending on grouping rules |
-| Per-clearView-instance rates (incl. unticketed machines) | **Computable [pending DB]**, no ownership data needed; label as "clearView instance" |
-| System-level exposure rates using host as key | **Possible [pending DB]** if D1–D5 pass and IPA confirms which organisation each instance serves |
+| Per-clearView-instance rates (incl. unticketed machines) | **Computable [pending DB]**, no ownership data needed; label as "clearView instance". *[Updated 14 Oct: DB available; not yet computed.]* |
+| System-level exposure rates using host as key | **Possible [pending DB]** if D1–D5 pass and IPA confirms which organisation each instance serves. *[Updated 14 Oct: host is not a facility key (single-account hosts hold 59.6% of the fleet); the system-level test still needs IPA's list.]* |
 | Ticket serial = physical machine | Mostly. At least 0.5% (about 0.7% on manual review) of tickets are noted as wrong-machine; 8 serials switch account |
 
 ### 5.1 Does the project need customer-specific exposure rates?
@@ -259,7 +288,8 @@ far as the register is complete; non-networked or out-of-contract machines may b
 Also ask: (a) whether one clearView instance corresponds to one parent account; (b) what the shared internal host
 holds (demo, loaner, refurbishment, staging); (c) whether a case's serial is chosen from the asset lookup or typed.
 
-## 7. Decisive checks once the DB arrives
+## 7. Decisive checks once the DB arrives *[partly run 12–14 Oct: the account-level host checks and unmatched
+serials, in the Update above; the system-level D4/D5 still need IPA's list]*
 
 `customer_fleet_audit.py --db PATH` runs D1–D7 against the source `devices` table plus the Excel cases. `--with-
 telemetry` adds D8, which scans all 17 GB. Pseudonymous results go to `fleet_db_D*.csv`. The private

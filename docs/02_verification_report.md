@@ -6,6 +6,34 @@ ownership (`docs/03_customer_fleet_ownership.md`) and timestamp semantics (`docs
 *Inputs available here:* the case-history workbook, the notebook with its printed outputs, and the project plan.
 The 17 GB telemetry database was **not** available, so telemetry results were checked by logic review and
 cross-table consistency only; `verification/verify_with_db.py` re-runs them once the DB is uploaded.
+*[Updated 14 Oct: the DB has since been run; see the Update below.]*
+
+> **Update, 14 October 2026.** This report was written on 12 October, before the full-database run and IPA's
+> answers at the 13 October meeting. The original text below is kept as the dated record; superseded statements are
+> marked *[Updated 14 Oct]*. What changed:
+> - **Full-database re-run done** (`verify_with_db.py`; record in `verification/outputs/db/db_summary.md`). It made 66
+>   checks against Zac's printed values, plus our own integrity checks. 65 pass in the committed record. The one
+>   FAIL (`pilot_last_codes_head`) was a sort-order bug in our comparison script, fixed in commit 1db0943; re-sorted,
+>   all 15 rows match. `db_summary.md` predates that fix.
+>   - Reproduced: linkage 81.82% (6,113 tickets, 3,041 machines), the 16 / 31 / 83 mapping summary, the
+>     machine-type and monthly rates, and the bucket totals.
+> - **Telemetry clock: UTC** (verified on the full database). The evidence:
+>   - hour-of-day profiles shift by zone as UTC predicts;
+>   - no zone shows a DST gap or doubled hour;
+>   - `event_time_offset` is 0 in all but 1 of the 1.5 million sampled rows, and `event_time_utc` follows the
+>     transaction time by a median of about 36 s;
+>   - the 155 rows where the two columns differ are −4 or −5 h shifts on devices with no linked ticket.
+>
+>   Sources: `db/db_summary.md` steps 5–8 and `fu/fu_summary.md` F5.
+> - **Case clock: US Eastern**, confirmed by IPA on 13 October.
+> - **Pilot at the corrected anchor** (+4 h EDT / +5 h EST). The rank-1 code is unchanged for 20 of the 26 pilot
+>   tickets with codes. 11 tickets have codes in the 4–5 h that Zac's windows missed (`fu/fu_summary.md` F3).
+> - **Customer attribution:** the device location name attributes 86% of devices to one account each, pending IPA
+>   confirmation (see the update in `docs/03`).
+> - **Field timing:** IPA says Trouble Code is entered at intake and may change by close, and that Category and Sub
+>   Category are set near close (see the update in `docs/04`).
+> - **Classifier:** IPA chose retrospective linking, and it is now lower priority than the data analysis
+>   (`docs/executive_summary.md`).
 
 ---
 
@@ -17,15 +45,19 @@ cross-table consistency only; `verification/verify_with_db.py` re-runs them once
 2. **His telemetry tables are internally consistent.** 85 cross-table identities pass: bucket sums, cohort and
    exclusion totals, the monthly and type tables, and the pilot tables. A second reviewer re-derived about 80 of
    them independently and found no discrepancy. The tables still cannot be *re-run* until the DB is available.
+   *[Updated 14 Oct: re-run on the full database; they reproduce (see the Update).]*
 3. **His main caution on customer-to-fleet ownership is right.** No field links devices to customer accounts, ticket
    serials reach only 42% of telemetry devices, and `Account Name` is a facility. Customer-specific exposure rates
-   are not supportable from the data as delivered (`docs/03`).
+   are not supportable from the data as delivered (`docs/03`). *[Updated 14 Oct: the device location name, in the
+   DB, attributes 86% of devices to one account; rates look feasible pending IPA's confirmation (`docs/03`).]*
 4. **His flagged timestamp issue is real, and half of it is now settled.**
    - Case times are on one shared, daylight-saving clock, most likely US Eastern. They are not hospital-local and
      not UTC.
-   - The telemetry clock is still unknown.
+   - The telemetry clock is still unknown. *[Updated 14 Oct: UTC, verified on the full database; the case clock is
+     US Eastern, confirmed by IPA.]*
    - Trouble Code and Category are filled by closure, and Resolution and Notes are written during the ticket's life
-     (`docs/04`).
+     (`docs/04`). *[Updated 14 Oct: IPA says Trouble Code is entered at intake and may change by close; the export
+     holds only the final value.]*
 5. **The issues found are about definitions and interpretation, not errors.** The most consequential:
    - the 30-ticket pilot sample design, and what its 26/30 result does and does not show;
    - how sensitive the repeat-contact and fleet-rate headlines are to definitions;
@@ -78,10 +110,10 @@ cross-table consistency only; `verification/verify_with_db.py` re-runs them once
 | Monthly ticket counts (13 months) | table | identical | ✔ |
 | 30-day repeat contact | 1,574 / 6,665 = 23.62%; same-category 7.73% | identical | ✔ |
 | Pilot selection (30 tickets) | 30 ids | consistent with his rule (eligibility needs the DB) | ✔ (partial) |
-| Exact-serial linkage | 6,113 tickets (81.82%), 3,041 machines | needs DB | pending |
-| Telemetry totals and buckets | 118,047,569; 6.68% non-success; 7.54 per 1,000 narrow faults | internally consistent | pending re-run |
-| Cohort rate | 4,916 / 69,155 = 7.11 per 100 active machine-months | consistent: exclusions sum to the 6,664 unplanned Aug-25–Jul-26 tickets re-derived from the workbook | pending re-run |
-| Mapping summary | 16 / 31 / 83 | logic reviewed (§4, F6) | pending re-run |
+| Exact-serial linkage | 6,113 tickets (81.82%), 3,041 machines | needs DB | pending → ✔ DB (14 Oct) |
+| Telemetry totals and buckets | 118,047,569; 6.68% non-success; 7.54 per 1,000 narrow faults | internally consistent | pending → ✔ DB (14 Oct) |
+| Cohort rate | 4,916 / 69,155 = 7.11 per 100 active machine-months | consistent: exclusions sum to the 6,664 unplanned Aug-25–Jul-26 tickets re-derived from the workbook | pending → ✔ DB (14 Oct) |
+| Mapping summary | 16 / 31 / 83 | logic reviewed (§4, F6) | pending → ✔ DB (14 Oct) |
 
 **Workbook provenance.** The local workbook hashes to `f060f58…`, not the `8ffdc24…` Zac verified. Its metadata
 shows it was re-saved in Excel on 2026-10-10, the same day as the notebook; the export itself was created on
@@ -119,16 +151,16 @@ These need no change:
 
 ---
 
-## 5. What is still pending, and how it will be resolved
+## 5. What is still pending, and how it will be resolved *[status updated 14 Oct]*
 
-| Item | Needs | Where |
-|---|---|---|
-| Linkage 81.82%, mapping 16/31/83, machine-type and monthly rates, bucket totals | the DB | `verify_with_db.py` steps 1–4 compare against Zac's printed values |
-| Host-as-customer-system feasibility | the DB, plus IPA's instance-to-organisation list | `verify_with_db.py` step 3, `customer_fleet_audit.py --db` (checks D1–D8) |
-| Telemetry clock (UTC, machine-local or server) | the DB, or IPA | `verify_with_db.py` steps 5–7: DST gap and doubled hour, hour profiles by zone, ingestion lag, the 155 rows |
-| Absolute case-clock zone (Eastern vs Central) | IPA (exporting user's Salesforce time zone) | `docs/04` §2.3 |
-| Code buckets, code support by family, door codes, code 05 | IPA | memo asks |
-| Pilot re-ranking at the corrected anchor | the telemetry clock | Zac's `analysis.sqlite` → `pilot_events` suffices |
+| Item | Needs | Where | Status (14 Oct) |
+|---|---|---|---|
+| Linkage 81.82%, mapping 16/31/83, machine-type and monthly rates, bucket totals | the DB | `verify_with_db.py` steps 1–4 compare against Zac's printed values | Done: all reproduce (`db/db_summary.md`) |
+| Host-as-customer-system feasibility | the DB, plus IPA's instance-to-organisation list | `verify_with_db.py` step 3, `customer_fleet_audit.py --db` (checks D1–D8) | Done at account level: host is not a facility key (single-account hosts hold 59.6% of the fleet); the system-level test still needs IPA's instance-to-organisation list. The device location name is the better route (`docs/03` update) |
+| Telemetry clock (UTC, machine-local or server) | the DB, or IPA | `verify_with_db.py` steps 5–7: DST gap and doubled hour, hour profiles by zone, ingestion lag, the 155 rows | Done: UTC |
+| Absolute case-clock zone (Eastern vs Central) | IPA (exporting user's Salesforce time zone) | `docs/04` §2.3 | Done: US Eastern (IPA, 13 Oct) |
+| Code buckets, code support by family, door codes, code 05 | IPA | memo asks | In progress: IPA is sending its code definitions |
+| Pilot re-ranking at the corrected anchor | the telemetry clock | Zac's `analysis.sqlite` → `pilot_events` suffices | Done: rank-1 code unchanged for 20 of 26 (`fu/fu_summary.md` F3) |
 
 ---
 

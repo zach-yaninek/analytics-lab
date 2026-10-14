@@ -13,6 +13,31 @@ ticket-to-code matching. The pilot is conditional on unverified clock assumption
 **[inferred]** is reasoning or documentation, not confirmed by IPA. **[pending DB / IPA]** means it cannot be
 settled with the data in hand.
 
+> **Update, 14 October 2026.** This document was written on 12 October, before the full-database run and IPA's
+> answers at the 13 October meeting. The original text below is kept as the dated record; superseded statements are
+> marked *[Updated 14 Oct]*. What changed:
+> - **Case clock: US Eastern**, confirmed by IPA on 13 October.
+> - **Telemetry clock: UTC**, verified on the full database. The evidence:
+>   - hour-of-day profiles shift by zone as UTC predicts;
+>   - no zone shows a DST gap or doubled hour;
+>   - `event_time_offset` is 0 in all but 1 of the 1.5 million sampled rows;
+>   - the 155 rows where the two columns differ are −4 or −5 h shifts on devices with no linked ticket.
+>
+>   Sources: `verification/outputs/db/db_summary.md` steps 5–8 and `verification/outputs/fu/fu_summary.md` F5.
+> - **Window rule.** Add +4 h (EDT) or +5 h (EST) to `opened_at` to put a ticket on the telemetry clock. Applied to
+>   the 6,113 device-matched tickets, that is +4 h for 4,151 and +5 h for 1,962 (`fu/fu_summary.md` F1).
+> - **Zac's pilot at the corrected anchor** (`fu/fu_summary.md` F3, `fu_pilot_equal_clock_vs_corrected.csv`):
+>   - the rank-1 code is unchanged for 20 of the 26 tickets with codes;
+>   - the last-10 distinct list is unchanged for 19 of 26;
+>   - 11 tickets have codes in the 4–5 h that the original windows missed.
+> - **Field timing (IPA, 13 October):**
+>   - Trouble Code is entered at intake but may be updated by close. The export holds only the final value: 1 of 64
+>     open tickets has one, which is why we read it as filled by closure. Where the intake value is kept is an open
+>     question for IPA.
+>   - Category and Sub Category are set near the end of the ticket's life.
+> - **Classifier:** IPA chose the retrospective linker (§5), and it is now lower priority than the data analysis.
+>   Ticket text may be processed with a language model; we still remove contact details.
+
 ---
 
 ## 1. Bottom line
@@ -21,11 +46,11 @@ settled with the data in hand.
 |---|---|---|
 | Is `Date/Time Opened` hospital-local time? | **No.** Every ticket is on one shared clock. | verified |
 | Is it UTC (or any fixed offset)? | **No.** The clock observes daylight saving time. | verified |
-| Which zone is the shared clock? | **US Eastern** (America/New_York) is the working assumption. Central is not fully excluded. | inferred; IPA to confirm |
+| Which zone is the shared clock? | **US Eastern** (America/New_York) is the working assumption. Central is not fully excluded. *[Updated 14 Oct: US Eastern.]* | ~~inferred; IPA to confirm~~ confirmed by IPA (13 Oct) |
 | Is `Trouble Closed Date/Time` on the same clock? | Yes. No negative durations; close-within-1-h shares are equal across zones. | verified |
-| What clock are the telemetry timestamps on? | **Unknown.** `transaction_time_local` and `transaction_time_utc` hold the same value in all but 155 of 118,047,569 rows. | Zac; pending DB / IPA |
-| How far off can Zac's pilot anchor be? | Between −2 h and +5 h for the 30 pilot tickets, depending on the telemetry clock. That is well inside his ±12 h band. | verified (arithmetic) |
-| When are Trouble Code / Category filled in? | **By closure.** 1 of 64 open tickets has them, against 461 of 461 tickets closed in the same month. | verified |
+| What clock are the telemetry timestamps on? | **Unknown.** `transaction_time_local` and `transaction_time_utc` hold the same value in all but 155 of 118,047,569 rows. *[Updated 14 Oct: **UTC**.]* | ~~Zac; pending DB / IPA~~ verified on the full DB (14 Oct) |
+| How far off can Zac's pilot anchor be? | Between −2 h and +5 h for the 30 pilot tickets, depending on the telemetry clock. That is well inside his ±12 h band. *[Updated 14 Oct: 4–5 h early; corrected, the rank-1 code is unchanged for 20 of 26.]* | verified (arithmetic); settled 14 Oct |
+| When are Trouble Code / Category filled in? | **By closure.** 1 of 64 open tickets has them, against 461 of 461 tickets closed in the same month. *[Updated 14 Oct: IPA says Trouble Code is entered at intake and may change by close, so the export holds only the final value; Category and Sub Category are set near close.]* | verified (export); IPA answer 13 Oct |
 | Are Resolution and Notes written at intake? | **No.** They are written during the ticket's life (44% of open tickets already have a resolution). | verified |
 
 ---
@@ -76,7 +101,7 @@ supersedes them all.
   not move in either. We read this as seasonal behaviour, not a clock change, and disclose it.
 - The Arizona (no-DST) difference-in-differences test is underpowered (n = 51) and inconclusive.
 
-### 2.3 Which zone? US Eastern, provisionally [inferred; IPA to confirm]
+### 2.3 Which zone? US Eastern, provisionally [inferred; IPA to confirm] *[Updated 14 Oct: confirmed by IPA]*
 Relative tests cannot identify the absolute zone. Three facts favour US Eastern:
 1. **The file's own creation stamp.** `docProps/core.xml` records `created = 2026-09-01T12:35:45Z`. The latest close
    in the export is `2026-09-01 08:05` on the export clock (9 closes that morning, 07:06–08:05).
@@ -110,7 +135,8 @@ CreatedDate in UTC.
 
 ---
 
-## 3. The telemetry clock [pending DB / IPA]
+## 3. The telemetry clock [pending DB / IPA] *[Updated 14 Oct: UTC, verified on the full database; see the Update at
+the top]*
 
 **[Zac]** In Zac's run, `transaction_time_local` and `transaction_time_utc` are identical strings for all but 155
 of 118,047,569 events. They record **one clock under two labels**. That clock could be true UTC with a mislabelled
@@ -138,7 +164,8 @@ at new offsets still need the source DB, because `00` events were not saved.
 ## 4. What this means for ticket-to-telemetry windows (Zac's pilot)
 
 **Hours to add to `opened_at`** to put it on the telemetry clock, assuming an Eastern case clock. Under a Central
-case clock, add 1 h to every entry.
+case clock, add 1 h to every entry. *[Updated 14 Oct: with an Eastern case clock and UTC telemetry, the rule is
++4 h (EDT) / +5 h (EST).]*
 
 | Hospital zone | Telemetry = UTC | Telemetry = machine-local | Telemetry = ET server |
 |---|---|---|---|
@@ -170,6 +197,10 @@ What that means for each pilot result:
 ---
 
 ## 5. Field-update timing and what it means for the classifier
+
+*[Updated 14 Oct: IPA chose the retrospective linker, and the classifier is now lower priority than the data
+analysis. IPA's field-timing answer, above, explains the 1-of-64 pattern: the export holds the final Trouble Code,
+not the intake value.]*
 
 **Open versus closed.** 64 tickets were open (`Dispatch`) at export, and all were opened in August 2026. The fair
 comparison is therefore with the 461 tickets opened in August 2026 and already closed. In the table, "open" is n=64
@@ -240,13 +271,13 @@ feature-selection deliverable should give both lists, and the team should confir
 
 ---
 
-## 6. Questions for IPA (and why each matters)
+## 6. Questions for IPA (and why each matters) *[answers added 14 Oct]*
 
-| # | Ask | Why we need it |
-|---|---|---|
-| 1 | Which time zone is set on the Salesforce user who exported the case-history report on 1 Sep 2026? Is "Date/Time Opened" the case creation time? Ideally, re-export about 10 cases with CreatedDate in UTC. | The data prove one shared, daylight-saving clock but cannot pin it down. Eastern vs Central leaves 1 h of uncertainty on every ticket-to-telemetry window. |
-| 2 | Telemetry: are `transaction_time_utc` / `transaction_time_local` true UTC, each machine's local clock (with automatic DST?), or the clearView server's zone? Is the stored time the event time or the receipt time? What are the 155 rows where they differ? | The two columns are identical, so their labels don't tell us. A wrong guess moves each ticket's look-back window by up to 5 h and changes which codes count as "the last ones before the call". |
-| 3 | When are Trouble Code / Category / Sub Category, Case Record Type, Case Owner and Dispatch # set? Is the close time stamped automatically on the status change? Field History Tracking would answer this. | It decides which fields a classifier may legitimately use, and whether close time can mark the end of an incident. |
-| 4 | How are "Monitoring – Daily / Poll" tickets created, and should they count as customer demand? | They make up 1.8% of tickets and 11% of 30-day repeats. If telemetry alerts trigger them, matching them back to telemetry is circular. |
-| 5 | How does IPA want to use a ticket classifier: triage at intake, or linking closed tickets to telemetry for engineering insight? May ticket free text (with contact details redacted) be processed by a language model? | The intended use decides the feature list (due 10/13) and the evaluation design. |
-| 6 | What do the statuses `Ricoh-Closed`, `Closed` and `Case Closed` mean? Is Sub Category meant to be not applicable for Network and Miscellaneous codes? | These 23 tickets have no close time and mostly no code; we need to know whether to count them as completed work. Sub Category's "31% missing" may simply mean not applicable. |
+| # | Ask | Why we need it | Answer (13 Oct) |
+|---|---|---|---|
+| 1 | Which time zone is set on the Salesforce user who exported the case-history report on 1 Sep 2026? Is "Date/Time Opened" the case creation time? Ideally, re-export about 10 cases with CreatedDate in UTC. | The data prove one shared, daylight-saving clock but cannot pin it down. Eastern vs Central leaves 1 h of uncertainty on every ticket-to-telemetry window. | US Eastern (IPA, 13 Oct). |
+| 2 | Telemetry: are `transaction_time_utc` / `transaction_time_local` true UTC, each machine's local clock (with automatic DST?), or the clearView server's zone? Is the stored time the event time or the receipt time? What are the 155 rows where they differ? | The two columns are identical, so their labels don't tell us. A wrong guess moves each ticket's look-back window by up to 5 h and changes which codes count as "the last ones before the call". | Settled from the data: UTC, verified on the full database (14 Oct). The 155 rows are −4/−5 h shifts on unlinked devices. |
+| 3 | When are Trouble Code / Category / Sub Category, Case Record Type, Case Owner and Dispatch # set? Is the close time stamped automatically on the status change? Field History Tracking would answer this. | It decides which fields a classifier may legitimately use, and whether close time can mark the end of an incident. | Partly answered: Trouble Code at intake (may change); Category and Sub Category near close. Field History export, close-time stamping, and where the intake Trouble Code is kept still open. |
+| 4 | How are "Monitoring – Daily / Poll" tickets created, and should they count as customer demand? | They make up 1.8% of tickets and 11% of 30-day repeats. If telemetry alerts trigger them, matching them back to telemetry is circular. | Not yet asked. |
+| 5 | How does IPA want to use a ticket classifier: triage at intake, or linking closed tickets to telemetry for engineering insight? May ticket free text (with contact details redacted) be processed by a language model? | The intended use decides the feature list (due 10/13) and the evaluation design. | Retrospective linking, lower priority than the data analysis; LLM processing of ticket text approved. |
+| 6 | What do the statuses `Ricoh-Closed`, `Closed` and `Case Closed` mean? Is Sub Category meant to be not applicable for Network and Miscellaneous codes? | These 23 tickets have no close time and mostly no code; we need to know whether to count them as completed work. Sub Category's "31% missing" may simply mean not applicable. | Open. |
