@@ -105,10 +105,11 @@ def plot(out_dir=style.FIG_DIR):
     ex_raw = int(raw.loc[raw.value == ex.machine_type, 'unplanned_tickets'].iloc[0])
     style.frame(
         fig,
-        f'Of {len(d)} well-measured types, {top.machine_type} has the highest ticket rate: '
+        f'{top.machine_type} has the highest ticket rate of the {len(d)} types shown: '
         f'{top.rate / fleet:.1f}× the fleet',
         f'Unplanned tickets per 100 machine-months by telemetry machine type, {style.period_text(S)}, for the '
-        f'{len(d)} types with at least {min_months} machine-months. Fleet rate {fleet:.1f} = '
+        f'{len(d)} types with at least {min_months} machine-months (the analysis\'s minimum for a type to get its own '
+        f'rate; smaller types are pooled). The 95% intervals show how precise each rate is. Fleet rate {fleet:.1f} = '
         f'{int(r.tickets_used_for_rate.sum()):,} tickets over {int(r.exposure_months.sum()):,} machine-months, all '
         f'types. The three types with the most tickets run only modestly above it ({vs_fleet}): their lead in raw '
         f'counts is mostly fleet size.',

@@ -53,8 +53,8 @@ def class_definition(S, d, untested):
                 f'(x\u00a0=\u00a00)' if hv0 else '')
     return (f'{NAME["rate_outlier_only"]} = a rate outlier that is not workload-outsized. '
             f'{NAME["high_volume_expected"]} = workload-outsized but not a significant rate outlier '
-            f'(q\u00a0≥\u00a0{S["definitions"]["q_cut"]:g}): most still log well above their expected count but miss the '
-            f'cut{zero_txt}.')
+            f'(q\u00a0≥\u00a0{S["definitions"]["q_cut"]:g}): most still log well above their expected count '
+            f'but miss the cut{zero_txt}.')
 
 
 def threshold_note(S, d):
