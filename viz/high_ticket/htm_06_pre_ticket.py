@@ -22,20 +22,22 @@ Inputs:
                                                    and definitions for the chronic-outlier and workload-outsized
                                                    definitions
 Outputs:
-  verification/outputs/figures/htm_06_pre_ticket_events.png
-  verification/outputs/figures/htm_06_pre_ticket_nonsuccess.png
+  viz/figures/htm_06_pre_ticket_events.png
+  viz/figures/htm_06_pre_ticket_nonsuccess.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_06_pre_ticket.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_06_pre_ticket.py
 """
 import re
 import sys
 from pathlib import Path
 from typing import NamedTuple
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 class Group(NamedTuple):
     key: str      # group in htm_pre_ticket.csv
@@ -122,15 +124,15 @@ def consistency_checks(S, pt, ps, ep, events_col):
                         paired[col].median(), 0.05)
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()
-    pt = style.load('pre_ticket')
-    ps = style.load('pre_ticket_summary').set_index(['group', 'window'])
+    S = htm.summary()
+    pt = htm.load('pre_ticket')
+    ps = htm.load('pre_ticket_summary').set_index(['group', 'window'])
     events_col, days = window_column(pt)
-    consistency_checks(S, pt, ps, style.load('episodes'), events_col)
+    consistency_checks(S, pt, ps, htm.load('episodes'), events_col)
     usable = int(pt.group.isin([g.key for g in GROUPS]).sum())
-    definitions = [style.chronic_definition(S), style.outsized_definition(S)]
+    definitions = [htm.chronic_definition(S), htm.outsized_definition(S)]
 
     written = []
     for spec in SPECS:

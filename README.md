@@ -22,11 +22,14 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   `verify_with_db.py` (everything that needs the telemetry DB), `db_followup.py` (last-10 codes per ticket on the
   corrected clock; also needs the DB), and `high_ticket_machines.py` (local only, reads the committed
   `fu_*`/`db_*` outputs).
-- `verification/plots/`: one plain matplotlib script per high-ticket-machine chart (`htm_01_*.py` … `htm_10_*.py`),
-  each runnable on its own; `style.py` holds the shared palette, layout and term definitions; `run_all.py` draws
-  every chart and checks definitions, numbers and privacy.
+- `viz/`: every chart, in one shared style (see `viz/README.md`).
+  - `viz/style/`: the reusable style: `ipa.mplstyle` (a plain matplotlib style sheet) and `ipa_style.py` (palette,
+    title band, footer for definitions and notes, save).
+  - `viz/high_ticket/`: one script per high-ticket-machine chart (`htm_01_*.py` … `htm_10_*.py`).
+  - `viz/zac_notebook/`: Zac's 10 notebook figures rebuilt in the same style (`zac_01_*.py` … `zac_10_*.py`).
+  - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py`.
-- `verification/outputs/`: pseudonymous aggregate outputs; `figures/` holds the charts.
+- `verification/outputs/`: pseudonymous aggregate outputs.
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
   machine.
 
@@ -46,8 +49,8 @@ python3 -I verification/tests/run_fixture_tests.py # self-test of the DB script 
 python3 -I verification/verify_with_db.py --db data/raw/ipa_transaction_events_202508_202608.db \
     --xlsx "data/raw/IPA_CaseHistory_Aug 2025-Aug2026.xlsx" --out verification/outputs/db --private data/private/db
 python3 -I verification/high_ticket_machines.py   # ~20 s, no DB; ends by drawing the htm_* figures
-python3 -I verification/plots/run_all.py                        # redraw every chart and run the chart checks
-python3 -I verification/plots/htm_03_observed_vs_expected.py   # redraw one chart (any htm_NN_*.py)
+python3 -I viz/run_all.py                                 # redraw every chart and run the chart checks
+python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py or zac_NN_*.py)
 ```
 
 Requires Python 3.12+ with pandas, numpy and openpyxl; matplotlib for the figures (skipped with a message if it is

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Draw every high-ticket-machine chart (verification/plots/htm_*.py) and check them.
+"""Draw every high-ticket-machine chart (viz/high_ticket/htm_*.py) and check them.
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/run_all.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/run_all.py
       (verification/high_ticket_machines.py calls main() at the end of a normal run.)
-Each chart script also runs on its own, e.g.  python3 -I verification/plots/htm_03_observed_vs_expected.py
+Each chart script also runs on its own, e.g.  python3 -I viz/high_ticket/htm_03_observed_vs_expected.py
 
 Writes (150 dpi PNG):
-  verification/outputs/figures/htm_NN_<name>.png   pseudonymous (Customer NNN, M#####, models, categories)
+  viz/figures/htm_NN_<name>.png   pseudonymous (Customer NNN, M#####, models, categories)
   deliverables/htm_chronic_outliers_by_customer_REALNAMES.png   real customer names (gitignored; chart 7 only)
 
 Checks, after drawing:
@@ -20,10 +20,12 @@ import importlib
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import pandas as pd  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 CHARTS = ['htm_01_concentration_curve', 'htm_02_tickets_per_machine', 'htm_03_observed_vs_expected',
           'htm_04_model_mix', 'htm_05_episode_followups', 'htm_06_pre_ticket',
@@ -37,7 +39,7 @@ def _flat(text):
 
 def definition_problems(texts):
     """Figures (path -> drawn strings) that use a term without its definition. Returns a list of messages."""
-    chronic_def, outsized_def = _flat(style.chronic_definition()), _flat(style.outsized_definition())
+    chronic_def, outsized_def = _flat(htm.chronic_definition()), _flat(htm.outsized_definition())
     problems = []
     for path, strings in texts.items():
         flat = [_flat(s) for s in strings]
@@ -54,7 +56,7 @@ def definition_problems(texts):
 def privacy_scan(paths):
     """Count real customer names / serials (from the gitignored private tables) that appear in any text drawn on
     the given figures. Returns None when the private tables are absent. Never prints the matched strings."""
-    files = [style.PRIVATE / 'htm_private_customer_names.csv', style.PRIVATE / 'htm_private_outsized_machines.csv']
+    files = [htm.PRIVATE / 'htm_private_customer_names.csv', htm.PRIVATE / 'htm_private_outsized_machines.csv']
     if not all(f.exists() for f in files):
         return None
     pn, pm = (pd.read_csv(f) for f in files)
@@ -67,7 +69,7 @@ def privacy_scan(paths):
     return sum(sum(r in '\n'.join(style.TEXTS.get(p, [])) for r in real) for p in paths)
 
 
-def main(out_dir=style.FIG_DIR, private=True):
+def main(out_dir=htm.FIG_DIR, private=True):
     out_dir = Path(out_dir)
     print(f'Plots -> {out_dir} ...')
     style.CHECKS.clear()

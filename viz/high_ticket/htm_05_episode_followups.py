@@ -13,18 +13,20 @@ Inputs:
                                           tickets, followup_share_<gap>d, followup_share_7d_random_timing);
                                           D1_workload (threshold, rank_k, machines, tickets, outsized_machines)
 Output:
-  verification/outputs/figures/htm_05_episode_followups.png
+  viz/figures/htm_05_episode_followups.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_05_episode_followups.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_05_episode_followups.py
 """
 import sys
 from pathlib import Path
 from typing import NamedTuple
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 from matplotlib.lines import Line2D  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 PNG = 'htm_05_episode_followups.png'
 RT_OFFSET = 0.68  # the random-timing row sits this far (y units) below its group's observed row
@@ -41,12 +43,12 @@ GROUPS = [Group('outsized', 'Workload-outsized machines', style.BLUE, 3.0),  # t
           Group('other', 'Other ticketed machines', style.GRAY, 1.0)]
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()
+    S = htm.summary()
     W, D5 = S['D1_workload'], S['D5_episodes']
     lo_gap, gap, hi_gap = S['definitions']['episode_gaps_days']
-    ep = style.load('episodes')
+    ep = htm.load('episodes')
 
     style.check('D1 machines (episodes)', W['machines'], len(ep))
     style.check('D1 tickets (episodes)', W['tickets'], int(ep.tickets.sum()))
@@ -112,10 +114,10 @@ def plot(out_dir=style.FIG_DIR):
         f'Outsized machines\' tickets are {gap}-day follow-ups {ratio:.1f}× as often '
         f'({style.pct(share["outsized"][gap])} vs {style.pct(share["other"][gap])})',
         f'All {sum(tickets.values()):,} unplanned tickets on {len(ep):,} machines (case-export serials), '
-        f'{style.period_text(S, "case_export_period")}. '
+        f'{htm.period_text(S, "case_export_period")}. '
         f'A ticket is a follow-up if it opens within {gap} days of the machine\'s previous '
         f'ticket (sensitivity: {lo_gap} and {hi_gap} days).',
-        definitions=[style.outsized_definition(S)],
+        definitions=[htm.outsized_definition(S)],
         notes=[f'Random timing: each machine\'s tickets placed uniformly at random over the period '
                f'({S["definitions"]["n_sim_episodes"]} draws, a rough null). '
                f'More tickets alone produce more follow-ups: '

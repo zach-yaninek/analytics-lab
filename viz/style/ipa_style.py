@@ -1,24 +1,28 @@
-"""Shared style, data loading and definitions for the high-ticket-machine charts (verification/plots/htm_*.py).
+"""IPA chart style: a light, quiet matplotlib look with a title band, a footer for definitions and notes, and a
+small validated palette. Reusable for any chart; nothing here is specific to one analysis.
 
-Every chart script imports this module, draws one chart with ordinary matplotlib and saves it with save(). The
-chart scripts read only the outputs that verification/high_ticket_machines.py has already written:
-  verification/outputs/htm_*.csv         every plotted series
-  verification/outputs/htm_summary.json  definitions (thresholds) and a few simulation results with no CSV column
+Two ways to use it (see viz/README.md):
+  1. Style sheet only:  plt.style.use('viz/style/ipa.mplstyle')   colours, fonts, grid, spines, legend
+  2. Full page layout:  import ipa_style as S
+                        fig, ax = S.figure(10, 6)               style sheet + constrained layout
+                        ... ordinary matplotlib on ax ...
+                        S.style_axes(ax, grid='y')               hairline grid, baseline-only spine
+                        S.frame(fig, title, subtitle, notes=[...], definitions=[...])
+                        S.save(fig, 'out.png')
 
-Page layout: frame() writes the title and subtitle above the plot area and the definition and notes below it, then
+Page layout: frame() writes the title and subtitle above the plot area and the definitions and notes below it, then
 reserves both bands through the constrained-layout rect. Band heights come from wrapped line counts and font sizes,
 so nothing is measured after drawing.
 
-Style: light surface #fcfcfb, ink #0b0b0b / #52514e / #898781, solid hairline grid #e1e0d9, baseline-only spine
+Palette: light surface #fcfcfb, ink #0b0b0b / #52514e / #898781, solid hairline grid #e1e0d9, baseline-only spine
 #c3c2b7; emphasis blue #2a78d6 against gray; categorical blue / orange / aqua in that order (validated all-pairs on
-the light surface; aqua is below 3:1, so every aqua mark has a legend entry); one-hue blue ramp for the heatmap.
+the light surface; aqua is below 3:1, so every aqua mark needs a label or legend entry); one-hue blue ramp for
+heatmaps and other ordered values.
 """
-import json
 import textwrap
 from pathlib import Path
 
 import matplotlib
-import pandas as pd
 
 if matplotlib.get_backend().lower() not in ('agg', 'module://matplotlib_inline.backend_inline'):
     matplotlib.use('Agg')  # headless runs; notebooks keep their inline backend
@@ -26,12 +30,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.text import Text  # noqa: E402
 from matplotlib.ticker import FuncFormatter  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
-OUTPUTS = ROOT / 'verification' / 'outputs'
-FIG_DIR = OUTPUTS / 'figures'
-PRIVATE = ROOT / 'data' / 'private'
-DELIVERABLES = ROOT / 'deliverables'
-SEED = 15072
+STYLE_SHEET = Path(__file__).resolve().parent / 'ipa.mplstyle'
 DPI = 150
 
 # Palette (fixed).
@@ -55,61 +54,13 @@ CHECKS = []  # (name, ok) from check(); reported by run_all.py
 TEXTS = {}   # saved figure path -> every text string drawn on it (privacy scan and definition check)
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# Data and definitions
-# ---------------------------------------------------------------------------------------------------------------
-def load(name):
-    """verification/outputs/htm_<name>.csv as a DataFrame."""
-    return pd.read_csv(OUTPUTS / f'htm_{name}.csv')
-
-
-def summary():
-    return json.loads((OUTPUTS / 'htm_summary.json').read_text())
-
-
-def period_text(S=None, which='period'):
-    """'Aug 2025 to Jul 2026' for S['definitions'][which]: 'period' = the rate-test / exposure window,
-    'case_export_period' = first to last opened ticket in the case export."""
-    S = S or summary()
-    start, end = (pd.Timestamp(x).strftime('%b %Y') for x in S['definitions'][which])
-    return f'{start} to {end}'
-
-
-def outsized_definition(S=None):
-    S = S or summary()
-    w, d = S['D1_workload'], S['definitions']
-    return (f'Workload-outsized = {w["threshold"]} or more unplanned tickets in the case export '
-            f'({period_text(S, "case_export_period")}): the ticket count of the {w["rank_k"]}th busiest machine, i.e. '
-            f'the top {d["top_share"]:.0%} of {w["machines"]:,} ticketed machines, ties included.')
-
-
-def chronic_definition(S=None):
-    S = S or summary()
-    w, d = S['D1_workload'], S['definitions']
-    return (f'Chronic outlier = a machine that is both workload-outsized ({w["threshold"]} or more unplanned '
-            f'tickets in the case export, {period_text(S, "case_export_period")}: the top {d["top_share"]:.0%} of '
-            f'ticketed machines, ties included) and a rate outlier (more tickets from {period_text(S)} than its '
-            f'machine type\'s rate × months active predicts, small types pooled; Poisson test, Benjamini-Hochberg '
-            f'q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a defect.')
-
-
-def machine_month_definition(S=None):
-    S = S or summary()
-    lo, hi = (pd.Timestamp(x) for x in S['definitions']['period'])
-    n_months = (hi.year - lo.year) * 12 + hi.month - lo.month + 1
-    return (f'Machine-month = one month of a machine in service. Each telemetry device counts the months of '
-            f'{period_text(S)} that fall within its first-to-last-transaction span, both end months included and quiet '
-            f'months in between too, so a machine active throughout adds {n_months}. Devices with no transaction in '
-            f'that window count 0 months but stay in the device counts and rates. Devices on the shared internal host '
-            f'or with no host are excluded.')
-
-
 def check(name, expected, actual, tol=0.0):
-    """Record a consistency check between htm_summary.json and a value recomputed from a CSV."""
+    """Record a consistency check: a value stated on a chart (expected) against the same value recomputed from the
+    data (actual). run_all.py scripts report the tally."""
     ok = abs(float(expected) - float(actual)) <= tol
     CHECKS.append((name, ok))
     if not ok:
-        print(f'  [WARN] {name}: summary {expected} vs CSV {actual}')
+        print(f'  [WARN] {name}: expected {expected}, got {actual}')
     return ok
 
 
@@ -117,16 +68,8 @@ def check(name, expected, actual, tol=0.0):
 # Figure helpers
 # ---------------------------------------------------------------------------------------------------------------
 def apply_style():
-    plt.rcParams.update({
-        'figure.facecolor': SURFACE, 'axes.facecolor': SURFACE, 'savefig.facecolor': SURFACE,
-        'font.family': 'sans-serif', 'font.sans-serif': ['DejaVu Sans'], 'font.size': 10.5,
-        'axes.edgecolor': BASE, 'axes.linewidth': 0.8, 'axes.labelcolor': MUTED, 'axes.labelsize': 10.5,
-        'xtick.color': MUTED, 'ytick.color': MUTED, 'xtick.labelsize': 10, 'ytick.labelsize': 10,
-        'xtick.major.size': 0, 'ytick.major.size': 0, 'xtick.major.pad': 6, 'ytick.major.pad': 6,
-        'legend.frameon': False, 'legend.fontsize': 9.5, 'legend.labelcolor': INK2,
-        'lines.solid_capstyle': 'round', 'lines.solid_joinstyle': 'round',
-        'svg.fonttype': 'none', 'pdf.fonttype': 42,
-    })
+    """Load the style sheet (viz/style/ipa.mplstyle) into matplotlib's rcParams."""
+    plt.style.use(STYLE_SHEET)
 
 
 def figure(width=10, height=6.2):
@@ -205,14 +148,14 @@ def frame(fig, title, subtitle, notes=(), definitions=()):
 
 
 def save(fig, path):
-    """Save at DPI, record every drawn text string for run_all.py's checks, close the figure."""
+    """Save at DPI, record every drawn text string (TEXTS, for privacy and definition checks), close the figure."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=DPI, metadata={'Software': None})
     TEXTS[path] = [t.get_text() for t in fig.findobj(Text) if t.get_text()]
     plt.close(fig)
     try:
-        shown = path.relative_to(ROOT)
+        shown = path.resolve().relative_to(Path.cwd())
     except ValueError:
         shown = path
     print(f'  wrote {shown}')

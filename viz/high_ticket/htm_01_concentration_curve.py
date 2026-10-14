@@ -14,23 +14,25 @@ Inputs:
                                                  tickets_obs), D1_workload (rank_k, machines), definitions
                                                  (period, top_share, fixed_threshold), n_sim, seed
 Output:
-  verification/outputs/figures/htm_01_concentration_curve.png
+  viz/figures/htm_01_concentration_curve.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_01_concentration_curve.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_01_concentration_curve.py
 """
 import math
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 
-def plot(out_dir=style.FIG_DIR):
-    S = style.summary()
-    L, dev, C = style.load('lorenz'), style.load('device_exposure'), S['D4_concentration']
+def plot(out_dir=htm.FIG_DIR):
+    S = htm.summary()
+    L, dev, C = htm.load('lorenz'), htm.load('device_exposure'), S['D4_concentration']
     share, fixed = S['definitions']['top_share'], S['definitions']['fixed_threshold']
     obs = np.sort(dev.tickets_obs.to_numpy())[::-1]
     k = math.ceil(share * len(obs))
@@ -81,7 +83,7 @@ def plot(out_dir=style.FIG_DIR):
         f'The top {x_top:g}% of devices hold {style.pct(top_obs, 0)} of tickets; chance alone gives '
         f'{style.pct(C["top5_share_null_median"], 0)}',
         f'{len(obs):,} devices in the exposure population (shared internal host and devices with no host excluded), '
-        f'{int(obs.sum()):,} unplanned tickets {style.period_text(S)}. Chance: Poisson draws at each '
+        f'{int(obs.sum()):,} unplanned tickets {htm.period_text(S)}. Chance: Poisson draws at each '
         f'device\'s expected count (type rate × months active), seed {S["seed"]}.',
         notes=[f'Gini over devices: {C["gini_obs"]:.3f} observed vs {C["gini_null_median"]:.3f} chance median. '
                f'Devices with {fixed} or more tickets: {ge_fixed} observed vs {C["ge6_null_median"]:.0f} chance '

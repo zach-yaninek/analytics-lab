@@ -21,23 +21,25 @@ Inputs:
                                                  checks
   data/private/htm_private_customer_names.csv    customer -> real_account_name (real-name version only; gitignored)
 Outputs:
-  verification/outputs/figures/htm_07_chronic_outliers_by_customer.png
+  viz/figures/htm_07_chronic_outliers_by_customer.png
   deliverables/htm_chronic_outliers_by_customer_REALNAMES.png   (private=True only)
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_07_chronic_outliers_by_customer.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_07_chronic_outliers_by_customer.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 PNG = 'htm_07_chronic_outliers_by_customer.png'
 REAL_PNG = 'htm_chronic_outliers_by_customer_REALNAMES.png'
-NAMES = style.PRIVATE / 'htm_private_customer_names.csv'
+NAMES = htm.PRIVATE / 'htm_private_customer_names.csv'
 MULTI = 2                    # customers with this many chronic outliers or more are shown ...
 MIN_ROWS, MAX_ROWS = 10, 25  # ... unless that gives fewer than MIN_ROWS or more than MAX_ROWS rows (then top MAX_ROWS)
 ROW_IN = 0.38                # inches per customer row
@@ -93,10 +95,10 @@ def draw(S, c, path, names=None):
     notes = [f'Not shown: {rest_txt} Customer = the device location\'s customer (ticket account where missing). '
              f'Rows sorted by chronic outliers, then devices.',
              'Source: htm_customer_chronic.csv'
-             + (f'; names from {NAMES.relative_to(style.ROOT)}' if names is not None else '')
+             + (f'; names from {NAMES.relative_to(htm.ROOT)}' if names is not None else '')
              + '; thresholds from htm_summary.json.']
     subtitle = [f'{n_mach} chronic-outlier machines across {n_cust} customers (tickets counted over the case export, '
-                f'{style.period_text(S, "case_export_period")}; rate test over {style.period_text(S)}). '
+                f'{htm.period_text(S, "case_export_period")}; rate test over {htm.period_text(S)}). '
                 f'{which} shown against their devices in the '
                 f'exposure population (customer hosts).']
     if names is not None:
@@ -106,19 +108,19 @@ def draw(S, c, path, names=None):
         fig,
         f'Chronic outliers are spread thinly: {singles} of {n_cust} customers have just one',
         subtitle,
-        definitions=[style.chronic_definition(S)],
+        definitions=[htm.chronic_definition(S)],
         notes=notes)
     return style.save(fig, path)
 
 
-def plot(out_dir=style.FIG_DIR, private=True):
-    """Draw the pseudonymous chart into out_dir and, when private=True, the real-name chart into style.DELIVERABLES.
+def plot(out_dir=htm.FIG_DIR, private=True):
+    """Draw the pseudonymous chart into out_dir and, when private=True, the real-name chart into htm.DELIVERABLES.
 
-    The real-name PNG always goes to style.DELIVERABLES, whatever out_dir is, so a test run into a scratch out_dir
+    The real-name PNG always goes to htm.DELIVERABLES, whatever out_dir is, so a test run into a scratch out_dir
     with private=True overwrites the deliverable; pass private=False for test runs."""
     out_dir = Path(out_dir)
-    S = style.summary()
-    cu = style.load('customer_chronic')
+    S = htm.summary()
+    cu = htm.load('customer_chronic')
     style.check('D3 chronic outliers (customer table)', S['D3_classes']['chronic_outlier'],
                 int(cu.chronic_outlier_machines.sum()))
     style.check('customers holding a chronic outlier', S['clustering']['chronic_customers_holding'],
@@ -139,10 +141,10 @@ def plot(out_dir=style.FIG_DIR, private=True):
     if private:
         if NAMES.exists():
             pn = pd.read_csv(NAMES)
-            written.append(draw(S, c, style.DELIVERABLES / REAL_PNG,
+            written.append(draw(S, c, htm.DELIVERABLES / REAL_PNG,
                                 names=dict(zip(pn.customer, pn.real_account_name))))
         else:
-            print(f'  real-name variant skipped: {NAMES.relative_to(style.ROOT)} not found')
+            print(f'  real-name variant skipped: {NAMES.relative_to(htm.ROOT)} not found')
     return written
 
 

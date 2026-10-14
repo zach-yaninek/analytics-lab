@@ -12,27 +12,29 @@ Inputs:
   verification/outputs/htm_summary.json   D1_workload (threshold, rank_k, machines, outsized_machines) for the
                                           workload-outsized definition and the consistency checks
 Output:
-  verification/outputs/figures/htm_04_model_mix.png
+  viz/figures/htm_04_model_mix.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_04_model_mix.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_04_model_mix.py
 """
 import math
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 PNG = 'htm_04_model_mix.png'
 N_SHOWN = 10  # models with the largest gap
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()
-    tm = style.load('type_mix')
+    S = htm.summary()
+    tm = htm.load('type_mix')
     m = tm[tm.field == 'model'].copy()
     n_out, n_oth = int(m.outsized_machines.sum()), int(m.other_machines.sum())
     W = S['D1_workload']
@@ -83,10 +85,10 @@ def plot(out_dir=style.FIG_DIR):
         fig,
         f'Outsized machines\' model mix differs from the rest by about {max_gap:.0f} points at most',
         f'Share of machines by model: {n_out:,} workload-outsized vs {n_oth:,} other ticketed machines (case-export '
-        f'serials), unplanned tickets {style.period_text(S, "case_export_period")}. '
+        f'serials), unplanned tickets {htm.period_text(S, "case_export_period")}. '
         f'The {min(N_SHOWN, len(m))} models with the largest gap, '
         f'sorted by gap.',
-        definitions=[style.outsized_definition(S)],
+        definitions=[htm.outsized_definition(S)],
         notes=notes)
     return [style.save(fig, out_dir / PNG)]
 

@@ -7,22 +7,24 @@ many machines of that type are installed and how long each was in service, so ty
 One dot per machine type with at least the analysis's minimum exposure (100 machine-months); the line through it is
 a 95% Poisson interval (Byar's approximation). The vertical line is the fleet rate. The three types with the most
 tickets in raw counts (chart 9) are drawn in blue so the change in ranking is visible. The machine-month definition
-is printed on the chart (style.machine_month_definition).
+is printed on the chart (htm.machine_month_definition).
 
 Inputs:  verification/outputs/htm_type_rates.csv (machine_type, devices, exposure_months, tickets_used_for_rate,
          rate_group), htm_type_mix.csv (raw ticket counts by machine type, for the blue highlight),
          htm_summary.json (period, minimum type exposure, fleet rate)
-Output:  verification/outputs/figures/htm_10_ticket_rate_by_machine_type.png
-Run:     cd /home/user/analytics-lab && python3 -I verification/plots/htm_10_ticket_rate_by_machine_type.py
+Output:  viz/figures/htm_10_ticket_rate_by_machine_type.png
+Run:     cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_10_ticket_rate_by_machine_type.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 Z = 1.96          # 95% interval
 N_RAW_TOP = 3     # types highlighted as the raw-count leaders (chart 9)
@@ -38,11 +40,11 @@ def poisson_interval(k, z=Z):
     return lo, hi
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()
+    S = htm.summary()
     D2, min_months = S['D2_exposure'], S['definitions']['min_type_months']
-    r = style.load('type_rates')
+    r = htm.load('type_rates')
 
     # Fleet rate over every type, as in the analysis (tickets incl. those on devices with no machine-months).
     fleet = 100 * r.tickets_used_for_rate.sum() / r.exposure_months.sum()
@@ -58,7 +60,7 @@ def plot(out_dir=style.FIG_DIR):
     d['lo'], d['hi'] = 100 * lo / d.exposure_months, 100 * hi / d.exposure_months
     d = d.sort_values(['rate', 'machine_type'], ascending=[True, True], kind='mergesort')  # highest rate at the top
 
-    tm = style.load('type_mix')
+    tm = htm.load('type_mix')
     raw = tm[(tm.field == 'machine_type') & (tm.value != NOT_MATCHED)]
     raw_top = raw.sort_values(['unplanned_tickets', 'value'], ascending=[False, True], kind='mergesort') \
         .value.head(N_RAW_TOP).tolist()
@@ -107,7 +109,7 @@ def plot(out_dir=style.FIG_DIR):
         fig,
         f'{top.machine_type} has the highest ticket rate of the {len(d)} types shown: '
         f'{top.rate / fleet:.1f}× the fleet',
-        f'Unplanned tickets per 100 machine-months by telemetry machine type, {style.period_text(S)}, for the '
+        f'Unplanned tickets per 100 machine-months by telemetry machine type, {htm.period_text(S)}, for the '
         f'{len(d)} types with at least {min_months} machine-months (the analysis\'s minimum for a type to get its own '
         f'rate; smaller types are pooled). The 95% intervals show how precise each rate is. Fleet rate {fleet:.1f} = '
         f'{int(r.tickets_used_for_rate.sum()):,} tickets over {int(r.exposure_months.sum()):,} machine-months, all '
@@ -119,10 +121,10 @@ def plot(out_dir=style.FIG_DIR):
                f'Not shown: {len(small)} types with fewer than {min_months} machine-months '
                f'({int(small.exposure_months.sum()):,} machine-months, {int(small.tickets_used_for_rate.sum())} '
                f'tickets in all); their rates are too unstable to compare.{unmeasured_txt}',
-               f'Tickets here cover {style.period_text(S)} on the exposure population, so counts are lower than in '
+               f'Tickets here cover {htm.period_text(S)} on the exposure population, so counts are lower than in '
                f'chart 9 (e.g. {ex.machine_type}: {int(ex.tickets_used_for_rate):,} here, {ex_raw:,} in chart 9).',
                'Source: htm_type_rates.csv; raw counts from htm_type_mix.csv.'],
-        definitions=[style.machine_month_definition(S)])
+        definitions=[htm.machine_month_definition(S)])
     return [style.save(fig, out_dir / 'htm_10_ticket_rate_by_machine_type.png')]
 
 

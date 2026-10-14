@@ -12,15 +12,17 @@ shows the exposure-adjusted rates per 100 machine-months by telemetry type.
 Inputs:  verification/outputs/htm_type_mix.csv (field = model / machine_type: unplanned_tickets per value)
          verification/outputs/htm_machine_counts.csv (model and machine_type per machine, for the proxy note)
          verification/outputs/htm_summary.json (D1_workload: total tickets and machines, for consistency checks)
-Run:     cd /home/user/analytics-lab && python3 -I verification/plots/htm_09_tickets_by_type.py
+Run:     cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_09_tickets_by_type.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 N_SHOWN = 12      # bars before the tail is grouped as "Other"
 N_HIGHLIGHT = 3   # top bars in emphasis blue; the titles say "Three" and the subtitles name them
@@ -33,7 +35,7 @@ def disclaimer(noun):
 
 def proxy_note(models):
     """For each model, its most common telemetry type among device-matched machines (model -> type share)."""
-    mc = style.load('machine_counts')
+    mc = htm.load('machine_counts')
     mc = mc[mc.machine_type.notna() & mc.model.isin(models)]
     parts = []
     for model in models:
@@ -44,7 +46,7 @@ def proxy_note(models):
 
 
 def tickets_by(field):
-    tm = style.load('type_mix')
+    tm = htm.load('type_mix')
     d = tm.loc[tm.field == field, ['value', 'unplanned_tickets']]
     return d.sort_values(['unplanned_tickets', 'value'], ascending=[False, True], kind='mergesort')
 
@@ -73,9 +75,9 @@ def draw(d, total, noun, title, subtitle, notes, disclaimer, path):
     return style.save(fig, path)
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S_all = style.summary()
+    S_all = htm.summary()
     S = S_all['D1_workload']
     written = []
 
@@ -89,7 +91,7 @@ def plot(out_dir=style.FIG_DIR):
         f'Three models generate {style.pct(top.unplanned_tickets.sum() / total, 0)} of unplanned tickets',
         f'Raw counts, not adjusted for fleet size (see the note below). All {total:,} unplanned tickets on '
         f'{S["machines"]:,} ticketed machines (case-export serials), '
-        f'{style.period_text(S_all, "case_export_period")}; excludes planned work, cancelled and duplicate cases. '
+        f'{htm.period_text(S_all, "case_export_period")}; excludes planned work, cancelled and duplicate cases. '
         f'Share of all unplanned tickets in brackets; blue = the three models with the most tickets.',
         [proxy_note(top.value.tolist()),
          f'Each machine is counted under the model recorded on its tickets. Other = the {len(m) - N_SHOWN} models '
@@ -110,7 +112,7 @@ def plot(out_dir=style.FIG_DIR):
         f'Three telemetry types generate {style.pct(top.unplanned_tickets.sum() / matched, 0)} of device-matched '
         f'tickets',
         f'Raw counts, not adjusted for fleet size (see the note below). The {matched:,} unplanned tickets whose '
-        f'serial matches a telemetry device, {style.period_text(S_all, "case_export_period")}. Share of these '
+        f'serial matches a telemetry device, {htm.period_text(S_all, "case_export_period")}. Share of these '
         f'tickets in brackets; blue = the three types with the most tickets.',
         [f'Not shown: {unmatched:,} tickets on machines not matched to a telemetry device. Other = the '
          f'{len(t) - N_SHOWN} types with the fewest tickets.',

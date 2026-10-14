@@ -13,18 +13,20 @@ Inputs:
                                                    definition; D3_classes, chronic_outlier_ids and
                                                    D5_episodes.chronic.tickets for the consistency checks
 Output:
-  verification/outputs/figures/htm_08_chronic_categories_heatmap.png
+  viz/figures/htm_08_chronic_categories_heatmap.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_08_chronic_categories_heatmap.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_08_chronic_categories_heatmap.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 from matplotlib.colors import BoundaryNorm, ListedColormap  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 PNG = 'htm_08_chronic_categories_heatmap.png'
 N_ROWS, N_COLS = 30, 10  # machines with the most tickets; most frequent categories (the rest pooled as Other)
@@ -33,10 +35,10 @@ DOMINANT = 0.5           # "one category makes up half or more of a machine's ti
 WHITE_FROM = 6           # BLUE_RAMP index from which cell counts are white bold (dark cells); check if the ramp changes
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()
-    cc = style.load('chronic_categories')
+    S = htm.summary()
+    cc = htm.load('chronic_categories')
     cc['category'] = cc.category.replace({'[Missing]': 'Category missing'})
 
     mach = cc.groupby(['machine_id', 'model', 'total_tickets'], as_index=False).size()
@@ -112,11 +114,11 @@ def plot(out_dir=style.FIG_DIR):
     style.frame(
         fig,
         f'One category makes up half or more of the tickets on {n_dom} of {len(mach)} chronic outliers',
-        f'Unplanned tickets by category (case-export serials, {style.period_text(S, "case_export_period")}) '
+        f'Unplanned tickets by category (case-export serials, {htm.period_text(S, "case_export_period")}) '
         f'for the {len(rows)} '
         f'chronic-outlier machines with the most tickets. Columns: the {N_COLS} most frequent categories across all '
         f'{len(mach)} chronic outliers, with their totals.',
-        definitions=[style.chronic_definition(S)],
+        definitions=[htm.chronic_definition(S)],
         notes=[f'Rows sorted by total tickets, then machine id. Not shown: {rest_txt} Other = {n_other_cats} '
                f'further categories.',
                f'Source: htm_chronic_categories.csv (full table, all {len(mach)} machines); thresholds from '

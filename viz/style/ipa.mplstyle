@@ -1,0 +1,57 @@
+# IPA chart style for matplotlib. Use it on its own:      plt.style.use('viz/style/ipa.mplstyle')
+# or through viz/style/ipa_style.py, whose figure() loads this sheet and adds the title band and footer.
+# Grid lines are off by default; turn them on per axis, e.g. ax.grid(axis='y'), and they take the colour below.
+
+# Surface and ink
+figure.facecolor:     fcfcfb
+axes.facecolor:       fcfcfb
+savefig.facecolor:    fcfcfb
+text.color:           0b0b0b
+
+# Type
+font.family:          sans-serif
+font.sans-serif:      DejaVu Sans
+font.size:            10.5
+axes.titlesize:       12
+axes.titleweight:     bold
+axes.titlelocation:   left
+axes.labelsize:       10.5
+axes.labelcolor:      898781
+
+# Axes: no box, baseline in a light warm gray
+axes.edgecolor:       c3c2b7
+axes.linewidth:       0.8
+axes.spines.top:      False
+axes.spines.right:    False
+axes.axisbelow:       True
+
+# Ticks: labels only, no tick marks
+xtick.color:          898781
+ytick.color:          898781
+xtick.labelsize:      10
+ytick.labelsize:      10
+xtick.major.size:     0
+ytick.major.size:     0
+xtick.major.pad:      6
+ytick.major.pad:      6
+
+# Hairline grid (when enabled)
+grid.color:           e1e0d9
+grid.linewidth:       0.6
+grid.linestyle:       -
+
+# Legend: no frame, secondary ink
+legend.frameon:       False
+legend.fontsize:      9.5
+legend.labelcolor:    52514e
+
+# Lines and series colours: emphasis blue, then orange, aqua (label aqua marks), then grays for context
+lines.linewidth:      2
+lines.solid_capstyle: round
+lines.solid_joinstyle: round
+axes.prop_cycle:      cycler('color', ['2a78d6', 'eb6834', '1baf7a', '898781', 'c3c2b7'])
+
+# Output
+savefig.dpi:          150
+svg.fonttype:         none
+pdf.fonttype:         42

@@ -16,18 +16,20 @@ Inputs:
                                                 D2_exposure (devices, devices_with_exposure, tickets,
                                                 rate_outliers_poisson, pooled_small_types), D3_classes
 Output:
-  verification/outputs/figures/htm_03_observed_vs_expected.png
+  viz/figures/htm_03_observed_vs_expected.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_03_observed_vs_expected.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_03_observed_vs_expected.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
-import style  # noqa: E402
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 PNG = 'htm_03_observed_vs_expected.png'
 XMAX = 3.4      # right edge of the x-axis; the few devices beyond it are counted in the footer
@@ -88,10 +90,10 @@ def hidden_note(S, hidden):
             f'{"is" if len(hidden) == 1 else "are"} off the right edge.')
 
 
-def plot(out_dir=style.FIG_DIR):
+def plot(out_dir=htm.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()
-    d = style.load('device_exposure')
+    S = htm.summary()
+    d = htm.load('device_exposure')
     thr = S['D1_workload']['threshold']
 
     # Consistency with htm_summary.json (D2 exposure population, D3 classes).
@@ -113,7 +115,7 @@ def plot(out_dir=style.FIG_DIR):
     style.check('device tickets in period <= serial case-export tickets', 0,
                 int((d.tickets_obs > d.serial_unplanned_tickets).sum()))
 
-    rng = np.random.default_rng(style.SEED)
+    rng = np.random.default_rng(htm.SEED)
     d['yj'] = d.tickets_obs + rng.uniform(-JITTER, JITTER, len(d))
     hidden = d[d.expected > XMAX]
     zero = d[d.expected == 0]
@@ -151,9 +153,9 @@ def plot(out_dir=style.FIG_DIR):
         f'Chronic outliers logged a median of {ch.tickets_obs.median():.0f} tickets where about '
         f'{ch.expected.median():.1f} was expected',
         f'{len(d):,} devices in the exposure population (shared internal host and devices with no host excluded), '
-        f'unplanned tickets {style.period_text(S)}. '
+        f'unplanned tickets {htm.period_text(S)}. '
         f'Points above the line logged more tickets than their type\'s rate × months active predicts.',
-        definitions=[style.chronic_definition(S), class_definition(S, d, untested)],
+        definitions=[htm.chronic_definition(S), class_definition(S, d, untested)],
         notes=[threshold_note(S, d),
                f'Points jittered vertically by up to {JITTER} to show overlap. {len(zero)} devices with zero '
                f'exposure months sit at x = 0{" (not tested)" if untested else ""}.{hidden_note(S, hidden)}',

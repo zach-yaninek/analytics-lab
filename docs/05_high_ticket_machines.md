@@ -1,9 +1,9 @@
 # Machines with an outsized share of service tickets
 
 *Script: `verification/high_ticket_machines.py` (33 self-checks; it runs locally in about 20 s from the workbook and
-the committed `fu_*` and `db_*` CSVs, with no database). Figures: `verification/outputs/figures/htm_*.png`, drawn
-by one plain matplotlib script per chart in `verification/plots/` (charts 6 and 9 each write two figures) (`htm_01_*.py` … `htm_10_*.py`; `run_all.py` draws
-them all). Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
+the committed `fu_*` and `db_*` CSVs, with no database). Figures: `viz/figures/htm_*.png`, drawn by one plain
+matplotlib script per chart in `viz/high_ticket/` (`htm_01_*.py` … `htm_10_*.py`; charts 6 and 9 each write two
+figures; `run_all.py` draws them all) in the shared style of `viz/style/`. Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
 as coming from the review pass.*
 
 **Terms.** *Workload-outsized*: 5 or more unplanned tickets, the top 5% of ticketed machines. *Chronic outlier*: a
@@ -86,7 +86,7 @@ We simulated ticket counts 1,000 times with each device's expected value: type r
   seven small types are pooled at 103.7 tickets per 100 months, which gives 13 devices an expected count of up to
   12.4. Without that artifact the median is 3, so the published comparison is conservative.
 
-![Concentration curve](../verification/outputs/figures/htm_01_concentration_curve.png)
+![Concentration curve](../viz/figures/htm_01_concentration_curve.png)
 
 ## B. How firm the 113 chronic outliers are
 - **The count depends on the cut-off** (review): q < 0.01 gives 62, q < 0.10 gives 133, and a top-2.5% workload
@@ -115,7 +115,7 @@ We simulated ticket counts 1,000 times with each device's expected value: type r
 **Suggested wording:** "About 70 machines consistently generate far more tickets than their type and months active
 predict; another ~40 are borderline."
 
-![Observed vs expected](../verification/outputs/figures/htm_03_observed_vs_expected.png)
+![Observed vs expected](../viz/figures/htm_03_observed_vs_expected.png)
 
 ## C. Profile
 - **Tickets.** The 113 machines hold 859 unplanned tickets (median 7 per machine).
@@ -140,8 +140,8 @@ predict; another ~40 are borderline."
   Chronic machines cluster by customer no more than workload-outsized machines in general (review). For the 247 workload-outsized
   machines, the top five customers hold 12.2% against 8.1% by chance (95th percentile 10.1%).
 
-![Chronic outliers by customer](../verification/outputs/figures/htm_07_chronic_outliers_by_customer.png)
-![Top categories per chronic outlier](../verification/outputs/figures/htm_08_chronic_categories_heatmap.png)
+![Chronic outliers by customer](../viz/figures/htm_07_chronic_outliers_by_customer.png)
+![Top categories per chronic outlier](../viz/figures/htm_08_chronic_categories_heatmap.png)
 
 ## D. Episodes (D5)
 Tickets on the same machine no more than 7 days apart count as one episode.
@@ -156,7 +156,7 @@ Tickets on the same machine no more than 7 days apart count as one episode.
 - Relative to random timing, clustering is about 2× on outsized machines and about 3× on other machines.
 - Most tickets on high-ticket machines are therefore separate episodes, not a single drawn-out incident.
 
-![Episode follow-ups](../verification/outputs/figures/htm_05_episode_followups.png)
+![Episode follow-ups](../viz/figures/htm_05_episode_followups.png)
 
 ## E. Telemetry before tickets
 From `fu_ticket_last10.csv`: 30-day lookback on the corrected clock, 5,312 usable unplanned tickets.
@@ -175,7 +175,7 @@ From `fu_ticket_last10.csv`: 30-day lookback on the corrected clock, 5,312 usabl
 - **Caveat.** Clean paired controls exist for only 21% of chronic tickets (163), against 72% of other tickets,
   because frequent tickets leave few clean 35-day-earlier windows.
 
-![Pre-ticket non-success rate](../verification/outputs/figures/htm_06_pre_ticket_nonsuccess.png)
+![Pre-ticket non-success rate](../viz/figures/htm_06_pre_ticket_nonsuccess.png)
 
 ## F. Which machine types generate the most tickets
 **Charts 9 show raw counts, which are not adjusted for fleet size.** A type can rank high simply because many machines
@@ -199,9 +199,9 @@ of that type are installed. Chart 10 adjusts for this with machine-months.
   - the highest rate among types with at least 100 machine-months is sbsx-51: 21.9 per 100 machine-months, on 33
     devices.
 
-![Tickets by model](../verification/outputs/figures/htm_09_tickets_by_model.png)
-![Tickets by telemetry machine type](../verification/outputs/figures/htm_09_tickets_by_machine_type.png)
-![Ticket rate per 100 machine-months by machine type](../verification/outputs/figures/htm_10_ticket_rate_by_machine_type.png)
+![Tickets by model](../viz/figures/htm_09_tickets_by_model.png)
+![Tickets by telemetry machine type](../viz/figures/htm_09_tickets_by_machine_type.png)
+![Ticket rate per 100 machine-months by machine type](../viz/figures/htm_10_ticket_rate_by_machine_type.png)
 
 ## Questions for IPA
 1. **Field check of the robust core.**

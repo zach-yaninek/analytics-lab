@@ -11,21 +11,23 @@ Inputs:
                                                 outsized_machines, outsized_ticket_share, fixed_machines,
                                                 fixed_ticket_share, max), definitions (fixed_threshold)
 Output:
-  verification/outputs/figures/htm_02_tickets_per_machine.png
+  viz/figures/htm_02_tickets_per_machine.png
 
-Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_02_tickets_per_machine.py
+Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/htm_02_tickets_per_machine.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import style  # noqa: E402
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
+import htm  # noqa: E402
+import ipa_style as style  # noqa: E402
 
 
-def plot(out_dir=style.FIG_DIR):
-    S = style.summary()
+def plot(out_dir=htm.FIG_DIR):
+    S = htm.summary()
     W, fixed_thr = S['D1_workload'], S['definitions']['fixed_threshold']
-    m = style.load('machine_counts')
+    m = htm.load('machine_counts')
     t = m.unplanned_tickets
     vc = t.value_counts().sort_index()
     n_mach, n_tix = len(m), int(t.sum())
@@ -68,8 +70,8 @@ def plot(out_dir=style.FIG_DIR):
         fig,
         f'The {len(outs)} machines with {thr} or more tickets carry {style.pct(share_out)} of the unplanned load',
         f'{n_mach:,} ticketed machines (case-export serials) and {n_tix:,} unplanned tickets (excludes planned work, '
-        f'cancelled and duplicate cases), case export {style.period_text(S, "case_export_period")}.',
-        definitions=[style.outsized_definition(S)],
+        f'cancelled and duplicate cases), case export {htm.period_text(S, "case_export_period")}.',
+        definitions=[htm.outsized_definition(S)],
         notes=[f'Fixed threshold of {fixed_thr} or more: {len(fixed)} machines with {style.pct(fixed.sum() / n_tix)} '
                f'of tickets. Maximum {int(vc.index.max())} tickets.',
                'Source: htm_machine_counts.csv, htm_summary.json (D1).'])
