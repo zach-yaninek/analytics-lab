@@ -20,7 +20,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
 import style  # noqa: E402
@@ -95,12 +94,11 @@ def plot(out_dir=style.FIG_DIR):
 
     top = d.iloc[-1]
     raw_rates = d[d.raw_top].sort_values('rate', ascending=False).rate
-    start, end = (pd.Timestamp(x).strftime('%b %Y') for x in S['definitions']['period'])
     style.frame(
         fig,
         f'Per machine-month, {top.machine_type} has the highest ticket rate: {top.rate:.1f}, '
-        f'{top.rate / fleet:.1f}x the fleet',
-        f'Unplanned tickets per 100 machine-months by telemetry machine type, {start} to {end}: '
+        f'{top.rate / fleet:.1f}× the fleet',
+        f'Unplanned tickets per 100 machine-months by telemetry machine type, {style.period_text(S)}: '
         f'{int(d.tickets_used_for_rate.sum()):,} tickets over {int(d.exposure_months.sum()):,} machine-months. '
         f'Adjusting for exposure, the three types with the most tickets sit near the fleet rate of {fleet:.1f} '
         f'({", ".join(f"{v:.1f}" for v in raw_rates)}): their lead in raw counts is mostly fleet size.',

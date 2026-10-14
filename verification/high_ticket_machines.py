@@ -102,6 +102,7 @@ MIN_TYPE_MONTHS = 100
 Q_CUT = 0.05
 TOP_SHARE = 0.05
 FIXED_THRESHOLD = 6
+CONTROL_OFFSET_DAYS = 35  # fu_ticket_last10.csv window 'control_minus35d' (db_followup.py)
 GAPS = (3, 7, 14)
 UNPLANNED_EXCLUDED = ('Planned work', 'Cancelled request', 'Duplicate case')
 POOL = '(pooled small types)'
@@ -842,7 +843,7 @@ def main():
     unpl_ids = set(sc.case_id)
     usable = main_w[~main_w.lookback_truncated.astype(bool) & ~main_w.after_telemetry_end.astype(bool)
                     & main_w.case_id.isin(unpl_ids)].copy()
-    ctrl = fu[(fu.window == 'control_minus35d') & fu.control_clean.astype(str).eq('True')
+    ctrl = fu[(fu.window == f'control_minus{CONTROL_OFFSET_DAYS}d') & fu.control_clean.astype(str).eq('True')
               & ~fu.lookback_truncated.astype(bool) & fu.case_id.isin(set(usable.case_id))]
     ctrl = ctrl.set_index('case_id')
     m_class = E.set_index('machine_id')['class']
@@ -1053,8 +1054,10 @@ def main():
     summ = {
         'generated_by': 'verification/high_ticket_machines.py', 'seed': SEED, 'n_sim': N_SIM,
         'definitions': {'period': [PERIOD_START, PERIOD_END], 'min_type_months': MIN_TYPE_MONTHS, 'q_cut': Q_CUT,
-                        'workload_rank': W['rank_k'], 'fixed_threshold': FIXED_THRESHOLD,
-                        'episode_gaps_days': list(GAPS), 'shared_internal_host': shared},
+                        'workload_rank': W['rank_k'], 'fixed_threshold': FIXED_THRESHOLD, 'top_share': TOP_SHARE,
+                        'case_export_period': [sc.opened_at.min()[:10], sc.opened_at.max()[:10]],
+                        'episode_gaps_days': list(GAPS), 'n_sim_episodes': N_SIM_EPISODES,
+                        'control_offset_days': CONTROL_OFFSET_DAYS, 'shared_internal_host': shared},
         'D1_workload': {k: (r(v) if isinstance(v, float) else v) for k, v in W.items()
                         if k not in ('counts', 'outsized')},
         'D2_exposure': {'devices': int(len(E)), 'devices_with_exposure': int(pos.sum()),

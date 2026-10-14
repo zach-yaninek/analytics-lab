@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Chart 3: observed vs expected unplanned tickets per device, coloured by outlier class.
 
-Each device in the exposure population (non-shared hosts) is one point: its observed unplanned tickets in the
+Each device in the exposure population (shared internal host and devices with no host excluded) is one point: its observed unplanned tickets in the
 period against the count its machine type's rate x months active predicts. Chronic outliers (workload-outsized and
-rate outlier), rate outliers only and high-volume-as-expected devices are drawn over the other devices, with the
+rate outlier), rate outliers only and workload-outsized-only devices are drawn over the other devices, with the
 observed = expected line for reference. The title states the chronic outliers' median observed vs expected count.
+The footer explains why some workload-outsized devices sit below the ticket threshold on this axis: the threshold
+counts the serial's tickets over the whole case export, the y-axis the device's tickets in the period.
 
 Inputs:
   verification/outputs/htm_device_exposure.csv  expected, tickets_obs, class, workload_outsized, rate_outlier,
-                                                serial_unplanned_tickets, rate_group, q_bh, machine_id, model
+                                                serial_unplanned_tickets, machine_type, q_bh, machine_id, model
   verification/outputs/htm_summary.json         definitions.period, definitions.q_cut, D1_workload.threshold,
                                                 D2_exposure (devices, devices_with_exposure, tickets,
-                                                rate_outliers_poisson), D3_classes
+                                                rate_outliers_poisson, pooled_small_types), D3_classes
 Output:
   verification/outputs/figures/htm_03_observed_vs_expected.png
 
@@ -22,9 +24,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.text import Annotation  # noqa: E402
 
 import style  # noqa: E402
 
@@ -32,45 +32,57 @@ PNG = 'htm_03_observed_vs_expected.png'
 XMAX = 3.4      # right edge of the x-axis; the few devices beyond it are counted in the footer
 JITTER = 0.22   # vertical jitter (tickets) to show overlapping integer counts
 
-# (class value, legend name, colour), in legend order. The names are the ones the definition lines use.
+# (class value, name, colour), in legend order. The legend and the class-definition line use these names.
 CLASSES = [
     ('chronic_outlier', 'Chronic outlier', style.BLUE),
     ('rate_outlier_only', 'Rate outlier only', style.ORANGE),
-    ('high_volume_expected', 'High volume, as expected', style.AQUA),
+    ('high_volume_expected', 'Workload-outsized only', style.AQUA),  # high volume, as expected for its exposure
 ]
+NAME = {c: n for c, n, _ in CLASSES}
 
 
-def class_definition(S):
-    """One line defining the two non-chronic classes, from the summary threshold."""
-    names = {c: n for c, n, _ in CLASSES}
+def count_phrase(n, what):
+    return f'{n} {what}' if n == 1 else f'{n} {what}s'
+
+
+def class_definition(d, untested):
+    """One line defining the two non-chronic classes."""
+    hv0 = int(((d['class'] == 'high_volume_expected') & (d.expected == 0)).sum())
+    zero_txt = (f', including {hv0} {"untested " if untested else ""}devices with zero exposure months (x = 0)'
+                if hv0 else '')
+    return (f'{NAME["rate_outlier_only"]} = a rate outlier that is not workload-outsized. '
+            f'{NAME["high_volume_expected"]} = workload-outsized but not a rate outlier: high volume, as expected for '
+            f'its type and months active{zero_txt}.')
+
+
+def threshold_note(S, d):
+    """The workload flag counts the serial's tickets over the whole case export, not the device's tickets in the
+    period plotted, so a workload-outsized device can sit below the threshold here. Counts those devices."""
     thr = S['D1_workload']['threshold']
-    return (f'{names["rate_outlier_only"]} = a rate outlier with fewer than {thr} unplanned tickets; '
-            f'{names["high_volume_expected"]} = workload-outsized but not a rate outlier.')
+    low = d.tickets_obs < thr
+    counts = [(int((low & (d['class'] == 'chronic_outlier')).sum()), 'chronic outlier'),
+              (int((low & (d['class'] == 'high_volume_expected')).sum()), f'{NAME["high_volume_expected"].lower()} device')]
+    text = ('Workload-outsized counts the serial\'s unplanned tickets over the whole case export, not the device\'s '
+            'tickets in the period plotted here')
+    if any(n for n, _ in counts):
+        below = ' and '.join(count_phrase(n, what) for n, what in counts if n)
+        text += f', so {below} {"sits" if sum(n for n, _ in counts) == 1 else "sit"} below {thr} on this axis'
+    return text + '.'
 
 
-def separate_first_definition(fig, first):
-    """Draw the first definition as a text artist of its own, directly above the remaining definition lines.
-
-    style.frame() draws all definitions as one text block, but run_all.py's definition check looks for
-    style.chronic_definition() as a whole drawn string. The block keeps its place (and the band frame() reserved
-    for it) and keeps only the later definitions; the first one is re-drawn just above it, anchored to the block,
-    so nothing is measured or positioned by hand. Does nothing when the first definition is already separate."""
-    flat = ' '.join(first.split())
-    for t in fig.texts:
-        lines = t.get_text().split('\n')
-        k = next((k for k in range(1, len(lines)) if ' '.join(' '.join(lines[:k]).split()) == flat), None)
-        if k is None:
-            continue
-        t.set_text('\n'.join(lines[k:]))
-        fig.add_artist(Annotation('\n'.join(lines[:k]), xy=(0, 1), xycoords=t, xytext=(0, 1),
-                                  textcoords='offset points', ha='left', va='bottom', fontsize=t.get_fontsize(),
-                                  color=t.get_color(), linespacing=t.get_linespacing()))
-        return
-
-
-def period_text(S):
-    lo, hi = (pd.Timestamp(x) for x in S['definitions']['period'])
-    return f'{lo:%b %Y} to {hi:%b %Y}'
+def hidden_note(S, hidden):
+    if hidden.empty:
+        return ''
+    n_pool = int(hidden.machine_type.isin(S['D2_exposure']['pooled_small_types']).sum())
+    n_flag = int((hidden['class'] != 'none').sum())
+    parts = []
+    if n_pool == len(hidden):
+        parts.append('pooled small types')
+    elif n_pool:
+        parts.append(f'{n_pool} in pooled small types')
+    parts.append('none flagged' if n_flag == 0 else f'{n_flag} flagged')
+    return (f' {count_phrase(len(hidden), "device")} with expected above {XMAX} ({", ".join(parts)}) '
+            f'{"is" if len(hidden) == 1 else "are"} off the right edge.')
 
 
 def plot(out_dir=style.FIG_DIR):
@@ -93,14 +105,19 @@ def plot(out_dir=style.FIG_DIR):
     style.check('D3 classes = outsized x rate-outlier flags', 0, int((d['class'] != expect).sum()))
     style.check('D1 outsized flag = serial tickets >= threshold', 0,
                 int((d.workload_outsized != (d.serial_unplanned_tickets >= thr)).sum()))
+    # A device's tickets in the period are a subset of its serial's case-export tickets, so no "Rate outlier only"
+    # device can sit at or above the threshold on the y-axis (the footer only counts flagged devices below it).
+    style.check('device tickets in period <= serial case-export tickets', 0,
+                int((d.tickets_obs > d.serial_unplanned_tickets).sum()))
 
     rng = np.random.default_rng(style.SEED)
     d['yj'] = d.tickets_obs + rng.uniform(-JITTER, JITTER, len(d))
     hidden = d[d.expected > XMAX]
     zero = d[d.expected == 0]
+    untested = bool(zero.q_bh.isna().all())
     ch = d[d['class'] == 'chronic_outlier']
 
-    fig, ax = style.figure(10, 7.6)
+    fig, ax = style.figure(10, 8.2)
     none = d[d['class'] == 'none']
     ax.scatter(none.expected, none.yj, s=7, color=style.GRAY_LIGHT, alpha=0.55, linewidths=0, zorder=2)
     ax.plot([0, XMAX], [0, XMAX], color=style.MUTED, lw=1.2, zorder=3)
@@ -126,26 +143,18 @@ def plot(out_dir=style.FIG_DIR):
     ax.set_ylabel('Observed tickets in the period')
     ax.legend(handles=handles, loc='upper right', handletextpad=0.6, borderaxespad=0.3)
 
-    if hidden.empty:
-        hidden_txt = ''
-    else:
-        pooled = '(pooled small types)'
-        kind = 'pooled small types' if (hidden.rate_group == pooled).all() else 'incl. pooled small types'
-        n_flag = int((hidden['class'] != 'none').sum())
-        hidden_txt = (f' {len(hidden)} devices with expected above {XMAX} ({kind}, '
-                      f'{"none" if n_flag == 0 else n_flag} flagged) are off the right edge.')
-    zero_txt = ' (not tested)' if zero.q_bh.isna().all() else ''
     style.frame(
         fig,
         f'Chronic outliers logged a median of {ch.tickets_obs.median():.0f} tickets where about '
         f'{ch.expected.median():.1f} was expected',
-        f'{len(d):,} devices in the exposure population (non-shared hosts), unplanned tickets {period_text(S)}. '
+        f'{len(d):,} devices in the exposure population (shared internal host and devices with no host excluded), '
+        f'unplanned tickets {style.period_text(S)}. '
         f'Points above the line logged more tickets than their type\'s rate × months active predicts.',
-        definitions=[style.chronic_definition(S), class_definition(S)],
-        notes=[f'Points jittered vertically by up to {JITTER} to show overlap. {len(zero)} devices with zero exposure '
-               f'months sit at x = 0{zero_txt}.{hidden_txt}',
+        definitions=[style.chronic_definition(S), class_definition(d, untested)],
+        notes=[threshold_note(S, d),
+               f'Points jittered vertically by up to {JITTER} to show overlap. {len(zero)} devices with zero '
+               f'exposure months sit at x = 0{" (not tested)" if untested else ""}.{hidden_note(S, hidden)}',
                'Source: htm_device_exposure.csv; thresholds from htm_summary.json.'])
-    separate_first_definition(fig, style.chronic_definition(S))
     return [style.save(fig, out_dir / PNG)]
 
 

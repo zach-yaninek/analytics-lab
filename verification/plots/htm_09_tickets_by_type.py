@@ -61,7 +61,8 @@ def draw(d, total, noun, title, subtitle, notes, disclaimer, path):
 
 def plot(out_dir=style.FIG_DIR):
     out_dir = Path(out_dir)
-    S = style.summary()['D1_workload']
+    S_all = style.summary()
+    S = S_all['D1_workload']
     written = []
 
     # By model (case export): every unplanned ticket has one.
@@ -74,7 +75,7 @@ def plot(out_dir=style.FIG_DIR):
         f'Three models generate {style.pct(top.unplanned_tickets.sum() / total, 0)} of unplanned tickets',
         f'Raw counts, not adjusted for fleet size (see the note below). Blue: {", ".join(top.value)}. '
         f'All {total:,} unplanned tickets on {S["machines"]:,} ticketed machines (case-export '
-        f'serials), Aug 2025 to Aug 2026. Excludes planned work, cancelled and duplicate cases. Share of all '
+        f'serials), {style.period_text(S_all, "case_export_period")}. Excludes planned work, cancelled and duplicate cases. Share of all '
         f'unplanned tickets in brackets.',
         [f'Each machine is counted under its most frequently recorded model. Other = the {len(m) - N_SHOWN} models '
          f'with the fewest tickets.', 'Source: htm_type_mix.csv (field = model).'],
@@ -95,7 +96,7 @@ def plot(out_dir=style.FIG_DIR):
         f'tickets',
         f'Raw counts, not adjusted for fleet size (see the note below). Blue: {", ".join(top.value)}. '
         f'{matched:,} unplanned tickets whose serial matches a telemetry device, '
-        f'Aug 2025 to Aug 2026. Share of device-matched tickets in brackets.',
+        f'{style.period_text(S_all, "case_export_period")}. Share of device-matched tickets in brackets.',
         [f'Not shown: {unmatched:,} tickets on machines not matched to a telemetry device. Other = the '
          f'{len(t) - N_SHOWN} types with the fewest tickets.',
          'Source: htm_type_mix.csv (field = machine_type).'],

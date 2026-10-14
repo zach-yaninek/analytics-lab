@@ -51,8 +51,8 @@ Combining the two views (D3):
 | Class | Machines | Meaning |
 |---|---|---|
 | **Chronic outlier** | **113** | Workload-outsized **and** a rate outlier |
-| High volume, as expected | 93 | Workload-outsized, but the volume fits the type and the months active |
-| Rate outlier only | 5 | Few tickets but very short exposure |
+| Workload-outsized only | 93 | Workload-outsized, but not a rate outlier: high volume, as expected for the type and the months active |
+| Rate outlier only | 5 | A rate outlier that is not workload-outsized: few tickets but very short exposure |
 
 The workload view's top 5% hold 18.3% of tickets, and its top 10% and top 20% hold 29.4% and 45.6%. 147 machines have
 6 or more tickets, 21 have 10 or more, and the maximum is 23.

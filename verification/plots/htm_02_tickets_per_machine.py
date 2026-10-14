@@ -2,8 +2,8 @@
 """Chart 2: distribution of unplanned tickets per ticketed machine, with the workload-outsized threshold.
 
 Bars count machines by their number of unplanned tickets in the case export; a vertical rule marks the
-workload-outsized threshold (ticket count of the rank_k-th busiest machine, ties included) and bars at or above it
-carry their machine counts.
+workload-outsized threshold (ticket count of the rank_k-th busiest machine, ties included). Bars at or above it are
+blue and carry their machine counts; bars below it are gray context.
 
 Inputs:
   verification/outputs/htm_machine_counts.csv   unplanned_tickets, workload_outsized (one row per ticketed machine)
@@ -30,13 +30,13 @@ def plot(out_dir=style.FIG_DIR):
     vc = t.value_counts().sort_index()
     n_mach, n_tix = len(m), int(t.sum())
     outs = m[m.workload_outsized]
-    thr = int(outs.unplanned_tickets.min())
+    thr = W['threshold']
     share_out = outs.unplanned_tickets.sum() / n_tix
     fixed = t[t >= fixed_thr]
     style.check('D1 machines', W['machines'], n_mach)
     style.check('D1 tickets', W['tickets'], n_tix)
-    style.check('D1 threshold', W['threshold'], thr)
-    style.check('D1 threshold = count of the rank_k-th machine', W['threshold'],
+    style.check('D1 threshold', thr, outs.unplanned_tickets.min())
+    style.check('D1 threshold = count of the rank_k-th machine', thr,
                 t.sort_values(ascending=False).iloc[W['rank_k'] - 1])
     style.check('D1 outsized machines', W['outsized_machines'], len(outs))
     style.check('D1 outsized ticket share', W['outsized_ticket_share'], round(share_out, 4), 1e-4)
@@ -46,7 +46,8 @@ def plot(out_dir=style.FIG_DIR):
 
     fig, ax = style.figure(10, 6.6)
     top = vc.max()
-    ax.bar(vc.index, vc.values, width=0.4, color=style.BLUE, linewidth=0)
+    ax.bar(vc.index, vc.values, width=0.4, linewidth=0,
+           color=[style.BLUE if xv >= thr else style.GRAY_LIGHT for xv in vc.index])
     for xv, yv in vc.items():
         if xv >= thr:
             ax.text(xv, yv + top * 0.012, f'{yv:,}', ha='center', va='bottom', fontsize=9, color=style.INK2)
@@ -67,7 +68,7 @@ def plot(out_dir=style.FIG_DIR):
         fig,
         f'The {len(outs)} machines with {thr} or more tickets carry {style.pct(share_out)} of the unplanned load',
         f'{n_mach:,} ticketed machines (case-export serials) and {n_tix:,} unplanned tickets (excludes planned work, '
-        f'cancelled and duplicate cases), case export Aug 2025 to Aug 2026.',
+        f'cancelled and duplicate cases), case export {style.period_text(S, "case_export_period")}.',
         definitions=[style.outsized_definition(S)],
         notes=[f'Fixed threshold of {fixed_thr} or more: {len(fixed)} machines with {style.pct(fixed.sum() / n_tix)} '
                f'of tickets. Maximum {int(vc.index.max())} tickets.',

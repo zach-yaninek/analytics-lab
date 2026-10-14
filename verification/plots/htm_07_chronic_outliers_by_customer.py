@@ -2,22 +2,23 @@
 """Chart 7: chronic-outlier machines by customer, against each customer's devices in the exposure population.
 
 One row per customer with 2 or more chronic outliers (or the top MAX_ROWS customers when that set is too small or too
-large): a light bar for the customer's devices in the exposure population (non-shared hosts) with the chronic-outlier
-machines overlaid in blue, labelled "k of n". The title states how many of the customers holding a chronic outlier
-hold just one; the footer counts the customers not shown.
+large): a light bar for the customer's devices in the exposure population (devices on customer hosts) with the
+chronic-outlier machines overlaid in blue, labelled "k of n". The title states how many of the customers holding a
+chronic outlier hold just one; the footer counts the customers not shown.
 
 Two versions are drawn from the same data:
   pseudonymous (Customer NNN), always;
   real customer names, when private=True and the gitignored name table exists. It is written to deliverables/
-  (gitignored) and must never be committed.
+  (gitignored) and must never be committed; its privacy warning is the first line of the subtitle.
 
 Inputs:
   verification/outputs/htm_customer_chronic.csv  customer, chronic_outlier_machines, workload_outsized_machines,
                                                  exposure_devices (one row per customer)
-  verification/outputs/htm_summary.json          definitions (period, q_cut), D1_workload (threshold,
-                                                 outsized_machines) for the chronic-outlier definition, D3_classes
-                                                 and clustering (chronic_customers_holding, customers_holding) for
-                                                 the consistency checks
+  verification/outputs/htm_summary.json          definitions.period (rate-test window) for the subtitle;
+                                                 D1_workload.threshold and definitions.q_cut for the chronic-outlier
+                                                 definition; D3_classes, D1_workload.outsized_machines and clustering
+                                                 (chronic_customers_holding, customers_holding) for the consistency
+                                                 checks
   data/private/htm_private_customer_names.csv    customer -> real_account_name (real-name version only; gitignored)
 Outputs:
   verification/outputs/figures/htm_07_chronic_outliers_by_customer.png
@@ -41,11 +42,8 @@ MULTI = 2                    # customers with this many chronic outliers or more
 MIN_ROWS, MAX_ROWS = 10, 25  # ... unless that gives fewer than MIN_ROWS or more than MAX_ROWS rows (then top MAX_ROWS)
 ROW_IN = 0.38                # inches per customer row
 BAR_H = 0.4                  # bar thickness as a share of the row pitch
-
-
-def period_text(S):
-    lo, hi = (pd.Timestamp(x) for x in S['definitions']['period'])
-    return f'{lo:%b %Y} to {hi:%b %Y}'
+PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
+                   '(gitignored); never commit.')
 
 
 def draw(S, c, path, names=None):
@@ -69,7 +67,7 @@ def draw(S, c, path, names=None):
             label='Customer\'s devices in the exposure population')
     ax.barh(y, shown.chronic_outlier_machines, height=BAR_H, color=style.BLUE, linewidth=0,
             label='Chronic-outlier machines')
-    for yi, (k, tot) in zip(y, zip(shown.chronic_outlier_machines, shown.exposure_devices)):
+    for yi, k, tot in zip(y, shown.chronic_outlier_machines, shown.exposure_devices):
         ax.annotate(f'{k} of {tot}', xy=(tot, yi), xytext=(6, 0), textcoords='offset points', va='center',
                     ha='left', fontsize=9.5, color=style.INK2)
     ax.set_ylim(-0.6, len(shown) - 0.4)
@@ -78,8 +76,10 @@ def draw(S, c, path, names=None):
     ax.set_yticklabels(labels, color=style.INK2)
     style.style_axes(ax, grid='x', baseline='left')
     ax.set_xlabel('Devices')
-    # The bottom rows are short bars, so the lower right of the plot is empty.
-    ax.legend(loc='lower right', handlelength=1.4)
+    # The bottom rows are short bars, so the lower right of the plot is empty. The opaque background keeps the
+    # x gridlines out of the legend text.
+    ax.legend(loc='lower right', handlelength=1.4, frameon=True, facecolor=style.SURFACE, edgecolor='none',
+              framealpha=1)
 
     which = (f'Customers with {MULTI} or more' if by_rule
              else f'The {len(shown)} customers with the most chronic outliers')
@@ -92,23 +92,29 @@ def draw(S, c, path, names=None):
                     f'{int(rest.chronic_outlier_machines.max())} chronic outliers.')
     notes = [f'Not shown: {rest_txt} Customer = the device location\'s customer (ticket account where missing). '
              f'Rows sorted by chronic outliers, then devices.',
-             'Source: htm_customer_chronic.csv' + ('; names from data/private/htm_private_customer_names.csv'
-                                                   if names is not None else '')
+             'Source: htm_customer_chronic.csv'
+             + (f'; names from {NAMES.relative_to(style.ROOT)}' if names is not None else '')
              + '; thresholds from htm_summary.json.']
+    subtitle = [f'{n_mach} chronic-outlier machines across {n_cust} customers (tickets counted over the case export, '
+                f'{style.period_text(S, "case_export_period")}; rate test on {style.period_text(S)}). {which} shown against their devices in the '
+                f'exposure population (customer hosts).']
     if names is not None:
-        notes.insert(0, 'Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                        '(gitignored); never commit.')
+        # First line of the subtitle, so the warning is read before the chart (frame() wraps each item separately).
+        subtitle.insert(0, PRIVACY_WARNING)
     style.frame(
         fig,
         f'Chronic outliers are spread thinly: {singles} of {n_cust} customers have just one',
-        f'{n_mach} chronic-outlier machines across {n_cust} customers, unplanned tickets {period_text(S)}. '
-        f'{which} shown against their devices in the exposure population (non-shared hosts).',
+        subtitle,
         definitions=[style.chronic_definition(S)],
         notes=notes)
     return style.save(fig, path)
 
 
 def plot(out_dir=style.FIG_DIR, private=True):
+    """Draw the pseudonymous chart into out_dir and, when private=True, the real-name chart into style.DELIVERABLES.
+
+    The real-name PNG always goes to style.DELIVERABLES, whatever out_dir is, so a test run into a scratch out_dir
+    with private=True overwrites the deliverable; pass private=False for test runs."""
     out_dir = Path(out_dir)
     S = style.summary()
     cu = style.load('customer_chronic')

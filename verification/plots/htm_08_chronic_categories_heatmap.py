@@ -30,9 +30,10 @@ PNG = 'htm_08_chronic_categories_heatmap.png'
 N_ROWS, N_COLS = 30, 10  # machines with the most tickets; most frequent categories (the rest pooled as Other)
 ROW_IN = 0.3             # inches per machine row
 DOMINANT = 0.5           # "one category makes up half or more of a machine's tickets"
+WHITE_FROM = 6           # BLUE_RAMP index from which cell counts are white bold (dark cells); check if the ramp changes
 
 
-def plot(out_dir=style.FIG_DIR, n_rows=N_ROWS, n_cols=N_COLS):
+def plot(out_dir=style.FIG_DIR):
     out_dir = Path(out_dir)
     S = style.summary()
     cc = style.load('chronic_categories')
@@ -50,18 +51,18 @@ def plot(out_dir=style.FIG_DIR, n_rows=N_ROWS, n_cols=N_COLS):
 
     tot = cc.groupby('category').tickets.sum().reset_index()
     tot = tot.sort_values(['tickets', 'category'], ascending=[False, True], kind='mergesort')
-    cols = tot.category.head(n_cols).tolist()
+    cols = tot.category.head(N_COLS).tolist()
     n_other_cats = len(tot) - len(cols)
     cc['col'] = cc.category.where(cc.category.isin(cols), 'Other')
     dom = cc.groupby('machine_id').tickets.max() / cc.groupby('machine_id').total_tickets.first()
     n_dom = int((dom >= DOMINANT).sum())
-    rows = mach.head(n_rows)
-    rest = mach.iloc[n_rows:]
+    rows = mach.head(N_ROWS)
+    rest = mach.iloc[N_ROWS:]
     piv = cc[cc.machine_id.isin(rows.machine_id)].pivot_table(index='machine_id', columns='col', values='tickets',
                                                               aggfunc='sum', fill_value=0)
     piv = piv.reindex(index=rows.machine_id, columns=cols + ['Other'], fill_value=0)
     style.check('heatmap rows sum to totals', 0,
-                int((piv.sum(axis=1).to_numpy() - rows.total_tickets.to_numpy()).sum()))
+                int(abs(piv.sum(axis=1).to_numpy() - rows.total_tickets.to_numpy()).sum()))
     vals = piv.to_numpy()
     vmax = int(vals.max())
 
@@ -76,7 +77,7 @@ def plot(out_dir=style.FIG_DIR, n_rows=N_ROWS, n_cols=N_COLS):
         for j in range(vals.shape[1]):
             v = int(vals[i, j])
             if v:
-                dark = idx[v - 1] >= 6
+                dark = idx[v - 1] >= WHITE_FROM
                 ax.text(j + 0.5, i + 0.5, str(v), ha='center', va='center', fontsize=9.5,
                         color='white' if dark else style.INK, weight='bold' if dark else 'normal')
     ax.set_ylim(vals.shape[0], 0)
@@ -87,7 +88,7 @@ def plot(out_dir=style.FIG_DIR, n_rows=N_ROWS, n_cols=N_COLS):
     ax.xaxis.tick_top()
     ax.set_xticks(np.arange(vals.shape[1]) + 0.5)
     col_n = dict(zip(tot.category, tot.tickets))
-    other_n = int(tot.tickets.iloc[n_cols:].sum())
+    other_n = int(tot.tickets.iloc[N_COLS:].sum())
     ax.set_xticklabels([f'{c} ({col_n[c]})' for c in cols] + [f'Other ({other_n})'], rotation=40, ha='left',
                        rotation_mode='anchor', color=style.INK2, fontsize=9.5)
     style.style_axes(ax, grid=None, baseline=None)
@@ -95,18 +96,27 @@ def plot(out_dir=style.FIG_DIR, n_rows=N_ROWS, n_cols=N_COLS):
     cb = fig.colorbar(mesh, ax=ax, location='right', shrink=0.4, anchor=(0.0, 1.0), aspect=22, pad=0.03,
                       ticks=range(0, vmax + 1, 2 if vmax > 8 else 1))
     cb.outline.set_visible(False)
-    cb.ax.tick_params(length=0, labelsize=9, colors=style.MUTED)
+    cb.ax.tick_params(which='both', length=0, labelsize=9, colors=style.MUTED)
     cb.set_label('tickets', color=style.MUTED, fontsize=10)
 
+    if len(rest) == 0:
+        rest_txt = 'none.'
+    else:
+        lo, hi = int(rest.total_tickets.min()), int(rest.total_tickets.max())
+        span = f'{lo} to {hi}' if lo < hi else f'{lo}'
+        rest_txt = f'{len(rest)} chronic outliers with {span} tickets.'
+        cut = int(rows.total_tickets.iloc[-1])
+        if hi == cut:  # the row limit splits a tie
+            rest_txt += (f' Of the {int((mach.total_tickets == cut).sum())} machines with {cut} tickets, the '
+                         f'{int((rows.total_tickets == cut).sum())} with the lowest machine ids are shown.')
     style.frame(
         fig,
         f'One category makes up half or more of the tickets on {n_dom} of {len(mach)} chronic outliers',
-        f'Unplanned tickets by category for the {len(rows)} chronic-outlier machines with the most tickets '
-        f'(case-export serials, Aug 2025 to Aug 2026). Columns: the {n_cols} most frequent categories across all '
+        f'Unplanned tickets by category (case-export serials, {style.period_text(S, "case_export_period")}) for the {len(rows)} '
+        f'chronic-outlier machines with the most tickets. Columns: the {N_COLS} most frequent categories across all '
         f'{len(mach)} chronic outliers, with their totals.',
         definitions=[style.chronic_definition(S)],
-        notes=[f'Rows sorted by total tickets, then machine id. Not shown: {len(rest)} chronic outliers with '
-               f'{int(rest.total_tickets.min())} to {int(rest.total_tickets.max())} tickets. Other = {n_other_cats} '
+        notes=[f'Rows sorted by total tickets, then machine id. Not shown: {rest_txt} Other = {n_other_cats} '
                f'further categories.',
                f'Source: htm_chronic_categories.csv (full table, all {len(mach)} machines); thresholds from '
                f'htm_summary.json.'])

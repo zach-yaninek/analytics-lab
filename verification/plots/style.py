@@ -67,28 +67,35 @@ def summary():
     return json.loads((OUTPUTS / 'htm_summary.json').read_text())
 
 
+def period_text(S=None, which='period'):
+    """'Aug 2025 to Jul 2026' for S['definitions'][which]: 'period' = the rate-test / exposure window,
+    'case_export_period' = first to last opened ticket in the case export."""
+    S = S or summary()
+    start, end = (pd.Timestamp(x).strftime('%b %Y') for x in S['definitions'][which])
+    return f'{start} to {end}'
+
+
 def outsized_definition(S=None):
     S = S or summary()
-    w = S['D1_workload']
-    return (f'Workload-outsized = {w["threshold"]} or more unplanned tickets in the case export (Aug 2025 to Aug '
-            f'2026): the ticket count of the {w["rank_k"]}th busiest machine, i.e. the top 5% of '
-            f'{w["machines"]:,} ticketed machines, ties included.')
+    w, d = S['D1_workload'], S['definitions']
+    return (f'Workload-outsized = {w["threshold"]} or more unplanned tickets in the case export '
+            f'({period_text(S, "case_export_period")}): the ticket count of the {w["rank_k"]}th busiest machine, i.e. '
+            f'the top {d["top_share"]:.0%} of {w["machines"]:,} ticketed machines, ties included.')
 
 
 def chronic_definition(S=None):
     S = S or summary()
     w, d = S['D1_workload'], S['definitions']
     return (f'Chronic outlier = a machine that is both workload-outsized ({w["threshold"]} or more unplanned '
-            f'tickets, the top 5% of ticketed machines) and a rate outlier (more tickets than its machine type\'s '
-            f'rate × months active predicts; Poisson test, Benjamini-Hochberg q < {d["q_cut"]:g}). A screening '
-            f'flag for follow-up, not proof of a defect.')
+            f'tickets, the top {d["top_share"]:.0%} of ticketed machines, ties included) and a rate outlier (more '
+            f'tickets than its machine type\'s rate × months active predicts, small types pooled; Poisson test, '
+            f'Benjamini-Hochberg q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a defect.')
 
 
 def machine_month_definition(S=None):
     S = S or summary()
-    start, end = (pd.Timestamp(x).strftime('%b %Y') for x in S['definitions']['period'])
     return (f'Machine-month = one month of a machine being in service. Each telemetry device counts the calendar '
-            f'months from its first to its last transaction within {start} to {end}, both included (quiet months in '
+            f'months from its first to its last transaction within {period_text(S)}, both included (quiet months in '
             f'between count too), so a machine active all year adds 12. Devices on the shared internal host or with '
             f'no host are excluded.')
 
@@ -159,13 +166,13 @@ def _lines(text_or_lines, chars):
 def frame(fig, title, subtitle, notes=(), definitions=()):
     """Title and subtitle above the plot area; definitions (darker) and notes (muted) below it.
 
-    The bands are reserved through the constrained-layout rect, so the axes, tick labels and legends are laid out
-    in the space between them. Definitions are the first lines of the footer so the reader sees them before the
-    source notes."""
+    Each definition is drawn as its own text, first in the footer so the reader sees it before the source notes;
+    run_all.py checks that every term a chart uses has its definition drawn. The bands are reserved through the
+    constrained-layout rect, so the axes, tick labels and legends are laid out in the space between them."""
     w, h = fig.get_size_inches()
     usable = w - 2 * MARGIN
     sub = _lines(subtitle, int(usable * SUB_CHARS_PER_IN))
-    defs = _lines(definitions, int(usable * NOTE_CHARS_PER_IN))
+    defs = [_lines(d, int(usable * NOTE_CHARS_PER_IN)) for d in definitions]
     note = _lines(notes, int(usable * NOTE_CHARS_PER_IN))
     title_h = TITLE_PT / 72 * 1.25
     sub_h = len(sub) * SUB_PT / 72 * 1.35
@@ -177,17 +184,19 @@ def frame(fig, title, subtitle, notes=(), definitions=()):
              color=INK2, linespacing=1.35)
     top_band = top + title_h + 0.08 + sub_h + 0.2
 
-    bottom = 0.16
+    # Footer, drawn bottom-up: notes, then the definitions in reverse so the first one ends up on top.
+    y = 0.16
     if note:
-        fig.text(MARGIN / w, bottom / h, '\n'.join(note), ha='left', va='bottom', fontsize=NOTE_PT, color=MUTED,
+        fig.text(MARGIN / w, y / h, '\n'.join(note), ha='left', va='bottom', fontsize=NOTE_PT, color=MUTED,
                  linespacing=1.4)
-    y = bottom + len(note) * note_lh + (0.06 if note and defs else 0)
-    if defs:
-        fig.text(MARGIN / w, y / h, '\n'.join(defs), ha='left', va='bottom', fontsize=NOTE_PT, color=INK2,
+        y += len(note) * note_lh + 0.06
+    for lines in reversed(defs):
+        fig.text(MARGIN / w, y / h, '\n'.join(lines), ha='left', va='bottom', fontsize=NOTE_PT, color=INK2,
                  linespacing=1.4)
-    bottom_band = y + len(defs) * note_lh + 0.2
+        y += len(lines) * note_lh + 0.04
+    bottom_band = y + 0.16
 
-    left, right = (MARGIN - 0.12) / w, 0.15 / w  # axis labels may sit a little left of the text margin
+    left, right = (MARGIN - 0.12) / w, MARGIN / w  # tick labels may sit a little left of the text margin
     fig.get_layout_engine().set(rect=(left, bottom_band / h, 1 - left - right, 1 - (top_band + bottom_band) / h))
 
 

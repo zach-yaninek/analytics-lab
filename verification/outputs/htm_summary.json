@@ -11,11 +11,18 @@
     "q_cut": 0.05,
     "workload_rank": 185,
     "fixed_threshold": 6,
+    "top_share": 0.05,
+    "case_export_period": [
+      "2025-08-01",
+      "2026-08-31"
+    ],
     "episode_gaps_days": [
       3,
       7,
       14
     ],
+    "n_sim_episodes": 200,
+    "control_offset_days": 35,
     "shared_internal_host": [
       "Host 246"
     ]

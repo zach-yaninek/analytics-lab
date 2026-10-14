@@ -19,6 +19,7 @@ Run:  cd /home/user/analytics-lab && python3 -I verification/plots/htm_05_episod
 """
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from matplotlib.lines import Line2D  # noqa: E402
@@ -26,13 +27,18 @@ from matplotlib.lines import Line2D  # noqa: E402
 import style  # noqa: E402
 
 PNG = 'htm_05_episode_followups.png'
-# Random-timing draws per group: N_SIM_EPISODES in verification/high_ticket_machines.py (not in htm_summary.json).
-N_DRAWS_RANDOM_TIMING = 200
 RT_OFFSET = 0.68  # the random-timing row sits this far (y units) below its group's observed row
 
-# (D5 key, row label, dot colour, y of the observed row), top to bottom.
-GROUPS = [('outsized', 'Workload-outsized machines', style.BLUE, 3.0),
-          ('other', 'Other ticketed machines', style.GRAY, 1.0)]
+
+class Group(NamedTuple):
+    key: str    # D5_episodes key
+    label: str  # y tick label
+    color: str  # dot
+    y: float    # observed row
+
+
+GROUPS = [Group('outsized', 'Workload-outsized machines', style.BLUE, 3.0),  # top to bottom
+          Group('other', 'Other ticketed machines', style.GRAY, 1.0)]
 
 
 def plot(out_dir=style.FIG_DIR):
@@ -47,30 +53,30 @@ def plot(out_dir=style.FIG_DIR):
     style.check('D1 outsized machines (episodes)', W['outsized_machines'], int(ep.workload_outsized.sum()))
     style.check('D1 outsized flag = tickets >= threshold (episodes)', 0,
                 int((ep.workload_outsized != (ep.tickets >= W['threshold'])).sum()))
-    vals = {}
-    for key, _, _, _ in GROUPS:
-        g = ep[ep.workload_outsized] if key == 'outsized' else ep[~ep.workload_outsized]
-        t = g.tickets.sum()
-        v = {k: 1 - g[f'episodes_{k}d'].sum() / t for k in (lo_gap, gap, hi_gap)}
-        v['n'], v['t'] = len(g), int(t)
-        vals[key] = v
-        style.check(f'D5 {key} machines', D5[key]['machines'], v['n'])
-        style.check(f'D5 {key} tickets', D5[key]['tickets'], v['t'])
-        for k in (lo_gap, gap, hi_gap):
-            style.check(f'D5 {key} {k}d follow-up share', D5[key][f'followup_share_{k}d'], round(v[k], 4), 1e-4)
+    # Per group: machines, tickets, and share[group][gap days] = follow-up share = 1 - episodes / tickets.
+    machines, tickets, share = {}, {}, {}
+    for grp in GROUPS:
+        k = grp.key
+        g = ep[ep.workload_outsized] if k == 'outsized' else ep[~ep.workload_outsized]
+        machines[k], tickets[k] = len(g), int(g.tickets.sum())
+        share[k] = {d: 1 - g[f'episodes_{d}d'].sum() / tickets[k] for d in (lo_gap, gap, hi_gap)}
+        style.check(f'D5 {k} machines', D5[k]['machines'], machines[k])
+        style.check(f'D5 {k} tickets', D5[k]['tickets'], tickets[k])
+        for d in (lo_gap, gap, hi_gap):
+            style.check(f'D5 {k} {d}d follow-up share', D5[k][f'followup_share_{d}d'], round(share[k][d], 4), 1e-4)
 
     fig, ax = style.figure(10, 6.5)
     rts = {}
-    for key, _, col, yv in GROUPS:
-        v = vals[key]
-        lo, mid, hi = 100 * v[lo_gap], 100 * v[gap], 100 * v[hi_gap]
+    for grp in GROUPS:
+        key, yv = grp.key, grp.y
+        lo, mid, hi = (100 * share[key][d] for d in (lo_gap, gap, hi_gap))
         ax.plot([lo, hi], [yv, yv], color=style.GRAY_LIGHT, lw=2, zorder=2)
         ax.plot([lo, hi], [yv, yv], ls='', marker='|', ms=13, mew=1.2, color=style.MUTED, zorder=2)
         # Main-rule value above the dot; the range-end values below the ends (never on the same line).
         for x, txt in ((lo, f'{lo_gap}-day {lo:.1f}%'), (hi, f'{hi_gap}-day {hi:.1f}%')):
             ax.annotate(txt, xy=(x, yv), xytext=(0, -10), textcoords='offset points', ha='center', va='top',
                         fontsize=9, color=style.MUTED)
-        ax.scatter([mid], [yv], s=120, color=col, edgecolors=style.SURFACE, linewidths=1.8, zorder=4)
+        ax.scatter([mid], [yv], s=120, color=grp.color, edgecolors=style.SURFACE, linewidths=1.8, zorder=4)
         ax.annotate(f'{mid:.1f}%', xy=(mid, yv), xytext=(0, 9), textcoords='offset points', ha='center',
                     va='bottom', fontsize=10.5, color=style.INK, weight='bold')
 
@@ -84,11 +90,12 @@ def plot(out_dir=style.FIG_DIR):
         ax.annotate(f'random timing {rt_med:.1f}%', xy=(rt_hi, yr), xytext=(8, 0), textcoords='offset points',
                     ha='left', va='center', fontsize=9, color=style.INK2)
 
-    ax.set_yticks([yv for _, _, _, yv in GROUPS])
-    ax.set_yticklabels([f'{label}\n{vals[k]["n"]:,} machines · {vals[k]["t"]:,} tickets'
-                        for k, label, _, _ in GROUPS], color=style.INK2, linespacing=1.35)
-    ax.set_ylim(GROUPS[-1][3] - RT_OFFSET - 0.45, GROUPS[0][3] + 0.75)
-    ax.set_xlim(0, 100 * max(v[hi_gap] for v in vals.values()) + 4)
+    ys = [grp.y for grp in GROUPS]
+    ax.set_yticks(ys)
+    ax.set_yticklabels([f'{grp.label}\n{machines[grp.key]:,} machines · {tickets[grp.key]:,} tickets'
+                        for grp in GROUPS], color=style.INK2, linespacing=1.35)
+    ax.set_ylim(min(ys) - RT_OFFSET - 0.45, max(ys) + 0.75)
+    ax.set_xlim(0, 100 * max(s[hi_gap] for s in share.values()) + 4)
     style.style_axes(ax, grid='x', baseline=None)
     style.pct_axis(ax.xaxis)
     ax.set_xlabel('Follow-up share: tickets opened within the window after the machine\'s previous ticket')
@@ -99,17 +106,17 @@ def plot(out_dir=style.FIG_DIR):
     ax.legend(handles=handles, loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=3, handletextpad=0.5,
               columnspacing=1.6)
 
-    ratio = vals['outsized'][gap] / vals['other'][gap]
+    ratio = share['outsized'][gap] / share['other'][gap]
     style.frame(
         fig,
         f'Outsized machines\' tickets are {gap}-day follow-ups {ratio:.1f}× as often '
-        f'({style.pct(vals["outsized"][gap])} vs {style.pct(vals["other"][gap])})',
-        f'All {sum(v["t"] for v in vals.values()):,} unplanned tickets on {len(ep):,} machines (case-export serials), '
-        f'Aug 2025 to Aug 2026. A ticket is a follow-up if it opens within {gap} days of the machine\'s previous '
+        f'({style.pct(share["outsized"][gap])} vs {style.pct(share["other"][gap])})',
+        f'All {sum(tickets.values()):,} unplanned tickets on {len(ep):,} machines (case-export serials), '
+        f'{style.period_text(S, "case_export_period")}. A ticket is a follow-up if it opens within {gap} days of the machine\'s previous '
         f'ticket (sensitivity: {lo_gap} and {hi_gap} days).',
         definitions=[style.outsized_definition(S)],
         notes=[f'Random timing: each machine\'s tickets placed uniformly at random over the period '
-               f'({N_DRAWS_RANDOM_TIMING} draws, a rough null). More tickets alone produce more follow-ups: '
+               f'({S["definitions"]["n_sim_episodes"]} draws, a rough null). More tickets alone produce more follow-ups: '
                f'{style.pct(rts["outsized"])} for outsized machines and {style.pct(rts["other"])} for the rest.',
                'Source: htm_episodes.csv; random timing and threshold from htm_summary.json (D5, D1).'])
     return [style.save(fig, out_dir / PNG)]
