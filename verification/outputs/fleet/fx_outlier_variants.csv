@@ -1,0 +1,13 @@
+expected,count,scope,total,tau2,customers_flagged,customers_beyond_funnel_998,machines_flagged
+model,tickets,all,6753,0.09852448881197905,83,4,151
+model,tickets,core,6140,0.09769557397001027,71,1,124
+model,episodes,all,6138,0.09062756916099482,61,1,84
+model,episodes,core,5679,0.0916365154181432,51,0,68
+model_age,tickets,all,6753,0.08916042832367568,70,3,135
+model_age,tickets,core,6140,0.08967718045237612,58,1,109
+model_age,episodes,all,6138,0.08078904890134733,51,1,78
+model_age,episodes,core,5679,0.08448570638635729,44,0,66
+model_age_coverage,tickets,all,6753,0.07757654607567036,68,2,128
+model_age_coverage,tickets,core,6140,0.07686921936075418,63,1,98
+model_age_coverage,episodes,all,6138,0.07076354058833469,42,1,78
+model_age_coverage,episodes,core,5679,0.07057961604052287,34,0,60

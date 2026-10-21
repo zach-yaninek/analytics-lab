@@ -1,0 +1,177 @@
+{
+  "generated_by": "verification/fleet_exposure.py",
+  "seed": 15072,
+  "n_boot": 2000,
+  "n_null": 1000,
+  "definitions": {
+    "period": [
+      "2025-08-01",
+      "2026-08-31"
+    ],
+    "split": "2026-02-15",
+    "month_days": 30.4375,
+    "min_type_months": 100,
+    "age_bands": [
+      "<1",
+      "1-2",
+      "2-4",
+      "4-6",
+      "6-8",
+      "8-10",
+      "10+"
+    ],
+    "episode_gap_days": 7,
+    "min_flag_tickets": 5,
+    "q_cut": 0.05,
+    "z95": 1.959964,
+    "z998": 3.090232,
+    "min_variants": 10,
+    "n_variants": 12,
+    "pool_label": "Other models (<100 months each)",
+    "equipment_list_date": "2026-10-19"
+  },
+  "fleet": {
+    "machines": 9294,
+    "accounts": 1066,
+    "months": 112618.97330595483,
+    "tickets": 6753,
+    "rate_per_100": 5.996325309816094,
+    "machines_with_ticket": 3459,
+    "machines_zero_months": 109,
+    "tickets_h1": 3335,
+    "tickets_h2": 3418,
+    "rate_h1": 6.111256018899254,
+    "rate_h2": 5.888277087335341
+  },
+  "match": {
+    "ticket rows (all case types)": 7471,
+    "ticket rows whose serial is on the list": 7018,
+    "ticket serials": 3773,
+    "ticket serials on the list": 3540,
+    "matched rows: ticket account = list account": 6978,
+    "matched rows: ticket model = list model": 7018,
+    "matched rows": 7018,
+    "unplanned tickets in period": 7186,
+    "unplanned tickets on listed machines": 6753,
+    "unplanned tickets on unlisted serials": 433,
+    "unlisted serials with unplanned tickets": 226,
+    "listed machines": 9294,
+    "listed accounts": 1066,
+    "listed machines installed after the period (0 months)": 109,
+    "tickets opened before the install date": 7,
+    "machines whose exposure starts at a pre-install ticket": 4
+  },
+  "customers": {
+    "tau2": 0.08916042832367568,
+    "phi_winsorised": 3.2706307356922295,
+    "eb_alpha": 0.523788177970068,
+    "customers_with_E": 1057,
+    "flagged_998": 3,
+    "above_95": 36,
+    "below_998": 0,
+    "poisson_q_lt_0.05_high": 71,
+    "consistent_outliers": 19,
+    "consistent_low": 17,
+    "poisson_flagged": 70,
+    "consistent_outliers_beyond_funnel_998": 2,
+    "flagged_in_10plus_variants": 37
+  },
+  "machines": {
+    "flagged": 135,
+    "flagged_nb": 0,
+    "consistent_outliers": 40,
+    "flagged_in_10plus_variants": 63
+  },
+  "models": {
+    "consistently_above": [
+      "LVD-Remote-2.0",
+      "LVRR-WP-2.0",
+      "alEx SD 2.0",
+      "scrubBank 480"
+    ],
+    "consistently_below": [
+      "A-LC",
+      "A-MC",
+      "LVRR-WP",
+      "SC-24",
+      "SC-30"
+    ]
+  },
+  "persistence": {
+    "spearman_STR_h1_h2": {
+      "level": "customer",
+      "units": 308,
+      "observed": 0.4627,
+      "perm_null_median": 0.0404,
+      "perm_null_p2_5": -0.074,
+      "perm_null_p97_5": 0.1507,
+      "perm_p_value": 0.001,
+      "poisson_null_median": -0.001,
+      "poisson_null_p97_5": 0.1151
+    },
+    "top_decile_retained_share": {
+      "level": "customer",
+      "units": 308,
+      "observed": 0.2903,
+      "perm_null_median": 0.0968,
+      "perm_null_p2_5": 0.0323,
+      "perm_null_p97_5": 0.2258,
+      "perm_p_value": 0.003,
+      "poisson_null_median": 0.0968,
+      "poisson_null_p97_5": 0.2258
+    },
+    "significant_in_both_halves": {
+      "level": "customer",
+      "units": 308,
+      "observed": 16.0,
+      "perm_null_median": 7.0,
+      "perm_null_p2_5": 3.0,
+      "perm_null_p97_5": 12.0,
+      "perm_p_value": 0.002,
+      "poisson_null_median": 0.0,
+      "poisson_null_p97_5": 2.0
+    },
+    "second_half_ratio_if_3plus_first_half": {
+      "level": "machine",
+      "units": 272,
+      "observed": 2.7026,
+      "perm_null_median": 1.0438,
+      "perm_null_p2_5": 0.8254,
+      "perm_null_p97_5": 1.3109,
+      "perm_p_value": 0.001,
+      "poisson_null_median": 1.0,
+      "poisson_null_p97_5": null
+    },
+    "spearman_OE_h1_h2": {
+      "level": "machine",
+      "units": 5781,
+      "observed": 0.1904,
+      "perm_null_median": null,
+      "perm_null_p2_5": null,
+      "perm_null_p97_5": null,
+      "perm_p_value": null,
+      "poisson_null_median": null,
+      "poisson_null_p97_5": null
+    }
+  },
+  "docs05_overlap": {
+    "docs05_flagged": 113,
+    "on_list": 106,
+    "flagged_now": 97,
+    "consistent_now": 33,
+    "short_span_flagged": 22,
+    "short_span_on_list": 19,
+    "short_span_installed_during_period": 7,
+    "short_span_installed_before_period": 12,
+    "short_span_flagged_now": 17
+  },
+  "go_live_sensitivity": {
+    "fleet_rate_per_100": 6.010039640142245,
+    "months": 112361.98767967145,
+    "flagged_998": 3,
+    "flagged_overlap_with_main": 3
+  },
+  "type_exposure_basis": "telemetry-span",
+  "tau2_h1": 0.12810770169381377,
+  "tau2_h2": 0.10677294475133901
+}

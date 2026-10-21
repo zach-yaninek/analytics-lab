@@ -1,0 +1,17 @@
+measure,value
+ticket rows (all case types),7471
+ticket rows whose serial is on the list,7018
+ticket serials,3773
+ticket serials on the list,3540
+matched rows: ticket account = list account,6978
+matched rows: ticket model = list model,7018
+matched rows,7018
+unplanned tickets in period,7186
+unplanned tickets on listed machines,6753
+unplanned tickets on unlisted serials,433
+unlisted serials with unplanned tickets,226
+listed machines,9294
+listed accounts,1066
+listed machines installed after the period (0 months),109
+tickets opened before the install date,7
+machines whose exposure starts at a pre-install ticket,4
