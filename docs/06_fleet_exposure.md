@@ -360,6 +360,23 @@ No code change is needed.
 7. **A field check of the 18 consistent-outlier customers** and the 36 consistent-outlier machines. The list is
    available on request.
 
+## Figures
+Drawn by `viz/fleet_exposure/fx_*.py` (`python3 -I viz/fleet_exposure/run_all.py`). Each chart prints the
+definitions of the terms it uses and checks every number it draws against the outputs.
+
+![The three busiest models' 51% of tickets mostly reflects their 42% of installed machine-months](../viz/figures/fx_01_fleet_vs_ticket_share.png)
+![5 of 27 models run above the fleet ticket rate beyond the noise, led by scrubBank 480 at 2.7×](../viz/figures/fx_02_rate_by_model.png)
+![Machines under 1 year old have 3.3× the ticket rate of machines 10 years or older](../viz/figures/fx_03_rate_by_age.png)
+![Under Warranty machines have 1.7× the fleet's ticket rate, Not Serviceable 0.24×](../viz/figures/fx_04_rate_by_coverage.png)
+![3 of 15 telemetry types run above the telemetry fleet's ticket rate, led by sbsx-51 at 2.9×; 3 run below](../viz/figures/fx_05_rate_by_telemetry_type.png)
+![10 of the 15 busiest customers are flagged, 6 consistently; the busiest is in line with its fleet](../viz/figures/fx_06_busiest_customers.png)
+![63 customers are flagged, but only 1 lies outside the normal spread between customers](../viz/figures/fx_07_customer_funnel.png)
+![The top 10% of customers hold 47% of unplanned tickets; fleets plus chance predict 39%](../viz/figures/fx_08_customer_concentration.png)
+![Allowing for age, only scrubBank 480 is clearly above the fleet in both halves; A-LC and A-MC are clearly below](../viz/figures/fx_09_model_persistence.png)
+![Customers that run high tend to stay high: rank correlation 0.46 between halves, 0.04 by chance](../viz/figures/fx_10_customer_persistence.png)
+![Machines with 3+ first-half tickets had 2.6× their expected second-half tickets; their sites alone would give 1.5×](../viz/figures/fx_11_machine_persistence.png)
+![9 of 18 consistent outliers have under 10 machines; 6 of the other 9 have their excess spread across their fleets](../viz/figures/fx_12_outlier_drivers.png)
+
 ## Privacy
 - **Public outputs:** `verification/outputs/fleet/` holds only pseudonyms (Customer NNN, S#####), labels and
   aggregates.
