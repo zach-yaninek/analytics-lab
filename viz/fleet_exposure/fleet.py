@@ -78,7 +78,8 @@ def installed_month_definition(S=None):
             f'installed during {period_text(S)}: from its install date, or {start.day} {start:%b %Y} if earlier, to '
             f'{end.day} {end:%b %Y}. Machines installed after the period count 0 months. Rates count unplanned '
             f'tickets on listed machines only, and leave out the {S["third_party"]["machines"]} machines on a '
-            f'third-party service plan, whose service does not reach IPA\'s case export.')
+            f'third-party service plan, whose service rarely reaches IPA\'s case export '
+            f'({S["third_party"]["tickets"]} unplanned tickets in {S["third_party"]["months"]:,.0f} machine-months).')
 
 
 def expected_definition(S=None):

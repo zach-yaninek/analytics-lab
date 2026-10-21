@@ -8,8 +8,9 @@ telemetry DB is not in this container); **[inferred]** = our reasoning or outsid
 **[pending DB]** = decided by the checks in §7 once the DB arrives.
 
 > **Update, 21 October 2026.** IPA sent its active installed-base list (19 October: serial, account, model,
-> install date). `docs/06_fleet_exposure.md` uses it to compute customer-level rates. Its account field is the
-> install's account on the asset record, so the location-name route below is no longer needed for rates.
+> install date). `docs/06_fleet_exposure.md` uses it to compute customer-level rates. Its account field appears to
+> be the install's account: it matches the ticket's account on 99.4% of matched rows, though IPA has not confirmed
+> the source field. So the location-name route below is no longer needed for rates.
 > - **Agreement with tickets:** 3,540 of the 3,773 ticket serials are on the list. Where they match, the ticket's
 >   account equals the list's account on 99.4% of rows and the model on 100%.
 > - **Rates by customer:** each customer's tickets are compared with what its own machines would generate at fleet
@@ -19,8 +20,13 @@ telemetry DB is not in this container); **[inferred]** = our reasoning or outsid
 >   - Customer 029, which has the most unplanned tickets on listed machines, is in line with its fleet.
 > - **Still facility-level:** accounts are facilities; health-system rates still need parent accounts.
 > - **Snapshot:** the list holds active machines only, so machines removed during the period are missing (docs/06 §1).
-> - **Statements marked *[Updated 14 Oct]* below** that customer rates are not yet computed are superseded by
->   docs/06.
+> - **Superseded statements below**, now marked *[Updated 21 Oct]*. docs/06 computes customer rates from the
+>   list's account, which supersedes:
+>   - the 14 Oct box's "No customer-level rate has been computed yet";
+>   - the *[Updated 14 Oct]* notes in the Bottom line and the §5 table that point to `devices.location_name` as
+>     the route to customer rates.
+>
+>   Per-clearView-instance rates (§5 table) are still not computed.
 
 > **Update, 14 October 2026.** This document was written on 12 October from the case export and Zac's device
 > dictionary, before the full-database run. The original text below is kept as the dated record; superseded
@@ -35,7 +41,8 @@ telemetry DB is not in this container); **[inferred]** = our reasoning or outsid
 >     - it is a current snapshot, not history;
 >     - accounts are facilities, not health systems;
 >     - IPA should confirm the field comes from the asset record.
->   - No customer-level rate has been computed yet.
+>   - No customer-level rate has been computed yet. *[Updated 21 Oct: computed from IPA's installed-base list;
+>     docs/06 §4.]*
 > - **Host as a key** (`verification/outputs/db/db_host_class_fleet_share.csv`, `db_accounts_per_host.csv`,
 >   `db_hosts_per_account.csv`):
 >   - At account level, single-account hosts hold 59.6% of the fleet and multi-account hosts 27.2%, so host is not a
@@ -52,14 +59,16 @@ telemetry DB is not in this container); **[inferred]** = our reasoning or outsid
 **Bottom line.**
 - Zac's call is right: with the case export and device dictionary as delivered, we cannot report exposure rates per
   customer account. *[Updated 14 Oct: the database's device location name changes this for 86% of devices; see the
-  Update above.]*
+  Update above.]* *[Updated 21 Oct: IPA's installed-base list gives every listed machine's account; customer rates
+  on installed exposure are in docs/06 §4.]*
 - No field links devices to accounts. *[Updated 14 Oct: `devices.location_name` in the source database does.]* Ticket serials reach only 3,041 of 7,183 devices (42%; at most 52.5% even if
   every unmatched serial were recovered).
 - `Account Name` behaves as a facility that nests in a few hundred health systems.
 - His 31/83/16 crosswalk counts include counting artefacts, but they are consistent with clearView instances that
   serve more than one facility.
 - Per-clearView-instance rates need no ownership data and can be computed once the DB arrives. *[Updated 14 Oct: the
-  location name is now the better route to customer rates.]* Labelling them as
+  location name is now the better route to customer rates.]* *[Updated 21 Oct: superseded by the installed-base
+  list (docs/06).]* Labelling them as
   customer or system rates needs IPA's parent-account and instance-to-organisation mapping, or the full asset list.
 - These conclusions were re-derived by independent reviewers (data/derived/workflowB_result.json, K2a–K2j), and
   the corrections they found are folded in below.
@@ -264,7 +273,7 @@ machine-level heterogeneity, assuming all dictionary devices were in service for
 |---|---|
 | Ticket workload (counts) by facility account | Supported. Counts only, not rates |
 | Rates by telemetry `machine_type` (Zac §3.3) | Supported; denominators come from telemetry, not tickets |
-| Customer-specific exposure rates from tickets | **Not supported.** At most 42% fleet coverage; denominator conditions on failure. *[Updated 14 Oct: from the device location name instead, feasible for 86% of devices pending IPA's confirmation.]* |
+| Customer-specific exposure rates from tickets | **Not supported.** At most 42% fleet coverage; denominator conditions on failure. *[Updated 14 Oct: from the device location name instead, feasible for 86% of devices pending IPA's confirmation.]* *[Updated 21 Oct: computed from IPA's installed-base list for 9,055 machines at 1,065 accounts (docs/06 §4).]* |
 | "Tickets per machine" by customer from tickets | **Not supported.** ≥1.0 by construction and tracks workload |
 | Facility = owner of a fleet | **Not supported.** Facilities nest in a few hundred systems; roughly half to four-fifths of tickets are in multi-account systems, depending on grouping rules |
 | Per-clearView-instance rates (incl. unticketed machines) | **Computable [pending DB]**, no ownership data needed; label as "clearView instance". *[Updated 14 Oct: DB available; not yet computed.]* |
@@ -290,7 +299,9 @@ the system grouping for workload counts, and (b) IPA's list of which organisatio
 and what sits on the internal instance, which labels the per-instance telemetry rates. Together these cover the
 project-plan deliverables.
 
-**Full register.** For exposure rates by customer or system, ask for the installed-base or asset list behind the
+**Full register.** *[Updated 21 Oct: IPA sent the active list: serial, account, model, install date and service
+status. Parent account IDs and removal dates are still needed (docs/06 §8).]* For exposure rates by customer or
+system, ask for the installed-base or asset list behind the
 case Serial # lookup. It may be the standard Salesforce Asset object, a custom equipment object or an ERP table. It
 should have one row per machine and be joinable on serial = `external_device_id`. The rates are possible only as
 far as the register is complete; non-networked or out-of-contract machines may be missing.

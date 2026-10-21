@@ -115,7 +115,7 @@ def parse_address(text):
     city, state, z = m.groups()
     z = z.strip().upper().replace(' ', '')
     if re.fullmatch(r'\d{4,5}(-\d{4})?', z):
-        five = z.split('-')[0].zfill(5)          # restores dropped leading zero (e.g. NJ '7753')
+        five = z.split('-')[0].zfill(5)          # restores dropped leading zero (e.g. NJ '7099')
         return city.strip().upper(), state.upper(), five, '-' in z
     return city.strip().upper(), state.upper(), z, len(z) == 6   # Canadian postal code (building-level)
 

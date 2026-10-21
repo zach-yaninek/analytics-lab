@@ -217,12 +217,12 @@ def draw(S, cr, top, path, names=None):
                 int(cr.tickets.max() - cr.tickets.drop(cr.tickets.idxmax()).max()))
     b_in_line = (not b.poisson_flagged) and b.STR_lo <= 1 <= b.STR_hi
     if b_in_line:
-        busiest = 'the busiest is in line with its fleet'
+        busiest = f'the top one (by {lead} ticket{"s" if lead != 1 else ""}) is in line with its fleet'
     elif b.poisson_flagged:
-        busiest = 'including the busiest'
+        busiest = 'including the top one'
     else:
-        busiest = 'the busiest is not flagged'
-    title = (f'{n_flag} of the {n} busiest customers are flagged, {n_cons} consistently'
+        busiest = 'the top one is not flagged'
+    title = (f'{n_flag} of the {n} customers with the most tickets are flagged, {n_cons} consistently'
              + ('; ' if b_in_line or not b.poisson_flagged else ', ') + busiest)
 
     labels = [f'{name(c)} ({m:,} machines)' for c, m in zip(top.customer, top.machines)]

@@ -14,9 +14,9 @@ Inputs (no database is opened):
 
 Definitions
   F1 Population. Machines on the list (9,294) EXCEPT those on a third-party service plan (THIRD_PARTY_PLANS:
-     Vogeltronix, 239 machines at one account, 3 tickets in about 3,000 machine-months: their service work does not
-     reach this case export, so they are not at risk of an IPA ticket; reported separately, and the fleet rate with
-     them is a sensitivity). Tickets = unplanned tickets (Zac's service_cases view: excludes Planned work,
+     Vogeltronix, 239 machines at one account, 3 tickets in about 3,000 machine-months: their service work rarely
+     reaches this case export, most likely because the third party handles it (IPA is asked to confirm), so they are
+     treated as not at risk of an IPA ticket; reported separately, and the fleet rate with them is a sensitivity). Tickets = unplanned tickets (Zac's service_cases view: excludes Planned work,
      Cancelled request, Duplicate case) opened 2025-08-01..2026-08-31 (Eastern) whose serial is in the population.
      Each ticket is attributed to the machine's account ON THE LIST (customer), so numerator and denominator use
      the same account. The list holds only machines active on 2026-10-19: tickets on serials that are not listed

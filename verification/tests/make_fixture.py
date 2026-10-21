@@ -52,14 +52,15 @@ HEADERS = ['Date/Time Opened', 'Account Name', 'Hospital City, State, Zip', 'Shi
            'Trouble Reported', 'Administrative Notes', 'Trouble Code', 'Trouble Code Category',
            'Trouble Code Sub Category', 'Trouble Resolution', 'Trouble Closed Date/Time']
 
-# Fake locations: real state/province codes (so the zone parser works), fake city names.
+# Fake locations: real state/province codes (so the zone parser works), fake city names, and zip / postal
+# codes checked not to equal any real customer's (synthetic).
 ZONES = {
-    'Eastern': ('America/New_York', [('NY', '10016', 'USA'), ('MA', '02115', 'USA'), ('OH', '43210', 'United States'),
-                                     ('ON', 'M5G 2C4', 'Canada')]),
-    'Central': ('America/Chicago', [('IL', '60611', 'USA'), ('TX', '75390', 'USA')]),
-    'Mountain': ('America/Denver', [('CO', '80045', 'USA'), ('UT', '84132', 'USA')]),
-    'Arizona (no DST)': ('America/Phoenix', [('AZ', '85006', 'USA')]),
-    'Pacific': ('America/Los_Angeles', [('CA', '94143', 'USA'), ('WA', '98195', 'USA')]),
+    'Eastern': ('America/New_York', [('NY', '10098', 'USA'), ('MA', '02198', 'USA'), ('OH', '43298', 'United States'),
+                                     ('ON', 'K0A 9Z9', 'Canada')]),
+    'Central': ('America/Chicago', [('IL', '60698', 'USA'), ('TX', '75398', 'USA')]),
+    'Mountain': ('America/Denver', [('CO', '80098', 'USA'), ('UT', '84198', 'USA')]),
+    'Arizona (no DST)': ('America/Phoenix', [('AZ', '85098', 'USA')]),
+    'Pacific': ('America/Los_Angeles', [('CA', '94198', 'USA'), ('WA', '98198', 'USA')]),
 }
 ACCOUNT_ZONES = (['Eastern'] * 10 + ['Central'] * 7 + ['Mountain'] * 4 + ['Arizona (no DST)'] * 3
                  + ['Pacific'] * 6)
@@ -135,11 +136,11 @@ def write_equipment(out, devices, accounts, ticket_only_serials, seed):
             name, loc = f'Fake Community Clinic {i - 72:02d}', ZONES[d['zone']][1][0]
         row(serial, name, i % 40, d['model'], d['product'], loc)
     for j, s in enumerate(ticket_only_serials):
-        row(s, f'Fake Memorial Hospital {j * 3 % 30:02d}', 40 + j, 'MV-2.0', 'scrubEx', ('NY', '10016', 'USA'))
+        row(s, f'Fake Memorial Hospital {j * 3 % 30:02d}', 40 + j, 'MV-2.0', 'scrubEx', ('NY', '10098', 'USA'))
     for j in range(13):
         serial = f'FX7{j:05d}' if j < 12 else f' FX7{j:05d} '              # whitespace removed by clean()
         model, family = MODELS[j % len(MODELS)][:2]
-        row(serial, f'Fake Surgery Center {j % 5:02d}', 50 + j, model, family, ('CA', '94143', 'USA'))
+        row(serial, f'Fake Surgery Center {j % 5:02d}', 50 + j, model, family, ('CA', '94198', 'USA'))
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = common.EQUIP_SHEET

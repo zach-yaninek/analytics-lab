@@ -90,7 +90,12 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
   `verification/outputs/fleet/db/`). After that, re-running `verification/fleet_exposure.py` gives telemetry-type rates
   on installed exposure, networked vs non-networked rates and the full model × type crosswalk; chart `fx_05` switches
   basis by itself.
-- [ ] **Stratify the association analysis by model** (item 6) using the list's model for every machine, not only
-  ticketed ones.
+- [ ] **Stratify the association analysis by model as well as telemetry type** (item 6). Every ticketed machine
+  already has its model (ticket model = list model on all 7,018 matched rows).
+- [ ] **Measure how many of the 18 consistent-outlier customers chance alone would produce:** extend the stratified
+  shuffle null (docs/06 §5) to the full rule (10 of 12 variants and both halves). Report separately the 8 with
+  under 3 expected tickets in a half.
+- [ ] **Re-run with IPA's answers on service channels** (docs/06 §8, asks 2–5): the Vogeltronix plan, the A-series,
+  "Not Serviceable", and coverage dates.
 - [ ] **Re-run with IPA's removal dates and parent accounts** when they arrive (docs/06 §8, asks 1 and 6).
 - [ ] **Fold in IPA's field check** of the 18 consistent-outlier customers and 36 machines.

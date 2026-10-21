@@ -32,50 +32,61 @@ date). With it we can, for the first time:
      own integrity checks).
    - One check fails in the committed run record. The cause was a sort-order bug in our comparison script, not in
      the notebook; once fixed, all 15 rows match.
-2. **Service workload is concentrated by product and not by customer, and it mostly follows the installed base.**
-   - Three models (LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0) account for 48% of tickets. That mostly reflects how
-     many are installed: on the installed base they hold 42% of machine-months and 51% of unplanned tickets.
+2. **Service workload is concentrated in a few models rather than a few customers, and it mostly follows the
+   installed base.**
+   - Three models (LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0) account for 48% of all 7,471 tickets. That mostly reflects
+     how many are installed: they hold 42% of installed machine-months and 51% of the 6,750 unplanned tickets on
+     listed machines.
    - The ten busiest facilities account for only 11% of tickets. The two largest differ once their fleets are known:
      - Customer 171 (123 tickets in all) has 113 unplanned tickets on its 68 listed machines against 59 expected,
-       about twice its fleet's rate;
+       about twice its fleet's rate. It is on the field-check list (finding 6); the reason is not yet known.
      - Customer 029 (116 tickets in all) has 114 against 102 expected on 107 machines, in line with its fleet.
    - Deposit Door is the most common recorded issue: 1,124 tickets, 16% of unplanned service.
 3. **New: adjusted for exposure and machine age, the main models are close to the fleet rate.**
    - **Fleet rate:** 6.2 unplanned tickets per 100 installed machine-months, about 0.74 per machine per year.
-   - **LVD-Remote-2.0 and LVRR-WP-2.0:** 8.0 and 7.7 per 100. Most of that lead is their younger age; age for age
-     they are 16% and 12% above the fleet.
-   - **Clearly higher:** scrubBank 480 (2.6 times the fleet age for age) and alEx SD 2.0 (1.8 times).
+   - **LVD-Remote-2.0 and LVRR-WP-2.0:** 8.0 and 7.7 per 100, 30% and 26% above the fleet. About half of that lead
+     is their younger age: age for age they are 16% (95% interval 5–28%) and 12% (1–25%) above the fleet.
+   - **Clearly higher:** scrubBank 480, 2.6 times the fleet age for age (1.8–3.8) and above it in both halves of the
+     period. alEx SD 2.0 (1.8 times) and SD-64 (1.5 times) are above over the year, but not clearly in each half.
    - **Almost no tickets:** the A-series.
-   - **Age:** machines in their first four years generate about 8 per 100; machines over 10 years old, 2.5.
+   - **Age:** machines under 4 years old generate about 8 per 100; machines 10 years or older, 2.5. Part of the
+     oldest machines' low rate is that many are Not Serviceable.
    - **Telemetry types (interim):** until the device list is joined to the installed base, they use telemetry-span
      exposure. scrubex2.0-2 and scrubex2.0-3 are at 7.9, against 7.0 for the telemetry fleet.
 4. **The fleet rate depends on the denominator.** Unplanned tickets per 100 machine-months:
-   - 6.2 on installed months, which include machines with no telemetry and quiet months;
-   - 7.0 on telemetry-span months;
-   - 7.11 on months with telemetry activity. That is Zac's measure, and it reproduces exactly on the full database.
+   - 6.2 on installed months (August 2025 to August 2026), which include machines with no telemetry and quiet
+     months;
+   - 7.0 on telemetry-span months (August 2025 to July 2026);
+   - 7.11 on months with telemetry activity (August 2025 to July 2026). That is Zac's measure, and it reproduces
+     exactly on the full database.
 5. **Most non-success telemetry is stock-outs and door events.** These shares also reproduce on the full database.
    - 6.7% of transactions are non-success: stock-outs 2.7%, door events 1.9%, mechanical and electronic fault codes
      0.75%.
    - Some machine types log almost no fault codes (scrubex-3: 17 in 9.7 M transactions), while another logs about
      100 per 1,000. That probably reflects which codes each family reports.
-6. **New: customers differ in ticket rate, and the differences persist.** Each customer is compared with what its
-   own machines would generate at fleet rates for their model and age.
+6. **New: customers differ in ticket rate, and the differences tend to last.** Each customer is compared with what
+   its own machines would generate at fleet rates for their model and age.
    - **63 customers have more tickets than their fleet predicts, beyond chance.** Between them they have 1,732
      tickets, against 747 expected.
-   - **The differences persist.** A customer's ratio in the first half of the period predicts its ratio in the
-     second half: rank correlation 0.46, against 0.04 by chance.
-   - **18 are consistent outliers:** flagged under at least 10 of 12 method variants and above expected in both
-     halves. Together they have 737 tickets against 318 expected.
-     - Nine have fewer than 10 machines.
-     - In six of the larger ones, the excess is spread across the fleet. That points to the site (usage,
-       environment, reporting), not one bad unit.
-   - Only one is outside the normal spread between customers. This is a list for a field check, not a verdict.
+   - **The differences tend to last.** Customers that ran high in the first half of the period tended to run high in
+     the second. The rank correlation is 0.46, against 0.04 when the halves are shuffled between customers.
+   - **Individual flags can still be chance.** The pattern holds for customers as a group; about 6 of the 15
+     customers clearly above expected in both halves would be expected by chance.
+   - **18 are consistent outliers:** flagged under at least 10 of 12 method variants and above expected beyond
+     chance in each half. Together they have 737 tickets against 318 expected.
+     - Nine have fewer than 10 machines, where one or two machines may drive the count.
+     - In six of the larger ones, the extra tickets are spread across many machines. That fits something
+       site-wide (use, environment, coverage or how readily staff call) better than one bad unit.
+   - Only one is unusual even after allowing for the normal spread between customers. This is a list for a field
+     check, not a verdict.
 7. **High-ticket machines hold up on installed exposure, as a continuum.**
    - Of the 113 machines flagged on 14 October, 106 are on the list and 93 stay flagged; 30 are consistent outliers.
    - On the whole list, 128 machines are flagged and 36 are consistent outliers.
-   - A model that allows for the spread between machines now flags none (2 on 14 October).
-   - Machines flagged on the first half alone fell from 12.6 to 2.9 times their expected tickets in the second
-     half: regression to the mean, but a real excess remains.
+   - Allowing for how much machines normally differ, none stands out as a separate group of defective units (2 did
+     on 14 October).
+   - The 70 machines picked out on the first half alone ran at 12.6 times their expected tickets then and 2.9 times
+     in the second half. Picking machines on their worst months exaggerates how far out they are, but they stay
+     well above expected.
 8. **About one in four tickets is followed by another on the same machine within 30 days (23.6%).**
    - 40% of those follow-ups come within a week.
    - This measures repeat contact, not failed repairs.
@@ -134,7 +145,8 @@ date). With it we can, for the first time:
 *Definitions.*
 - **Unplanned tickets** exclude preventive maintenance and installations, cancelled requests and duplicate cases.
 - **Installed machine-month** (findings 2, 3, 6 and 7): one month of a listed machine being installed, from its install
-  date (or 1 August 2025) to 31 August 2026. The 239 machines on a third-party service plan are left out.
+  date (or 1 August 2025) to 31 August 2026. The 239 machines on a third-party service plan are left out: their
+  service rarely reaches the case export.
 - **Expected tickets:** what the machines would generate at fleet rates for their model and age.
 - **Flagged:** both of these hold:
   - 5 or more unplanned tickets;
@@ -144,4 +156,4 @@ date). With it we can, for the first time:
 - **Consistent outlier:** both of these hold:
   - flagged under at least 10 of 12 method variants (three adjustments × tickets or 7-day episodes × with or without
     monitoring and No Trouble Found tickets);
-  - above expected in both halves of the period.
+  - above expected beyond chance in each half of the period (Poisson p < 0.05 in each).

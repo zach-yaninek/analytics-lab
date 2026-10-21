@@ -3,7 +3,7 @@
 *Script: `verification/high_ticket_machines.py` (33 self-checks; it runs locally in about 20 s from the workbook and
 the committed `fu_*` and `db_*` CSVs, with no database). Figures: `viz/figures/htm_*.png`, drawn by one plain
 matplotlib script per chart in `viz/high_ticket/` (`htm_01_*.py` … `htm_08_*.py`; chart 6 writes two figures;
-`run_all.py` draws them all) in the shared style of `viz/style/`. Charts 9 and 10 were retired on 21 October in favour of
+`run_all.py` draws them all) in the shared style of `viz/style/`. Charts htm_09 and htm_10 were retired on 21 October in favour of
 `viz/fleet_exposure/` (see the update below). Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
 as coming from the review pass.*
 
@@ -35,7 +35,7 @@ script.
 > - **Persistence:** machines with 3 or more tickets in the first half had 2.6 times their expected tickets in the
 >   second half. Permuting among machines of the same customer gives 1.45, so the excess is partly site-level and
 >   partly the machine (`fx_outlier_machine_persistence.csv`).
-> - **Charts 9 and 10 are retired.** Raw counts and telemetry-span rates are replaced by `fx_01` (share of the
+> - **Charts htm_09 and htm_10 are retired.** Raw counts and telemetry-span rates are replaced by `fx_01` (share of the
 >   installed base vs share of tickets), `fx_02` (rate by model, now computable) and `fx_05` (rate by telemetry
 >   type).
 > - **Model rates exist now.** Model is on the installed-base list, so rates by model no longer depend on tickets
@@ -48,9 +48,10 @@ script.
    - 106 devices have 6 or more tickets, against about 15 expected.
 2. **It is a continuum, not a distinct set of defective units.** Ticket rates vary widely between machines of the
    same type, even at the same customer. Under a model that allows for that spread (negative binomial), only 2
-   machines stand out.
+   machines stand out. *[Updated 21 Oct: on installed exposure, none.]*
 3. **About 113 machines are worth a closer look: a watch-list, not a defect list.** Each is both in the top 5% by
-   workload and well above its type's rate.
+   workload and well above its type's rate. *[Updated 21 Oct: 93 of the 106 on the list stay flagged on installed
+   exposure and 30 are consistent outliers; see the update above.]*
    - About 70 of them stay on the list under almost every reasonable change of method; the other ~40 sit near the
      cut-offs.
    - They are spread over 82 customers, mostly one per customer, and across the main models.
@@ -202,17 +203,20 @@ From `fu_ticket_last10.csv`: 30-day lookback on the corrected clock, 5,312 usabl
 ![Pre-ticket non-success rate](../viz/figures/htm_06_pre_ticket_nonsuccess.png)
 
 ## F. Which machine types generate the most tickets
-*[Updated 21 Oct: charts 9 and 10 are retired. Rates by model on installed exposure are in docs/06 §3 and charts
-`fx_01`, `fx_02` and `fx_05`. The text of this section is kept as the 14 October record.]*
+*[Updated 21 Oct: charts htm_09 and htm_10 are retired. On tickets inside each device's span, the telemetry fleet
+rate is 7.0, not 7.5: the 7.5 also counted 227 tickets opened outside a device's span and 172 on devices with no
+exposure month. scrubex2.0-2, -3 and -4 are 7.9, 7.9 and 7.1, and sbsx-51 is 20.1 on 31 devices (chart fx_05).
+Rates by model on installed exposure are in docs/06 §3 and charts fx_01 and fx_02. The text of this section is
+kept as the 14 October record.]*
 
 **Charts 9 show raw counts, which are not adjusted for fleet size.** A type can rank high simply because many machines
 of that type are installed. Chart 10 adjusts for this with machine-months.
 
 - **By model**, as recorded on tickets: LVD-Remote-2.0, LVRR-WP-2.0 and MV-2.0 generate 49% of the 7,186 unplanned
   tickets (1,393, 1,211 and 897).
-  - Model is recorded only on tickets, so the number of installed machines per model is unknown.
-  - Per-machine rates by model therefore cannot be computed from these data. *[Updated 21 Oct: IPA's
-    installed-base list gives every machine's model; rates by model are in docs/06 §3.]*
+  - Model is recorded only on tickets, so the number of installed machines per model is unknown. *[Updated 21 Oct:
+    IPA's installed-base list gives every machine's model; rates by model are in docs/06 §3.]*
+  - Per-machine rates by model therefore cannot be computed from these data.
 - **By telemetry machine type:** scrubex2.0-2, scrubex2.0-3 and scrubex2.0-4 generate 52% of the 5,921 tickets
   matched to a telemetry device.
 - **Machine-month:** one month of a machine in service. Each telemetry device counts the calendar months from its
@@ -232,7 +236,8 @@ of that type are installed. Chart 10 adjusts for this with machine-months.
 ![Ticket rate by telemetry machine type](../viz/figures/fx_05_rate_by_telemetry_type.png)
 
 ## Questions for IPA
-1. **Field check of the robust core.**
+1. **Field check of the robust core.** *[Updated 21 Oct: superseded by the field check of the 36 consistent-outlier
+   machines and 18 consistent-outlier customers in docs/06 §8, ask 7. 30 of the 36 machines are among these 113.]*
    - Do the field service team recognise these machines (real names in the local deliverable
      `deliverables/htm_chronic_outliers_by_customer_REALNAMES.png`)?
    - Are they known problem units, sites with heavy use or training issues, or sites that simply report more?

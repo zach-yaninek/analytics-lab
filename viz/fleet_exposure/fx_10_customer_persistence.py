@@ -449,9 +449,9 @@ def draw(S, c, k, path, names=None):
     # ---- text ----
     persists = k['rho'] > k['null_hi']
     title = (f'Customers that run high tend to stay high: rank correlation {num(k["rho"])} between halves, '
-             f'{num(k["null_med"])} by chance' if persists else
+             f'{num(k["null_med"])} when the halves are shuffled' if persists else
              f'Customers do not clearly stay high: rank correlation {num(k["rho"])} between halves, '
-             f'{num(k["null_med"])} by chance')
+             f'{num(k["null_med"])} when the halves are shuffled')
     bound = num_above(k['null_hi'])
     style.check('fx_10 "97.5% below" bound is above the 97.5th percentile, by under 0.01', 1,
                 int(0 < float(bound) - k['null_hi'] <= 0.01 + 1e-9))
