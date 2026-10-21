@@ -153,7 +153,32 @@ date). With it we can, for the first time:
   - more than expected beyond chance (Poisson test, Benjamini–Hochberg q < 0.05).
 
   This is a screening flag, not proof of a problem.
+- **Halves of the period** (findings 6 and 7): a split in time, not a random split of the data.
+  - **The split:** 1 August 2025 to 14 February 2026, and 15 February to 31 August 2026. That is about 6.5 months
+    each, with 3,334 and 3,416 unplanned tickets.
+  - **How each half is counted:** each machine counts only the installed months inside a half. Expected tickets are
+    refitted within each half, so fleet-wide differences between the halves, such as season, cancel out. Only a
+    customer's or machine's standing relative to the fleet is compared.
+  - **What the halves test:** whether customers and machines that run high in one half also run high in the other.
+    - Rank correlation: 0.46, against 0.04 when the halves are shuffled between customers.
+    - Customers picked out on one half were significant in the other 43% and 38% of the time, against 17% and 13%
+      after shuffling.
+  - **Caveats:**
+    - each half has about half the data, and 8 of the 18 consistent outliers have under 3 expected tickets in a half;
+    - the halves cover different seasons;
+    - most tickets on machines no longer listed fall in the first half.
+- **The 12 method variants:** every combination of three choices (3 × 2 × 2), each with the same flag rule.
+  - **Adjustment:** model only; model + machine age (the main analysis); or model + age + service status. Checks that
+    a flag does not depend on one adjustment, and whether a contract or warranty mix explains it.
+  - **Count:** tickets, or 7-day episodes (a ticket within 7 days of the previous one on the same machine is merged
+    into it). A burst of follow-ups or rollovers on one problem then counts once.
+  - **Tickets included:** all unplanned, or without the "Monitoring – Daily/Poll" and No Trouble Found tickets.
+    Monitoring tickets may be raised by IPA's own telemetry alerts, and No Trouble Found tickets are not faults.
+  - **Flags across the variants:**
+    - customers: 29 to 79, with 63 in the main variant;
+    - machines: 53 to 151, with 128 in the main variant.
 - **Consistent outlier:** both of these hold:
-  - flagged under at least 10 of 12 method variants (three adjustments × tickets or 7-day episodes × with or without
-    monitoring and No Trouble Found tickets);
+  - flagged in at least 10 of the 12 method variants;
   - above expected beyond chance in each half of the period (Poisson p < 0.05 in each).
+
+  That gives 18 customers and 36 machines. Detail is in docs/06 §2 and §5.
