@@ -16,7 +16,10 @@ counted in a label.
 Dots: light gray = other customers; dark gray = above their expected tickets beyond chance (one-sided Poisson
 p < 0.05) in both halves but not consistent outliers; blue = consistent outliers, each labelled. Labels are placed
 by a small search (place_labels()) around each dot, clear of the other labels, the coloured dots, the legend and the
-quadrant labels, with a leader line when a label sits away from its dot.
+quadrant labels, with a leader line when a label sits away from its dot. The search's hard rules make every label
+read as its own dot's: a label without a leader is clearly nearer its own dot than any other coloured dot, each
+labelled dot's nearest label is its own, and leaders neither cross nor pass over another dot or label. Checks
+confirm that no dot is hidden under the legend or the quadrant labels.
 
 The title states the split-half rank correlation (Spearman) against the median of the analysis' permutation null
 (second-half results shuffled among customers in the same tenth of second-half expected tickets, so differences
@@ -73,7 +76,7 @@ ZERO_GAP = 2.4            # zero-ticket customers are drawn at the smallest posi
 EDGE = 1.35               # axis ends: this factor beyond the floor value and beyond the largest STR ...
 HEADROOM = 1.6            # ... and this factor above the largest STR (room for the quadrant labels)
 TICKS = [0.1, 0.2, 0.5, 1, 2, 5, 10]
-PLOT_H = 7.4              # inches between the title band and the footer (axes, tick labels, axis label)
+PLOT_H = 8.6              # inches between the title band and the footer (axes, tick labels, axis label)
 TITLE_IN_PER_CHAR = 0.124  # approximate width of one title character (15 pt bold), for the figure width
 AX_W_LESS, AX_H_LESS = 1.22, 0.56  # figure width / plot height less the axes size (margins, tick and axis labels)
 LABEL_PT = 8.5            # point-label font size
@@ -166,11 +169,22 @@ def checks(S, oc, pe):
     style.check('fx_10 STR 0 in the first half = no tickets', int(z1.sum()), int((c.STR_h1 == 0).sum()))
     style.check('fx_10 STR 0 in the second half = no tickets', int(z2.sum()), int((c.STR_h2 == 0).sum()))
     c['cls'] = np.where(c.cons, 'consistent', np.where(sig, 'both', 'other'))
-    return c, {'rho': rho, 'null_med': float(sp.perm_null_median), 'null_hi': float(sp.perm_null_p97_5),
-               'sig': int(sig.sum()), 'sig_med': float(sb.perm_null_median), 'sig_lo': float(sb.perm_null_p2_5),
-               'sig_hi': float(sb.perm_null_p97_5), 'q': q, 'above1': int(a1.sum()), 'above2': int(a2.sum()),
-               'zero1': int(z1.sum()), 'zero2': int(z2.sum()), 'zero_both': int((z1 & z2).sum()),
-               'cons_all': int(cons.sum()), 'cons_shown': int(c.cons.sum())}
+    # The same counts straight from the CSV's own columns (STR, p, consistent_outlier), for the drawn quadrant and
+    # legend counts, which use the recomputed values above.
+    raw = oc[keep]
+    r1, r2 = raw.STR_h1 > 1, raw.STR_h2 > 1
+    for key, sel in (('both', r1 & r2), ('first', r1 & ~r2), ('second', ~r1 & r2), ('neither', ~r1 & ~r2)):
+        style.check(f'fx_10 quadrant {key} from the CSV STR columns', q[key], int(sel.sum()))
+    raw_sig = (raw.p_h1 < P_CUT) & (raw.p_h2 < P_CUT)
+    legend = {'consistent': int(raw.consistent_outlier.sum()),
+              'both': int((raw_sig & ~raw.consistent_outlier).sum()),
+              'other': int((~raw_sig & ~raw.consistent_outlier).sum())}
+    style.check('fx_10 legend classes cover every customer plotted', len(c), sum(legend.values()))
+    return c, {'legend': legend, 'rho': rho, 'null_med': float(sp.perm_null_median),
+               'null_hi': float(sp.perm_null_p97_5), 'sig': int(sig.sum()), 'sig_med': float(sb.perm_null_median),
+               'sig_lo': float(sb.perm_null_p2_5), 'sig_hi': float(sb.perm_null_p97_5), 'q': q,
+               'above1': int(a1.sum()), 'above2': int(a2.sum()), 'zero1': int(z1.sum()), 'zero2': int(z2.sum()),
+               'zero_both': int((z1 & z2).sum()), 'cons_all': int(cons.sum()), 'cons_shown': int(c.cons.sum())}
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -229,20 +243,33 @@ def segments_cross(a, b, c, d):
 
 RADII = [0.08, 0.18, 0.3, 0.44, 0.6, 0.78, 0.98, 1.2]  # label distance from its dot (inches)
 ANGLES = np.deg2rad(np.arange(0, 360, 15))
-R_DOT = 0.06       # coloured dot radius plus a margin (inches)
-TOP_K = 24         # cheapest spots per label searched jointly
+R_DOT = 0.06        # coloured dot radius plus a margin (inches)
+TOP_K = 32          # cheapest spots per label searched jointly
 MAX_NODES = 400_000
-MISREAD_GAP = 0.1  # a label must be this much nearer its own dot than any other labelled dot (inches)
-LINE_COST = 0.25   # cost of a label across a reference line at 1
+LEADER_MIN = 0.12   # a label further than this from its dot gets a leader line (inches)
+MISREAD_GAP = 0.12  # a label without a leader must be this much nearer its own dot than any other coloured dot
+LEADER_CLEAR = 0.16  # a label with a leader must keep this far from every other coloured dot (inches)
+LEADER_DOT = 0.09    # a leader may not pass nearer than this to another coloured dot (inches) ...
+LEADER_BOX = 0.05    # ... or than this to another label
+END_CLEAR = 0.18     # a leader's end (at its label) keeps this far from every other label (inches)
+PAIR_GAP, PAIR_CLEAR = 0.08, 0.35  # each labelled dot's own label must be the nearest label to it by PAIR_GAP; when
+                                   # its label is far (leader), other labels keep at least PAIR_CLEAR from it
+LINE_COST = 0.5     # cost of a label across a reference line at 1
+GRAY_COST = 0.06    # cost of each gray dot a label covers
+LENGTH_COST = 0.5   # cost of a spot r inches from its dot: r + LENGTH_COST * r^2 (long leaders cost more)
+RELPOS = {'left': 0.0, 'center': 0.5, 'right': 1.0, 'bottom': 0.0, 'top': 1.0}  # leader end on the label box
 
 
 def candidates(i, items, keep_out, dots, gray, lines, ax_w, ax_h):
     """Every allowed spot for label i, cheapest first: (cost, box, dot, leader end, (dx, dy, ha, va, leader)).
-    A spot may not leave the axes, touch a keep-out box or cover a coloured dot, and its leader may not pass over
-    another coloured dot. Cost: distance, gray dots covered, reference lines crossed, and a label nearer another
-    labelled dot than its own (could be misread)."""
+
+    Hard rules, so every label reads as belonging to its own dot: a spot may not leave the axes, touch a keep-out
+    box or cover a coloured dot. A label next to its dot (no leader) must be at least MISREAD_GAP nearer its own dot
+    than any other coloured dot (blue or dark gray). A label further away gets a leader line, drawn from the dot to
+    the label's anchor corner (the text's alignment point, see RELPOS), which may not pass over another coloured dot
+    or a keep-out box, and the label must keep LEADER_CLEAR from every other coloured dot.
+    Cost: distance, gray dots covered, reference lines crossed."""
     x, y, w, h = items[i]
-    others = [(p[0], p[1]) for j, p in enumerate(items) if j != i]
     other_dots = dots[np.hypot(dots[:, 0] - x, dots[:, 1] - y) > 1e-9]
     out = []
     for r in RADII:
@@ -250,93 +277,122 @@ def candidates(i, items, keep_out, dots, gray, lines, ax_w, ax_h):
             cx, cy = math.cos(a), math.sin(a)
             ha = 'left' if cx > 0.4 else 'right' if cx < -0.4 else 'center'
             va = 'bottom' if cy > 0.4 else 'top' if cy < -0.4 else 'center'
-            box = text_box(x + r * cx, y + r * cy, w, h, ha, va)
+            anchor = (x + r * cx, y + r * cy)  # the text's alignment point
+            box = text_box(*anchor, w, h, ha, va)
             if box[0] < 0.04 or box[1] < 0.04 or box[2] > ax_w - 0.04 or box[3] > ax_h - 0.04:
                 continue
             if any(overlaps(box, b, 0.03) for b in keep_out) or inside(box, dots, R_DOT).any():
                 continue
-            leader = r > 0.12
-            end = (min(max(x, box[0]), box[2]), min(max(y, box[1]), box[3]))  # where the leader meets the box
+            nearest_other = min((box_distance(box, p) for p in other_dots), default=math.inf)
+            leader = r > LEADER_MIN
             if leader:
-                seg = segment((x, y), end)
+                if nearest_other < LEADER_CLEAR:
+                    continue
+                seg = segment((x, y), anchor)
                 if any(inside(b, seg).any() for b in keep_out):
                     continue
                 if len(other_dots) and np.min(np.hypot(seg[:, None, 0] - other_dots[None, :, 0],
-                                                       seg[:, None, 1] - other_dots[None, :, 1])) < R_DOT:
+                                                       seg[:, None, 1] - other_dots[None, :, 1])) < LEADER_DOT:
                     continue
-            cost = r + 0.5 * r * r + 0.04 * int(inside(box, gray, 0.02).sum())
+            elif nearest_other < box_distance(box, (x, y)) + MISREAD_GAP:
+                continue
+            cost = r + LENGTH_COST * r * r + GRAY_COST * int(inside(box, gray, 0.02).sum())
             cost += LINE_COST * sum(box[k] < v < box[k + 2] for k, v in lines)
-            if others and min(box_distance(box, p) for p in others) < box_distance(box, (x, y)) + MISREAD_GAP:
-                cost += 0.6
             cost += 0.03 * (ha == 'center')
-            out.append((cost, box, (x, y), end if leader else None, (x + r * cx - x, y + r * cy - y, ha, va, leader)))
+            out.append((cost, box, (x, y), anchor if leader else None, (r * cx, r * cy, ha, va, leader)))
     return sorted(out, key=lambda c: c[0])
 
 
+def read_as(box, other_box, other_dot):
+    """Whether a label box could be read as the label of other_dot: it is not clearly further from that dot than
+    the dot's own label (other_box) is, or, when that label is far off on a leader, it comes within PAIR_CLEAR."""
+    return box_distance(box, other_dot) < min(box_distance(other_box, other_dot) + PAIR_GAP, PAIR_CLEAR)
+
+
 def compatible(a, b):
-    """Whether two chosen spots (of different labels) can both be drawn: boxes apart, no leader through the other
-    box, leaders not crossing."""
+    """Whether two chosen spots (of different labels) can both be drawn: boxes apart, neither label read as the
+    other dot's, no leader through the other box, leaders not crossing."""
     _, box, dot, end, _ = a
     _, obox, odot, oend, _ = b
-    if overlaps(box, obox, 0.03):
+    if overlaps(box, obox, 0.03) or read_as(box, obox, odot) or read_as(obox, box, dot):
         return False
-    if end is not None and inside(obox, segment(dot, end)).any():
+    # A leader keeps clear of the other label along its length, and its end, where the eye lands, clearly so.
+    if end is not None and (inside(obox, segment(dot, end), LEADER_BOX).any() or box_distance(obox, end) < END_CLEAR):
         return False
-    if oend is not None and inside(box, segment(odot, oend)).any():
+    if oend is not None and (inside(box, segment(odot, oend), LEADER_BOX).any() or box_distance(box, oend) < END_CLEAR):
         return False
     return not (end is not None and oend is not None and segments_cross(dot, end, odot, oend))
 
 
 def place_labels(items, keep_out, dots, gray, lines, ax_w, ax_h):
     """Label placement in inches within the axes: the combination of spots (each label's TOP_K cheapest) with the
-    lowest total cost, by depth-first branch and bound.
+    lowest total cost, by branch and bound with forward checking. Each choice removes the spots it rules out from
+    the labels still to place (backtracking at once when one has none left); the label with the fewest spots left
+    goes next; the bound is the cost so far plus each remaining label's cheapest spot left.
 
     items: (x, y, w, h) per label (dot position, label size). keep_out: boxes no label may touch. dots: (n, 2)
     coloured dot centres, which no label may cover. gray: (m, 2) gray dot centres (small cost each). lines:
     (axis, position) of the reference lines, axis 0 = vertical line at x, 1 = horizontal line at y.
     Returns (dx, dy, ha, va, leader) per item."""
-    n = len(items)
-    cands = [candidates(i, items, keep_out, dots, gray, lines, ax_w, ax_h)[:TOP_K] for i in range(n)]
-    if any(not c for c in cands):
+    every = [candidates(i, items, keep_out, dots, gray, lines, ax_w, ax_h) for i in range(len(items))]
+    if any(not c for c in every):
         raise RuntimeError('fx_10: no free spot for a label')
-    order = sorted(range(n), key=lambda i: len(cands[i]))
-    floor = [sum(cands[order[k]][0][0] for k in range(dd, n)) for dd in range(n + 1)]  # lower bound of the rest
+    # The cheapest spots first; if they admit no layout, widen the search (the spots near a dot can crowd out the
+    # only ones that fit).
+    for top_k in (TOP_K, 2 * TOP_K, 4 * TOP_K, None):
+        spots = _search([c[:top_k] for c in every])
+        if spots is not None:
+            return spots
+    raise RuntimeError('fx_10: labels do not fit without overlaps')
+
+
+def _search(cands):
+    """Branch and bound over the given spots per label; (dx, dy, ha, va, leader) per label, or None."""
+    n = len(cands)
     ok = {}
 
-    def fits(i, a, chosen):
-        for j, b in chosen:
-            key = (i, a, j, b)
-            if key not in ok:
-                ok[key] = compatible(cands[i][a], cands[j][b])
-            if not ok[key]:
-                return False
-        return True
+    def fits(i, a, j, b):
+        key = (i, a, j, b) if i < j else (j, b, i, a)
+        if key not in ok:
+            ok[key] = compatible(cands[i][a], cands[j][b])
+        return ok[key]
 
     best, nodes = [math.inf, None], [0]
 
-    def search(depth, chosen, cost):
+    def search(domains, chosen, cost):
+        """domains: label -> its spots (indices, cheapest first) still compatible with every choice made."""
         nodes[0] += 1
-        if cost + floor[depth] >= best[0] or nodes[0] > MAX_NODES:
+        if nodes[0] > MAX_NODES or cost + sum(cands[j][d[0]][0] for j, d in domains.items()) >= best[0]:
             return
-        if depth == n:
-            best[0], best[1] = cost, list(chosen)
+        if not domains:
+            best[0], best[1] = cost, dict(chosen)
             return
-        i = order[depth]
-        for a, cand in enumerate(cands[i]):
-            if fits(i, a, chosen):
-                chosen.append((i, a))
-                search(depth + 1, chosen, cost + cand[0])
-                chosen.pop()
+        i = min(domains, key=lambda j: (len(domains[j]), j))
+        rest = [(j, d) for j, d in domains.items() if j != i]
+        for a in domains[i]:
+            pruned = {}
+            for j, d in rest:
+                pruned[j] = [b for b in d if fits(i, a, j, b)]
+                if not pruned[j]:
+                    break
+            else:
+                chosen[i] = a
+                search(pruned, chosen, cost + cands[i][a][0])
+                del chosen[i]
 
-    search(0, [], 0.0)
-    if best[1] is None:
-        raise RuntimeError('fx_10: labels do not fit without overlaps')
-    spot = dict(best[1])
-    return [cands[i][spot[i]][4] for i in range(n)]
+    search({i: list(range(len(cands[i]))) for i in range(n)}, {}, 0.0)
+    return None if best[1] is None else [cands[i][best[1][i]][4] for i in range(n)]
 
 
 def wrap_name(name):
-    return '\n'.join(textwrap.wrap(name, NAME_WRAP)) if len(name) > NAME_WRAP else name
+    """Names longer than NAME_WRAP on two lines of about equal length (no single dangling word)."""
+    if len(name) <= NAME_WRAP:
+        return name
+    for width in range(math.ceil(len(name) / 2), len(name) + 1):
+        lines = textwrap.wrap(name, width, break_on_hyphens=False)
+        if len(lines) <= 2:
+            return '\n'.join(lines)
+    return name
 
 
 def num(x):
@@ -424,8 +480,7 @@ def draw(S, c, k, path, names=None):
     # Quadrant labels with their counts, in the four corners of the positive region.
     line_h = LABEL_PT / 72 * 1.25
     keep_out = []
-    corner = to_in(sep, sep)[0]
-    quads = [(f'Above 1 in both halves: {k["q"]["both"]}', hi, hi, 'right', 'top', -4, -4),
+    quads =[(f'Above 1 in both halves: {k["q"]["both"]}', hi, hi, 'right', 'top', -4, -4),
              (f'Above 1 in the second half only: {k["q"]["second"]}', sep, hi, 'left', 'top', 4, -4),
              (f'Above 1 in the first half only: {k["q"]["first"]}', hi, sep, 'right', 'bottom', -4, 4),
              (f'Below 1 in both halves: {k["q"]["neither"]}', sep, sep, 'left', 'bottom', 4, 4)]
@@ -456,6 +511,12 @@ def draw(S, c, k, path, names=None):
                     edgecolor='none', framealpha=1, handletextpad=0.3, borderaxespad=0.3, fontsize=9)
     leg_w = 0.5 + 0.068 * max(len(t.get_text()) for t in leg.get_texts())
     keep_out.append((0, ax_h * 0.955 - 0.78, leg_w, ax_h * 0.955))
+    # The legend is opaque and the quadrant and zero labels are drawn over the plot: none may sit on a dot.
+    every_dot = to_in(xs, ys)
+    style.check('fx_10 no dot under the legend, quadrant or zero labels', 0,
+                int(sum(inside(b, every_dot, 0.03).sum() for b in keep_out)))
+    for key, _, _, label in styles:
+        style.check(f'fx_10 legend count: {label}', k['legend'][key], int((c.cls == key).sum()))
 
     # Labels: every consistent outlier drawn, largest expected tickets first.
     lab = c[c.cls == 'consistent'].assign(E=c.E_h1 + c.E_h2).sort_values(['E', 'customer'], ascending=[False, True])
@@ -472,8 +533,8 @@ def draw(S, c, k, path, names=None):
         ax.annotate(t, xy=(r.x, r.y), xytext=(dx * 72, dy * 72), textcoords='offset points', ha=ha, va=va,
                     fontsize=LABEL_PT, color=style.INK, linespacing=1.1, zorder=7,
                     bbox=dict(boxstyle='square,pad=0.1', fc=style.SURFACE, ec='none', alpha=0.85),
-                    arrowprops=dict(arrowstyle='-', color=style.GRAY, lw=0.6, shrinkA=0, shrinkB=3)
-                    if leader else None)
+                    arrowprops=dict(arrowstyle='-', color=style.GRAY, lw=0.6, shrinkA=0, shrinkB=3,
+                                    relpos=(RELPOS[ha], RELPOS[va])) if leader else None)
 
     ticks = [zero_at] + [t for t in TICKS if sep < t < hi]
     fmt = FuncFormatter(lambda v, _: '0' if v == zero_at else f'{v:g}')

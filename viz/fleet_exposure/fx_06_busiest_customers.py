@@ -7,11 +7,13 @@ tickets next to the tickets its machines would generate at fleet rates for their
 the model + age fit of verification/fleet_exposure.py). One row per customer, busiest on top, labelled
 'Customer NNN (n machines)': a gray ring at expected tickets, a filled dot at observed tickets, joined by a thin
 line, with both counts at the outer ends and the standardised ticket ratio (STR = observed / expected) in a column
-at the right. Dot colour: blue = consistent outlier, orange = flagged (Poisson rule) but not consistent, gray =
-neither. The title counts the flagged and consistent customers among the TOP_N and says whether the busiest one is
-in line with its fleet (not flagged, and the 95% interval of its STR includes 1); the subtitle gives that customer's
-numbers and the share of the fleet's tickets and machines the TOP_N hold. The footer gives the definitions, then a
-caveat (what expected tickets allow for; how many flagged and consistent customers are not shown) and the source.
+at the right, bold when the customer is flagged. Dot colour, as in fx_07: blue = consistent outlier, orange =
+flagged (Poisson rule) but not consistent, gray = not flagged. The title counts the flagged and consistent customers
+among the TOP_N and says whether the busiest one is in line with its fleet (not flagged, and the 95% interval of its
+STR includes 1); the subtitle gives that customer's numbers (and its lead over the next customer) and the share of
+the fleet's tickets and machines the TOP_N hold. The footer gives the definitions, then a caveat (what expected
+tickets allow for; which machines are counted; how many flagged and consistent customers are not shown), how the
+STR interval is computed, and the source.
 
 Two versions are drawn from the same data:
   pseudonymous (Customer NNN), always;
@@ -24,7 +26,9 @@ Inputs (computed by verification/fleet_exposure.py; nothing is refitted here):
                                                      variants_flagged, O_h1/E_h1/p_h1, O_h2/E_h2/p_h2,
                                                      consistent_outlier
   verification/outputs/fleet/fx_machine_flags.csv    every machine with a ticket (customer, tickets, expected):
-                                                     independent check of each customer's ticket count
+                                                     independent check of each customer's tickets, machines with a
+                                                     ticket and (as a lower bound) expected tickets
+  verification/outputs/fleet/fx_match.csv            listed and population accounts and machines, for the checks
   verification/outputs/fleet/fx_summary.json         period, flag thresholds, fleet totals, customer flag counts
   data/private/fx_private_customer_names.csv         customer -> real_account_name (real-name version only;
                                                      gitignored; via fleet.real_customer_names())
@@ -57,11 +61,12 @@ LABEL_IN_PER_CHAR = 0.075  # approximate width of one tick-label character (10 p
 DOT = 62                  # marker area (pt^2): about 8 pt across
 PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
                    '(gitignored); never commit.')
-CLASSES = [  # (key, dot colour, legend label)
+CLASSES = [  # (key, dot colour, legend label): fx_07's classes; mid gray, as light gray would vanish on the line
     ('consistent', style.BLUE, 'Observed: consistent outlier'),
     ('flagged', style.ORANGE, 'Observed: flagged, not consistent'),
-    ('neither', style.GRAY, 'Observed: neither'),
+    ('not_flagged', style.GRAY, 'Observed: not flagged'),
 ]
+COLOUR = {key: colour for key, colour, _ in CLASSES}
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -108,13 +113,22 @@ def byar_interval(k, z):
 def class_of(row):
     if row.consistent_outlier:
         return 'consistent'
-    return 'flagged' if row.poisson_flagged else 'neither'
+    return 'flagged' if row.poisson_flagged else 'not_flagged'
 
 
-def checks(S, cr, mf):
+def checks(S, cr, mf, match):
     """Consistency checks on the whole customer table; returns the TOP_N rows in drawing order."""
     d, F, C = S['definitions'], S['fleet'], S['customers']
     style.check('fx_06 customers = population accounts', F['accounts'], len(cr))
+    # Subtitle: the customers are the listed accounts less the one(s) with only third-party-plan machines.
+    style.check('fx_06 customers = listed accounts - third-party-only accounts',
+                match['listed accounts'] - match['accounts with only third-party machines (excluded)'], len(cr))
+    style.check('fx_06 third-party machines (note) = match table', S['third_party']['machines'],
+                match['listed machines on a third-party service plan (excluded)'])
+    # Note: machines installed after the period are not counted in the machines column.
+    style.check('fx_06 machines installed after the period = population - counted machines',
+                match['population machines installed after the period (0 months)'],
+                F['machines'] - int(cr.machines.sum()))
     style.check('fx_06 customer tickets sum to the fleet', F['tickets'], int(cr.tickets.sum()))
     style.check('fx_06 expected sums to observed (fit property)', F['tickets'], float(cr.expected.sum()), 1e-6)
     style.check('fx_06 machines sum to exposed machines', F['machines_exposed'], int(cr.machines.sum()))
@@ -153,6 +167,23 @@ def checks(S, cr, mf):
     style.check('fx_06 consistent outliers shown are flagged', 0,
                 int((top.consistent_outlier & ~top.poisson_flagged).sum()))
     style.check('fx_06 every row has expected > 0', 1, int((top.expected > 0).all()))
+    # Title counts from the recomputed flags (top.index holds cr's row positions).
+    rows = top.index.to_numpy()
+    style.check('fx_06 flagged among the top N (title) = recomputed', int(top.poisson_flagged.sum()),
+                int(flag[rows].sum()))
+    style.check('fx_06 consistent among the top N (title) = recomputed', int(top.consistent_outlier.sum()),
+                int(cons[rows].sum()))
+    # Each row against the machine table (machines with a ticket only): tickets equal; machines with a ticket
+    # equal and no more than the machines drawn; expected at least the expected on those machines.
+    mt = mf.groupby('customer').agg(n=('tickets', 'size'), o=('tickets', 'sum'), e=('expected', 'sum')) \
+        .reindex(top.customer).fillna(0)
+    style.check('fx_06 top-N tickets = machine-table sum', int(top.tickets.sum()), int(mt.o.sum()))
+    style.check('fx_06 top-N machines with a ticket = machine table', 0,
+                int((mt.n.to_numpy() != top.machines_with_ticket.to_numpy()).sum()))
+    style.check('fx_06 top-N machines >= machines with a ticket', 0,
+                int((top.machines.to_numpy() < mt.n.to_numpy()).sum()))
+    style.check('fx_06 top-N expected >= expected on machines with a ticket', 0,
+                int((top.expected.to_numpy() < mt.e.to_numpy() - 1e-9).sum()))
     # Byar interval of the busiest customer's STR.
     b = top.iloc[0]
     lo, hi = byar_interval(int(b.tickets), d['z95'])
@@ -174,10 +205,16 @@ def draw(S, cr, top, path, names=None):
     style.check('fx_06 flagged shown + not shown = summary', S['customers']['poisson_flagged'], n_flag + rest_flag)
     style.check('fx_06 consistent shown + not shown = summary', S['customers']['consistent_outliers'],
                 n_cons + rest_cons)
+    # The note counts the consistent outliers not shown among the flagged customers not shown.
+    style.check('fx_06 consistent outliers not shown are flagged', 0,
+                int((rest.consistent_outlier & ~rest.poisson_flagged).sum()))
     tickets, machines = int(top.tickets.sum()), int(top.machines.sum())
-    style.check('fx_06 shown tickets (independent sum)', int(sum(int(t) for t in top.tickets)), tickets)
+    zero_months = F['machines'] - F['machines_exposed']
 
     b = top.iloc[0]
+    lead = int(top.tickets.iloc[0] - top.tickets.iloc[1])
+    style.check('fx_06 busiest lead over the next (independent)', lead,
+                int(cr.tickets.max() - cr.tickets.drop(cr.tickets.idxmax()).max()))
     b_in_line = (not b.poisson_flagged) and b.STR_lo <= 1 <= b.STR_hi
     if b_in_line:
         busiest = 'the busiest is in line with its fleet'
@@ -199,7 +236,7 @@ def draw(S, cr, top, path, names=None):
     for yi, o, e, k in zip(y, top.tickets, top.expected, cls):
         ax.plot([e, o], [yi, yi], color=style.GRAY_LIGHT, lw=1.6, solid_capstyle='butt', zorder=1)
         ax.scatter([e], [yi], s=DOT, facecolor=style.SURFACE, edgecolor=style.GRAY, linewidth=1.5, zorder=2)
-        ax.scatter([o], [yi], s=DOT, color=dict((c, col) for c, col, _ in CLASSES)[k], linewidth=0, zorder=3)
+        ax.scatter([o], [yi], s=DOT, color=COLOUR[k], linewidth=0, zorder=3)
         # Counts at the outer ends: observed beyond its dot, expected beyond its ring.
         right = o >= e
         ax.annotate(f'{o}', xy=(o, yi), xytext=(7 if right else -7, 0), textcoords='offset points', va='center',
@@ -211,7 +248,7 @@ def draw(S, cr, top, path, names=None):
     ax.text(1.02, n - 0.45, 'STR', transform=tr, ha='left', va='bottom', fontsize=9.5, color=style.INK2,
             weight='bold')
     for yi, r, k in zip(y, top.itertuples(), cls):
-        flagged = k != 'neither'
+        flagged = k != 'not_flagged'
         ax.text(1.02, yi, f'{r.STR:.2f}', transform=tr, ha='left', va='center', fontsize=9.5,
                 color=style.INK if flagged else style.INK2, weight='bold' if flagged else 'normal')
     style.check('fx_06 drawn STR (2 decimals) = tickets / expected', 0,
@@ -237,27 +274,30 @@ def draw(S, cr, top, path, names=None):
 
     share_t, share_m = tickets / F['tickets'], machines / F['machines_exposed']
     if b_in_line:
-        b_verdict = 'interval includes 1, not flagged'
+        b_verdict = 'includes 1; not flagged'
     elif b.poisson_flagged:
         b_verdict = 'flagged'
     else:
-        b_verdict = 'interval excludes 1, but not flagged'
+        b_verdict = 'excludes 1, but not flagged'
     subtitle = [f'Unplanned tickets (filled dot) against expected tickets (gray ring) for the {n} customers with the '
-                f'most unplanned tickets of the {len(cr):,} with machines on IPA\'s installed-base list, '
-                f'{fleet.period_text(S)}; standardised ticket ratio (STR) at the right. Together they have '
-                f'{tickets:,} of the fleet\'s {F["tickets"]:,} unplanned tickets ({style.pct(share_t)}) on '
-                f'{machines:,} of its {F["machines_exposed"]:,} machines ({style.pct(share_m)}).',
-                f'The busiest, {name(b.customer)}: {b.tickets} tickets against {b.expected:.1f} expected, STR '
-                f'{b.STR:.2f} (95% interval {b.STR_lo:.2f} to {b.STR_hi:.2f}; {b_verdict}).']
+                f'most unplanned tickets of the {len(cr):,} with machines on IPA\'s installed-base list (third-party '
+                f'service plan excluded), {fleet.period_text(S)}; standardised ticket ratio (STR) at the right, bold '
+                f'when flagged. Together they have {tickets:,} of the fleet\'s {F["tickets"]:,} unplanned tickets '
+                f'({style.pct(share_t)}) on {machines:,} of its {F["machines_exposed"]:,} machines '
+                f'({style.pct(share_m)}).',
+                f'The busiest, {name(b.customer)} (by {lead} ticket{"" if lead == 1 else "s"}): '
+                f'{b.tickets} tickets against {b.expected:.1f} expected, STR {b.STR:.2f} (95% interval '
+                f'{b.STR_lo:.2f} to {b.STR_hi:.2f}; {b_verdict}).']
     if names is not None:
         subtitle.insert(0, PRIVACY_WARNING)  # first line, so the warning is read before the chart
     notes = [f'Expected tickets allow for models and machine ages only, not coverage, use or reporting; tickets '
              f'cluster within a customer\'s machines, so a flag calls for follow-up, not proof. Machines = listed '
-             f'machines installed during the period ({S["third_party"]["machines"]} on a third-party service plan '
-             f'left out). Not shown: {rest_flag} more flagged customers ({rest_cons} consistent outliers), all with '
-             f'fewer tickets.',
+             f'machines installed before the end of the period ({zero_months} installed later and '
+             f'{S["third_party"]["machines"]} on a third-party service plan left out). Not shown: {rest_flag} more '
+             f'flagged customers ({rest_cons} of them consistent outliers), all with fewer tickets.',
              'STR interval: Byar\'s approximation to the exact Poisson interval for the observed count, divided by '
-             'expected tickets.',
+             'expected tickets; it does not allow for tickets clustering within a customer, so it is if anything '
+             'too narrow.',
              fleet.source('customer_rates')[:-1]
              + ('; names from data/private/fx_private_customer_names.csv (gitignored).' if names is not None
                 else '.')]
@@ -277,7 +317,8 @@ def plot(out_dir=fleet.FIG_DIR, private=True):
     S = fleet.summary()
     cr = fleet.load('customer_rates')
     mf = fleet.load('machine_flags')
-    top = checks(S, cr, mf)
+    match = fleet.load('match').set_index('measure').value
+    top = checks(S, cr, mf, match)
     written = [draw(S, cr, top, out_dir / PNG)]
     if private:
         names = fleet.real_customer_names()

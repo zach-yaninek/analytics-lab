@@ -7,17 +7,18 @@ different service arrangements generate tickets at different rates. One bar per 
 top), with its 95% interval (cluster bootstrap over accounts; the wider of the bootstrap and Byar's Poisson
 interval for a status in fewer than 10 accounts) and its rate at the end of the interval. The axis label under
 each status gives its machines and installed machine-months. Blue = interval wholly above the fleet rate, orange =
-wholly below, gray = the interval includes it (the same classes as charts fx_02 and fx_03; the colour key is in the
+wholly below, gray = the interval includes it (the same classes as charts fx_02 and fx_05; the colour key is in the
 subtitle, so no legend crosses the fleet line). The vertical line is the fleet rate. The title names the highest-
 and lowest-rate statuses and their multiples of the fleet rate.
 
 The rates are crude and the status is the list's 19 Oct 2026 snapshot, applied to the whole period, so the first
 footer note says how far that matters for the two extremes: Under Warranty machines are mostly new installs (a
 lower bound on the share installed during the period is computed from their mean installed months), and machines
-in their first year run above the fleet rate (fx_age_rates.csv); what Not Serviceable means is open with IPA (the
-note gives the youngest age band among its machines with a ticket). The second note gives the interval method and
-the machines left out of every rate (those on a third-party service plan, from fx_service_plan_rates.csv rows with
-in_population == False): their count, account count, tickets, installed machine-months and rate, all computed.
+in their first year run above the fleet rate across all statuses (fx_age_rates.csv); what Not Serviceable means is
+open with IPA (the note gives the youngest age band among its machines with a ticket). The second note gives the
+interval method (with the number of bootstrap draws) and the machines left out of every rate (those on a
+third-party service plan, from fx_service_plan_rates.csv rows with in_population == False): their plan, account
+count, tickets, installed machine-months and rate, all computed.
 
 Inputs (computed by verification/fleet_exposure.py; nothing is recomputed here):
   verification/outputs/fleet/fx_coverage_rates.csv      one row per service status: machines, machines_with_ticket,
@@ -49,7 +50,7 @@ import ipa_style as style  # noqa: E402
 
 PNG = 'fx_04_rate_by_coverage.png'
 ROW_IN = 0.62             # inches per status row
-BAR_H = 0.24              # bar thickness in rows (about 22 px at 150 dpi with ROW_IN)
+BAR_H = 0.26              # bar thickness in rows (about 22 px at 150 dpi with ROW_IN)
 FIG_H = 4.55              # figure height besides the rows: title band, footer, x axis (inches)
 TITLE_IN_PER_CHAR = 0.12  # approximate width of one title character (15 pt bold), for the figure width
 BOOT = 'cluster bootstrap'
@@ -63,6 +64,7 @@ CLASSES = [  # vs_fleet value, bar colour, colour key in the subtitle (in place 
 WARRANTY = 'Under Warranty'           # status of the early-life caveat (checked against the data)
 NOT_SERVICEABLE = 'Not Serviceable'   # status whose meaning is to be confirmed by IPA (checked against the data)
 FIRST_BAND = '<1'                     # first age band of the analysis (fx_summary definitions.age_bands)
+NBSP = '\u00a0'                       # keeps a date together when frame() wraps the subtitle
 
 
 def ratio_text(r):
@@ -174,6 +176,7 @@ def plot(out_dir=fleet.FIG_DIR):
     list_date = pd.Timestamp(D['equipment_list_date'])
     list_text = f'{list_date.day} {list_date:%b %Y}'
     style.check('fx_04 list date = the date in the source line', 1, int(f'({list_text})' in fleet.source()))
+    list_drawn = list_text.replace(' ', NBSP)  # one unit when frame() wraps the text
 
     # Note 1, Under Warranty: every listed machine is installed to the end of the period, so a machine installed
     # before the period has the full period's months and the others fewer; months / full months bounds the share
@@ -199,6 +202,8 @@ def plot(out_dir=fleet.FIG_DIR):
     style.check('fx_04 first-band rate = 100 x tickets / months', first.rate_per_100, first_rate, 1e-9)
     style.check('fx_04 first-band rate is above the fleet', 1, int(first.vs_fleet == 'above' and first_rate > f))
     first_years = int(FIRST_BAND.lstrip('<'))
+    style.check('fx_04 warranty: stated share installed during the period (floor of the bound, customer months)',
+                w_new_pct, math.floor(100 * (1 - months_cust[WARRANTY] / int(w.machines) / full)))
     # Not Serviceable: the youngest age band among its machines with a ticket.
     ns_mf = mf[mf.service_status == NOT_SERVICEABLE]
     style.check('fx_04 Not Serviceable machines with a ticket (per-machine table)',
@@ -242,15 +247,27 @@ def plot(out_dir=fleet.FIG_DIR):
     y = np.arange(n, dtype=float)
     colour = {cl[0]: cl[1] for cl in CLASSES}
     xmax = d.ci_hi.max() * 1.14
-    pad = xmax * 0.012
+    pad, label_w = xmax * 0.012, xmax * 0.05  # value-label offset and approximate width (4 characters), data units
     ax.axvline(f, color=style.INK2, lw=1, zorder=1)
     ax.barh(y, d.rate_per_100, height=BAR_H, color=[colour[v] for v in d.vs_fleet], linewidth=0, zorder=2)
     ax.errorbar(d.rate_per_100, y, xerr=[d.rate_per_100 - d.ci_lo, d.ci_hi - d.rate_per_100], fmt='none',
                 ecolor=style.INK2, elinewidth=1.1, capsize=3.5, capthick=1.1, zorder=3)
     for yi, row in zip(y, d.itertuples()):
         named = row.service_status in (top.service_status, low.service_status)
-        ax.text(row.ci_hi + pad, yi, f'{row.rate_per_100:.1f}', va='center', ha='left', fontsize=9.5,
+        label = f'{row.rate_per_100:.1f}'
+        # Drawn numbers per row, against counts recomputed from other columns and tables.
+        style.check(f'fx_04 drawn rate {row.service_status} = 100 x tickets / months', float(label),
+                    100 * per_machine.tickets[row.service_status] / months_cust[row.service_status], 0.05)
+        style.check(f'fx_04 drawn machines {row.service_status} = machines share x exposed machines', row.machines,
+                    row.share_of_machines * F['machines_exposed'], 1e-6)
+        style.check(f'fx_04 drawn machine-months {row.service_status} = customer months x status share',
+                    round(row.months), months_cust[row.service_status], 0.5)
+        style.check(f'fx_04 value label {row.service_status} clear of the fleet line', 0,
+                    int(row.ci_hi + pad < f < row.ci_hi + pad + label_w))
+        ax.text(row.ci_hi + pad, yi, label, va='center', ha='left', fontsize=9.5,
                 color=style.INK if named else style.INK2, weight='bold' if named else 'normal')
+    style.check('fx_04 drawn fleet rate = 100 x tickets / months (status rows)', float(f'{f:.1f}'),
+                100 * per_machine.tickets.sum() / months_cust.sum(), 0.05)
     ax.text(f + pad, n - 0.5, f'Fleet: {f:.1f}', va='bottom', ha='left', fontsize=9.5, color=style.INK2)
     ax.set_yticks(y)
     ax.set_yticklabels([f'{r.service_status}\n{r.machines:,} machines · {r.months:,.0f} machine-months'
@@ -265,20 +282,21 @@ def plot(out_dir=fleet.FIG_DIR):
 
     # ---------------------------------------------------------------------------------------------- Text
     key = ', '.join(text for cls, _, text in CLASSES if cls in set(d.vs_fleet))
-    subtitle = (f'Unplanned tickets per 100 installed machine-months by service status on IPA\'s installed-base list '
-                f'of {list_text}, {fleet.period_text(S)}: {F["machines_exposed"]:,} machines. Bars with 95% '
-                f'intervals: {key}. Fleet rate (line) {f:.1f} = {int(F["tickets"]):,} tickets over '
-                f'{F["months"]:,.0f} installed machine-months.')
-    snapshot_note = (f'Status is the {list_text} snapshot, applied to the whole period. {WARRANTY} machines are mostly '
-                     f'new installs (they average {w_mean:.1f} of a possible {full:.1f} installed months, so at least '
-                     f'{w_new_pct}% were installed during the period), and machines under {first_years} year old run '
-                     f'at {first_rate:.1f} fleet-wide (chart fx_03): part of their rate is early-life. What '
-                     f'{NOT_SERVICEABLE} means is to be confirmed by IPA{ns_age}. The low {names(below)} rates '
-                     f'probably mean fewer calls reach IPA, not more reliable machines.')
-    method_note = (f'95% intervals: cluster bootstrap over accounts, since tickets cluster within accounts{wider_txt}. '
-                   f'Left out of every rate: the {tp_machines} machines on the {tp_plan} third-party service plan '
-                   f'({tp_accounts} account{"" if tp_accounts == 1 else "s"}), with {tp_tickets} unplanned '
-                   f'tickets in {tp_months:,.0f} installed machine-months ({tp_rate:.2f} per 100).')
+    subtitle = (f'Unplanned tickets per 100 installed machine-months, {fleet.period_text(S)}, by service status on '
+                f'IPA\'s installed-base list of {list_drawn} ({F["machines_exposed"]:,} machines), with 95% intervals: '
+                f'{key}. Line: the fleet rate, {f:.1f} = {int(F["tickets"]):,} tickets over {F["months"]:,.0f} '
+                f'installed machine-months.')
+    snapshot_note = (f'Status is the {list_drawn} snapshot, applied to the whole period. {WARRANTY} machines are '
+                     f'mostly new installs (they average {w_mean:.1f} of a possible {full:.1f} installed months, so '
+                     f'at least {w_new_pct}% were installed during the period), and machines under {first_years} '
+                     f'year{"" if first_years == 1 else "s"} old run at {first_rate:.1f} across all statuses (chart '
+                     f'fx_03), so part of their rate is early-life. What {NOT_SERVICEABLE} means is to be confirmed by '
+                     f'IPA{ns_age}. The low {names(below)} rates probably reflect fewer calls reaching IPA, not more '
+                     f'reliable machines.')
+    method_note = (f'95% intervals: cluster bootstrap over accounts ({S["n_boot"]:,} draws), since tickets cluster '
+                   f'within accounts{wider_txt}. The {tp_machines} third-party-plan machines left out ({tp_plan}, '
+                   f'{tp_accounts} account{"" if tp_accounts == 1 else "s"}) had {tp_tickets} unplanned tickets in '
+                   f'{tp_months:,.0f} installed machine-months ({tp_rate:.2f} per 100).')
     source_note = (fleet.source('coverage_rates', 'service_plan_rates', 'age_rates', 'machine_flags').rstrip('.')
                    + '; fleet rate from fx_summary.json.')
     style.frame(fig, title, subtitle,

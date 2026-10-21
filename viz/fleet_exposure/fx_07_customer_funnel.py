@@ -11,9 +11,11 @@ orders of magnitude), y = STR = observed / expected. Three pairs of limits are d
 Dots: light gray = neither flag; orange = flagged by the Poisson rule (not consistent); blue = consistent outliers.
 The title contrasts the customers flagged by the Poisson rule with those outside the 99.8% funnel, so the reader sees
 why plain Poisson limits flag too many. Labelled: consistent outliers with at least LABEL_MIN_EXPECTED expected
-tickets, and every customer beyond the 99.8% funnel; labels are placed by a small greedy search (place_labels())
-around each dot, clear of other labels, coloured dots, the legend and the line labels, with a leader line when a
-label sits away from its dot. One customer with an STR far above the rest is drawn at the top edge (noted).
+tickets, and every customer beyond the 99.8% funnel; labels are placed by a small branch-and-bound search
+(place_labels()) over spots around each dot, clear of other labels, coloured dots, the legend and the line labels.
+A label without a leader must be clearly nearer its own dot than any other coloured dot (MISREAD_RATIO), so in the
+crowded band of orange and blue dots most labels get a short leader line. One customer with an STR far above the
+rest is drawn at the top edge (noted).
 
 Two versions are drawn from the same data:
   pseudonymous (Customer NNN), always;
@@ -41,7 +43,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
-from matplotlib.ticker import FuncFormatter, NullFormatter  # noqa: E402
+from matplotlib.ticker import FuncFormatter, NullLocator  # noqa: E402
 
 import fleet  # noqa: E402
 import ipa_style as style  # noqa: E402
@@ -50,6 +52,7 @@ PNG = 'fx_07_customer_funnel.png'
 REAL_PNG = 'fx_07_customer_funnel_REALNAMES.png'
 LABEL_MIN_EXPECTED = 10   # consistent outliers with at least this many expected tickets are labelled
 PLOT_H = 6.4              # inches between the title band and the footer (axes, tick labels, axis label)
+PLOT_H_NAMES = 7.4        # the same for the real-name version: its wrapped names need more room
 TITLE_IN_PER_CHAR = 0.124  # approximate width of one title character (15 pt bold), for the figure width
 LABEL_PT = 8.5            # point-label font size
 LABEL_IN_PER_CHAR = 0.066  # approximate width of one character at LABEL_PT (DejaVu Sans), for label boxes
@@ -122,6 +125,15 @@ def checks(S, cr):
                 int((cons != c.consistent_outlier.to_numpy()).sum()))
     style.check('fx_07 consistent outliers = summary', C['consistent_outliers'], int(cons.sum()))
 
+    # tau^2 (drawn in the note) recomputed: additive random-effects moment estimator on the Poisson z of every
+    # customer with expected > 0, winsorised at its 10th and 90th percentiles (verification/fleet_exposure.py, F5).
+    e_, o_ = c.expected.to_numpy(), c.tickets.to_numpy(float)
+    z0 = (np.sqrt(o_ / e_) - 1) * 2 * np.sqrt(e_)
+    zw = np.clip(z0, *np.percentile(z0, [10, 90]))
+    w = 4 * e_  # 1 / s^2
+    tau2 = max(0.0, (len(zw) * np.mean(zw ** 2) - (len(zw) - 1)) / (w.sum() - (w ** 2).sum() / w.sum()))
+    style.check('fx_07 tau^2 recomputed = summary', C['tau2'], tau2, 1e-9)
+
     # Funnel z recomputed on the square-root scale with the summary's tau^2; beyond the 99.8% funnel.
     s2 = 1 / (4 * c.expected.to_numpy())
     z = (np.sqrt(c.tickets.to_numpy() / c.expected.to_numpy()) - 1) / np.sqrt(s2 + C['tau2'])
@@ -144,11 +156,21 @@ def checks(S, cr):
     above_pois = np.sqrt(c.STR.to_numpy()) > 1 + d['z998'] / (2 * np.sqrt(c.expected.to_numpy()))
     style.check('fx_07 above the drawn Poisson 99.8% limit',
                 int(above_pois.sum()), int((c.STR.to_numpy() > fleet.poisson_limits(c.expected, d['z998'])[1]).sum()))
+    # The note says the flagged customers below the dashed line sit "just below it": every customer above it is
+    # flagged, and those below it are within 20% of it.
+    hi_pois = fleet.poisson_limits(c.expected, d['z998'])[1]
+    style.check('fx_07 every customer above the dashed limit is flagged', 0, int((above_pois & ~flag).sum()))
+    style.check('fx_07 flagged customers below the dashed limit are within 20% of it', 1,
+                int(((c.STR.to_numpy() / hi_pois)[flag & ~above_pois] > 0.8).all()))
     # Colours are nested: every consistent outlier is also flagged in the main variant (blue drawn over orange).
     style.check('fx_07 consistent outliers are flagged', 0, int((cons & ~flag).sum()))
+    # Customers with no tickets (drawn on the baseline), counted from the two halves.
+    style.check('fx_07 tickets = first half + second half', 0, int((c.O_h1 + c.O_h2 != c.tickets).sum()))
+    n_zero = int(((c.O_h1 + c.O_h2) == 0).sum())
+    style.check('fx_07 customers with no tickets', n_zero, int((c.tickets == 0).sum()))
     return c, {'flagged': int(flag.sum()), 'consistent': int(cons.sum()), 'beyond': int(beyond.sum()),
                'in95': int(in95.sum()), 'above_pois': int(above_pois.sum()),
-               'flag_below_pois': int((flag & ~above_pois).sum()), 'pois_unflagged': int((above_pois & ~flag).sum())}
+               'flag_below_pois': int((flag & ~above_pois).sum()), 'n_zero': n_zero}
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -210,20 +232,28 @@ def segments_cross(a, b, c, d):
 RADII = [0.1, 0.2, 0.32, 0.46, 0.62, 0.8, 1.0, 1.25, 1.55, 1.9]  # label distance from its dot (inches)
 ANGLES = np.deg2rad(np.arange(0, 360, 15))
 R_DOT = 0.055      # coloured dot radius plus a margin (inches)
-R_LEADER = 0.08    # how far a leader stays from other coloured dots (inches)
-TOP_K = 32         # cheapest spots per label searched jointly
+R_LEADER = 0.08    # how far a leader stays from other coloured dots (inches) ...
+LEADER_GAP_PT = 3  # ... beyond the gap the leader leaves at its own dot (arrowprops shrinkB, points); a dot that
+                   # touches its neighbour can still have a leader that leaves on the far side
+TOP_K = 64         # cheapest spots per label searched jointly (128 finds no better layout for either version)
 MAX_NODES = 400_000
-MISREAD_GAP = 0.1  # a label must be this much nearer its own dot than any other labelled dot (inches)
-CROSS_COST = {'funnel': 0.7, 'poisson': 0.3, 'fleet': 0.3}  # cost of a label across a line, by line
+MISREAD_RATIO = 2.5  # a label without a leader must be this many times nearer its own dot than any other coloured
+                     # dot, or it could be read as that dot's label (such a spot is not allowed)
+LEADER_CLEAR = 0.12  # a label with a leader should keep this far from other coloured dots (inches) ...
+LEADER_NEAR_COST = 0.3  # ... or pay this
+GRAY_COST = 0.02   # cost per gray dot a label covers (its background hides them)
+LONG_LEADER, LONG_COST = 1.0, 1.5  # extra cost per inch of leader beyond LONG_LEADER inches
+CROSS_COST = {'funnel': 1.5, 'poisson': 1.5, 'fleet': 1.5}  # cost of a label across a line, by line (a label on
+                                                            # a line reads worse than a longer leader)
 
 
 def candidates(i, items, keep_out, dots, gray, curves, ax_w, ax_h):
-    """Every allowed spot for label i, cheapest first, with its own cost: distance, gray dots covered, limit lines
-    crossed, and a label nearer another labelled dot than its own (could be misread). A spot may not leave the
-    axes, touch a keep-out box or cover a coloured dot, and its leader may not pass over another coloured dot."""
+    """Every allowed spot for label i, cheapest first, with its own cost: distance (more beyond LONG_LEADER), gray
+    dots covered, limit lines crossed, and another coloured dot at a label that has a leader. A spot may not leave
+    the axes, touch a keep-out box or cover a coloured dot; its leader may not pass over another coloured dot; and
+    a label without a leader must be clearly nearer its own dot than any other coloured dot (MISREAD_RATIO)."""
     x, y, w, h = items[i]
-    others = [(p[0], p[1]) for j, p in enumerate(items) if j != i]
-    other_dots = dots[np.hypot(dots[:, 0] - x, dots[:, 1] - y) > 1e-9]
+    other_dots = dots[np.hypot(dots[:, 0] - x, dots[:, 1] - y) > 1e-9]  # every other coloured dot, labelled or not
     out = []
     for r in RADII:
         for a in ANGLES:
@@ -243,13 +273,18 @@ def candidates(i, items, keep_out, dots, gray, curves, ax_w, ax_h):
                 seg = segment((x, y), end)
                 if any(inside(b, seg).any() for b in keep_out):
                     continue
-                if len(other_dots) and np.min(np.hypot(seg[:, None, 0] - other_dots[None, :, 0],
+                seg = seg[np.hypot(seg[:, 0] - x, seg[:, 1] - y) > LEADER_GAP_PT / 72]  # the drawn part
+                if len(other_dots) and len(seg) and np.min(np.hypot(seg[:, None, 0] - other_dots[None, :, 0],
                                                        seg[:, None, 1] - other_dots[None, :, 1])) < R_LEADER:
                     continue
-            cost = r + 0.5 * r * r + 0.05 * int(inside(box, gray).sum())
+            cost = r + 0.5 * r * r + LONG_COST * max(0.0, r - LONG_LEADER)
+            cost += GRAY_COST * int(inside(box, gray).sum())
             cost += sum(wt for cv, wt in curves if inside(box, cv).any())
-            if others and min(box_distance(box, p) for p in others) < box_distance(box, (x, y)) + MISREAD_GAP:
-                cost += 0.6
+            near = min((box_distance(box, p) for p in other_dots), default=math.inf)
+            if not leader and near < MISREAD_RATIO * box_distance(box, (x, y)):
+                continue
+            if leader and near < LEADER_CLEAR:
+                cost += LEADER_NEAR_COST
             cost += 0.03 * (ha == 'center')
             # Where the drawn leader leaves the label, as a fraction of the label box (arrowprops relpos).
             relpos = ((end[0] - box[0]) / w, (end[1] - box[1]) / h) if leader else None
@@ -360,7 +395,7 @@ def draw(S, c, counts, path, names=None):
     xlo, xhi = c.expected.min() / 1.4, c.expected.max() * X_RIGHT
     ytop = math.ceil(c[c.poisson_flagged | c.consistent_outlier].STR.max() + 0.6)
     over = c[c.STR > ytop].sort_values('STR', ascending=False)
-    n_zero = int((c.tickets == 0).sum())
+    n_zero = counts['n_zero']
 
     title = (f'{counts["flagged"]} customers are flagged, but {lie(counts["beyond"])} outside the normal spread '
              f'between customers')
@@ -399,8 +434,9 @@ def draw(S, c, counts, path, names=None):
 
     width = max(11.0, TITLE_IN_PER_CHAR * len(title) + 2 * style.MARGIN)
     top_band, bottom_band = bands(width, subtitle, definitions, notes)
-    fig, ax = style.figure(width, top_band + PLOT_H + bottom_band)
-    ax_w, ax_h = width - AX_W_LESS, PLOT_H - AX_H_LESS  # axes size in inches, for the label placement
+    plot_h = PLOT_H if names is None else PLOT_H_NAMES
+    fig, ax = style.figure(width, top_band + plot_h + bottom_band)
+    ax_w, ax_h = width - AX_W_LESS, plot_h - AX_H_LESS  # axes size in inches, for the label placement
     ax.set_xscale('log')
     ax.set_xlim(xlo, xhi)
     ax.set_ylim(0, ytop)
@@ -456,7 +492,10 @@ def draw(S, c, counts, path, names=None):
     y_draw = np.minimum(c.STR, ytop)
     high = (c.STR > ytop).to_numpy()
     n_cls = {k: int((cls == k).sum()) for k in ('neither', 'flagged', 'consistent')}
-    for z, (key, colour, size, label) in enumerate((('neither', style.GRAY_LIGHT, DOT_GRAY, 'Neither'),
+    style.check('fx_07 legend: not flagged', len(c) - counts['flagged'], n_cls['neither'])
+    style.check('fx_07 legend: flagged, not consistent', counts['flagged'] - counts['consistent'], n_cls['flagged'])
+    style.check('fx_07 legend: consistent outliers', counts['consistent'], n_cls['consistent'])
+    for z, (key, colour, size, label) in enumerate((('neither', style.GRAY_LIGHT, DOT_GRAY, 'Not flagged'),
                                                     ('flagged', style.ORANGE, DOT_COLOUR, 'Flagged, not consistent'),
                                                     ('consistent', style.BLUE, DOT_COLOUR, 'Consistent outlier'))):
         for m, sel in (('o', (cls == key) & ~high), ('^', (cls == key) & high)):
@@ -495,12 +534,12 @@ def draw(S, c, counts, path, names=None):
                     fontsize=LABEL_PT, color=style.INK if r.beyond_funnel_998 else style.INK2,
                     weight='bold' if r.beyond_funnel_998 else 'normal', linespacing=1.1, zorder=7,
                     bbox=dict(boxstyle='square,pad=0.1', fc=style.SURFACE, ec='none', alpha=0.85),
-                    arrowprops=dict(arrowstyle='-', color=style.GRAY, lw=0.6, shrinkA=0, shrinkB=3, relpos=relpos)
-                    if relpos else None)
+                    arrowprops=dict(arrowstyle='-', color=style.GRAY, lw=0.6, shrinkA=0, shrinkB=LEADER_GAP_PT,
+                                    relpos=relpos) if relpos else None)
 
     ax.set_xticks([t for t in (0.03, 0.1, 0.3, 1, 3, 10, 30, 100, 300) if xlo <= t <= xhi])
     ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f'{v:g}'))
-    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.xaxis.set_minor_locator(NullLocator())  # no tick marks (style sheet), not even the log axis's minor ones
     ax.set_yticks(range(0, ytop + 1))
     style.style_axes(ax, grid='y', baseline='bottom')
     ax.set_xlabel('Expected tickets at fleet rates for the customer\'s models and ages (log scale)')

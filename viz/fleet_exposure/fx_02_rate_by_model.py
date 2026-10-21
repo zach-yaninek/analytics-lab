@@ -8,12 +8,14 @@ noise. One dot per model with its own rate (at least 100 installed machine-month
 analysis and not shown), sorted by rate, with the model's machine count on the axis label. The line through each
 dot is the 95% interval (cluster bootstrap over accounts; the wider of the bootstrap and Byar's Poisson interval for
 models in fewer than 10 accounts). Blue = interval wholly above the fleet rate, orange = wholly below, gray = the
-interval includes it. The vertical line is the fleet rate. The title names the highest-rate model and its multiple
-of the fleet and counts the models above the fleet. The rates are crude (not adjusted for age), so one footer note
-says which of the above-fleet models stay above on the age-standardised ratio from the same analysis, and how far
-their age mix alone lifts them (machines under 4 years old run above the fleet rate, chart 3, and the newer models'
-machines are mostly that young). The note does not call every above-fleet model younger: an age mix can run above
-the fleet rate just because a model has few machines in the oldest, lowest-rate band.
+interval includes it. The vertical line is the fleet rate. The title counts the models whose interval lies above the
+fleet rate ("beyond the noise": more dots than that sit right of the line) and names the highest-rate model shown
+with its multiple of the fleet. A pooled model with a higher, unstable rate is named in the footer, so the title's
+"highest" is not misread. The rates are crude (not adjusted for age), so one footer note says which of the
+above-fleet models stay above on the age-standardised ratio from the same analysis, and how far their age mix alone
+lifts them (machines under 4 years old run above the fleet rate, chart 3; each above-fleet model's months sit in
+higher-rate age bands than the fleet's, checked). The note does not call every above-fleet model younger: an age mix
+can run above the fleet rate just because a model has few machines in the oldest, lowest-rate band.
 
 Inputs:  verification/outputs/fleet/fx_model_rates.csv   one row per model: machines, accounts, months, tickets,
                                                          rate_per_100, ci_lo/ci_hi (ci_method), vs_fleet,
@@ -133,6 +135,16 @@ def plot(out_dir=fleet.FIG_DIR):
     style.check('fx_02 share of months shown = 1 - pooled share', 1 - rest.months.sum() / m.months.sum(),
                 months_share, 1e-9)
     style.check('fx_02 fleet months = model months', F['months'], m.months.sum(), 1e-6)
+    # Pooled models with a higher (unstable) rate than the top model shown, named in the footer.
+    higher = rest[rest.rate_per_100 > top.rate_per_100].sort_values(['rate_per_100', 'model'],
+                                                                      ascending=[False, True], kind='mergesort')
+    style.check('fx_02 pooled higher rates = 100 x tickets / months', 0,
+                float((100 * higher.tickets / higher.months - higher.rate_per_100).abs().max()) if len(higher) else 0,
+                1e-9)
+    style.check('fx_02 pooled higher-rate models: no own rate', 0, int(higher.own_rate.sum()))
+    # The footer gives the reason for the wider-of intervals as "fewer than min_clusters accounts".
+    style.check('fx_02 wider-of intervals shown are all for models in < min_clusters accounts', 0,
+                int(((d.ci_method == WIDER) & (d.accounts >= D['min_clusters'])).sum()))
 
     # Age note: which above-fleet models stay above once age is allowed for, and why their ratios fall.
     above = d[d.vs_fleet == 'above'].sort_values(['rate_per_100', 'model'], ascending=[False, True])
@@ -157,8 +169,12 @@ def plot(out_dir=fleet.FIG_DIR):
     style.check(f'fx_02 crude rate above the fleet in every band under {YOUNG_YEARS} years (chart 3)', 1,
                 int((ages.loc[YOUNG, 'vs_fleet'] == 'above').all()))
 
-    title = (f'{n_above} of {n} models are above the fleet rate; {top.model} is highest at {top_ratio:.1f}× '
-             f'the fleet')
+    if top.vs_fleet == 'above':
+        title = (f'{n_above} of {n} models run above the fleet ticket rate beyond the noise, led by {top.model} at '
+                 f'{top_ratio:.1f}×')
+    else:
+        title = (f'{n_above} of {n} models run above the fleet ticket rate beyond the noise; the highest, '
+                 f'{top.model} ({top_ratio:.1f}×), is within it')
 
     # ---- draw ----
     # Wide enough for the one-line title (the model name in it comes from the data).
@@ -195,7 +211,9 @@ def plot(out_dir=fleet.FIG_DIR):
               edgecolor='none', framealpha=1)
 
     # ---- text ----
-    ratio = lambda r: f'{r:.2f}×'  # noqa: E731
+    def ratio(r):
+        return f'{r:.2f}×'
+
     stay_txt = names([f'{r.model} ({ratio(r.age_std_ratio)})' for r in stay.itertuples()])
     if len(drop):
         drop_txt = (f'; {names([f"{r.model} ({ratio(r.age_std_ratio)})" for r in drop.itertuples()])} '
@@ -209,22 +227,27 @@ def plot(out_dir=fleet.FIG_DIR):
                 f'fleet rate, and at the fleet\'s rate for their age alone these {len(above)} models would run at '
                 f'{age_mix.min():.2f}× ({lift_lo.model}) to {age_mix.max():.2f}× ({lift_hi.model}) the fleet rate.'
                 f'{join_txt}')
+    higher_txt = ''
+    if len(higher):
+        each = [f'{r.model} ({r.rate_per_100:.1f}, from {int(r.tickets)} tickets at {int(r.accounts)} '
+                f'account{"" if r.accounts == 1 else "s"})' for r in higher.itertuples()]
+        higher_txt = (f'; {names(each)} {"has a higher rate" if len(higher) == 1 else "have higher rates"} than any '
+                      f'model shown')
     wider = d[d.ci_method == WIDER]
     wider_txt = (f'; for {names(wider.model.tolist())} (fewer than {D["min_clusters"]} accounts), the wider of that '
                  f'and Byar\'s Poisson interval' if len(wider) else '')
     ci_note = (f'95% intervals: cluster bootstrap over accounts, since tickets cluster within accounts{wider_txt}. '
                f'Not shown: {len(rest)} models with fewer than {D["min_type_months"]} installed machine-months '
                f'({int(rest.machines.sum())} machines, {int(rest.tickets.sum())} tickets in all), pooled in the '
-               f'analysis.')
+               f'analysis{higher_txt}.')
     source_note = fleet.source('model_rates').rstrip('.') + '; fleet rate from fx_summary.json.'
     style.frame(
         fig,
         title,
         f'Unplanned tickets per 100 installed machine-months by model, {fleet.period_text(S)}: the {n} models with '
         f'at least {D["min_type_months"]} installed machine-months ({months_share:.1%} of the fleet\'s months), '
-        f'sorted by rate, with 95% intervals. Fleet rate '
-        f'{f:.1f} = {int(F["tickets"]):,} tickets over {F["months"]:,.0f} installed machine-months on '
-        f'{F["machines_exposed"]:,} machines.',
+        f'sorted by rate, with 95% intervals. The line is the fleet rate, {f:.1f}: {int(F["tickets"]):,} tickets '
+        f'over {F["months"]:,.0f} installed machine-months on {F["machines_exposed"]:,} machines.',
         definitions=[fleet.unplanned_definition(), fleet.installed_month_definition(S), fleet.AGE_STD_DEFINITION],
         notes=[age_note, ci_note, source_note])
     return [style.save(fig, out_dir / PNG)]

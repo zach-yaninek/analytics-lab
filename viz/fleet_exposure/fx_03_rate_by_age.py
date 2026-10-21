@@ -5,23 +5,34 @@ Age is the second axis of the fleet besides model: the same installed-base list 
 months gives its install date, so every machine falls in one age band (years since install at the midpoint of its
 exposure in the period, cut at 1, 2, 4, 6, 8 and 10 years). One vertical bar per band, youngest on the left, with
 its rate labelled beside the bar top and its 95% interval as a whisker (cluster bootstrap over accounts); the band's
-machine count is on the axis label. The horizontal line is the fleet rate. The title compares the youngest band
-with the oldest (the multiple is computed); those two bars are blue, the others gray. The subtitle groups the bands
-by the data: the leading bands whose interval is wholly above the fleet line, the oldest band, and the bands
-between. The footer says why this chart does not compare models: age and model overlap (newer models have younger
-machines), so model comparisons are age-standardised (charts fx_02 and fx_09), and service status overlaps with age
-as well (chart fx_04).
+machine count is on the axis label. The horizontal line is the fleet rate. Blue = interval wholly above the fleet
+rate, orange = wholly below it, gray = the interval includes it (the same classes as charts fx_02 and fx_04; the
+colour key is in the subtitle). The class is read from the drawn interval against the line, so the key is true of
+what is drawn; where the analysis' ratio-to-fleet interval (which also allows for the fleet rate's own uncertainty)
+classes a band differently, the interval note says so. The title compares the youngest band with the oldest (the
+multiple is computed); their labels are bold. The subtitle groups the bands by the data: the leading bands whose
+interval is wholly above the fleet line, the oldest band, and the bands between.
+
+The first footer note says what the age comparison is entangled with, all computed: service status (how many of the
+oldest band's machines with a ticket are Not Serviceable, the lowest-rate status; Under Warranty machines with a
+ticket are all in the youngest band), model (newer models have younger machines, so model comparisons are
+age-standardised: charts fx_02 and fx_09), and the machines removed before the list date, whose tickets are left
+out with their unknown age.
 
 Inputs (computed by verification/fleet_exposure.py; nothing is recomputed here):
-  verification/outputs/fleet/fx_age_rates.csv      one row per age band: machines, accounts, months, tickets,
-                                                   rate_per_100, ci_lo/ci_hi (ci_method), boot_lo/boot_hi,
-                                                   ratio_to_fleet, fleet_rate_per_100
-  verification/outputs/fleet/fx_summary.json       fleet rate and totals, period, age_bands, min_clusters, n_boot
-  verification/outputs/fleet/fx_model_rates.csv    ratio_to_fleet and age_std_ratio per model (their quotient is the
-                                                   model's age mix, for the overlap note)
-  verification/outputs/fleet/fx_machine_flags.csv  age band, service status and install year of every machine with
-                                                   a ticket (status overlap note, and a check that newer models have
-                                                   younger machines)
+  verification/outputs/fleet/fx_age_rates.csv       one row per age band: machines, machines_with_ticket, accounts,
+                                                    months, tickets, rate_per_100, ci_lo/ci_hi (ci_method),
+                                                    boot_lo/boot_hi, ratio_to_fleet, ratio_lo/hi, vs_fleet,
+                                                    fleet_rate_per_100
+  verification/outputs/fleet/fx_summary.json        fleet rate and totals, period, age_bands, min_clusters, n_boot,
+                                                    list date, unplanned tickets on unlisted (removed) serials
+  verification/outputs/fleet/fx_coverage_rates.csv  rate per service status (the Not Serviceable rate in the note)
+  verification/outputs/fleet/fx_model_rates.csv     ratio_to_fleet and age_std_ratio per model (their quotient is the
+                                                    model's age mix, for the overlap note)
+  verification/outputs/fleet/fx_machine_flags.csv   age band, service status and install year of every machine with
+                                                    a ticket (status counts in the note, per-band checks, and a check
+                                                    that newer models have younger machines)
+  verification/outputs/fleet/fx_unlisted_by_model.csv   unlisted tickets per model (check of the removed-machine count)
 Output:  viz/figures/fx_03_rate_by_age.png
 Run:     cd /home/user/analytics-lab && python3 -I viz/fleet_exposure/fx_03_rate_by_age.py
 """
@@ -31,6 +42,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 from matplotlib.ticker import MultipleLocator  # noqa: E402
 
 import fleet  # noqa: E402
@@ -39,13 +51,18 @@ import ipa_style as style  # noqa: E402
 PNG = 'fx_03_rate_by_age.png'
 BOOT = 'cluster bootstrap'
 WARRANTY, NOT_SERVICEABLE = 'Under Warranty', 'Not Serviceable'  # service-status labels on the list
+CLASSES = [  # class of the drawn interval against the fleet line, bar colour, colour key in the subtitle
+    ('above', style.BLUE, 'blue = interval wholly above the fleet rate'),
+    ('below', style.ORANGE, 'orange = wholly below it'),
+    ('not different', style.GRAY_LIGHT, 'gray = interval includes it'),
+]
 TITLE_IN_PER_CHAR = 0.12  # approximate width of one title character (15 pt bold), for the figure width
-HEIGHT = 7.4              # figure height, inches
+HEIGHT = 7.6              # figure height, inches
 BAR_PX = 22               # bar thickness, pixels at style.DPI
 AXIS_LABEL_IN = 0.95      # approximate width of the y tick labels and two-line axis label, inches
 X_PAD = 0.6               # space left of the first bar and right of the last, in bar slots
 Y_STEP = 2.5              # y gridline step: keeps a gridline from sitting just beside the fleet line
-NBSP = '\u00a0'           # keeps a number with its unit when frame() wraps the subtitle
+NBSP = ' '           # keeps a number with its unit when frame() wraps the subtitle
 
 
 def edges(label):
@@ -60,6 +77,20 @@ def edges(label):
 
 def years(x):
     return f'{x:g}{NBSP}year' + ('' if x == 1 else 's')
+
+
+def rate_range(s):
+    """'7.8 to 8.4' for several rates, '2.5' for one."""
+    return f'{s.min():.1f} to {s.max():.1f}' if len(s) > 1 else f'{s.iloc[0]:.1f}'
+
+
+def ratio_text(lo, hi):
+    """'0.776 to 0.996': the fewest decimals (at least 2) that keep both ends off 1, so the text says which side of 1
+    the interval is on."""
+    for nd in (2, 3, 4):
+        if f'{lo:.{nd}f}' != f'{1:.{nd}f}' and f'{hi:.{nd}f}' != f'{1:.{nd}f}':
+            break
+    return f'{lo:.{nd}f}{NBSP}to{NBSP}{hi:.{nd}f}'  # kept on one line when frame() wraps the note
 
 
 def plot(out_dir=fleet.FIG_DIR):
@@ -97,6 +128,18 @@ def plot(out_dir=fleet.FIG_DIR):
     style.check('fx_03 every interval contains its rate', 0,
                 int(((a.ci_lo > a.rate_per_100) | (a.ci_hi < a.rate_per_100)).sum()))
 
+    # Colour classes: the drawn rate interval against the fleet line (what the colour key says). The analysis'
+    # vs_fleet uses the ratio-to-fleet interval, which also carries the fleet rate's uncertainty; it may be sharper
+    # than the drawn interval, but must never contradict it.
+    drawn = pd.Series(np.select([a.ci_lo > f, a.ci_hi < f], ['above', 'below'], 'not different'), index=a.index)
+    colour = {cl[0]: cl[1] for cl in CLASSES}
+    style.check('fx_03 every class has a colour', 1, int(set(drawn) <= set(colour)))
+    ratio_cls = np.select([a.ratio_lo > 1, a.ratio_hi < 1], ['above', 'below'], 'not different')
+    style.check('fx_03 vs_fleet = ratio-to-fleet interval against 1', 0, int((ratio_cls != a.vs_fleet).sum()))
+    style.check('fx_03 drawn class never contradicts vs_fleet', 0,
+                int(((drawn != a.vs_fleet) & (drawn != 'not different')).sum()))
+    sharper = a[drawn != a.vs_fleet]
+
     # Title: the youngest band against the oldest.
     young, old = a.iloc[0], a.iloc[-1]
     multiple = young.rate_per_100 / old.rate_per_100
@@ -107,10 +150,12 @@ def plot(out_dir=fleet.FIG_DIR):
     style.check('fx_03 oldest band has the lowest rate', 1, int(old.rate_per_100 == a.rate_per_100.min()))
     style.check('fx_03 oldest band interval wholly below the youngest band interval', 1,
                 int(old.ci_hi < young.ci_lo))
+    style.check('fx_03 youngest band above the fleet, oldest below (drawn and ratio intervals)', 1,
+                int(drawn.iloc[0] == young.vs_fleet == 'above' and drawn.iloc[-1] == old.vs_fleet == 'below'))
 
     # Subtitle groups: the leading bands whose drawn interval is wholly above the fleet line, the oldest band, and
     # the bands between.
-    above = (a.ci_lo > f).to_numpy()
+    above = (drawn == 'above').to_numpy()
     n_lead = int(np.argmin(above)) if not above.all() else len(a)
     style.check('fx_03 the bands above the fleet are the leading ones', int(above.sum()), n_lead)
     style.check('fx_03 at least one band between the leading ones and the oldest', 1, int(0 < n_lead < len(a) - 1))
@@ -122,20 +167,11 @@ def plot(out_dir=fleet.FIG_DIR):
     mid_lo, mid_hi = lims[n_lead][0], lims[len(a) - 2][1]
     old_lo = lims[-1][0]
 
-    # Note: age and model overlap. A model's age mix = the rate its machines would have at the fleet's age rates,
-    # over the fleet rate = crude ratio / age-standardised ratio.
-    m = fleet.load('model_rates')
-    m['mix'] = m.ratio_to_fleet / m.age_std_ratio.where(m.age_std_ratio > 0)
-    own = m[m.own_rate]
-    style.check('fx_03 age mix = expected (age only) / (months x fleet rate)', 0,
-                float((own.mix - own.expected_age_only / (own.months * f / 100)).abs().max()), 1e-9)
-    style.check('fx_03 age-only expected tickets add up to the fleet\'s tickets', F['tickets'],
-                m.expected_age_only.sum(), 1e-6)
-    biggest = own.sort_values(['months', 'model'], ascending=[False, True], kind='mergesort').iloc[0]
-    style.check('fx_03 largest model by installed months', float(m.months.max()), biggest.months)
+    # Note, service status: the oldest band's machines with a ticket that are Not Serviceable (the lowest-rate
+    # status), and Under Warranty machines with a ticket all in the youngest band. fx_machine_flags.csv holds every
+    # machine with a ticket, and only those.
     mf = fleet.load('machine_flags')
-    # Per-band counts drawn (tick labels, subtitle), recomputed: tickets and machines with a ticket from the
-    # per-machine table, machines from the share column and the fleet total.
+    style.check('fx_03 machine flags = the machines with a ticket', F['machines_with_ticket'], len(mf))
     by_band = mf.groupby('age_band').agg(tickets=('tickets', 'sum'), n=('serial_id', 'size')).reindex(bands)
     style.check('fx_03 band tickets = per-machine tickets by band', 0,
                 float(np.abs(by_band.tickets.to_numpy() - a.tickets.to_numpy()).max()), 1e-9)
@@ -143,22 +179,48 @@ def plot(out_dir=fleet.FIG_DIR):
                 int((by_band.n.to_numpy() != a.machines_with_ticket.to_numpy()).sum()))
     style.check('fx_03 band machines = share_of_machines x exposed machines', 0,
                 float((a.machines - a.share_of_machines * F['machines_exposed']).abs().max()), 1e-6)
-    style.check('fx_03 models with their own rate = models with min_type_months', len(own),
-                int((m.months >= D['min_type_months']).sum()))
+    style.check('fx_03 status labels named here exist', 1, int({WARRANTY, NOT_SERVICEABLE} <= set(mf.service_status)))
+    old_mf = mf[mf.age_band == old.age_band]
+    old_ns = int((old_mf.service_status == NOT_SERVICEABLE).sum())
+    style.check('fx_03 oldest band: machines with a ticket (per-machine table)', int(old.machines_with_ticket),
+                len(old_mf))
+    style.check('fx_03 oldest band: Not Serviceable is its most common status among machines with a ticket', 1,
+                int(old_mf.service_status.value_counts().idxmax() == NOT_SERVICEABLE))
+    style.check('fx_03 every machine with a ticket under warranty is in the youngest band', 0,
+                int((mf[mf.service_status == WARRANTY].age_band != bands[0]).sum()))
+    cov = fleet.load('coverage_rates').set_index('service_status')
+    style.check('fx_03 status rates = 100 x tickets / months', 0,
+                float((100 * cov.tickets / cov.months - cov.rate_per_100).abs().max()), 1e-9)
+    ns_rate = 100 * cov.loc[NOT_SERVICEABLE, 'tickets'] / cov.loc[NOT_SERVICEABLE, 'months']
+    style.check('fx_03 Not Serviceable has the lowest status rate', 1,
+                int(cov.rate_per_100.idxmin() == NOT_SERVICEABLE))
+    style.check('fx_03 Not Serviceable rate below the oldest band rate', 1, int(ns_rate < old.rate_per_100))
+
+    # Note, model: a model's age mix = the rate its machines would have at the fleet's rate for their age, over the
+    # fleet rate = crude ratio / age-standardised ratio.
+    m = fleet.load('model_rates')
+    m['mix'] = m.ratio_to_fleet / m.age_std_ratio.where(m.age_std_ratio > 0)
+    own = m[m.months >= D['min_type_months']]
+    style.check('fx_03 models with their own rate = own_rate column', int(m.own_rate.sum()), len(own))
+    style.check('fx_03 age mix = expected (age only) / (months x fleet rate)', 0,
+                float((own.mix - own.expected_age_only / (own.months * f / 100)).abs().max()), 1e-9)
+    style.check('fx_03 age-only expected tickets add up to the fleet\'s tickets', F['tickets'],
+                m.expected_age_only.sum(), 1e-6)
     first_year = mf[mf.model.isin(own.model)].groupby('model').install_year.min()
     rho = own.set_index('model').mix.rank().corr(first_year.reindex(own.model).rank())
     style.check('fx_03 newer models (later first install) have a younger age mix (rank correlation > 0.5)', 1,
                 int(rho > 0.5))
-    # Service status by age band, among the machines with a ticket (all that fx_machine_flags.csv holds).
-    style.check('fx_03 machine flags = the machines with a ticket', F['machines_with_ticket'], len(mf))
-    status = set(mf.service_status)
-    style.check('fx_03 status labels named here exist', 1, int({WARRANTY, NOT_SERVICEABLE} <= status))
-    style.check('fx_03 every machine with a ticket under warranty is in the youngest band', 0,
-                int((mf[mf.service_status == WARRANTY].age_band != bands[0]).sum()))
-    ns_bands = set(mf[mf.service_status == NOT_SERVICEABLE].age_band)
-    ns_from = min(edges(b)[0] for b in ns_bands)
-    style.check('fx_03 not serviceable machines with a ticket: none younger than stated', 0,
-                int(sum(edges(b)[0] < ns_from for b in mf[mf.service_status == NOT_SERVICEABLE].age_band)))
+
+    # Note, removed machines: unplanned tickets on serials not on the list.
+    list_date = pd.Timestamp(D['equipment_list_date'])
+    list_text = f'{list_date.day} {list_date:%b %Y}'
+    style.check('fx_03 list date = the date in the source line', 1, int(f'({list_text})' in fleet.source()))
+    n_unl = int(S['unlisted']['tickets'])
+    style.check('fx_03 unlisted tickets = match table', S['match']['unplanned tickets on unlisted serials'], n_unl)
+    style.check('fx_03 unlisted tickets = per-model table', float(fleet.load('unlisted_by_model').unlisted_tickets
+                                                                   .sum()), n_unl, 1e-9)
+    style.check('fx_03 unplanned tickets in period = listed + unlisted', S['match']['unplanned tickets in period'],
+                S['match']['unplanned tickets on listed machines'] + n_unl)
 
     # ---------------------------------------------------------------------------------------------- Drawing
     title = (f'Machines under {years(lims[0][1])} old have {multiple:.1f}× the ticket rate of machines '
@@ -169,12 +231,11 @@ def plot(out_dir=fleet.FIG_DIR):
     x = np.arange(n)
     span = n - 1 + 2 * X_PAD
     bar_w = (BAR_PX / style.DPI) / ((width - 2 * style.MARGIN - AXIS_LABEL_IN) / span)  # data units
-    hot = np.isin(x, [0, n - 1])
-    colors = np.where(hot, style.BLUE, style.GRAY_LIGHT)
+    hot = np.isin(x, [0, n - 1])  # the two bands the title compares
     ymax = a.ci_hi.max() * 1.12
 
     ax.axhline(f, color=style.INK2, lw=1, zorder=1)
-    ax.bar(x, a.rate_per_100, width=bar_w, color=colors, linewidth=0, zorder=2)
+    ax.bar(x, a.rate_per_100, width=bar_w, color=[colour[c] for c in drawn], linewidth=0, zorder=2)
     ax.errorbar(x, a.rate_per_100, yerr=[a.rate_per_100 - a.ci_lo, a.ci_hi - a.rate_per_100], fmt='none',
                 ecolor=style.INK2, elinewidth=1.2, capsize=3.5, capthick=1.2, zorder=3)
     for xi, row, h in zip(x, a.itertuples(), hot):
@@ -197,30 +258,37 @@ def plot(out_dir=fleet.FIG_DIR):
     ax.set_ylim(0, ymax)
     ax.yaxis.set_major_locator(MultipleLocator(Y_STEP))
     ax.yaxis.set_major_formatter(lambda v, _: f'{v:g}')
-    style.check('fx_03 no gridline within half a step of the fleet line', 1,
+    style.check('fx_03 no gridline within a quarter step of the fleet line', 1,
                 int(abs(f / Y_STEP - round(f / Y_STEP)) > 0.25))
     style.style_axes(ax, grid='y', baseline='bottom')
     ax.set_xlabel('Machine age band, years since install (at the midpoint of the machine\'s exposure)')
     ax.set_ylabel('Unplanned tickets per 100\ninstalled machine-months')
 
     # ---------------------------------------------------------------------------------------------- Text
-    rng = lambda s: f'{s.min():.1f} to {s.max():.1f}' if len(s) > 1 else f'{s.iloc[0]:.1f}'  # noqa: E731
-    subtitle = [f'Unplanned tickets per 100 installed machine-months by machine age band, {fleet.period_text(S)}, '
-                f'with 95% intervals ({int(a.machines.sum()):,}{NBSP}machines, {int(a.tickets.sum()):,}{NBSP}tickets).',
-                f'Under {years(lead_upper)} old: {rng(lead.rate_per_100)}, every interval above the fleet rate of '
-                f'{f:.1f}. {mid_lo:g} to {years(mid_hi)}: {rng(mid.rate_per_100)}. {years(old_lo)} or older: '
-                f'{old.rate_per_100:.1f} ({int(old.tickets):,}{NBSP}tickets on {int(old.machines):,}{NBSP}machines).']
-    overlap = (f'Age overlaps with model and service status. Newer models have younger machines: on age mix alone, '
-               f'the {len(own)} models with their own rate would run at {own.mix.min():.2f}× to {own.mix.max():.2f}× '
-               f'the fleet rate ({biggest.model}, most installed months: {biggest.mix:.2f}×), so model comparisons '
-               f'are age-standardised (charts fx_02, fx_09). Among machines with a ticket, all {WARRANTY} ones are '
-               f'under {years(lims[0][1])} old and all {NOT_SERVICEABLE} ones {years(ns_from)} or older (chart '
-               f'fx_04).')
-    ci_note = (f'95% intervals: cluster bootstrap over accounts ({S["n_boot"]:,} draws), since tickets cluster '
-               f'within accounts; each band spans {int(a.accounts.min())} or more accounts. The '
-               f'{F["machines_zero_months"]} machines installed after the period have no age band.')
-    source_note = (fleet.source('age_rates', 'model_rates', 'machine_flags').rstrip('.') +
-                   '; fleet rate and totals from fx_summary.json.')
+    key = ', '.join(text for cls, _, text in CLASSES if cls in set(drawn))
+    subtitle = [f'Unplanned tickets per 100 installed machine-months by machine age band, {fleet.period_text(S)} '
+                f'({int(a.machines.sum()):,}{NBSP}machines, {int(a.tickets.sum()):,}{NBSP}tickets), with 95% '
+                f'intervals: {key}.',
+                f'Fleet rate (line) {f:.1f}. Under {years(lead_upper)}: {rate_range(lead.rate_per_100)}, all above it. '
+                f'{mid_lo:g} to {years(mid_hi)}: {rate_range(mid.rate_per_100)}. {years(old_lo)} or older: '
+                f'{old.rate_per_100:.1f} ({int(old.tickets):,}{NBSP}tickets).']
+    overlap = (f'Age overlaps with service status and model. Of the {len(old_mf)} machines {years(old_lo)} or older '
+               f'with a ticket, {old_ns} are {NOT_SERVICEABLE}, the lowest-rate status ({ns_rate:.1f}, chart fx_04), '
+               f'probably because fewer of their calls reach IPA; every {WARRANTY} machine with a ticket is under '
+               f'{years(lims[0][1])} old. Newer models have younger machines (age mix alone puts the {len(own)} models '
+               f'with {D["min_type_months"]}+ installed machine-months at {own.mix.min():.2f}× to '
+               f'{own.mix.max():.2f}× the fleet rate), so model comparisons are age-standardised (charts fx_02, '
+               f'fx_09). The {n_unl} unplanned tickets on machines removed before the {list_text} list (age unknown) '
+               f'are in no band.')
+    sharper_txt = ''.join(
+        f'; the ratio-to-fleet interval, which also allows for the fleet rate\'s uncertainty, puts '
+        f'{r.age_band.replace("-", "–")} years {r.vs_fleet} it ({ratio_text(r.ratio_lo, r.ratio_hi)})'
+        for r in sharper.itertuples())
+    ci_note = (f'95% intervals: cluster bootstrap over accounts, since tickets cluster within accounts '
+               f'({S["n_boot"]:,} draws; {int(a.accounts.min())} or more accounts per band). Colours compare each '
+               f'interval with the fleet line{sharper_txt}.')
+    source_note = (fleet.source('age_rates', 'coverage_rates', 'model_rates', 'machine_flags').rstrip('.') +
+                   '; fleet rate, totals and unlisted tickets from fx_summary.json.')
     style.frame(fig, title, subtitle,
                 definitions=[fleet.unplanned_definition(), fleet.installed_month_definition(S),
                              fleet.AGE_STD_DEFINITION],

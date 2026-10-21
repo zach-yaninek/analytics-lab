@@ -7,9 +7,13 @@ shows whether a type's rate is really different from its fleet's or within the n
 rate (at least 100 machine-months) and at least MIN_TICKETS tickets, sorted by rate, with the type's machine (or
 device) count on the axis label. The line through each dot is the 95% interval (cluster bootstrap over customers;
 the wider of the bootstrap and Byar's Poisson interval for types in fewer than 10 customers). Blue = interval
-wholly above the fleet rate, orange = wholly below, gray = the interval includes it. The vertical line is the
-fleet rate of the same table. The title counts the types above and below the fleet and names the highest-rate type
-with its multiple of the fleet.
+wholly above the fleet rate, orange = wholly below, gray = the interval includes it (a lower-right legend, or a
+colour key in the subtitle when the legend would cover the fleet line or the lowest rows). The vertical line is the
+fleet rate of the same table. The title counts the types above and below that fleet (named: telemetry or networked,
+since the other fx charts' "fleet" is the whole listed fleet) and names the highest-rate type with its multiple of
+the fleet; the subtitle gives that type's tickets and devices, and the interval note names any type not shown whose
+(unstable) rate is higher still. Value labels sit right of each interval, or left of it when that lands on the fleet
+line, or right of the fleet line when the left side has no room.
 
 The chart handles both exposure bases of fx_type_rates.csv (column exposure_basis):
   'telemetry-span' (interim, now): telemetry machine-months, i.e. months of Aug 2025 to Jul 2026 within each
@@ -56,16 +60,22 @@ PNG = 'fx_05_rate_by_telemetry_type.png'
 MIN_TICKETS = 20          # types shown: own rate (min_type_months) and at least this many tickets
 ROW_IN = 0.29             # inches per type row
 TITLE_IN_PER_CHAR = 0.12  # approximate width of one title character (15 pt bold), for the figure width
+CHAR_EM = 0.6             # conservative average character width in em (DejaVu Sans), for the legend-fit estimate
+LEGEND_PT, TICK_PT = 9.5, 10  # legend and tick label sizes (ipa.mplstyle)
 SPAN, INSTALLED = 'telemetry-span', 'installed'
 BOOT = 'cluster bootstrap'
 WIDER = 'wider of bootstrap and Byar'
 UNKNOWN = 'Unknown'
-CLASSES = [  # vs_fleet value, colour of the dot, colour of the interval, legend text
-    ('above', style.BLUE, style.BLUE, 'Above the fleet: 95% interval wholly above the fleet rate'),
-    ('below', style.ORANGE, style.ORANGE, 'Below the fleet: interval wholly below'),
-    ('not different', style.GRAY, style.GRAY_LIGHT, 'Not different: interval includes the fleet rate'),
-    ('not estimable (one account)', style.GRAY, style.GRAY_LIGHT, 'Not estimable: one customer'),
+CLASSES = [  # vs_fleet value, colour of the dot, colour of the interval, legend text, subtitle key (no legend)
+    ('above', style.BLUE, style.BLUE, 'Above the fleet: 95% interval wholly above the fleet rate',
+     'blue = 95% interval wholly above the fleet rate'),
+    ('below', style.ORANGE, style.ORANGE, 'Below the fleet: interval wholly below', 'orange = wholly below it'),
+    ('not different', style.GRAY, style.GRAY_LIGHT, 'Not different: interval includes the fleet rate',
+     'gray = interval includes it'),
+    ('not estimable (one account)', style.GRAY, style.GRAY_LIGHT, 'Not estimable: one customer',
+     'gray = one customer, not estimable'),
 ]
+Y_LO = -0.7               # lower y limit (rows at 0, 1, ...)
 HTM_DEVICES = fleet.OUTPUTS / 'htm_device_exposure.csv'
 HTM_TYPES = fleet.OUTPUTS / 'htm_type_rates.csv'
 FXDB = fleet.FLEET / 'db' / 'fxdb_devices.csv'
@@ -75,6 +85,20 @@ def names(items):
     """'A', 'A and B', 'A, B and C'."""
     items = list(items)
     return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
+
+
+def legend_fits(fig_w, ticks, legend_labels, xmax, f, right):
+    """Whether a lower-right legend clears the fleet line and the intervals and value labels of the rows it covers.
+    Sizes are estimated from character counts and font sizes before drawing, conservatively (nothing is measured):
+    legend width against the axes width (figure less page margins and tick labels), legend height in rows of
+    ROW_IN. right: each row's rightmost interval or label edge, in data units."""
+    em = LEGEND_PT / 72
+    leg_w = (max(map(len, legend_labels)) * CHAR_EM + 2.2 + 0.8 + 2 * 0.4 + 0.5) * em  # text, handle, pads
+    leg_h = (len(legend_labels) * 1.5 + 2 * 0.4 + 0.5) * em                            # rows, pads
+    axes_w = fig_w - 2 * style.MARGIN - (max(map(len, ticks)) * CHAR_EM * TICK_PT / 72 + 6 / 72)
+    x_left = xmax * (1 - leg_w / axes_w)
+    covered = np.arange(len(right)) - 0.35 < Y_LO + leg_h / ROW_IN
+    return bool(f < x_left and (right[covered] < x_left).all())
 
 
 def span_period():
@@ -107,7 +131,7 @@ def installed_recount():
     db = pd.read_csv(FXDB)
     on = db[db.on_list.astype(str).isin(['1', 'True', 'true'])].drop_duplicates('serial_id')
     t = on.machine_type.map(lambda x: str(x).strip() if pd.notna(x) and str(x).strip() else UNKNOWN)
-    on = on.assign(machine_type=t.map(lambda x: UNKNOWN if x.lower() == 'unknown' else x.lower()))
+    on = on.assign(machine_type=t.map(lambda x: UNKNOWN if x in (UNKNOWN, 'unknown') else x.lower()))  # as the analysis
     mf = fleet.load('machine_flags')[['serial_id', 'tickets']]
     return on.merge(mf, on='serial_id', how='left').fillna({'tickets': 0}).groupby('machine_type').tickets.sum()
 
@@ -183,8 +207,7 @@ def plot(out_dir=fleet.FIG_DIR):
     keep = t.own_rate & (t.tickets >= MIN_TICKETS)
     d, rest = t[keep].copy(), t[~keep]
     d['clusters'] = clusters[keep]
-    style.check('fx_05 types shown + not shown = all types', len(t), len(d) + len(rest))
-    weak = (d.clusters < D['min_clusters']) | (d.tickets == 0)
+    weak =(d.clusters < D['min_clusters']) | (d.tickets == 0)
     style.check('fx_05 interval method = rule (clusters < min_clusters or no tickets)', 0,
                 int((d.ci_method != np.where(weak, WIDER, BOOT)).sum()))
     lo = np.where(weak, np.fmin(d.boot_lo, d.byar_lo), d.boot_lo)
@@ -210,31 +233,72 @@ def plot(out_dir=fleet.FIG_DIR):
     n_above, n_below = int(counts.get('above', 0)), int(counts.get('below', 0))
     style.check('fx_05 types above (drawn intervals)', n_above, int((d.ci_lo > f).sum()))
     style.check('fx_05 types below (drawn intervals)', n_below, int((d.ci_hi < f).sum()))
+    # The same counts from the analysis's ratio-to-fleet interval columns, independently of the vs_fleet labels.
+    est = (d.clusters >= 2).to_numpy()
+    style.check('fx_05 types above = ratio interval wholly above 1', n_above, int(((d.ratio_lo > 1) & est).sum()))
+    style.check('fx_05 types below = ratio interval wholly below 1', n_below, int(((d.ratio_hi < 1) & est).sum()))
+    style.check('fx_05 types not different = ratio interval includes 1', int(counts.get('not different', 0)),
+                int(((d.ratio_lo <= 1) & (d.ratio_hi >= 1) & est).sum()))
     months_share = d.months.sum() / t.months.sum()
-    style.check('fx_05 share of months shown = 1 - not-shown share', 1 - rest.months.sum() / t.months.sum(),
-                months_share, 1e-9)
+    style.check('fx_05 share of months shown = share_of_months column', d.share_of_months.sum(), months_share, 1e-9)
     tickets_share = d.tickets.sum() / t.tickets.sum()
-    style.check('fx_05 share of tickets shown = 1 - not-shown share', 1 - rest.tickets.sum() / t.tickets.sum(),
-                tickets_share, 1e-9)
+    style.check('fx_05 share of tickets shown = share_of_tickets column', d.share_of_tickets.sum(), tickets_share,
+                1e-9)
+    # Types not shown whose (unstable) point rate is above the top type shown: named so "led by" is not misread.
+    higher = rest[rest.rate_per_100 > top.rate_per_100].sort_values(['rate_per_100', 'machine_type'],
+                                                                    ascending=[False, True], kind='mergesort')
+    if span:
+        # The selection and every count drawn, recounted from the per-device table (span_recount).
+        gk = (g.months >= D['min_type_months']) & (g.tickets >= MIN_TICKETS)
+        style.check('fx_05 span: types shown = device-table recount', n, int(gk.sum()))
+        style.check('fx_05 span: same types as the device-table recount', 1,
+                    int(set(g.index[gk]) == set(d.machine_type)))
+        style.check('fx_05 span: rates shown = device table', 0,
+                    float(np.abs(100 * g.tickets / g.months - t.set_index('machine_type').rate_per_100)[gk].max()),
+                    1e-9)
+        style.check('fx_05 span: fleet rate = device table', 100 * g.tickets.sum() / g.months.sum(), f, 1e-9)
+        style.check('fx_05 span: share of months shown = device table', g.months[gk].sum() / g.months.sum(),
+                    months_share, 1e-9)
+        style.check('fx_05 span: share of tickets shown = device table', g.tickets[gk].sum() / g.tickets.sum(),
+                    tickets_share, 1e-9)
+        style.check('fx_05 span: types not shown = device table', len(g) - int(gk.sum()), len(rest))
+        style.check('fx_05 span: devices not shown = device table', int(g.devices[~gk].sum()),
+                    int(rest.machines.sum()))
+        style.check('fx_05 span: tickets not shown = device table', int(g.tickets[~gk].sum()),
+                    int(rest.tickets.sum()))
+        for r in [top, *higher.itertuples(index=False)]:
+            style.check(f'fx_05 span: {r.machine_type} tickets = device table', g.tickets[r.machine_type], r.tickets)
+            style.check(f'fx_05 span: {r.machine_type} devices = device table', g.devices[r.machine_type],
+                        r.machines)
+        style.check('fx_05 span: types with a higher rate than the top type shown, not shown = device table',
+                    len(higher), int(((100 * g.tickets / g.months) > top.rate_per_100)[~gk].sum()))
 
     def label(mt):
         return f'{UNKNOWN} (no type recorded)' if mt == UNKNOWN else mt
 
+    def run(k):
+        return 'runs' if k == 1 else 'run'
+
+    fleet_word = 'telemetry' if span else 'networked'
+    lead = (f'{n_above} of {n} telemetry types {run(n_above)}' if n_above else
+            f'None of the {n} telemetry types runs')
     if top.vs_fleet == 'above':
-        title = (f'{n_above} of {n} telemetry types run above the fleet ticket rate, led by {label(top.machine_type)} '
-                 f'at {top_ratio:.1f}×; {n_below} run below')
+        below = f'{n_below} {run(n_below)} below' if n_below else 'none runs below'
+        title = (f'{lead} above the {fleet_word} fleet\'s ticket rate, led by {label(top.machine_type)} at '
+                 f'{top_ratio:.1f}×; {below}')
     else:
-        title = (f'{n_above} of {n} telemetry types run above the fleet ticket rate and {n_below} below; the highest, '
+        title = (f'{lead} above the {fleet_word} fleet\'s ticket rate and {n_below} below; the highest, '
                  f'{label(top.machine_type)} ({top_ratio:.1f}×), is within the noise')
 
     # ---- draw ----
-    fig, ax = style.figure(max(10.0, TITLE_IN_PER_CHAR * len(title) + 2 * style.MARGIN), 4.4 + ROW_IN * n)
+    fig_w = max(10.0, TITLE_IN_PER_CHAR * len(title) + 2 * style.MARGIN)
+    fig, ax = style.figure(fig_w, 4.6 + ROW_IN * n)
     y = np.arange(n)
     xmax = d.ci_hi.max() * 1.1
     pad, label_w = xmax * 0.012, xmax * 0.045  # value-label offset and approximate width (4 characters)
     ax.axvline(f, color=style.INK2, lw=1, zorder=1)
     handles = []
-    for cls, dot, line, text in CLASSES:
+    for cls, dot, line, text, _ in CLASSES:
         sel = (d.vs_fleet == cls).to_numpy()
         if not sel.any():
             continue
@@ -243,25 +307,37 @@ def plot(out_dir=fleet.FIG_DIR):
                    zorder=3)
         handles.append(Line2D([], [], color=line, lw=2, marker='o', ms=7.5, mfc=dot, mec=style.SURFACE,
                               label=f'{text} ({int(sel.sum())})'))
+    right = np.empty(n)  # right edge of each row's interval and value label, for the legend-fit estimate
     for yi, row in zip(y, d.itertuples()):
-        # Right of the interval, unless that lands on the fleet line: then left of the interval.
-        on_line = row.ci_hi + pad < f < row.ci_hi + pad + label_w
-        x, ha = (row.ci_lo - pad, 'right') if on_line else (row.ci_hi + pad, 'left')
+        # Right of the interval; left of it if that lands on the fleet line; right of the fleet line if the left side
+        # has no room either (the label would cross the axis at 0).
+        if not row.ci_hi + pad < f < row.ci_hi + pad + label_w:
+            x, ha = row.ci_hi + pad, 'left'
+        elif row.ci_lo - pad - label_w > 0:
+            x, ha = row.ci_lo - pad, 'right'
+        else:
+            x, ha = f + pad, 'left'
+        right[yi] = max(row.ci_hi, x + label_w if ha == 'left' else x)
         hot = row.vs_fleet == 'above'
         ax.text(x, yi, f'{row.rate_per_100:.1f}', va='center', ha=ha, fontsize=9.5,
                 color=style.INK if hot else style.INK2,
                 weight='bold' if row.machine_type == top.machine_type else 'normal')
     fleet_name = 'Telemetry fleet' if span else 'Networked fleet'
     ax.text(f + pad, n - 0.45, f'{fleet_name}: {f:.1f}', va='bottom', ha='left', fontsize=9.5, color=style.INK2)
+    ticks = [f'{label(mt)}  ·  {k:,} {who}' for mt, k in zip(d.machine_type, d.machines)]
     ax.set_yticks(y)
-    ax.set_yticklabels([f'{label(mt)}  ·  {k:,} {who}' for mt, k in zip(d.machine_type, d.machines)],
-                       color=style.INK2)
-    ax.set_ylim(-0.7, n + 0.25)
+    ax.set_yticklabels(ticks, color=style.INK2)
+    ax.set_ylim(Y_LO, n + 0.25)
     ax.set_xlim(0, xmax)
     style.style_axes(ax, grid='x', baseline=None)
     ax.set_xlabel(f'Unplanned tickets per 100 {unit}s')
-    ax.legend(handles=handles, loc='lower right', handlelength=2.2, frameon=True, facecolor=style.SURFACE,
-              edgecolor='none', framealpha=1)
+    if legend_fits(fig_w, ticks, [h.get_label() for h in handles], xmax, f, right):
+        ax.legend(handles=handles, loc='lower right', handlelength=2.2, frameon=True, facecolor=style.SURFACE,
+                  edgecolor='none', framealpha=1)
+        key = ''
+    else:  # the legend would cover the fleet line or the lowest rows: colour key in the subtitle instead
+        key = '; '.join(k for c, _, _, _, k in CLASSES if (d.vs_fleet == c).any())
+        key = f' {key[0].upper()}{key[1:]}.'
 
     # ---- text ----
     if span:
@@ -279,7 +355,9 @@ def plot(out_dir=fleet.FIG_DIR):
         definition = fleet.span_month_definition()
     else:
         unnetworked = int(F['machines_exposed'] - t.machines.sum())
-        fleet_txt = (f'{f:.1f} = {int(t.tickets.sum()):,} tickets over {t.months.sum():,.0f} {unit}s on '
+        style.check('fx_05 installed: listed fleet rate = 100 x fleet tickets / months', fleet.fleet_rate(S),
+                    100 * F['tickets'] / F['months'], 1e-9)
+        fleet_txt =(f'{f:.1f} = {int(t.tickets.sum()):,} tickets over {t.months.sum():,.0f} {unit}s on '
                      f'{int(t.machines.sum()):,} listed machines with a telemetry device, all types')
         basis_note = (f'Replaces high_ticket chart 10, which used telemetry-span exposure. Types come from the '
                       f'database extract (verification/fleet_db_extract.py), which joins the telemetry devices to '
@@ -292,16 +370,25 @@ def plot(out_dir=fleet.FIG_DIR):
     wider = d[d.ci_method == WIDER]
     wider_txt = (f'; for {names([label(x) for x in wider.machine_type])} (fewer than {D["min_clusters"]} customers), '
                  f'the wider of that and Byar\'s Poisson interval' if len(wider) else '')
+    higher_txt = ''
+    if len(higher):
+        each = [f'{label(r.machine_type)} ({r.rate_per_100:.1f}, from {int(r.tickets)} tickets on {int(r.machines)} '
+                f'{who})' for r in higher.itertuples()]
+        higher_txt = (f'; {names(each)} {"has a higher rate" if len(higher) == 1 else "have higher rates"} than any '
+                      f'type shown')
     ci_note = (f'95% intervals: cluster bootstrap over {cluster_txt}, since tickets cluster within customers'
                f'{wider_txt}. Not shown: {len(rest)} types with fewer than {D["min_type_months"]} {unit}s or fewer '
                f'than {MIN_TICKETS} tickets ({int(rest.machines.sum()):,} {who}, {int(rest.tickets.sum())} tickets '
-               f'in all), too few for a stable rate.')
+               f'in all), too few for a stable rate{higher_txt}.')
+    top_txt = (f'{label(top.machine_type)}\'s {top.rate_per_100:.1f} comes from {int(top.tickets)} tickets on '
+               f'{int(top.machines)} {who}')
     style.frame(
         fig,
         title,
         f'Unplanned tickets per 100 {unit}s by telemetry machine type, {period}: the {n} types with at least '
         f'{D["min_type_months"]} {unit}s and {MIN_TICKETS} tickets ({months_share:.1%} of the months, '
-        f'{tickets_share:.1%} of the tickets), sorted by rate, with 95% intervals. Fleet rate {fleet_txt}.',
+        f'{tickets_share:.1%} of the tickets), sorted by rate, with 95% intervals. Fleet rate {fleet_txt}; '
+        f'{top_txt}.{key}',
         definitions=[fleet.unplanned_definition(), definition],
         notes=[basis_note, ci_note, source_note])
     return [style.save(fig, out_dir / PNG)]
