@@ -77,7 +77,8 @@ def installed_month_definition(S=None):
     return (f'Installed machine-month = one month (30.4 days) that a machine on IPA\'s installed-base list was '
             f'installed during {period_text(S)}: from its install date, or {start.day} {start:%b %Y} if earlier, to '
             f'{end.day} {end:%b %Y}. Machines installed after the period count 0 months. Rates count unplanned '
-            f'tickets on listed machines only.')
+            f'tickets on listed machines only, and leave out the {S["third_party"]["machines"]} machines on a '
+            f'third-party service plan, whose service does not reach IPA\'s case export.')
 
 
 def expected_definition(S=None):
@@ -88,6 +89,10 @@ def expected_definition(S=None):
             'observed tickets.')
 
 
+AGE_STD_DEFINITION = ('Age-standardised ratio = a model\'s unplanned tickets ÷ the tickets its machines would '
+                      'generate at the fleet\'s rate for their age (joint model + age fit): 1 = in line with the '
+                      'fleet once machine age is allowed for.')
+
 STR_DEFINITION = ('Standardised ticket ratio (STR) = observed ÷ expected tickets: 1 = in line with its fleet, '
                   '2 = twice the tickets its machines would generate at fleet rates.')
 
@@ -95,9 +100,9 @@ STR_DEFINITION = ('Standardised ticket ratio (STR) = observed ÷ expected ticket
 def flagged_customer_definition(S=None):
     S = S or summary()
     d = S['definitions']
-    return (f'Flagged = {d["min_flag_tickets"]} or more unplanned tickets and more than expected beyond chance '
-            f'(Poisson test, Benjamini-Hochberg q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a '
-            f'problem.')
+    return (f'Flagged customer = {d["min_flag_tickets"]} or more unplanned tickets and more than its machines would '
+            f'generate at fleet rates for their model and age, beyond chance (Poisson test, Benjamini-Hochberg '
+            f'q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a problem.')
 
 
 def flagged_machine_definition(S=None):
@@ -113,6 +118,24 @@ def funnel_definition(S=None):
             'beyond chance.')
 
 
+def funnel_limits(expected, z, S=None):
+    """(lower, upper) STR limits of the overdispersion-adjusted funnel at the given expected counts; z = 1.96 for
+    95%, 3.09 for 99.8%. tau2 = 0 gives the plain Poisson (square-root scale) limits."""
+    import numpy as np
+    S = S or summary()
+    e = np.asarray(expected, float)
+    half = z * np.sqrt(1 / (4 * e) + S['customers']['tau2'])
+    return np.maximum(0.0, 1 - half) ** 2, (1 + half) ** 2
+
+
+def poisson_limits(expected, z):
+    """Funnel limits with no allowance for spread between customers (tau2 = 0), square-root scale."""
+    import numpy as np
+    e = np.asarray(expected, float)
+    half = z / (2 * np.sqrt(e))
+    return np.maximum(0.0, 1 - half) ** 2, (1 + half) ** 2
+
+
 def consistent_definition(S=None):
     S = S or summary()
     d = S['definitions']
@@ -120,7 +143,8 @@ def consistent_definition(S=None):
     return (f'Consistent outlier = flagged in at least {d["min_variants"]} of {d["n_variants"]} method variants '
             f'(3 adjustments: model, model + age, model + age + coverage; tickets or {d["episode_gap_days"]}-day '
             f'episodes; with or without monitoring and No Trouble Found tickets) and above its expected tickets beyond '
-            f'chance in both halves of the period ({h1}; {h2}; Poisson p < 0.05 in each).')
+            f'chance in both halves of the period ({h1}; {h2}; Poisson p < 0.05 in each): persistently above the '
+            f'fleet\'s rate for the same models and ages.')
 
 
 def span_month_definition():
