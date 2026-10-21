@@ -49,7 +49,8 @@ CLASSES = [  # vs_fleet value, colour of the dot, colour of the interval, legend
     ('not different', style.GRAY, style.GRAY_LIGHT, 'Not different: interval includes the fleet rate'),
     ('not estimable (one account)', style.GRAY, style.GRAY_LIGHT, 'Not estimable: one account'),
 ]
-YOUNG = ['<1', '1-2', '2-4']  # age bands under 4 years (fx_summary definitions.age_bands)
+YOUNG = ['<1', '1-2', '2-4']  # the youngest age bands (fx_summary definitions.age_bands), under YOUNG_YEARS
+YOUNG_YEARS = int(YOUNG[-1].split('-')[1])
 
 
 def names(models):
@@ -149,13 +150,15 @@ def plot(out_dir=fleet.FIG_DIR):
     lift_lo, lift_hi = above.loc[age_mix.idxmin()], above.loc[age_mix.idxmax()]
     b = age_factors()
     style.check('fx_02 age bands named here = analysis age bands', 1, int(set(b.index) == set(D['age_bands'])))
-    style.check('fx_02 every band under 4 years has a higher age factor than every older band', 1,
+    style.check(f'fx_02 every band under {YOUNG_YEARS} years has a higher age factor than every older band', 1,
                 int(b[YOUNG].min() > b.drop(YOUNG).max()))
+    style.check('fx_02 interval level 95% (z95 of the analysis)', 1.96, D['z95'], 0.001)
     ages = fleet.load('age_rates').set_index('age_band')
-    style.check('fx_02 crude rate above the fleet in every band under 4 years (chart 3)', 1,
+    style.check(f'fx_02 crude rate above the fleet in every band under {YOUNG_YEARS} years (chart 3)', 1,
                 int((ages.loc[YOUNG, 'vs_fleet'] == 'above').all()))
 
-    title = f'{n_above} of {n} models are above the fleet rate; {top.model} is highest at {top_ratio:.1f}× the fleet'
+    title = (f'{n_above} of {n} models are above the fleet rate; {top.model} is highest at {top_ratio:.1f}× '
+             f'the fleet')
 
     # ---- draw ----
     # Wide enough for the one-line title (the model name in it comes from the data).
@@ -202,9 +205,10 @@ def plot(out_dir=fleet.FIG_DIR):
     join_txt = ''.join(f' {r.model} goes the other way: {r.vs_fleet} on the crude rate shown, above the fleet once '
                        f'age is allowed for ({ratio(r.age_std_ratio)}).' for r in join.itertuples())
     age_note = (f'Age-standardised, {len(stay)} of the {len(above)} models above the fleet stay above: {stay_txt}'
-                f'{drop_txt}. Part of each gap is machine age: machines under 4 years old run above the fleet rate, and at the '
-                f'fleet\'s rate for their age alone these {len(above)} models would run at {age_mix.min():.2f}× '
-                f'({lift_lo.model}) to {age_mix.max():.2f}× ({lift_hi.model}) the fleet rate.{join_txt}')
+                f'{drop_txt}. Part of each gap is machine age: machines under {YOUNG_YEARS} years old run above the '
+                f'fleet rate, and at the fleet\'s rate for their age alone these {len(above)} models would run at '
+                f'{age_mix.min():.2f}× ({lift_lo.model}) to {age_mix.max():.2f}× ({lift_hi.model}) the fleet rate.'
+                f'{join_txt}')
     wider = d[d.ci_method == WIDER]
     wider_txt = (f'; for {names(wider.model.tolist())} (fewer than {D["min_clusters"]} accounts), the wider of that '
                  f'and Byar\'s Poisson interval' if len(wider) else '')
