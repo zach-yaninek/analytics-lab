@@ -11,6 +11,7 @@
     "split": "2026-02-15",
     "month_days": 30.4375,
     "min_type_months": 100,
+    "min_clusters": 10,
     "age_bands": [
       "<1",
       "1-2",
@@ -28,20 +29,30 @@
     "min_variants": 10,
     "n_variants": 12,
     "pool_label": "Other models (<100 months each)",
+    "third_party_plans": [
+      "Vogeltronix"
+    ],
     "equipment_list_date": "2026-10-19"
   },
   "fleet": {
-    "machines": 9294,
-    "accounts": 1066,
-    "months": 112618.97330595483,
-    "tickets": 6753,
-    "rate_per_100": 5.996325309816094,
-    "machines_with_ticket": 3459,
+    "machines": 9055,
+    "machines_exposed": 8946,
+    "accounts": 1065,
+    "months": 109621.28952772074,
+    "tickets": 6750,
+    "rate_per_100": 6.157563032765709,
+    "machines_with_ticket": 3457,
     "machines_zero_months": 109,
-    "tickets_h1": 3335,
-    "tickets_h2": 3418,
-    "rate_h1": 6.111256018899254,
-    "rate_h2": 5.888277087335341
+    "tickets_h1": 3334,
+    "tickets_h2": 3416,
+    "rate_h1": 6.2763088396464255,
+    "rate_h2": 6.045921897768625
+  },
+  "third_party": {
+    "machines": 239,
+    "accounts": 1,
+    "months": 2997.6837782340867,
+    "tickets": 3
   },
   "match": {
     "ticket rows (all case types)": 7471,
@@ -57,121 +68,182 @@
     "unlisted serials with unplanned tickets": 226,
     "listed machines": 9294,
     "listed accounts": 1066,
-    "listed machines installed after the period (0 months)": 109,
+    "listed machines on a third-party service plan (excluded)": 239,
+    "accounts with only third-party machines (excluded)": 1,
+    "unplanned tickets on third-party machines (excluded)": 3,
+    "machines in the population": 9055,
+    "accounts in the population": 1065,
+    "population machines installed after the period (0 months)": 109,
     "tickets opened before the install date": 7,
     "machines whose exposure starts at a pre-install ticket": 4
   },
   "customers": {
-    "tau2": 0.08916042832367568,
-    "phi_winsorised": 3.2706307356922295,
-    "eb_alpha": 0.523788177970068,
-    "customers_with_E": 1057,
-    "flagged_998": 3,
-    "above_95": 36,
+    "tau2": 0.09040115185850832,
+    "phi_winsorised": 3.305051828338106,
+    "eb_alpha": 0.29553193292219,
+    "customers_with_E": 1056,
+    "flagged_998": 1,
+    "above_95": 32,
     "below_998": 0,
-    "poisson_q_lt_0.05_high": 71,
-    "consistent_outliers": 19,
-    "consistent_low": 17,
-    "poisson_flagged": 70,
-    "consistent_outliers_beyond_funnel_998": 2,
-    "flagged_in_10plus_variants": 37
+    "poisson_q_lt_0.05_high": 64,
+    "poisson_flagged": 63,
+    "flagged_in_10plus_variants": 32,
+    "consistent_outliers": 18,
+    "consistent_outliers_beyond_funnel_998": 1,
+    "consistent_outliers_inside_funnel_95": 7,
+    "consistent_low": 5,
+    "consistent_low_mostly_uncovered": 2
   },
   "machines": {
-    "flagged": 135,
+    "flagged": 128,
     "flagged_nb": 0,
-    "consistent_outliers": 40,
-    "flagged_in_10plus_variants": 63
+    "flagged_in_10plus_variants": 58,
+    "consistent_outliers": 36
   },
   "models": {
     "consistently_above": [
-      "LVD-Remote-2.0",
-      "LVRR-WP-2.0",
-      "alEx SD 2.0",
       "scrubBank 480"
     ],
     "consistently_below": [
       "A-LC",
-      "A-MC",
-      "LVRR-WP",
-      "SC-24",
-      "SC-30"
+      "A-MC"
     ]
+  },
+  "unlisted": {
+    "tickets": 433,
+    "tickets_h1": 302,
+    "tickets_h2": 131
   },
   "persistence": {
     "spearman_STR_h1_h2": {
       "level": "customer",
-      "units": 308,
-      "observed": 0.4627,
-      "perm_null_median": 0.0404,
-      "perm_null_p2_5": -0.074,
-      "perm_null_p97_5": 0.1507,
+      "units": 311,
+      "observed": 0.4589,
+      "perm_null_median": 0.0366,
+      "perm_null_p2_5": -0.071,
+      "perm_null_p97_5": 0.1468,
       "perm_p_value": 0.001,
-      "poisson_null_median": -0.001,
-      "poisson_null_p97_5": 0.1151
+      "poisson_null_median": -0.0021,
+      "poisson_null_p97_5": 0.1058,
+      "note": ""
     },
     "top_decile_retained_share": {
       "level": "customer",
-      "units": 308,
-      "observed": 0.2903,
-      "perm_null_median": 0.0968,
-      "perm_null_p2_5": 0.0323,
-      "perm_null_p97_5": 0.2258,
-      "perm_p_value": 0.003,
-      "poisson_null_median": 0.0968,
-      "poisson_null_p97_5": 0.2258
+      "units": 311,
+      "observed": 0.2812,
+      "perm_null_median": 0.0938,
+      "perm_null_p2_5": 0.0312,
+      "perm_null_p97_5": 0.2188,
+      "perm_p_value": 0.002,
+      "poisson_null_median": 0.125,
+      "poisson_null_p97_5": 0.2188,
+      "note": "top 10% by STR in H1 also top 10% in H2"
     },
     "significant_in_both_halves": {
       "level": "customer",
-      "units": 308,
-      "observed": 16.0,
-      "perm_null_median": 7.0,
-      "perm_null_p2_5": 3.0,
-      "perm_null_p97_5": 12.0,
-      "perm_p_value": 0.002,
+      "units": 311,
+      "observed": 15.0,
+      "perm_null_median": 6.0,
+      "perm_null_p2_5": 2.0,
+      "perm_null_p97_5": 10.0,
+      "perm_p_value": 0.001,
       "poisson_null_median": 0.0,
-      "poisson_null_p97_5": 2.0
+      "poisson_null_p97_5": 2.0,
+      "note": "p < 0.05 in each half"
+    },
+    "flagged_h1_significant_h2_share": {
+      "level": "customer",
+      "units": 311,
+      "observed": 0.4348,
+      "perm_null_median": 0.1739,
+      "perm_null_p2_5": 0.0435,
+      "perm_null_p97_5": 0.3043,
+      "perm_p_value": 0.003,
+      "poisson_null_median": 0.0,
+      "poisson_null_p97_5": 0.0,
+      "note": "23 customers flagged (q < 0.05) in H1"
+    },
+    "flagged_h2_significant_h1_share": {
+      "level": "customer",
+      "units": 311,
+      "observed": 0.375,
+      "perm_null_median": 0.125,
+      "perm_null_p2_5": 0.0,
+      "perm_null_p97_5": 0.3125,
+      "perm_p_value": 0.023,
+      "poisson_null_median": 0.0,
+      "poisson_null_p97_5": 0.0,
+      "note": "16 customers flagged in H2"
     },
     "second_half_ratio_if_3plus_first_half": {
       "level": "machine",
       "units": 272,
-      "observed": 2.7026,
-      "perm_null_median": 1.0438,
-      "perm_null_p2_5": 0.8254,
-      "perm_null_p97_5": 1.3109,
+      "observed": 2.5932,
+      "perm_null_median": 1.0531,
+      "perm_null_p2_5": 0.816,
+      "perm_null_p97_5": 1.2858,
       "perm_p_value": 0.001,
-      "poisson_null_median": 1.0,
-      "poisson_null_p97_5": null
+      "poisson_null_median": null,
+      "poisson_null_p97_5": null,
+      "note": "null: first-half counts permuted within model-group x age-band cells; Poisson null is 1 by construction"
     },
-    "spearman_OE_h1_h2": {
+    "second_half_ratio_if_3plus_first_half_within_customer": {
       "level": "machine",
-      "units": 5781,
-      "observed": 0.1904,
+      "units": 272,
+      "observed": 2.5932,
+      "perm_null_median": 1.4516,
+      "perm_null_p2_5": 1.2094,
+      "perm_null_p97_5": 1.72,
+      "perm_p_value": 0.001,
+      "poisson_null_median": null,
+      "poisson_null_p97_5": null,
+      "note": "null: first-half counts permuted among machines of the same customer (site-level persistence)"
+    },
+    "h1_flagged_second_half_ratio": {
+      "level": "machine",
+      "units": 70,
+      "observed": 2.8951,
       "perm_null_median": null,
       "perm_null_p2_5": null,
       "perm_null_p97_5": null,
       "perm_p_value": null,
       "poisson_null_median": null,
-      "poisson_null_p97_5": null
+      "poisson_null_p97_5": null,
+      "note": "machines flagged (q < 0.05) on H1 alone; their H1 ratio was 12.64"
     }
   },
   "docs05_overlap": {
     "docs05_flagged": 113,
-    "on_list": 106,
-    "flagged_now": 97,
-    "consistent_now": 33,
+    "in_population": 106,
+    "on_list_third_party": 0,
+    "flagged_now": 93,
+    "consistent_now": 30,
+    "short_span_definition": "telemetry span < 12 months",
     "short_span_flagged": 22,
-    "short_span_on_list": 19,
+    "short_span_in_population": 19,
     "short_span_installed_during_period": 7,
     "short_span_installed_before_period": 12,
-    "short_span_flagged_now": 17
+    "short_span_flagged_now": 16
   },
   "go_live_sensitivity": {
-    "fleet_rate_per_100": 6.010039640142245,
-    "months": 112361.98767967145,
-    "flagged_998": 3,
-    "flagged_overlap_with_main": 3
+    "fleet_rate_per_100": 6.173259840257876,
+    "months": 109342.55441478439,
+    "flagged_998": 2,
+    "flagged_overlap_with_main": 1,
+    "poisson_flagged": 64,
+    "poisson_flagged_overlap": 63
+  },
+  "with_third_party_sensitivity": {
+    "machines": 9294,
+    "months": 112618.97330595483,
+    "tickets": 6753,
+    "fleet_rate_per_100": 5.996325309816094,
+    "tau2": 0.08916042832367568,
+    "eb_alpha": 0.523788177970068,
+    "poisson_flagged": 70
   },
   "type_exposure_basis": "telemetry-span",
-  "tau2_h1": 0.12810770169381377,
-  "tau2_h2": 0.10677294475133901
+  "type_span_tickets_outside_span": 227,
+  "tau2_h1": 0.13147682420660062,
+  "tau2_h2": 0.11273514780865587
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Build a small synthetic telemetry DB and a fake case workbook for testing verify_with_db.py.
+"""Build a small synthetic telemetry DB, a fake case workbook and a fake installed-base list for testing
+verify_with_db.py, db_followup.py and fleet_db_extract.py.
 
 Everything here is FAKE: account names, cities, serials, case numbers, hosts, owners and texts are invented.
 The schema mirrors the real sources:
@@ -8,6 +9,10 @@ The schema mirrors the real sources:
             devices(external_device_id, device_status, machine_type, clearview_url),
             transaction_codes(transaction_code, transaction_description)
   * Workbook: sheet 'ipa_repair cases' with the 19 real column headers, plus a 'Summary' sheet.
+  * Equipment list (fake_equipment.xlsx): sheet common.EQUIP_SHEET with the 22 real column headers. It lists 80 of
+    the 90 devices, 5 ticket-only serials and 13 serials seen nowhere else (one padded with spaces), plus 2 serials
+    that match a device only after stripping leading zeros. fixture_truth.json['equipment'] holds the planted
+    counts.
 
 The clock behaviour is planted so the verification's clock tests have a known answer:
   --clock local : transaction_time_local is each machine's own wall clock and observes DST where the hospital does,
@@ -80,6 +85,74 @@ CODES = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
          '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '30', '31', '32', '33', '34', '35', '41', '43',
          '50', '51', '52', '53', '55', '60', '61', '66', '77', '79', '84', '90', 'X9']
 FIRST_DATE, LAST_DATE = '2025-08-01', '2026-08-28'
+# Installed-base list: the real sheet's 22 headers (common.load_equipment reads EQUIP_KEEP and EQUIP_DATES;
+# common.equipment_real_strings reads EQUIP_PRIVATE_COLUMNS).
+EQUIP_HEADERS = ['Serial Number', 'Service Status', 'Account Name', 'Hospital Address', 'Hospital City',
+                 'Hospital State', 'Hospital Zip Code', 'Shipping Country', 'Phone', 'Product Family', 'Model',
+                 'Manufacturing Date Code', 'Poll Position', 'Location', 'Last PM date', 'Equipment Ownership',
+                 'Vendor Credentialing', 'Vendor Credentialing Notes', 'Service Plan', 'Current SC Expiration',
+                 'Install Date', 'Go Live Date']
+assert set(common.EQUIP_KEEP) | set(common.EQUIP_DATES.values()) | set(common.EQUIP_PRIVATE_COLUMNS) <= set(
+    EQUIP_HEADERS)
+EQUIPMENT_FILE = 'fake_equipment.xlsx'
+UNLISTED_DEVICES = range(4, 90, 9)              # devices 4, 13, ..., 85 are not on the list (10 devices)
+LEADING_ZERO_DEVICES = {76: '0', 85: '00'}      # ... but these two are listed with leading zeros
+
+
+def write_equipment(out, devices, accounts, ticket_only_serials, seed):
+    """Fake installed-base list. Uses its own random stream so the DB and workbook are unchanged."""
+    rng = np.random.default_rng(seed + 1000)
+    rows = []
+
+    def row(serial, account, k, model, family, zone_state):
+        st, zp, country = zone_state
+        install = dt.datetime(2014, 1, 1) + dt.timedelta(days=int(rng.integers(0, 4500)))
+        rows.append({'Serial Number': serial,
+                     'Service Status': rng.choice(['Service Contract', 'Warranty', 'Time and Materials']),
+                     'Account Name': account, 'Hospital Address': f'{100 + k} Fake Street',
+                     'Hospital City': f'Testville{k:02d}', 'Hospital State': st, 'Hospital Zip Code': zp,
+                     'Shipping Country': country, 'Phone': None if k % 7 == 0 else f'555-01{k:02d}',
+                     'Product Family': family, 'Model': model, 'Manufacturing Date Code': f'FAKE-{2010 + k % 12}',
+                     'Poll Position': f'{k % 4 + 1:02d}', 'Location': f'Fake Pharmacy {k % 3 + 1}',
+                     'Last PM date': install + dt.timedelta(days=400),
+                     'Equipment Ownership': rng.choice(['Customer Owned', 'Leased']),
+                     'Vendor Credentialing': None, 'Vendor Credentialing Notes': None if k % 2 else 'Fake note',
+                     'Service Plan': rng.choice(['Fake Plan A', 'Fake Plan B']),
+                     'Current SC Expiration': install + dt.timedelta(days=3000),
+                     'Install Date': install,
+                     'Go Live Date': None if k % 5 == 0 else install + dt.timedelta(days=int(rng.integers(0, 60)))})
+
+    for i, d in enumerate(devices):
+        if i in UNLISTED_DEVICES and i not in LEADING_ZERO_DEVICES:
+            continue
+        serial = LEADING_ZERO_DEVICES.get(i, '') + d['id']
+        if d['acct'] is not None:
+            a = accounts[d['acct']]
+            name = a['name'] if i % 6 else f"Fake Regional Health {d['acct']:02d}"   # list account != ticket account
+            st = a['loc'].split(',')[1].split()
+            loc = (st[0], ' '.join(st[1:]), a['country'])
+        else:
+            name, loc = f'Fake Community Clinic {i - 72:02d}', ZONES[d['zone']][1][0]
+        row(serial, name, i % 40, d['model'], d['product'], loc)
+    for j, s in enumerate(ticket_only_serials):
+        row(s, f'Fake Memorial Hospital {j * 3 % 30:02d}', 40 + j, 'MV-2.0', 'scrubEx', ('NY', '10016', 'USA'))
+    for j in range(13):
+        serial = f'FX7{j:05d}' if j < 12 else f' FX7{j:05d} '              # whitespace removed by clean()
+        model, family = MODELS[j % len(MODELS)][:2]
+        row(serial, f'Fake Surgery Center {j % 5:02d}', 50 + j, model, family, ('CA', '94143', 'USA'))
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = common.EQUIP_SHEET
+    ws.append(EQUIP_HEADERS)
+    for r in rows:
+        ws.append([r[h] for h in EQUIP_HEADERS])
+    path = Path(out) / EQUIPMENT_FILE
+    wb.save(path)
+    listed_devices = [d['id'] for i, d in enumerate(devices) if i not in UNLISTED_DEVICES]
+    return path, {'listed_machines': len(rows), 'devices_on_list': len(listed_devices),
+                  'listed_device_ids': listed_devices, 'ticket_only_serials': len(ticket_only_serials),
+                  'serials_on_list_only': 13 + len(LEADING_ZERO_DEVICES),
+                  'leading_zero_extra_devices': len(LEADING_ZERO_DEVICES)}
 
 
 def fmt(epoch_seconds):
@@ -197,6 +270,7 @@ def build(out, clock='local', ingest_col='ingested_at_utc', indexes='full', scal
         summ.append([cat, int(n), round(n / len(tickets), 3)])
     xlsx = out / 'fake_cases.xlsx'
     wb.save(xlsx)
+    _, equipment_truth = write_equipment(out, devices, accounts, [f'FX8{j:05d}' for j in range(5)], seed)
 
     # ---------------- telemetry ----------------
     hours = pd.date_range('2025-07-31 12:00', '2026-08-29 12:00', freq='h', tz='UTC')
@@ -357,6 +431,7 @@ def build(out, clock='local', ingest_col='ingested_at_utc', indexes='full', scal
         'planted': {'clock': clock, 'ingest_col': ingest_col or None, 'indexes': indexes, 'seed': seed,
                     'rows': n, 'devices': len(dev), 'tickets': len(t)},
     }
+    truth['equipment'] = equipment_truth
     if extended:
         truth['extended'] = {'name_match_ticketed_devices': pd.Series(planted_names).value_counts().to_dict(),
                              'event_time_offset_convention': 'minus the UTC offset (hours west of UTC positive)',

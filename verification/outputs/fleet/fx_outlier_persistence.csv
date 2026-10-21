@@ -1,6 +1,9 @@
-level,statistic,units,observed,perm_null_median,perm_null_p2_5,perm_null_p97_5,perm_p_value,poisson_null_median,poisson_null_p97_5
-customer,spearman_STR_h1_h2,308,0.4626797112090806,0.0404002465230531,-0.07395091715482385,0.15067082732442658,0.000999000999000999,-0.0010038770479928742,0.11510358669136223
-customer,top_decile_retained_share,308,0.2903225806451613,0.0967741935483871,0.03225806451612903,0.22580645161290322,0.002997002997002997,0.0967741935483871,0.22580645161290322
-customer,significant_in_both_halves,308,16.0,7.0,3.0,12.0,0.001998001998001998,0.0,2.0
-machine,second_half_ratio_if_3plus_first_half,272,2.702625563092853,1.0438284360448444,0.8253527168726678,1.3108543150330605,0.000999000999000999,1.0,
-machine,spearman_OE_h1_h2,5781,0.19043158417010708,,,,,,
+level,statistic,units,observed,perm_null_median,perm_null_p2_5,perm_null_p97_5,perm_p_value,poisson_null_median,poisson_null_p97_5,note
+customer,spearman_STR_h1_h2,311,0.458918063083408,0.03655357487918935,-0.0709619877569602,0.14679952247917594,0.000999000999000999,-0.0021424953934649506,0.10575778503147687,
+customer,top_decile_retained_share,311,0.28125,0.09375,0.03125,0.21875,0.001998001998001998,0.125,0.21875,top 10% by STR in H1 also top 10% in H2
+customer,significant_in_both_halves,311,15.0,6.0,2.0,10.0,0.000999000999000999,0.0,2.0,p < 0.05 in each half
+customer,flagged_h1_significant_h2_share,311,0.43478260869565216,0.17391304347826086,0.043478260869565216,0.30434782608695654,0.002997002997002997,0.0,0.0,23 customers flagged (q < 0.05) in H1
+customer,flagged_h2_significant_h1_share,311,0.375,0.125,0.0,0.3125,0.022977022977022976,0.0,0.0,16 customers flagged in H2
+machine,second_half_ratio_if_3plus_first_half,272,2.593235346563288,1.053064459408939,0.8160426339549681,1.285815485874497,0.000999000999000999,,,null: first-half counts permuted within model-group x age-band cells; Poisson null is 1 by construction
+machine,second_half_ratio_if_3plus_first_half_within_customer,272,2.593235346563288,1.4516332435089148,1.2093776211212763,1.7199515102417235,0.000999000999000999,,,null: first-half counts permuted among machines of the same customer (site-level persistence)
+machine,h1_flagged_second_half_ratio,70,2.8951101819090153,,,,,,,machines flagged (q < 0.05) on H1 alone; their H1 ratio was 12.64

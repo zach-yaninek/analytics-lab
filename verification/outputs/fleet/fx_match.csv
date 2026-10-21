@@ -12,6 +12,11 @@ unplanned tickets on unlisted serials,433
 unlisted serials with unplanned tickets,226
 listed machines,9294
 listed accounts,1066
-listed machines installed after the period (0 months),109
+listed machines on a third-party service plan (excluded),239
+accounts with only third-party machines (excluded),1
+unplanned tickets on third-party machines (excluded),3
+machines in the population,9055
+accounts in the population,1065
+population machines installed after the period (0 months),109
 tickets opened before the install date,7
 machines whose exposure starts at a pre-install ticket,4
