@@ -72,7 +72,9 @@ Deterministic: fixed seed, stable sorts. Exit status 1 if any check fails.
 Figures: the run ends by calling viz/high_ticket/run_all.py (one plain matplotlib script per chart, each also
 runnable on its own). They read only the htm_* outputs and write viz/figures/htm_NN_*.png
 (pseudonymous) plus one real-name chart to deliverables/ (gitignored). Skipped with a message if matplotlib is not
-installed.
+installed. Charts 9 and 10 (raw ticket counts by model and type; rates per 100 machine-months by telemetry type) are
+retired: see viz/fleet_exposure/ fx_01 (ticket share against installed base), fx_02 (rate by model) and fx_05 (rate
+by telemetry type). htm_type_mix.csv and htm_type_rates.csv are still written (chart 4 and fx_05 read them).
 """
 import sys
 from pathlib import Path

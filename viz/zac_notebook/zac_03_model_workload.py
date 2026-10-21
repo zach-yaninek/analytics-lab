@@ -6,7 +6,7 @@ the case export, and his bar() helper from cell 9 on models.head(10)). Same popu
 planned work, cancelled requests and duplicate cases), same selection (top 10 by tickets, ties broken by model as in
 his ORDER BY) and same metric (tickets per model). Added: each model's share of all tickets, blue for the three
 models his notebook sums ("The top 3 models account for ...") and a definitions line saying the counts are not
-adjusted for how many machines of each model are installed.
+adjusted for how many machines of each model are installed (with a pointer to fleet chart fx_02, rates by model).
 
 Inputs:  zac_data.load('model_workload')  verification/outputs/repro_sql_model_workload.csv (model, cases,
                                           affected_machines, share_pct; one row per model)
@@ -33,8 +33,8 @@ ROW_IN = 0.36     # figure height added per bar (constrained layout sets the fin
 BAR_H = 0.5       # bar thickness as a share of the row pitch
 NOT_ADJUSTED = (
     'Not adjusted for fleet size: these are raw ticket counts, so a model can rank high simply because many of its '
-    'machines are installed. The case export does not record installed machines per model, so per-machine rates by '
-    'model cannot be computed from it.')
+    'machines are installed. IPA\'s installed-base list now gives the machines per model: fleet chart fx_02 shows '
+    'each model\'s ticket rate per 100 installed machine-months.')
 
 
 def plot(out_dir=zac_data.FIG_DIR):

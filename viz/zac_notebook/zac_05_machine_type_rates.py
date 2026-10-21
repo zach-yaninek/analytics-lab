@@ -7,9 +7,10 @@ known non-shared hosts), same selection (his chart screen: at least 100 active m
 type not Unknown; then the 10 highest rates) and the same metric (100 x tickets / active machine-months, a ratio of
 totals) as his chart, with the same one-decimal values. Added: the type the title names in blue, the number of
 machines per type on the axis, and a labelled line at the rate over all types (his printed "overall comparison
-rate"; zac_06 uses the same name). The footer says which tickets the rates count and how they compare with
-high_ticket chart 10, which also counts quiet months and the tickets opened in them (the direction and size of the
-difference are computed and stated in words).
+rate"; zac_06 uses the same name). The footer says which tickets the rates count and how they compare with fleet
+chart fx_05 (viz/fleet_exposure/), which on its telemetry-span basis also counts quiet months (first to last
+transaction) but only the tickets inside that span (the direction and size of the difference are computed and stated
+in words; the note follows fx_05's exposure basis).
 
 Inputs:  zac_data.load_db('machine_type_rates')        one row per machine type (Zac's SQL, cell 27, re-run on the DB)
          zac_data.load_db('comparison_cohort')         cohort totals (cell 27), for the totals checks
@@ -17,7 +18,7 @@ Inputs:  zac_data.load_db('machine_type_rates')        one row per machine type 
          zac_data.load_db('monthly_comparison')        months of the comparison window (cell 29), for the period
          zac_data.load_db('machine_type_rates_vs_expected')   Zac's notebook table next to the re-run, for a check
          zac_data.load('case_monthly')                 unplanned tickets per month in the case export (cell 29)
-         verification/outputs/htm_type_rates.csv   high_ticket chart 10's rates by type, for the note
+         verification/outputs/fleet/fx_type_rates.csv  fleet chart fx_05's rates by type, for the note
 Output:  viz/figures/zac_05_machine_type_rates.png
 Run:     cd /home/user/analytics-lab && python3 -I viz/zac_notebook/zac_05_machine_type_rates.py
 """
@@ -43,6 +44,8 @@ INCLUDED = 'Included in comparison'
 NO_MATCH = 'No device match'
 QUIET = 'No transactions in ticket month'
 HOST = ['Missing host', 'Shared/internal host']
+FX_TYPES = zac_data.OUTPUTS / 'fleet' / 'fx_type_rates.csv'  # fleet chart fx_05's table (fleet_exposure.py)
+SPAN = 'telemetry-span'     # fx_05's exposure basis until the devices are joined to IPA's list (then 'installed')
 
 
 def window_text(months):
@@ -59,7 +62,7 @@ def plot(out_dir=zac_data.FIG_DIR):
     excl = zac_data.load_db('ticket_cohort_exclusions').set_index('reason').tickets
     months = zac_data.load_db('monthly_comparison').month
     unplanned = int(zac_data.load('case_monthly').set_index('month').loc[months, 'unplanned_tickets'].sum())
-    htm_rates = pd.read_csv(zac_data.OUTPUTS / 'htm_type_rates.csv').set_index('machine_type')
+    fx = pd.read_csv(FX_TYPES).set_index('machine_type')
     period = window_text(months)
 
     # Checks: the types add up to Zac's cohort and the rates are ratios of totals.
@@ -92,27 +95,37 @@ def plot(out_dir=zac_data.FIG_DIR):
                 float(np.abs(zac.loc[shown.machine_type, 'tickets_per_100_active_months_expected'].to_numpy() -
                              shown.rate.to_numpy()).max()), 0.005)
 
-    # High_ticket chart 10 counts machine-months from first to last transaction and every ticket in the period.
-    htm_fleet = 100 * htm_rates.tickets_used_for_rate.sum() / htm_rates.exposure_months.sum()  # as chart 10
-    htm_shown = htm_rates.loc[shown.machine_type]
-    style.check('zac_05 Zac rates in htm_type_rates = DB re-run', 0,
-                float(np.abs(htm_shown.zac_rate_per_100_active_months.to_numpy() - shown.rate.to_numpy()).max()), 1e-9)
-    style.check('zac_05 chart-10 tickets = Zac tickets + tickets in months with no transaction',
-                int(htm_rates.tickets_used_for_rate.sum()), tickets + int(excl[QUIET]))
-    rel = htm_shown.rate_per_100_months.to_numpy() / shown.rate.to_numpy() - 1  # chart 10 rate vs this one
-    # What chart 10 adds: tickets in months with no transaction, and quiet machine-months.
-    more_tickets = int(htm_rates.tickets_used_for_rate.sum()) / tickets - 1
-    more_months = int(htm_rates.exposure_months.sum()) / active - 1
-    style.check('zac_05 chart-10 machine-months >= active machine-months', 1, int(more_months >= 0))
-    style.check('zac_05 chart-10 fleet rate = Zac rate x (1 + more tickets) / (1 + more months)', htm_fleet,
+    # Fleet chart fx_05 rates the same telemetry types on its own exposure basis (fx_type_rates.csv).
+    basis = fx.exposure_basis.iloc[0]
+    fx_fleet = float(fx.fleet_rate_per_100.iloc[0])  # fx_05's fleet line
+    style.check('zac_05 fx_05 table has one exposure basis', 1, int(fx.exposure_basis.nunique() == 1))
+    style.check('zac_05 fx_05 fleet rate = its tickets / machine-months', 100 * fx.tickets.sum() / fx.months.sum(),
+                fx_fleet, 1e-9)
+    style.check('zac_05 fx_05 rates every type shown', 1, int(set(shown.machine_type) <= set(fx.index)))
+    fx_shown = fx.reindex(shown.machine_type)
+    rated = fx_shown.rate_per_100.notna().to_numpy()
+    rel = fx_shown.rate_per_100.to_numpy()[rated] / shown.rate.to_numpy()[rated] - 1  # fx_05 rate vs this one
+    # fx_05's tickets and machine-months against this chart's, all types.
+    more_tickets = float(fx.tickets.sum()) / tickets - 1
+    more_months = float(fx.months.sum()) / active - 1
+    style.check('zac_05 fx_05 fleet rate = Zac rate x (1 + more tickets) / (1 + more months)', fx_fleet,
                 all_rate * (1 + more_tickets) / (1 + more_months), 1e-9)
+    if basis == SPAN:
+        # Same window; a device's span holds every one of its active months, so span months >= active months.
+        style.check('zac_05 fx_05 window = this window', 1, int(period in fx.ratio_basis.iloc[0]))
+        style.check('zac_05 fx_05 machine-months >= active machine-months, each type shown', 1,
+                    int((fx_shown.months.to_numpy()[rated] >= shown.active_machine_months.to_numpy()[rated]).all()))
+        fx_text = ('Fleet chart fx_05 also counts quiet months (first to last transaction) but only the tickets '
+                   'inside that span')
+    else:
+        fx_text = 'Fleet chart fx_05 divides by installed machine-months from IPA\'s list instead of active months'
     if (rel > 0).all():
         rel_text = f'are {rel.min():.0%} to {rel.max():.0%} higher'
     elif (rel < 0).all():
         rel_text = f'are {-rel.max():.0%} to {-rel.min():.0%} lower'
     else:
         rel_text = f'differ by {rel.min():+.0%} to {rel.max():+.0%}'
-    weigh = 'outweigh' if more_tickets > more_months else 'weigh less than'
+    rel_types = f'the {TOP_N} types shown' if rated.all() else f'the {rated.sum()} of the {TOP_N} types shown it rates'
 
     d = shown.iloc[::-1]  # highest rate on top, as in Zac's chart
     colors = [style.BLUE if t == lead.machine_type else style.GRAY_LIGHT for t in d.machine_type]
@@ -120,7 +133,7 @@ def plot(out_dir=zac_data.FIG_DIR):
     y = np.arange(len(d))
     xmax = d.rate.max() * 1.12
     pad, label_w = xmax * 0.01, xmax * 0.045  # value-label offset and approximate width (3 characters), data units
-    ax.axvline(all_rate, color=style.INK2, lw=1, zorder=1)  # under the bars, as the fleet line in chart 10
+    ax.axvline(all_rate, color=style.INK2, lw=1, zorder=1)  # under the bars, as the fleet line in fx_05
     ax.barh(y, d.rate, height=0.5, color=colors, linewidth=0, zorder=2)
     ax.text(all_rate + pad, len(d) - 0.45, f'Overall: {all_rate:.1f}', va='bottom', ha='left', fontsize=9.5,
             color=style.INK2)
@@ -164,14 +177,12 @@ def plot(out_dir=zac_data.FIG_DIR):
                f'({int(screened.active_machine_months.sum()):,} active machine-months, {int(screened.tickets.sum())} '
                f'tickets in all): {UNKNOWN}, a malformed type value and {len(screened) - 2} types with too few tickets '
                f'or months{higher}.',
-               f'High-ticket chart 10 also counts quiet months (first to last transaction) and the {int(excl[QUIET])} '
-               f'tickets opened in a month with no transaction. The extra tickets ({more_tickets:+.1%}) {weigh} the '
-               f'extra machine-months ({more_months:+.1%}), so its rates {rel_text} for the {TOP_N} types shown '
-               f'(fleet: {htm_fleet:.1f} against {all_rate:.1f}).',
+               f'{fx_text}: {more_tickets:+.1%} tickets and {more_months:+.1%} machine-months against this chart, so '
+               f'its rates {rel_text} for {rel_types} (fleet: {fx_fleet:.1f} against {all_rate:.1f}).',
                'Source: verification/outputs/db/db_machine_type_rates.csv (Zac\'s SQL, notebook cell 27, re-run on the '
                'full database); tickets counted from verification/outputs/repro_sql_case_monthly.csv and '
-               'verification/outputs/db/db_ticket_cohort_exclusions.csv; chart 10 from '
-               'verification/outputs/htm_type_rates.csv.'],
+               'verification/outputs/db/db_ticket_cohort_exclusions.csv; fx_05 from '
+               'verification/outputs/fleet/fx_type_rates.csv.'],
         definitions=[zac_data.UNPLANNED_DEFINITION, zac_data.ACTIVE_MONTH_DEFINITION])
     return [style.save(fig, out_dir / 'zac_05_machine_type_rates.png')]
 

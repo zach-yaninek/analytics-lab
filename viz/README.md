@@ -11,6 +11,7 @@ viz/
     ipa_style.py        the sheet + page layout (title band, footer), palette constants, save()
   high_ticket/          high-ticket-machine charts (docs/05); htm.py = their data and term definitions
   zac_notebook/         Zac's 10 notebook figures, rebuilt in this style; zac_data.py = data and definitions
+  fleet_exposure/       fleet-exposure charts (docs/06); fleet.py = their data and term definitions
   figures/              rendered PNGs (pseudonymous)
   run_all.py            redraw everything and run the checks
 ```
@@ -94,8 +95,6 @@ number on the chart equals that number in the data" assertions.
 | `high_ticket/htm_06_pre_ticket.py` | Telemetry in the 30 days before tickets (two figures) |
 | `high_ticket/htm_07_chronic_outliers_by_customer.py` | Chronic outliers by customer (+ real-name variant) |
 | `high_ticket/htm_08_chronic_categories_heatmap.py` | Top ticket categories for each chronic outlier |
-| `high_ticket/htm_09_tickets_by_type.py` | Raw ticket counts by model and by telemetry type (two figures) |
-| `high_ticket/htm_10_ticket_rate_by_machine_type.py` | Tickets per 100 machine-months by telemetry type |
 | `zac_notebook/zac_01_missing_fields.py` | Missing values per ticket field |
 | `zac_notebook/zac_02_customer_workload.py` | Customers with the most tickets (+ real-name variant) |
 | `zac_notebook/zac_03_model_workload.py` | Models with the most tickets |
@@ -106,28 +105,52 @@ number on the chart equals that number in the data" assertions.
 | `zac_notebook/zac_08_customer_concentration.py` | How concentrated tickets are across customers |
 | `zac_notebook/zac_09_model_issue_heatmap.py` | Category mix of each model's unplanned tickets |
 | `zac_notebook/zac_10_repeat_composition.py` | What repeat contacts are made of |
+| `fleet_exposure/fx_01_fleet_vs_ticket_share.py` | Model share of installed machine-months vs share of tickets |
+| `fleet_exposure/fx_02_rate_by_model.py` | Tickets per 100 installed machine-months by model, with 95% intervals |
+| `fleet_exposure/fx_03_rate_by_age.py` | Ticket rate by machine age band, with 95% intervals |
+| `fleet_exposure/fx_04_rate_by_coverage.py` | Ticket rate by service status (contract, warranty, no coverage, ...) |
+| `fleet_exposure/fx_05_rate_by_telemetry_type.py` | Ticket rate by telemetry machine type, with 95% intervals |
+| `fleet_exposure/fx_06_busiest_customers.py` | Busiest customers, observed vs expected tickets (+ real-name variant) |
+| `fleet_exposure/fx_07_customer_funnel.py` | Funnel plot of customers' STR vs expected tickets (+ real-name variant) |
+| `fleet_exposure/fx_08_customer_concentration.py` | Ticket concentration across customers vs what fleets predict |
+| `fleet_exposure/fx_09_model_persistence.py` | Each model's age-standardised ratio, first half vs second half |
+| `fleet_exposure/fx_10_customer_persistence.py` | Each customer's STR, first half vs second (+ real-name variant) |
+| `fleet_exposure/fx_11_machine_persistence.py` | Second-half ratio of machines grouped by first-half tickets |
+| `fleet_exposure/fx_12_outlier_drivers.py` | What drives each consistent outlier's excess (+ real-name variant) |
+
+High-ticket charts 9 (raw ticket counts by model and telemetry type) and 10 (rates per 100 machine-months by telemetry
+type) were retired in favour of `fx_01`, `fx_02` and `fx_05`, which use IPA's installed-base list.
 
 The `htm_*` charts read the outputs of `verification/high_ticket_machines.py`. The `zac_*` charts read the
 committed reproductions of Zac's tables:
 - `verification/outputs/repro_sql_*.csv`: his case-export SQL, run verbatim;
 - `verification/outputs/db/db_*.csv`: his telemetry SQL, re-run on the full database.
 
-Neither set needs the database. Only the real-name variants read the gitignored workbook.
+The `fx_*` charts read `verification/outputs/fleet/fx_*.csv` and `fx_summary.json`, written by
+`verification/fleet_exposure.py` from IPA's installed-base list joined to the case export (`fx_05` also reads three
+`htm_*` outputs for its checks and its note on the retired chart 10).
+
+None of these needs the database. Only the real-name variants and the privacy scans read gitignored inputs (the
+workbook, the equipment list, `data/private/`).
 
 ## Running
 
 ```bash
 python3 -I viz/run_all.py                                  # every chart, then the checks
-python3 -I viz/high_ticket/run_all.py                      # one section
+python3 -I viz/high_ticket/run_all.py                      # one section (also zac_notebook/, fleet_exposure/)
 python3 -I viz/zac_notebook/zac_04_issue_mix.py            # one chart
 ```
 
-Each section's `run_all.py` runs three checks:
+Each of the three sections' `run_all.py` runs its own set of three checks on the figures it draws:
 - **Numbers:** numbers drawn on the charts match the data (`check()` calls).
-- **Definitions:** every chart that uses a defined term draws its definition.
-- **Privacy:** no real customer name or serial appears on a pseudonymous figure.
+- **Definitions:** every chart that uses a defined term draws its definition. High-ticket: chronic outlier,
+  workload-outsized. Zac: unplanned tickets, active machine-months, repeat contact, provisional fault codes. Fleet
+  (`defined_terms()` in `fleet_exposure/run_all.py`): installed and telemetry machine-months, unplanned tickets,
+  expected tickets, STR, age-standardised ratio, flagged, consistent outlier, funnel.
+- **Privacy:** no real customer name, serial or address appears on a pseudonymous figure.
 
-A failed definition or privacy check stops the run with an error.
+A failed definition or privacy check stops the run with an error. The fleet section also stops on a failed number
+check; the other two report it as a warning.
 
 **Requirements:** Python 3.12+, pandas, numpy and matplotlib. The real-name variants also need openpyxl and the
-workbook in `data/raw/`.
+gitignored inputs above (the workbook and equipment list in `data/raw/`, the tables in `data/private/`).

@@ -14,8 +14,9 @@ why plain Poisson limits flag too many. Labelled: consistent outliers with at le
 tickets, and every customer beyond the 99.8% funnel; labels are placed by a small branch-and-bound search
 (place_labels()) over spots around each dot, clear of other labels, coloured dots, the legend and the line labels.
 A label without a leader must be clearly nearer its own dot than any other coloured dot (MISREAD_RATIO), so in the
-crowded band of orange and blue dots most labels get a short leader line. One customer with an STR far above the
-rest is drawn at the top edge (noted).
+crowded band of orange and blue dots most labels get a short leader line; away from its own dot a leader keeps clear
+of other coloured dots (R_LEADER_FAR), so it cannot be read as pointing at one it passes. One customer with an STR far
+above the rest is drawn at the top edge (noted).
 
 Two versions are drawn from the same data:
   pseudonymous (Customer NNN), always;
@@ -27,7 +28,8 @@ Inputs (computed by verification/fleet_exposure.py; nothing is recomputed here e
                                                     poisson_flagged, beyond_funnel_998, variants_flagged,
                                                     O_h1, E_h1, O_h2, E_h2, consistent_outlier (one row per customer)
   verification/outputs/fleet/fx_summary.json        customers.tau2 (funnel), definitions (z95, z998, flag and
-                                                    consistency thresholds, period), customers.* counts for checks
+                                                    consistency thresholds, period), customers.* counts and
+                                                    match (listed and third-party-only accounts) for checks
   data/private/fx_private_customer_names.csv        customer -> real_account_name (real-name version only; gitignored)
 Outputs:
   viz/figures/fx_07_customer_funnel.png
@@ -39,6 +41,7 @@ import math
 import sys
 import textwrap
 from pathlib import Path
+from statistics import NormalDist
 
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
@@ -101,8 +104,15 @@ def bh(p):
 def checks(S, cr):
     """Consistency checks; returns the customers with expected tickets (the plotted population) plus the counts
     the chart states."""
-    d, C = S['definitions'], S['customers']
+    d, C, M = S['definitions'], S['customers'], S['match']
     style.check('fx_07 customer tickets sum to the fleet', S['fleet']['tickets'], int(cr.tickets.sum()))
+    # Population (subtitle): every listed account except those whose machines are all on a third-party service plan;
+    # the plotted customers are those with expected tickets (machines in place during the period).
+    style.check('fx_07 customers = listed accounts less third-party-only accounts',
+                M['listed accounts'] - M['accounts with only third-party machines (excluded)'], len(cr))
+    # The z values drawn (1.96, 3.09) are the two-sided 95% and 99.8% normal quantiles the labels name.
+    style.check('fx_07 z95 = 95% two-sided normal quantile', NormalDist().inv_cdf(0.975), d['z95'], 1e-5)
+    style.check('fx_07 z998 = 99.8% two-sided normal quantile', NormalDist().inv_cdf(0.999), d['z998'], 1e-5)
     style.check('fx_07 customers without expected tickets have no tickets', 0,
                 int(cr.tickets[cr.expected <= 0].sum()))
     c = cr[cr.expected > 0].reset_index(drop=True)
@@ -142,6 +152,14 @@ def checks(S, cr):
     style.check('fx_07 beyond the 99.8% funnel recomputed = beyond_funnel_998', 0,
                 int((beyond != c.beyond_funnel_998.to_numpy()).sum()))
     style.check('fx_07 beyond the 99.8% funnel = summary', C['flagged_998'], int(beyond.sum()))
+    # The title says "only K lie outside the normal spread": no customer is below the lower 99.8% limit either, and
+    # the K above it are among the flagged customers the title counts first.
+    below = z < -d['z998']
+    style.check('fx_07 no customer below the 99.8% funnel (title: outside = above)', 0, int(below.sum()))
+    style.check('fx_07 below the 99.8% funnel = summary', C['below_998'], int(below.sum()))
+    lo998 = fleet.funnel_limits(c.expected, d['z998'], S)[0]
+    style.check('fx_07 dots below the drawn lower 99.8% funnel', 0, int((c.STR.to_numpy() < lo998).sum()))
+    style.check('fx_07 customers beyond the funnel are flagged', 0, int((beyond & ~flag).sum()))
     # The drawn lines (fleet.funnel_limits / fleet.poisson_limits) put the same customers outside.
     hi998 = fleet.funnel_limits(c.expected, d['z998'], S)[1]
     style.check('fx_07 dots above the drawn 99.8% funnel = beyond the funnel', int(beyond.sum()),
@@ -174,7 +192,7 @@ def checks(S, cr):
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# Layout helpers: page bands (the same arithmetic as style.frame) and greedy label placement in inches
+# Layout helpers: page bands (the same arithmetic as style.frame) and label placement in inches (branch and bound)
 # ---------------------------------------------------------------------------------------------------------------
 def bands(width, subtitle, definitions, notes):
     """(top band, bottom band) in inches, as style.frame() reserves them, so the figure height can be set from the
@@ -235,6 +253,8 @@ R_DOT = 0.055      # coloured dot radius plus a margin (inches)
 R_LEADER = 0.08    # how far a leader stays from other coloured dots (inches) ...
 LEADER_GAP_PT = 3  # ... beyond the gap the leader leaves at its own dot (arrowprops shrinkB, points); a dot that
                    # touches its neighbour can still have a leader that leaves on the far side
+R_NEAR_OWN, R_LEADER_FAR = 0.15, 0.11  # farther than R_NEAR_OWN from its own dot, a leader keeps R_LEADER_FAR from
+                                       # other coloured dots: one that grazes a dot on its way reads as pointing at it
 TOP_K = 64         # cheapest spots per label searched jointly (128 finds no better layout for either version)
 MAX_NODES = 400_000
 MISREAD_RATIO = 2.5  # a label without a leader must be this many times nearer its own dot than any other coloured
@@ -273,10 +293,13 @@ def candidates(i, items, keep_out, dots, gray, curves, ax_w, ax_h):
                 seg = segment((x, y), end)
                 if any(inside(b, seg).any() for b in keep_out):
                     continue
-                seg = seg[np.hypot(seg[:, 0] - x, seg[:, 1] - y) > LEADER_GAP_PT / 72]  # the drawn part
-                if len(other_dots) and len(seg) and np.min(np.hypot(seg[:, None, 0] - other_dots[None, :, 0],
-                                                       seg[:, None, 1] - other_dots[None, :, 1])) < R_LEADER:
-                    continue
+                along = np.hypot(seg[:, 0] - x, seg[:, 1] - y)
+                seg, along = seg[along > LEADER_GAP_PT / 72], along[along > LEADER_GAP_PT / 72]  # the drawn part
+                if len(other_dots) and len(seg):
+                    gap = np.min(np.hypot(seg[:, None, 0] - other_dots[None, :, 0],
+                                          seg[:, None, 1] - other_dots[None, :, 1]), axis=1)
+                    if gap.min() < R_LEADER or (gap[along > R_NEAR_OWN] < R_LEADER_FAR).any():
+                        continue
             cost = r + 0.5 * r * r + LONG_COST * max(0.0, r - LONG_LEADER)
             cost += GRAY_COST * int(inside(box, gray).sum())
             cost += sum(wt for cv, wt in curves if inside(box, cv).any())
@@ -396,11 +419,20 @@ def draw(S, c, counts, path, names=None):
     ytop = math.ceil(c[c.poisson_flagged | c.consistent_outlier].STR.max() + 0.6)
     over = c[c.STR > ytop].sort_values('STR', ascending=False)
     n_zero = counts['n_zero']
+    # Numbers drawn for the customers on the top edge (the "STR x" labels and note 2), recomputed from other columns.
+    for o in over.itertuples():
+        style.check(f'fx_07 top-edge STR {o.STR:.1f} = tickets / expected', round(o.STR, 1), o.tickets / o.expected,
+                    0.05)
+    if len(over):
+        o = over.iloc[0]
+        style.check('fx_07 top-edge tickets (note 2) = both halves', int(o.tickets), int(o.O_h1 + o.O_h2))
+        style.check('fx_07 top-edge expected (note 2) = tickets / STR', round(o.expected, 2), o.tickets / o.STR, 0.005)
 
     title = (f'{counts["flagged"]} customers are flagged, but {lie(counts["beyond"])} outside the normal spread '
              f'between customers')
     subtitle = [f'Standardised ticket ratio (STR) against expected tickets for the {len(c):,} customers with machines '
-                f'on IPA\'s installed-base list in place during {fleet.period_text(S)}, one dot each. The plain '
+                f'on IPA\'s installed-base list in place during {fleet.period_text(S)} (machines on a third-party '
+                f'service plan left out), one dot each. The plain '
                 f'Poisson 99.8% limits (dashed) allow for chance only: {counts["above_pois"]} customers lie above '
                 f'them. The funnel limits (solid gray) also allow for the normal spread between customers: '
                 f'{counts["beyond"]} lies above the 99.8% limit. Blue: the {counts["consistent"]} consistent '

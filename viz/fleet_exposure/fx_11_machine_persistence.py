@@ -6,15 +6,18 @@ single machines. The period is split at its midpoint and the machines installed 
 unplanned tickets in the first half (0, 1, 2, 3, 4 or more). One vertical bar per group shows the group's
 second-half ratio, observed ÷ expected unplanned tickets in the second half (expected from the analysis' own model +
 age fit within that half, so 1 = what machines of that model and age have), with its 95% interval as a whisker
-(cluster bootstrap over accounts) and the value beside the bar top; the machine count is on the axis label. The
-horizontal line is 1.
+(cluster bootstrap over accounts) and the value beside the bar top; the machine count is under each bar, in its
+tick label. The horizontal line is 1.
 
 Two shuffles say how much of the pattern a machine's own history explains (F7 of verification/fleet_exposure.py):
   gray band  first-half counts permuted among machines of the same model and age band, 95% of the shuffles, line =
-             median: what model and age alone give (about 1, by construction of the expected tickets);
-  orange     first-half counts permuted among machines of the same customer, median and 95%: what site effects
-             alone give (busy sites keep being busy, whichever of their machines had the tickets).
-A group that sits above the orange interval keeps its tickets beyond what its site explains.
+             median: what model and age alone give (about 1, since the expected tickets already allow for model
+             and age);
+  aqua       first-half counts permuted among machines of the same customer, median and 95%: what site effects
+             alone give (busy sites keep being busy, whichever of their machines had the tickets). Each customer
+             keeps its own mix of first-half counts, so the shuffled 3+ group sits at the same sites as the real one.
+A group that sits above the aqua interval keeps its tickets beyond what its site explains. Aqua, not orange: in the
+other fleet charts orange means below the fleet or flagged only, and both shuffles are reference marks.
 
 The title states the pooled result for machines with 3 or more first-half tickets (the analysis' persistence
 statistic), against the median of the same-customer shuffles; a bracket over the 3 and 4+ bars draws the same
@@ -29,8 +32,11 @@ rule that fleet.flagged_machine_definition() states, so the note spells the rule
 Every number drawn is checked against an independent recount from fx_machine_flags.csv (every machine with a ticket,
 with its tickets and expected tickets per half): the 1, 2, 3 and 4+ groups are recounted exactly, the 0 group's
 second-half tickets two ways, and the first-half selection of the note by a local Poisson test and
-Benjamini-Hochberg step. The shuffle and bootstrap results are random draws of the analysis and are checked only for
-internal consistency (each median inside its band, the pooled 3+ median inside the groups' bands, CSV = summary).
+Benjamini-Hochberg step. The machine table leaves out machines with no ticket, so the count of machines in both
+halves (and with it the 0 group's) is bounded from the fleet's installed months in each half (fx_summary.json:
+tickets ÷ rate per half), since no machine has more than one half's length in a half. The shuffle and bootstrap
+results are random draws of the analysis and are checked only for internal consistency (each median inside its band,
+the pooled 3+ median inside the groups' bands, CSV = summary).
 
 Inputs (computed by verification/fleet_exposure.py; nothing is recomputed here):
   verification/outputs/fleet/fx_outlier_machine_persistence.csv  one row per first-half group: machines,
@@ -82,6 +88,8 @@ AXIS_LABEL_IN = 0.95      # approximate width of the y tick labels and two-line 
 X_PAD = 0.6               # space left of the first bar and right of the last, in bar slots
 BAND_HALF = 0.27          # half-width of the model-and-age shuffle band, bar slots
 SITE_DX = 0.15            # the same-customer shuffle marker sits this far right of the bar centre, bar slots
+SITE_COLOUR = style.AQUA  # the same-customer shuffle: a reference series, so not orange (= below / flagged only in
+                          # the other fleet charts); aqua is light, so it carries a legend entry
 NBSP = '\u00a0'           # keeps a number with its unit when frame() wraps the subtitle
 SUB_CHARS_PER_IN = 12.2   # subtitle wrap width, characters per inch: tighter than frame()'s estimate, because
                           # these lines are dense in digits and '×' and ran past the right margin at its width
@@ -158,6 +166,26 @@ def plot(out_dir=fleet.FIG_DIR):
                 int(g.loc['0', 'machines'] >= len(zero)))
     style.check('fx_11 machines in both halves <= machines with exposure', 1,
                 int(mp.machines.sum() + len(h2_only) <= F['machines_exposed']))
+    # Tighter: each half is the same number of months for a machine installed throughout, and no machine has more.
+    # The fleet's installed months in a half (tickets ÷ rate) then bound the machines in both halves: at least the
+    # first half's months ÷ its length, at most the second half's months, less those of the second-half installs
+    # with a ticket, ÷ its length.
+    p0, p1 = (pd.Timestamp(x) for x in D['period'])
+    cut = pd.Timestamp(D['split'])
+    len_h1 = (cut - p0).days / D['month_days']
+    len_h2 = (p1 + pd.Timedelta(days=1) - cut).days / D['month_days']
+    style.check('fx_11 no machine has more than a half of months in a half', 1,
+                int(mf.months_h1.max() <= len_h1 + 1e-9 and mf.months_h2.max() <= len_h2 + 1e-9))
+    months_h1 = 100 * F['tickets_h1'] / F['rate_h1']
+    months_h2 = 100 * F['tickets_h2'] / F['rate_h2']
+    style.check('fx_11 half months add up to the fleet months', F['months'], months_h1 + months_h2, 1e-6)
+    n_lo_both = math.ceil(months_h1 / len_h1 - 1e-9)
+    n_hi_both = math.floor((months_h2 - h2_only.months_h2.sum()) / len_h2 + 1e-9)
+    style.check('fx_11 machines in both halves within the half-month bounds', 1,
+                int(n_lo_both <= mp.machines.sum() <= n_hi_both))
+    style.check('fx_11 machines in group 0 within the half-month bounds', 1,
+                int(n_lo_both - len(both[both.group > 0]) <= g.loc['0', 'machines']
+                    <= n_hi_both - len(both[both.group > 0])))
     # Each half's fit gives as many expected as observed tickets over the population, so the groups' expected
     # tickets plus those of the second-half installs with a ticket cannot exceed the fleet's second-half tickets.
     style.check('fx_11 expected, group 0 within bounds', 1,
@@ -271,8 +299,8 @@ def plot(out_dir=fleet.FIG_DIR):
     ax.errorbar(x, mp.second_half_ratio, yerr=[mp.second_half_ratio - mp.boot_lo, mp.boot_hi - mp.second_half_ratio],
                 fmt='none', ecolor=style.INK2, elinewidth=1.2, capsize=3.5, capthick=1.2, zorder=4)
     xs = x + SITE_DX
-    ax.vlines(xs, mp.customer_null_p2_5, mp.customer_null_p97_5, color=style.ORANGE, lw=1.6, zorder=4)
-    ax.plot(xs, site_med, 'D', ms=5.5, mfc=style.ORANGE, mec=style.SURFACE, mew=0.8, ls='none', zorder=5)
+    ax.vlines(xs, mp.customer_null_p2_5, mp.customer_null_p97_5, color=SITE_COLOUR, lw=1.8, zorder=4)
+    ax.plot(xs, site_med, 'D', ms=6, mfc=SITE_COLOUR, mec=style.SURFACE, mew=0.8, ls='none', zorder=5)
     for xi, row, h in zip(x, mp.itertuples(), is_hot):
         label = f'{row.second_half_ratio:.2f}×'
         style.check(f'fx_11 drawn ratio, group {row.first_half_tickets}', float(label[:-1]), row.second_half_ratio,
@@ -291,7 +319,8 @@ def plot(out_dir=fleet.FIG_DIR):
             f'{HOT_FROM} or more together ({hot_n} machines): {r3:.2f}×\n'
             f'shuffled within customer {site.perm_null_median:.2f}×, within model and age '
             f'{cell.perm_null_median:.2f}×',
-            ha='center', va='bottom', fontsize=9.5, color=style.INK, linespacing=1.35, zorder=6)
+            ha='center', va='bottom', fontsize=9.5, color=style.INK, linespacing=1.35, zorder=6,
+            bbox=dict(facecolor=style.SURFACE, edgecolor='none', pad=1.5))  # keeps gridlines off the text
     ax.text(-X_PAD + 0.02, 1, ' 1 = as expected', ha='left', va='bottom', fontsize=9.5, color=style.INK2, zorder=6)
 
     ax.set_xticks(x)
@@ -309,20 +338,23 @@ def plot(out_dir=fleet.FIG_DIR):
     ax.set_xlabel(f'Unplanned tickets in the first half ({h1_text})')
     ax.set_ylabel(f'Second-half tickets ÷ expected\n({h2_text})')
 
-    handles = [(Patch(facecolor=style.GRAY_LIGHT, edgecolor='none'), Patch(facecolor=style.BLUE, edgecolor='none')),
-               Patch(facecolor=style.BAR_BACKGROUND, edgecolor=style.GRAY, linewidth=0.8),
-               Line2D([], [], color=style.ORANGE, lw=1.6, marker='D', ms=5.5, mfc=style.ORANGE,
-                      mec=style.SURFACE, mew=0.8)]
-    labels = ['Observed ÷ expected in the second half (whisker: 95% interval)',
+    bars = (Patch(facecolor=style.GRAY_LIGHT, edgecolor='none'), Patch(facecolor=style.BLUE, edgecolor='none'))
+    band = (Patch(facecolor=style.BAR_BACKGROUND, edgecolor='none'),  # the band with its median line, as drawn
+            Line2D([], [], color=style.GRAY, lw=1.2, solid_capstyle='butt'))
+    handles = [bars, band,
+               Line2D([], [], color=SITE_COLOUR, lw=1.8, marker='D', ms=6, mfc=SITE_COLOUR, mec=style.SURFACE,
+                      mew=0.8)]
+    labels = [f'Observed ÷ expected in the second half (blue: {HOT_FROM} or more; whisker: 95% interval)',
               'First-half counts shuffled within model and age: 95% of shuffles (line: median)',
               'Shuffled within customer, what site effects alone give: median and 95%']
-    ax.legend(handles, labels, loc='upper left', handler_map={tuple: HandlerTuple(ndivide=None, pad=0)},
+    ax.legend(handles, labels, loc='upper left',
+              handler_map={bars: HandlerTuple(ndivide=None, pad=0), band: HandlerTuple(ndivide=1)},
               handlelength=2.2, frameon=True, facecolor=style.SURFACE, edgecolor='none', framealpha=1)
 
     # ---------------------------------------------------------------------------------------------- Text
     subtitle = [f'Observed ÷ expected unplanned tickets in the second half of {fleet.period_text(S)}, by each '
-                f'machine\'s unplanned tickets in the first half: the {n_both:,}{NBSP}machines installed in both '
-                f'halves, with 95% intervals.',
+                f'machine\'s unplanned tickets in the first half: the {n_both:,}{NBSP}machines installed before '
+                f'{split.day} {split:%b %Y}, so in both halves, with 95% intervals.',
                 f'Shuffling first-half counts among machines of the same model and age gives about 1 in every group '
                 f'(medians {cell_med.min():.2f}× to {cell_med.max():.2f}×); shuffling them among machines of the same '
                 f'customer gives {site_med.min():.2f}× to {site_med.max():.2f}×, the part that comes from the site. '
@@ -331,7 +363,7 @@ def plot(out_dir=fleet.FIG_DIR):
     method = (f'Expected tickets in each half come from a model + age fit within that half, so 1 = machines of the '
               f'same model and age in that half. Whiskers: cluster bootstrap over accounts ({S["n_boot"]:,} draws), '
               f'since tickets cluster within accounts. Shuffles: first-half counts permuted {n_null:,} times among '
-              f'machines of the same model group and age band (gray band) or of the same customer (orange).')
+              f'machines of the same model group and age band (gray band) or of the same customer (aqua).')
     regression = (f'Regression to the mean: the {h1_n} machines above their expected tickets beyond chance on the '
                   f'first half alone (Poisson test, Benjamini-Hochberg q < {D["q_cut"]:g}) had '
                   f'{h1_ratio_note:.1f}× their expected tickets in the first half and {h1.observed:.1f}× in the '

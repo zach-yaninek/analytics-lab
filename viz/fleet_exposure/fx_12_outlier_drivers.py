@@ -4,15 +4,17 @@
 A customer can be a consistent outlier because one or two of its machines generate many more tickets than their
 model and age predict, because its whole fleet runs a little high, or simply because it has so few machines that a
 couple of bad ones decide its ratio. Which of these it is decides the follow-up (fix a machine, or talk to the site).
-This chart splits each consistent outlier's excess tickets (observed - expected, the model + age fit of
+This chart splits each consistent outlier's excess unplanned tickets (observed - expected, the model + age fit of
 verification/fleet_exposure.py) into the excess on its two machines with the most excess (blue) and the excess on the
 rest of its machines (gray). One row per consistent outlier, largest excess on top, labelled
 'Customer NNN (n machines)', with the net excess and the top-2 share at the bar end and, in two columns at the right,
 the pattern assigned by the analysis (small fleet / a few machines / spread across fleet) and the customer's most
-frequent ticket category with its share of the customer's tickets. When the rest of a customer's machines are
-together below expected, the top-2 excess is larger than the customer's net excess: the blue bar then shows the
+frequent recorded category with its share of the customer's unplanned tickets. When the rest of a customer's machines
+are together below expected, the top-2 excess is larger than the customer's net excess: the blue bar then shows the
 top-2 excess and an ink tick marks the net. The title counts the small fleets among the consistent outliers and,
-among the larger ones, those whose excess is spread across the fleet.
+among the larger ones, those whose excess is spread across their own fleet (the analysis' rule: the top 2 machines
+hold under half of it). The figure height is set from the rows plus the title and footer bands as frame() reserves
+them, so the bars are about 22 px thick whatever the footer holds.
 
 Two versions are drawn from the same data:
   pseudonymous (Customer NNN), always;
@@ -39,6 +41,7 @@ Run:  cd /home/user/analytics-lab && python3 -I viz/fleet_exposure/fx_12_outlier
 """
 import re
 import sys
+import textwrap
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -58,8 +61,9 @@ SMALL, FEW, SPREAD = 'small fleet', 'a few machines', 'spread across fleet'
 FEW_SHARE = 0.5           # the analysis' rule: 'a few machines' = top-2 machines hold at least this share of the
                           # excess (checked below: the rule reproduces every pattern in the CSV)
 ROW_IN = 0.34             # inches per customer row
-FIG_H = 5.2               # figure height besides the rows: title band, footer, x axis (inches)
-BAR_H = 0.43              # bar thickness as a share of the row pitch (about 22 px at 150 dpi)
+AXIS_IN = 0.75            # plot band besides the rows: x tick labels, x label, column heads, layout pads (inches)
+Y_LO, Y_HI = -0.6, -0.4   # y limits = (Y_LO, n + Y_HI): the plot spans n + Y_HI - Y_LO rows
+BAR_H = 0.43              # bar thickness as a share of the row pitch (0.43 x 0.34 in = about 22 px at 150 dpi)
 TITLE_IN_PER_CHAR = 0.118  # approximate width of one title character (15 pt bold), for the figure width
 LABEL_IN_PER_CHAR = 0.075  # approximate width of one tick-label character (10 pt), for the real-name width
 COL_PT_PER_CHAR = 5.6     # approximate width of one column character (9.5 pt), for the column offsets
@@ -89,6 +93,23 @@ def pattern_key(label):
     return 'small' if label.startswith(SMALL) else {FEW: 'few', SPREAD: 'spread'}[label]
 
 
+def bands(width, subtitle, definitions, notes):
+    """(top band, bottom band) in inches, as style.frame() reserves them (same wrapping and line heights), so the
+    figure height can be set from the rows (as in fx_10)."""
+    usable = width - 2 * style.MARGIN
+
+    def n_lines(items, per_in):
+        items = [items] if isinstance(items, str) else list(items)
+        return sum(len(textwrap.wrap(t, int(usable * per_in), break_on_hyphens=False)) for t in items)
+
+    top = (0.25 + style.TITLE_PT / 72 * 1.25 + 0.08
+           + n_lines(subtitle, style.SUB_CHARS_PER_IN) * style.SUB_PT / 72 * 1.35 + 0.2)
+    note_lh = style.NOTE_PT / 72 * 1.4
+    bottom = 0.16 + (n_lines(notes, style.NOTE_CHARS_PER_IN) * note_lh + 0.06 if notes else 0)
+    bottom += sum(n_lines(t, style.NOTE_CHARS_PER_IN) * note_lh + 0.04 for t in definitions) + 0.16
+    return top, bottom
+
+
 def checks(S, dr, cr, mf):
     """Consistency checks against the customer and machine tables; returns the rows in drawing order and the
     independent recomputations used to check the drawn numbers."""
@@ -96,6 +117,7 @@ def checks(S, dr, cr, mf):
     c = dr[dr.consistent_outlier].copy()
     style.check('fx_12 consistent outliers in drivers = summary', n_cons, len(c))
     style.check('fx_12 consistent outliers in customer table = summary', n_cons, int(cr.consistent_outlier.sum()))
+    style.check('fx_12 subtitle: customers on the list = customer table rows', S['fleet']['accounts'], len(cr))
     style.check('fx_12 drivers rows = consistent outliers of the customer table', 1,
                 int(set(c.customer) == set(cr.customer[cr.consistent_outlier])))
 
@@ -165,13 +187,43 @@ def draw(S, c, small_n, path, names=None):
     style.check('fx_12 title: spread across fleet (recomputed)', sum(r == 'spread' for r in c.rule), n_spread)
     style.check('fx_12 title: consistent outliers', S['customers']['consistent_outliers'], n)
     title = (f'{n_small} of {n} consistent outliers have under {small_n} machines; '
-             f'{n_spread} of the other {n_large} have their excess spread across the fleet')
+             f'{n_spread} of the other {n_large} have their excess spread across their fleets')
+
+    # Subtitle totals, recomputed from the customer and machine tables.
+    tot_t, tot_e = int(c.tickets.sum()), float(c.expected.sum())
+    tot_x, tot_2 = float(c.excess.sum()), float(c.top2_machines_excess.sum())
+    style.check('fx_12 subtitle: tickets (customer table)', tot_t, int(sum(int(t) for t in c.tickets)))
+    style.check('fx_12 subtitle: excess (customer table)', round(float(c.excess_chk.sum()), 1), round(tot_x, 1))
+    style.check('fx_12 subtitle: expected = tickets - excess', round(tot_t - float(c.excess_chk.sum()), 1),
+                round(tot_e, 1))
+    style.check('fx_12 subtitle: top-2 share of the excess (machine table)',
+                round(100 * float(c.top2_chk.sum()) / float(c.excess_chk.sum()), 1), round(100 * tot_2 / tot_x, 1))
+    subtitle = [f'Excess unplanned tickets (observed − expected) of each of the {n} consistent-outlier customers '
+                f'among the {F["accounts"]:,} with machines on IPA\'s installed-base list, {fleet.period_text(S)}, '
+                f'largest first: blue on the customer\'s two machines with the most excess, gray on the rest of its '
+                f'machines. At the right: the analysis\' pattern and the customer\'s top category.',
+                f'Together: {tot_t:,} unplanned tickets against {tot_e:.1f} expected; {style.pct(tot_2 / tot_x)} of '
+                f'the {tot_x:.1f} excess tickets are on their top-2 machines.']
+    if names is not None:
+        subtitle.insert(0, PRIVACY_WARNING)  # first line, so the warning is read before the chart
+    notes = [f'Excess per machine = its tickets − its expected tickets, so a customer\'s machines add up to its '
+             f'excess; where the rest of its machines are together below expected, the top 2 hold more than 100% of '
+             f'it. Pattern (the analysis\' rule): small fleet = under {small_n} machines in place during the period; '
+             f'otherwise a few machines = the top 2 hold at least {FEW_SHARE:.0%} of the excess, else spread across '
+             f'fleet.',
+             'Top category = most frequent recorded category among the customer\'s unplanned tickets. Expected '
+             'tickets allow for model and age only, not coverage, use or reporting.',
+             fleet.source('outlier_drivers', 'customer_rates', 'machine_flags')[:-1]
+             + ('; names from data/private/fx_private_customer_names.csv (gitignored).' if names is not None
+                else '.')]
+    definitions = [fleet.unplanned_definition(), fleet.expected_definition(S), fleet.consistent_definition(S)]
 
     labels = [f'{name(x)} ({m:,} machines)' for x, m in zip(c.customer, c.machines)]
     pseudo_w = LABEL_IN_PER_CHAR * max(len(f'{x} ({m:,} machines)') for x, m in zip(c.customer, c.machines))
     label_w = LABEL_IN_PER_CHAR * max(len(s) for s in labels)
     width = max(12.5, TITLE_IN_PER_CHAR * len(title) + 2 * style.MARGIN) + max(0.0, label_w - pseudo_w)
-    fig, ax = style.figure(width, FIG_H + ROW_IN * n)
+    top_band, bottom_band = bands(width, subtitle, definitions, notes)
+    fig, ax = style.figure(width, top_band + bottom_band + AXIS_IN + ROW_IN * (n + Y_HI - Y_LO))
 
     y = np.arange(n)[::-1]  # largest excess on top
     exc = c.excess.to_numpy()
@@ -219,13 +271,13 @@ def draw(S, c, small_n, path, names=None):
             ax.annotate(text, xy=(1, yi), xycoords=tr, xytext=(x_pt, 0), textcoords='offset points',
                         ha='left', va='center', fontsize=FONT, color=style.INK2)
 
-    ax.set_ylim(-0.6, n - 0.4)
+    ax.set_ylim(Y_LO, n + Y_HI)
     ax.set_xlim(0, float(ends.max()) * XPAD)
     ax.set_yticks(y)
     ax.set_yticklabels(labels, color=style.INK2)
     ax.tick_params(axis='y', length=0)
     style.style_axes(ax, grid='x', baseline='left')
-    ax.set_xlabel(f'Excess tickets (observed − expected), {fleet.period_text(S)}')
+    ax.set_xlabel(f'Excess unplanned tickets (observed − expected), {fleet.period_text(S)}')
     handles = [Patch(color=style.BLUE, linewidth=0, label='Excess on its 2 machines with the most excess'),
                Patch(color=style.GRAY_LIGHT, linewidth=0, label='Excess on the rest of its machines')]
     if neg.any():
@@ -235,35 +287,7 @@ def draw(S, c, small_n, path, names=None):
     ax.legend(handles=handles, loc='lower right', frameon=True, facecolor=style.SURFACE, edgecolor='none',
               framealpha=1, handlelength=1.4)
 
-    # Subtitle totals, recomputed from the customer and machine tables.
-    tot_t, tot_e = int(c.tickets.sum()), float(c.expected.sum())
-    tot_x, tot_2 = float(c.excess.sum()), float(c.top2_machines_excess.sum())
-    style.check('fx_12 subtitle: tickets (customer table)', tot_t, int(sum(int(t) for t in c.tickets)))
-    style.check('fx_12 subtitle: excess (customer table)', round(float(c.excess_chk.sum()), 1), round(tot_x, 1))
-    style.check('fx_12 subtitle: expected = tickets - excess', round(tot_t - float(c.excess_chk.sum()), 1),
-                round(tot_e, 1))
-    style.check('fx_12 subtitle: top-2 share of the excess (machine table)',
-                round(100 * float(c.top2_chk.sum()) / float(c.excess_chk.sum()), 1), round(100 * tot_2 / tot_x, 1))
-    subtitle = [f'Excess tickets (observed − expected) of the {n} consistent-outlier customers among the '
-                f'{F["accounts"]:,} with machines on IPA\'s installed-base list, {fleet.period_text(S)}, largest '
-                f'first: blue on its two machines with the most excess, gray on the rest. At the right: the pattern '
-                f'and the customer\'s most frequent ticket category.',
-                f'Together: {tot_t:,} tickets against {tot_e:.1f} expected; {style.pct(tot_2 / tot_x)} of the '
-                f'{tot_x:.1f} excess tickets are on their top-2 machines.']
-    if names is not None:
-        subtitle.insert(0, PRIVACY_WARNING)  # first line, so the warning is read before the chart
-    notes = [f'Excess per machine = its tickets − its expected tickets, so a customer\'s machines add up to its '
-             f'excess. Pattern (the analysis\' rule): small fleet = under {small_n} machines installed during the '
-             f'period ({S["third_party"]["machines"]} on a third-party service plan left out); otherwise a few '
-             f'machines = the top 2 hold at least {FEW_SHARE:.0%} of the excess, else spread across fleet. Where the '
-             f'rest of the machines are together below expected, the top 2 hold more than 100% of the net excess.',
-             'Top category = most frequent recorded category among the customer\'s tickets (all its tickets, '
-             'categories as recorded). Expected tickets allow for model and age only, not coverage, use or reporting.',
-             fleet.source('outlier_drivers', 'customer_rates', 'machine_flags')[:-1]
-             + ('; names from data/private/fx_private_customer_names.csv (gitignored).' if names is not None
-                else '.')]
-    style.frame(fig, title, subtitle, notes=notes,
-                definitions=[fleet.expected_definition(S), fleet.consistent_definition(S)])
+    style.frame(fig, title, subtitle, notes=notes, definitions=definitions)
     return style.save(fig, path)
 
 

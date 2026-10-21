@@ -11,7 +11,8 @@ bottom half of customers (the 422 with the fewest tickets). The customers are th
 
 Shared text lives in zac_data.py: the customer definition (CUSTOMER_DEFINITION, from the team's review of account
 names and addresses in docs/03_customer_fleet_ownership.md section 3.1), the workload note (WORKLOAD_NOTE) and the
-period (period_text). zac_02_customer_workload.py draws the same definition and note.
+period (period_text). zac_02_customer_workload.py draws the same definition and note. A second note points to fleet
+chart fx_08 (concentration against fleet size).
 
 Inputs:  zac_data.load('customer_workload')  verification/outputs/repro_sql_customer_workload.csv (customer, cases,
                                              affected_machines, share_pct; one row per customer with a ticket)
@@ -94,6 +95,8 @@ def plot(out_dir=zac_data.FIG_DIR):
         f'work, cancelled requests and duplicate cases. Customers ranked by ticket count, most first; the bottom '
         f'half (the {n_low} customers with the fewest tickets) accounts for {style.pct(low_share / 100)} of tickets.',
         notes=[zac_data.WORKLOAD_NOTE,
+               'Fleet chart fx_08 sets this concentration against what each customer\'s fleet predicts (expected '
+               'tickets for its models and ages).',
                'Source: verification/outputs/repro_sql_customer_workload.csv (Zac\'s SQL, notebook cells 17 and 18); '
                'totals from repro_sql_record_quality.csv. Customer definition: the team\'s review of account names '
                'and addresses (docs/03_customer_fleet_ownership.md, section 3.1).'],

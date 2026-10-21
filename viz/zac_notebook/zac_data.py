@@ -63,7 +63,8 @@ CUSTOMER_DEFINITION = (
     'Customer = the account name on the ticket. An account is usually a single facility (a hospital, campus or lab), '
     'not a health system: a health system with several facilities appears as several customers.')
 WORKLOAD_NOTE = ('Counts measure workload, not reliability: a customer can rank high simply because it has more '
-                 'machines installed, and the case export does not record installed machines per customer.')
+                 'machines installed. IPA\'s installed-base list now gives each customer\'s fleet: fleet charts fx_06 '
+                 '(busiest customers against expected tickets) and fx_07 (funnel) allow for it.')
 
 
 def fault_code_definition():

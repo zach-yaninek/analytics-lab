@@ -3,8 +3,9 @@
 The charts read only the outputs that verification/high_ticket_machines.py has already written:
   verification/outputs/htm_*.csv         every plotted series
   verification/outputs/htm_summary.json  definitions (thresholds) and a few simulation results with no CSV column
-The term definitions drawn on the charts (workload-outsized, chronic outlier, machine-month) are built here from
-htm_summary.json, so they always match the analysis. The look and page layout come from viz/style/ipa_style.py.
+The term definitions drawn on the charts (workload-outsized, chronic outlier) are built here from htm_summary.json,
+so they always match the analysis. The look and page layout come from viz/style/ipa_style.py. Charts 9 and 10 (and
+the machine-month definition only chart 10 drew) are retired: see viz/fleet_exposure/ fx_01, fx_02 and fx_05.
 """
 import json
 from pathlib import Path
@@ -52,14 +53,3 @@ def chronic_definition(S=None):
             f'ticketed machines, ties included) and a rate outlier (more tickets from {period_text(S)} than its '
             f'machine type\'s rate × months active predicts, small types pooled; Poisson test, Benjamini-Hochberg '
             f'q < {d["q_cut"]:g}). A screening flag for follow-up, not proof of a defect.')
-
-
-def machine_month_definition(S=None):
-    S = S or summary()
-    lo, hi = (pd.Timestamp(x) for x in S['definitions']['period'])
-    n_months = (hi.year - lo.year) * 12 + hi.month - lo.month + 1
-    return (f'Machine-month = one month of a machine in service. Each telemetry device counts the months of '
-            f'{period_text(S)} that fall within its first-to-last-transaction span, both end months included and quiet '
-            f'months in between too, so a machine active throughout adds {n_months}. Devices with no transaction in '
-            f'that window count 0 months but stay in the device counts and rates. Devices on the shared internal host '
-            f'or with no host are excluded.')

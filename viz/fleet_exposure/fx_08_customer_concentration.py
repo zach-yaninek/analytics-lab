@@ -15,8 +15,9 @@ explain. A labelled hairline marks the top TOP% of customers. The title compares
 median of the Poisson draws (what fleets plus chance predict for a ranking of observed counts), not with the gray
 curve: ranking noisy counts always adds some concentration, so the gray curve alone would overstate the gap. The
 labels give the gray share and the band there too.
-The subtitle adds the customers with no unplanned ticket (where the blue curve reaches 100%) and their expected
-tickets. No customer is named, so there is no real-name variant.
+The subtitle adds the customers with no unplanned ticket (where the blue curve reaches 100%), how many customers
+fleets plus chance would leave with none (the sum of exp(-expected) over customers), and the zero-ticket customers'
+expected tickets. No customer is named, so there is no real-name variant.
 
 Each curve ranks customers by its own count, so the top 10% on the blue curve and on the gray curve are not
 necessarily the same customers; the comparison is between distributions, not of a customer with its own fleet
@@ -109,6 +110,13 @@ def checks(S, L, c):
                     and np.all(L.ticket_share_obs[grid < start - 1e-12] < 1)))
     style.check('fx_08 zero-ticket customers\' expected = total - expected of customers with tickets',
                 zero_expected, expected - float(cc[cc.tickets > 0].expected.sum()), 1e-6)
+    # How many customers fleets plus chance leave at zero: sum of P(0) = exp(-E), against the same Poisson draws.
+    zero_chance = float(np.exp(-cc.expected.to_numpy()).sum())
+    sim_zeros = (sims == 0).sum(axis=1)
+    style.check('fx_08 customers with no ticket under chance: exp(-E) sum = mean of the draws', zero_chance,
+                float(sim_zeros.mean()), 1.5)
+    style.check('fx_08 observed zero-ticket customers above the 97.5th percentile of the draws', 1,
+                int(n_zero > np.percentile(sim_zeros, 97.5)))
 
     # Above the band: the grid points where the blue curve lies above the shaded band (customer shares > 0).
     inner = (grid > 0) & (L.ticket_share_obs < 1 - 1e-12)
@@ -117,7 +125,8 @@ def checks(S, L, c):
     return dict(n=n, tickets=tickets, obs=float(row.ticket_share_obs), exp=float(row.expected_share),
                 lo=float(row.ticket_share_null_p2_5), mid=float(row.ticket_share_null_median),
                 hi=float(row.ticket_share_null_p97_5), n_zero=n_zero,
-                zero_share=n_zero / n, zero_expected=zero_expected, start=start,
+                zero_share=n_zero / n, zero_expected=zero_expected, zero_chance=zero_chance,
+                zero_chance_sim=float(sim_zeros.mean()), start=start,
                 obs_re=float(top_share(cc.tickets, [TOP])[0]), exp_re=float(top_share(cc.expected, [TOP])[0]),
                 lo_re=float(lo), mid_re=float(mid), hi_re=float(hi))
 
@@ -201,8 +210,11 @@ def plot(out_dir=fleet.FIG_DIR):
                 f'Shaded, fleets plus chance: how concentrated tickets would look if each customer\'s tickets varied '
                 f'only by chance around its expected count.',
                 f'The blue curve reaches 100% at {style.pct(v["start"], 0)}: the other {v["n_zero"]} customers '
-                f'({style.pct(v["zero_share"], 0)}) had no unplanned ticket, against '
-                f'{v["zero_expected"]:,.0f} expected.']
+                f'({style.pct(v["zero_share"], 0)}) had no unplanned ticket, against {v["zero_expected"]:,.0f} '
+                f'expected tickets.',
+                f'Fleets plus chance would leave about {v["zero_chance"]:,.0f} customers with none.']
+    style.check('fx_08 subtitle: customers left at zero by chance as drawn', round(v['zero_chance']),
+                v['zero_chance_sim'], 1.5)
     notes = [f'Each curve ranks customers by its own count, so the top {x_top:g}% by tickets and by expected '
              f'tickets are not all the same customers. Expected tickets allow for fleet size, model and age, not '
              f'for service coverage or how a site reports problems; charts fx_06 and fx_07 compare customers one by '

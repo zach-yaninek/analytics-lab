@@ -23,9 +23,10 @@ confirm that no dot is hidden under the legend or the quadrant labels.
 
 The title states the split-half rank correlation (Spearman) against the median of the analysis' permutation null
 (second-half results shuffled among customers in the same tenth of second-half expected tickets, so differences
-between customers are kept but persistence is not); the subtitle adds the null's 97.5th percentile and how many of
-the customers above 1 in the first half are above 1 again. A footer note compares the customers above their
-expected tickets beyond chance in both halves with the permutation-null median.
+between customers are kept but persistence is not); the subtitle adds the null's 97.5th percentile (drawn as the
+next hundredth above it, so "97.5% below" holds after rounding) and the share above 1 in the second half among the
+customers above 1 in the first half against those below 1 (the quadrant counts). A footer note compares the
+customers above their expected tickets beyond chance in both halves with the permutation-null median.
 
 Two versions are drawn from the same data:
   pseudonymous (Customer NNN), always;
@@ -34,14 +35,16 @@ Two versions are drawn from the same data:
 
 Inputs (computed by verification/fleet_exposure.py; nothing is refitted here, the numbers are only re-derived for
 the checks):
-  verification/outputs/fleet/fx_outlier_customers.csv    one row per customer with expected tickets >= 1 (plus the
-                                                         flagged and low ones): customer, machines, O_h1, E_h1,
+  verification/outputs/fleet/fx_outlier_customers.csv    one row per customer with expected tickets >= 1 (plus any
+                                                         beyond the 99.8% funnel limit or consistently low):
+                                                         customer, machines, O_h1, E_h1,
                                                          STR_h1, p_h1, O_h2, E_h2, STR_h2, p_h2, variants_flagged,
                                                          consistent_outlier
   verification/outputs/fleet/fx_outlier_persistence.csv  persistence statistics against their nulls: rows
                                                          spearman_STR_h1_h2 and significant_in_both_halves (units,
                                                          observed, perm_null_median, perm_null_p2_5,
-                                                         perm_null_p97_5)
+                                                         perm_null_p97_5); perm_p_value (to check the number of
+                                                         shuffles)
   verification/outputs/fleet/fx_summary.json             period, split, n_null, min_variants, consistent-outlier
                                                          count and the same persistence statistics (for checks)
   data/private/fx_private_customer_names.csv             customer -> real_account_name (real-name version only;
@@ -180,11 +183,25 @@ def checks(S, oc, pe):
               'both': int((raw_sig & ~raw.consistent_outlier).sum()),
               'other': int((~raw_sig & ~raw.consistent_outlier).sum())}
     style.check('fx_10 legend classes cover every customer plotted', len(c), sum(legend.values()))
+    # Subtitle shares: above 1 in the second half, among those above 1 and those below 1 in the first.
+    share_hi, share_lo = q['both'] / int(a1.sum()), q['second'] / int((~a1).sum())
+    style.check('fx_10 share above 1 again, from the CSV STR columns', share_hi, (r1 & r2).sum() / r1.sum(), 1e-12)
+    style.check('fx_10 share above 1 after below 1, from the CSV STR columns', share_lo,
+                (~r1 & r2).sum() / (~r1).sum(), 1e-12)
+    zero_both = int((z1 & z2).sum())
+    style.check('fx_10 no tickets in either half, from the CSV STR columns', zero_both,
+                int(((raw.STR_h1 == 0) & (raw.STR_h2 == 0)).sum()))
+    not_shown = int(cons.sum() - c.cons.sum())
+    style.check('fx_10 consistent outliers not drawn = those under MIN_E_HALF expected in a half', not_shown,
+                int((oc.consistent_outlier & ~((oc.E_h1 >= MIN_E_HALF) & (oc.E_h2 >= MIN_E_HALF))).sum()))
+    # Shuffles: every permutation p-value is (count + 1) / (n_null + 1), the smallest 1 / (n_null + 1).
+    style.check('fx_10 shuffles in the summary = 1 / smallest permutation p-value - 1', S['n_null'],
+                1 / pe.perm_p_value.min() - 1, 1e-6)
     return c, {'legend': legend, 'rho': rho, 'null_med': float(sp.perm_null_median),
                'null_hi': float(sp.perm_null_p97_5), 'sig': int(sig.sum()), 'sig_med': float(sb.perm_null_median),
                'sig_lo': float(sb.perm_null_p2_5), 'sig_hi': float(sb.perm_null_p97_5), 'q': q,
-               'above1': int(a1.sum()), 'above2': int(a2.sum()), 'zero1': int(z1.sum()), 'zero2': int(z2.sum()),
-               'zero_both': int((z1 & z2).sum()), 'cons_all': int(cons.sum()), 'cons_shown': int(c.cons.sum())}
+               'above1': int(a1.sum()), 'below1': int((~a1).sum()), 'share_hi': share_hi, 'share_lo': share_lo,
+               'zero1': int(z1.sum()), 'zero2': int(z2.sum()), 'zero_both': zero_both, 'not_shown': not_shown}
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -400,6 +417,12 @@ def num(x):
     return f'{x:.2f}'
 
 
+def num_above(x):
+    """An upper bound drawn as 'below ...': the next hundredth strictly above x, so the claim holds after rounding
+    (0.1468 -> '0.15', 0.15 -> '0.16')."""
+    return f'{(math.floor(x * 100 + 1e-9) + 1) / 100:.2f}'
+
+
 def count(x):
     """A null-distribution count: whole numbers without decimals."""
     return f'{x:.0f}' if float(x).is_integer() else f'{x:.1f}'
@@ -429,22 +452,25 @@ def draw(S, c, k, path, names=None):
              f'{num(k["null_med"])} by chance' if persists else
              f'Customers do not clearly stay high: rank correlation {num(k["rho"])} between halves, '
              f'{num(k["null_med"])} by chance')
-    share_again = k['q']['both'] / k['above1']
+    bound = num_above(k['null_hi'])
+    style.check('fx_10 "97.5% below" bound is above the 97.5th percentile, by under 0.01', 1,
+                int(0 < float(bound) - k['null_hi'] <= 0.01 + 1e-9))
     subtitle = [f'Standardised ticket ratio (STR) of each customer in the first half against the second half of '
                 f'{fleet.period_text(S)}: the {n} customers with at least {MIN_E_HALF} expected tickets in each half, '
                 f'one dot each. Of the {k["above1"]} above 1 in the first half, {k["q"]["both"]} '
-                f'({share_again:.0%}) are above 1 again in the second, against {k["above2"]} of all {n} '
-                f'({k["above2"] / n:.0%}). Chance: in {S["n_null"]:,} shuffles of the second halves, 97.5% give a '
-                f'rank correlation below {num(k["null_hi"])}.']
+                f'({k["share_hi"]:.0%}) are above 1 again in the second; of the {k["below1"]} below 1, '
+                f'{k["q"]["second"]} ({k["share_lo"]:.0%}). Chance: in {S["n_null"]:,} shuffles of the second '
+                f'halves, 97.5% give a rank correlation below {bound}.']
     if names is not None:
         subtitle.insert(0, PRIVACY_WARNING)  # first line, so the warning is read before the chart
-    not_shown = k['cons_all'] - k['cons_shown']
+    not_shown = k['not_shown']
+    not_shown_txt = ('' if not not_shown else
+                     f' {not_shown} more consistent outlier{"s have" if not_shown > 1 else " has"} under '
+                     f'{MIN_E_HALF} expected tickets in a half and {"are" if not_shown > 1 else "is"} not drawn.')
     notes = [f'Log axes, because these are ratios (0.5 and 2 sit the same distance from 1). Customers with no tickets '
              f'in a half (STR 0, which a log axis cannot show) are drawn in the shaded strips at 0: {k["zero1"]} in '
              f'the first half, {k["zero2"]} in the second. Consistent outliers lie above 1 in both halves by '
-             f'definition; the rank correlation over all {n} customers is the test of persistence. '
-             f'{not_shown} more consistent outliers have under {MIN_E_HALF} expected tickets in a half and are not '
-             f'drawn.',
+             f'definition; the rank correlation over all {n} customers is the test of persistence.' + not_shown_txt,
              f'Chance = second-half results shuffled {S["n_null"]:,} times among customers in the same tenth of '
              f'second-half expected tickets: differences between customers kept, persistence removed. {k["sig"]} '
              f'customers are above their expected tickets beyond chance (Poisson p < {P_CUT:g}) in both halves, '
@@ -493,7 +519,7 @@ def draw(S, c, k, path, names=None):
     # Dots: gray, then dark gray, then blue on top.
     styles = (('other', style.GRAY_LIGHT, DOT_GRAY, 'Other customers'),
               ('both', style.GRAY, DOT_COLOUR,
-               f'Above expected beyond chance in both halves (Poisson p < {P_CUT:g}), not consistent'),
+               f'Above expected tickets beyond chance in both halves (Poisson p < {P_CUT:g}), not consistent'),
               ('consistent', style.BLUE, DOT_COLOUR, 'Consistent outlier'))
     for z, (key, colour, size, label) in enumerate(styles):
         sel = (c.cls == key).to_numpy()

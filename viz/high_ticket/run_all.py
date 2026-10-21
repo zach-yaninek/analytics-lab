@@ -4,6 +4,9 @@
 Run:  cd /home/user/analytics-lab && python3 -I viz/high_ticket/run_all.py
       (verification/high_ticket_machines.py calls main() at the end of a normal run.)
 Each chart script also runs on its own, e.g.  python3 -I viz/high_ticket/htm_03_observed_vs_expected.py
+Charts 9 (raw ticket counts by model and type) and 10 (rates per 100 machine-months by telemetry type) are retired:
+see viz/fleet_exposure/ fx_01 (ticket share against installed base), fx_02 (rate by model) and fx_05 (rate by
+telemetry type).
 
 Writes (150 dpi PNG):
   viz/figures/htm_NN_<name>.png   pseudonymous (Customer NNN, M#####, models, categories)
@@ -29,8 +32,7 @@ import ipa_style as style  # noqa: E402
 
 CHARTS = ['htm_01_concentration_curve', 'htm_02_tickets_per_machine', 'htm_03_observed_vs_expected',
           'htm_04_model_mix', 'htm_05_episode_followups', 'htm_06_pre_ticket',
-          'htm_07_chronic_outliers_by_customer', 'htm_08_chronic_categories_heatmap', 'htm_09_tickets_by_type',
-          'htm_10_ticket_rate_by_machine_type']
+          'htm_07_chronic_outliers_by_customer', 'htm_08_chronic_categories_heatmap']
 
 
 def _flat(text):
