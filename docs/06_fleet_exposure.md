@@ -148,13 +148,52 @@ during the period are missing.
   - more than expected beyond chance (Poisson test, Benjamini–Hochberg q < 0.05).
 - **Outside the funnel:** above the 99.8% limit of an overdispersion-adjusted funnel (Spiegelhalter 2005). Such a
   customer is unusual even among customers, not just beyond chance.
+- **Halves of the period:** a split in time, not a random split of the data.
+  - **The split:** 1 August 2025 to 14 February 2026, and 15 February to 31 August 2026. That is about 6.5 months
+    each, with 3,334 and 3,416 unplanned tickets.
+  - **How each half is counted:** each machine counts only the installed months inside a half. Expected tickets are
+    refitted within each half, with each machine's age band taken at the midpoint of its exposure in that half.
+    Fleet-wide differences between the halves, such as season, therefore cancel out. Only a customer's or machine's
+    standing relative to the fleet is compared.
+  - **What the halves test:** whether customers and machines that run high in one half also run high in the other.
+    - Rank correlation: 0.46, against 0.04 when the halves are shuffled between customers.
+    - Customers picked out on one half were significant in the other 43% and 38% of the time, against 17% and 13%
+      after shuffling.
+  - **Caveats:**
+    - each half has about half the data, and 8 of the 18 consistent outliers have under 3 expected tickets in a half;
+    - the halves cover different seasons;
+    - most tickets on machines no longer listed fall in the first half (302 of 433).
+- **The 12 method variants:** every combination of three choices (3 × 2 × 2), each with the same flag rule.
+  - **Adjustment:** model only; model + machine age (the main analysis); or model + age + service status. Checks that
+    a flag does not depend on one adjustment, and whether a contract or warranty mix explains it.
+  - **Count:** tickets, or 7-day episodes (a ticket within 7 days of the previous one on the same machine is merged
+    into it). A burst of follow-ups or rollovers on one problem then counts once.
+  - **Tickets included:** all unplanned, or without the monitoring-template ("Monitoring – Daily/Poll") and No
+    Trouble Found tickets. Monitoring tickets may be raised by IPA's own telemetry alerts, and No Trouble Found
+    tickets are not faults.
+  - **Flags per variant** (`fx_outlier_variants.csv`):
+
+    | Adjustment | Count | Tickets included | Total counted | Customers flagged | Machines flagged |
+    |---|---|---|---|---|---|
+    | Model | Tickets | All unplanned | 6,750 | 79 | 151 |
+    | Model | Tickets | Without monitoring and NTF | 6,138 | 66 | 123 |
+    | Model | Episodes | All unplanned | 6,135 | 57 | 84 |
+    | Model | Episodes | Without monitoring and NTF | 5,677 | 48 | 68 |
+    | **Model + age (main)** | **Tickets** | **All unplanned** | **6,750** | **63** | **128** |
+    | Model + age | Tickets | Without monitoring and NTF | 6,138 | 57 | 91 |
+    | Model + age | Episodes | All unplanned | 6,135 | 49 | 69 |
+    | Model + age | Episodes | Without monitoring and NTF | 5,677 | 38 | 55 |
+    | Model + age + coverage | Tickets | All unplanned | 6,750 | 66 | 125 |
+    | Model + age + coverage | Tickets | Without monitoring and NTF | 6,138 | 54 | 93 |
+    | Model + age + coverage | Episodes | All unplanned | 6,135 | 41 | 67 |
+    | Model + age + coverage | Episodes | Without monitoring and NTF | 5,677 | 29 | 53 |
+
+    In the episode variants the 5-or-more rule applies to episodes.
 - **Consistent outlier:** both of these hold:
-  - flagged in at least 10 of 12 method variants. The variants are:
-    - three adjustments (model; model + age; model + age + coverage);
-    - × tickets or 7-day episodes;
-    - × with or without monitoring-template and No Trouble Found tickets;
-  - above expected beyond chance in each half of the period (1 August 2025 to 14 February 2026; 15 February to 31
-    August 2026; Poisson p < 0.05 in each).
+  - flagged in at least 10 of the 12 method variants;
+  - above expected beyond chance in each half of the period (Poisson p < 0.05 in each).
+
+  That gives 18 customers and 36 machines (§5).
 - **Consistently low:** the mirror image of a consistent outlier.
 - **Intervals:** 95%, from a cluster bootstrap that resamples accounts, because tickets cluster within a customer.
   - For a group held by fewer than 10 accounts, or with no tickets, the bootstrap interval is degenerate. The
