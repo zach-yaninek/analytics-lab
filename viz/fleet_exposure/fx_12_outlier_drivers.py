@@ -256,7 +256,9 @@ def draw(S, c, small_n, path, names=None):
     # Two text columns at the right of the plot area (axes x, data y): pattern, and top category with its share.
     tr = blended_transform_factory(ax.transAxes, ax.transData)
     pat_text = [p[0].upper() + p[1:] for p in c.pattern]
-    cat_text = [f'{t} ({s:.0%})' for t, s in zip(c.top_category, c.top_category_share)]
+    # A top category tied with others is the alphabetically first of them (fleet_exposure.py); say so.
+    cat_text = [f'{t} ({s:.0%}{f", tied with {k - 1} more" if k > 1 else ""})'
+                for t, s, k in zip(c.top_category, c.top_category_share, c.top_category_ties)]
     style.check('fx_12 drawn top-category shares (whole %) = count / tickets', 0,
                 float(np.abs(np.round(100 * c.top_category_share.to_numpy()) -
                              np.round(100 * c.cat_count.to_numpy() / c.tickets.to_numpy())).max()))

@@ -226,6 +226,7 @@
     "short_span_flagged_now": 16
   },
   "go_live_sensitivity": {
+    "scope": "go-live date for exposure only; age bands from the install date",
     "fleet_rate_per_100": 6.173259840257876,
     "months": 109342.55441478439,
     "flagged_998": 2,

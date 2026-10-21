@@ -27,7 +27,7 @@ script.
 >   - 30 are also *consistent outliers*: flagged under at least 10 of 12 method variants and above expected in
 >     both halves of the period.
 >   - On the list as a whole, 128 machines are flagged and 36 are consistent outliers.
->   - A negative-binomial check still flags none (`fx_summary.json` machines, docs05_overlap).
+>   - A negative-binomial check now flags none (the 14 October telemetry-based check left 2) (`fx_summary.json` machines, docs05_overlap).
 > - **The 22 machines with under 12 months of exposure:**
 >   - 19 are on the list. 7 were installed during the period, so their short exposure was real; 12 were installed
 >     earlier and had quiet months.

@@ -1,7 +1,7 @@
 # Ticket rates adjusted for fleet exposure
 
-*21 October 2026. Script: `verification/fleet_exposure.py`. It runs locally in about 30 s from the case export and
-IPA's installed-base list, with no database, and has 23 self-checks. Every number below is in
+*21 October 2026. Script: `verification/fleet_exposure.py`. It runs locally in about 40 s from the case export and
+IPA's installed-base list, with no database, and has 27 self-checks. Every number below is in
 `verification/outputs/fleet/fx_summary.json` or an `fx_*.csv`. Figures: `viz/figures/fx_*.png`, drawn by one plain
 matplotlib script per chart in `viz/fleet_exposure/`. They replace high_ticket charts 9 and 10, which are
 retired.*
@@ -42,7 +42,7 @@ changes, all applied here:
 3. **Age matters as much as model.**
    - Machines in their first four years generate about 8 tickets per 100 machine-months.
    - Machines over 10 years old generate 2.5.
-   - Service status matters too: Under Warranty 10.5, No Coverage 4.4, Not Serviceable 1.5. But that is a
+   - Service status matters too: Under Warranty 10.5, No Coverage 4.3, Not Serviceable 1.5. But that is a
      snapshot from October 2026.
 4. **Customer differences are real and persistent.** We compare each customer with what its own machines would
    generate at fleet rates for their model and age.
@@ -67,7 +67,7 @@ changes, all applied here:
 
 ## 1. The data
 **IPA's active equipment list (19 October 2026).**
-- **Contents:** 9,294 machines at 1,066 accounts; 34 models in 5 product families.
+- **Contents:** 9,294 machines at 1,066 accounts; 34 models in 4 product families (plus one machine labelled "scrubEx 1.0").
 - **Fields used:** serial, account, model, product family, service status, service plan, ownership, country,
   install date and go-live date.
 - **Fields dropped when loaded** (`common.load_equipment`), so they never reach an analysis table:
@@ -93,23 +93,25 @@ during the period are missing.
   August 2026 (`fx_unlisted_by_month.csv`). Those tickets drop out with their unknown exposure.
 - **Older models lose most:**
   - 10–33% of the tickets of several older models are on unlisted serials;
-  - the 2.0 models lose 1.5% or less (`fx_unlisted_by_model.csv`).
-- **Bound:** adding the unlisted tickets back with the least exposure they could have had (from the period start
-  to their last ticket) moves some older models' rates up, never the 2.0 models' by more than 0.1. For example:
-  - alEx LC-D: 8.0 → at most 9.2;
-  - LVD-Remote: 5.7 → at most 6.3.
+  - the scrubEx 2.0 models lose 1.5% or less, and alEx SD 2.0 2% (`fx_unlisted_by_model.csv`).
+- **Bound:** adding the unlisted tickets back with the least exposure they could have had (from their first to
+  their last ticket in the period) gives an upper bound for each model's rate. It moves some older models' rates up
+  noticeably, the scrubEx 2.0 models' by 0.1 at most and alEx SD 2.0's by 0.25. For example:
+  - alEx LC-D: 8.0 → at most 9.4;
+  - LVD-Remote: 5.7 → at most 6.4.
 - **Effect on comparisons:** older models are understated relative to newer ones. The bound is in the
-  `rate_with_unlisted_bound` column of `fx_model_rates.csv`.
+  `rate_with_unlisted_max` column of `fx_model_rates.csv`.
 
 **Third-party service plan left out.** All 239 machines on the Vogeltronix service plan sit at one account.
-- **Evidence:** they had 3 unplanned tickets in 2,998 machine-months, 0.1 per 100 against 6.0 for every other plan
+- **Evidence:** they had 3 unplanned tickets in 2,998 machine-months, 0.1 per 100 against 6.2 for all other plans together
   (Ricoh 6.2, Bell and Howell 6.0).
 - **Interpretation:** their service work almost certainly does not reach this case export, so they are not at risk
   of an IPA ticket. They are left out of every rate and comparison.
 - **Sensitivity:** with them included, the fleet rate is 6.0 and the customer flags change little (70 instead of
   63).
-- **Why it matters:** left in, this one account would have supplied half of the customer-dispersion estimate,
-  lowered several models' rates and shown up as a "consistently low" customer.
+- **Why it matters:** left in, this one account would have supplied about 45% of the gamma-Poisson
+  customer-dispersion estimate (0.52 with it, 0.30 without), lowered several models' rates and shown up as a
+  "consistently low" customer.
 
 **Population.** 9,055 machines at 1,065 accounts. 109 of them were installed after the period and count 0 months.
 
@@ -118,7 +120,8 @@ during the period are missing.
   1 August 2025 if earlier) to 31 August 2026.
   - Four machines had a ticket before their install date (7 tickets). The list's date is the install at the current
     account, so their exposure starts at that ticket.
-  - Go-live dates instead of install dates give 6.17 instead of 6.16.
+  - Go-live dates instead of install dates (for exposure; age bands stay on install dates) give 6.17 instead of
+    6.16.
 - **Unplanned tickets:** Zac's definition. Every ticket except planned work, cancelled requests and duplicates. No
   Trouble Found stays in.
 - **Expected tickets:** what a group's machines would generate at fleet rates for their model and age.
@@ -146,6 +149,8 @@ during the period are missing.
   - For a group held by fewer than 10 accounts, or with no tickets, the bootstrap interval is degenerate. The
     reported interval is then the wider of the bootstrap and the exact Poisson (Byar) interval.
   - A group held by one account is "not estimable" against the fleet.
+  - Age-standardised ratios re-fit the joint model + age fit in every resample, so their intervals include the
+    uncertainty of the age factors.
 
 **Three fleet rates.**
 
@@ -158,7 +163,7 @@ during the period are missing.
 The installed rate is the lowest because its denominator counts every installed month. That includes:
 - machines with no telemetry;
 - months when a machine transacts nothing;
-- the 5,598 machines that never had a ticket.
+- the 5,598 machines with no unplanned ticket.
 
 The telemetry-span figure here (6.98) counts only tickets inside each device's active span. docs/05's 7.5 also
 counted 227 tickets outside the span and tickets on devices with no exposure.
@@ -169,16 +174,16 @@ extremes. "Age-standardised" allows for each model's age mix.
 
 | Model | Machines | Tickets | Rate per 100 | 95% interval | Age-standardised ratio |
 |---|---|---|---|---|---|
-| LVD-Remote-2.0 | 1,452 | 1,381 | 8.0 | 7.3–8.9 | 1.16 (1.05–1.29) |
-| LVRR-WP-2.0 | 1,305 | 1,193 | 7.7 | 6.9–8.6 | 1.12 (1.00–1.25) |
-| MV-2.0 | 1,151 | 883 | 6.4 | 5.7–7.2 | 0.93 (0.83–1.04) |
-| LVD-Remote | 832 | 615 | 5.7 | 4.9–6.4 | 1.14 (0.99–1.29) |
-| LVRR-WP | 873 | 495 | 4.4 | 3.7–5.1 | 0.84 (0.71–0.98) |
+| LVD-Remote-2.0 | 1,452 | 1,381 | 8.0 | 7.3–8.9 | 1.16 (1.05–1.28) |
+| LVRR-WP-2.0 | 1,305 | 1,193 | 7.7 | 6.9–8.6 | 1.12 (1.01–1.25) |
+| MV-2.0 | 1,151 | 883 | 6.4 | 5.7–7.2 | 0.93 (0.84–1.04) |
+| LVD-Remote | 832 | 615 | 5.7 | 4.9–6.4 | 1.14 (0.97–1.36) |
+| LVRR-WP | 873 | 495 | 4.4 | 3.7–5.1 | 0.84 (0.69–1.01) |
 | alEx LC-D | 551 | 466 | 8.0 | 6.3–9.9 | 1.05 (0.83–1.32) |
-| MV | 602 | 380 | 4.9 | 3.9–5.9 | 1.01 (0.81–1.21) |
-| alEx SD 2.0 | 98 | 150 | 12.9 | 9.4–16.9 | 1.82 (1.33–2.36) |
-| scrubBank 480 | 58 | 122 | 16.4 | 11.3–22.5 | 2.58 (1.75–3.70) |
-| A-LC | 345 | 39 | 0.9 | 0.4–1.4 | 0.16 (0.07–0.25) |
+| MV | 602 | 380 | 4.9 | 3.9–5.9 | 1.01 (0.80–1.24) |
+| alEx SD 2.0 | 98 | 150 | 12.9 | 9.4–16.9 | 1.82 (1.32–2.37) |
+| scrubBank 480 | 58 | 122 | 16.4 | 11.3–22.5 | 2.58 (1.75–3.79) |
+| A-LC | 345 | 39 | 0.9 | 0.4–1.4 | 0.16 (0.07–0.26) |
 | A-MC | 112 | 3 | 0.2 | 0.0–0.6 | 0.04 (0.00–0.11) |
 
 **What the model table shows:**
@@ -208,7 +213,7 @@ extremes. "Age-standardised" allows for each model's age mix.
 |---|---|
 | Under Warranty | 10.5 |
 | Service Contract | 7.5 |
-| No Coverage | 4.4 |
+| No Coverage | 4.3 |
 | Not Serviceable | 1.5 |
 
 - **Snapshot caveat:** the status is the one on the October 2026 list, applied to the whole period. Warranty
@@ -225,7 +230,7 @@ extremes. "Age-standardised" allows for each model's age mix.
 - **Above the telemetry fleet's 7.0:**
   - scrubex2.0-2 7.9 and scrubex2.0-3 7.9, the types of LVD-Remote-2.0 and LVRR-WP-2.0;
   - sbsx-51 20.1.
-- **Below it:** scrubex-3 4.3 and scrubex-4 4.8.
+- **Below it:** scrubex-5 4.0, scrubex-3 4.3 and scrubex-4 4.8.
 
 ## 4. Customers
 **The busiest customers against their fleets** (`fx_customer_rates.csv`; chart `fx_06`).
@@ -275,7 +280,7 @@ extremes. "Age-standardised" allows for each model's age mix.
 **Customers** (`fx_outlier_customers.csv`, `fx_outlier_drivers.csv`; chart `fx_12`).
 - 32 customers are flagged in at least 10 of the 12 variants. 18 of them are also above expected in both halves:
   the **consistent outliers**.
-- Together they have 737 unplanned tickets against 318 expected, with STRs from 1.9 to 5.2 (median 3.0).
+- Together they have 737 unplanned tickets against 318 expected, with STRs from 1.8 to 5.2 (median 3.0).
 - **Fleet size and spread:**
   - 9 have fewer than 10 machines. A few machines can drive those, so a field check should look at the machines
     first.
@@ -283,7 +288,8 @@ extremes. "Age-standardised" allows for each model's age mix.
     it.
   - Those 6 are Customers 056, 171, 363, 479, 529 and 641. A spread-out excess points to the site (usage,
     environment, how readily staff call), not to a bad unit.
-- **Top categories:** Deposit Door at 7 customers, Computer Board at 4, Curtain at 4.
+- **Top categories:** Deposit Door at 7 customers, Computer Board at 4 (at one of them tied with two other
+  categories), Curtain at 4.
 - **Funnel position:** only one is outside the overdispersion-adjusted 99.8% funnel limit, and 7 are inside its
   95% limit. Each is "persistently above the fleet's rate for the same machines", a screening list for IPA's
   field check, not a verdict.
@@ -295,7 +301,8 @@ extremes. "Age-standardised" allows for each model's age mix.
   - 128 listed machines are flagged on installed exposure (953 tickets);
   - 58 are flagged in at least 10 of 12 variants;
   - 36 are consistent outliers, at 31 customers (14 of them at consistent-outlier customers).
-  - As in docs/05, a negative-binomial check, which allows for the spread between machines, flags none. These are
+  - A negative-binomial check, which allows for the spread between machines, now flags none (docs/05's
+    telemetry-based check left 2). These are
     machines high within a heterogeneous fleet, not a separate population.
 - **Persistence:** machines with 3 or more tickets in the first half had 2.6 times their expected tickets in the
   second half. The two nulls give:
@@ -312,8 +319,8 @@ extremes. "Age-standardised" allows for each model's age mix.
 **Models** (`fx_outlier_models.csv`; chart `fx_09`).
 - On age-standardised ratios, scrubBank 480 is above the fleet in both halves (2.65 and 2.56).
 - A-LC and A-MC are below in both.
-- LVD-Remote-2.0 is above on the full period (1.16, 1.05–1.29) and in the first half. In the second half it is
-  1.13 with a lower bound of 0.99. alEx SD 2.0 is the mirror image.
+- LVD-Remote-2.0 is above on the full period (1.16, 1.05–1.28) and in the first half. In the second half it is
+  1.13 with a lower bound just under 1 (0.995). alEx SD 2.0 is the mirror image.
 
 ## 6. Limits
 - **Machines missing from the list.** Removed machines are missing, so older models are understated (section 1).

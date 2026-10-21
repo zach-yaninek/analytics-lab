@@ -21,7 +21,8 @@ Definitions
      Each ticket is attributed to the machine's account ON THE LIST (customer), so numerator and denominator use
      the same account. The list holds only machines active on 2026-10-19: tickets on serials that are not listed
      (removed or replaced machines) drop out with their unknown exposure; fx_unlisted_by_model.csv and the
-     rate_with_unlisted_bound column bound the effect.
+     rate_with_unlisted_max column (unlisted tickets put back with their least possible exposure, first to last
+     ticket) bound the effect.
   F2 Installed machine-months. Exposure runs from max(2025-08-01, install date) to 2026-09-01 (exclusive), in months
      of 365.25/12 days. If a machine has a ticket in the period before its install date (4 machines), exposure starts
      on that ticket's date: the list's install date is the install at the current account. Machines installed after
@@ -231,6 +232,21 @@ def ipf(df, count, factors, months='months', iters=500, tol=1e-9):
         if worst < tol:
             break
     return e.to_numpy(), mult, base
+
+
+def age_factors_batch(t, mo, iters=300):
+    """Age multipliers of the model + age main-effects fit for a batch of (group x age) ticket and month tables
+    (shape B x G x A), by the same proportional fitting as ipf(); scale is arbitrary."""
+    e = mo * (t.sum((1, 2)) / mo.sum((1, 2)))[:, None, None]
+    cm = np.ones((t.shape[0], t.shape[2]))
+    with np.errstate(invalid='ignore', divide='ignore'):
+        for _ in range(iters):
+            r = np.where(e.sum(2) > 0, t.sum(2) / e.sum(2), 0.0)
+            e = e * r[:, :, None]
+            c = np.where(e.sum(1) > 0, t.sum(1) / e.sum(1), 0.0)
+            e = e * c[:, None, :]
+            cm = cm * c
+    return cm
 
 
 def ipf_expected(df, count, factors, months='months'):
@@ -484,9 +500,32 @@ def age_standardised(m, by, W, clusters, tickets='tickets', months='months', age
     e_age = d[months] * base * d[age].map(mult[age]).astype(float).fillna(0.0)
     d = d.assign(_e=e_age * d[tickets].sum() / e_age.sum())
     levels, (T, E) = _cluster_sums(d, by, [tickets, '_e'], clusters)
-    with np.errstate(invalid='ignore', divide='ignore'):
-        rb = (W @ T.T) / (W @ E.T)
-    lo, hi = pct_ci(rb)
+    # Bootstrap: re-fit the joint model + age fit in every resample (on the resampled group x age tables), so the
+    # interval carries the uncertainty of the age factors and of the fleet level as well as of the group's own count.
+    ci = d.customer.map({a: i for i, a in enumerate(clusters)}).to_numpy()
+    groups = sorted(d.rate_group.unique())
+    gi = d.rate_group.map({g: i for i, g in enumerate(groups)}).to_numpy()
+    ai = d[age].map({a: i for i, a in enumerate(AGE_LABELS)}).astype(int).to_numpy()
+    li = d[by].map({v: i for i, v in enumerate(levels)}).astype(int).to_numpy()
+    C, G, A, L = len(clusters), len(groups), len(AGE_LABELS), len(levels)
+    tg, mg, ml = np.zeros((C, G, A)), np.zeros((C, G, A)), np.zeros((C, L, A))
+    np.add.at(tg, (ci, gi, ai), d[tickets].to_numpy(float))
+    np.add.at(mg, (ci, gi, ai), d[months].to_numpy(float))
+    np.add.at(ml, (ci, li, ai), d[months].to_numpy(float))
+
+    def ratios(w):
+        t_ = (w @ tg.reshape(C, -1)).reshape(-1, G, A)
+        m_ = (w @ mg.reshape(C, -1)).reshape(-1, G, A)
+        l_ = (w @ ml.reshape(C, -1)).reshape(-1, L, A)
+        o_ = w @ T.T
+        cm = age_factors_batch(t_, m_)
+        with np.errstate(invalid='ignore', divide='ignore'):
+            return o_ * (m_.sum(1) * cm).sum(1)[:, None] / (t_.sum((1, 2))[:, None] * (l_ * cm[:, None, :]).sum(2))
+
+    point = ratios(np.ones((1, C)))[0]
+    check(f'age-standardised ({by}, {tickets}): batch re-fit at unit weights = point estimate', 0.0,
+          float(np.nanmax(np.abs(point - T.sum(1) / E.sum(1)))), tol=1e-6)
+    lo, hi = pct_ci(ratios(W))
     g = pd.DataFrame({by: levels, 'tickets': T.sum(1), 'expected_age_only': E.sum(1)})
     g['clusters'] = d.groupby(by).customer.nunique().reindex(levels).to_numpy()
     g['age_std_ratio'] = g.tickets / g.expected_age_only
@@ -575,10 +614,13 @@ def main():
     check('every exposed machine has an age band', 0, int((m.months > 0).sum() - m.age_band.notna().sum()))
 
     # Survivorship bound: tickets on unlisted serials by model and half, with the least exposure they could have
-    # had (period start to the day after their last ticket).
+    # had (from the day of their first ticket in the period to the day after their last), so the rate with them put
+    # back is an upper bound.
     u = unl.assign(half=np.where(unl.ts < SPLIT, 'h1', 'h2'))
-    last = u.groupby('serial').agg(model=('model', 'first'), last=('ts', 'max'), tickets=('case_id', 'size'))
-    last['min_months'] = ((last['last'].dt.normalize() + pd.Timedelta(days=1) - PERIOD_START).dt.days / MONTH_DAYS)
+    last = u.groupby('serial').agg(model=('model', 'first'), first=('ts', 'min'), last=('ts', 'max'),
+                                   tickets=('case_id', 'size'))
+    last['min_months'] = ((last['last'].dt.normalize() + pd.Timedelta(days=1) - last['first'].dt.normalize())
+                          .dt.days / MONTH_DAYS)
     ub = last.groupby('model').agg(unlisted_serials=('tickets', 'size'), unlisted_tickets=('tickets', 'sum'),
                                    unlisted_min_months=('min_months', 'sum'))
     ub = ub.join(u.pivot_table(index='model', columns='half', values='case_id', aggfunc='size', fill_value=0)
@@ -616,7 +658,7 @@ def main():
     models['own_rate'] = models.months >= MIN_TYPE_MONTHS
     ubm = ub.reindex(models.model).fillna(0)
     models['unlisted_tickets'] = ubm.unlisted_tickets.to_numpy()
-    models['rate_with_unlisted_bound'] = 100 * (models.tickets + ubm.unlisted_tickets.to_numpy()) / \
+    models['rate_with_unlisted_max'] = 100 * (models.tickets + ubm.unlisted_tickets.to_numpy()) / \
         (models.months + ubm.unlisted_min_months.to_numpy())
     models = models.sort_values(['tickets', 'model'], ascending=[False, True])
     save(models, 'model_rates')
@@ -741,7 +783,8 @@ def main():
     # Sensitivities: go-live exposure, and the population with the third-party machines put back.
     ml = m.assign(months=m.months_live)
     cl, _, _ = customer_table(ml, 'tickets', ipf_expected(ml, 'tickets', ['rate_group', 'age_band']))
-    FACTS['go_live_sensitivity'] = {'fleet_rate_per_100': 100 * m.tickets.sum() / m.months_live.sum(),
+    FACTS['go_live_sensitivity'] = {'scope': 'go-live date for exposure only; age bands from the install date',
+                                    'fleet_rate_per_100': 100 * m.tickets.sum() / m.months_live.sum(),
                                     'months': float(m.months_live.sum()), 'flagged_998': int((cl.z_d > Z998).sum()),
                                     'flagged_overlap_with_main': int(((cl.z_d > Z998) & c.flagged).sum()),
                                     'poisson_flagged': int(poisson_flags(cl.O, cl.E).sum()),
@@ -948,7 +991,8 @@ def main():
                     'top2_share_of_excess': float(top2.excess.sum() / exc) if exc > 0 else np.nan,
                     'machines_above_expected_share': float((mm[mm.months > 0].tickets > mm[mm.months > 0].E).mean()),
                     'flagged_machines': int(mm.flagged.sum()),
-                    'top_category': cc.index[0] if len(cc) else None,
+                    'top_category': cc.index[0] if len(cc) else None,   # ties: alphabetically first
+                    'top_category_ties': int((cc == cc.iloc[0]).sum()) if len(cc) else 0,
                     'top_category_share': float(cc.iloc[0] / cc.sum()) if len(cc) else np.nan,
                     'top_model': c.loc[cust, 'top_model'],
                     'months_share_service_contract': c.loc[cust].get('months_share_service_contract', np.nan)})

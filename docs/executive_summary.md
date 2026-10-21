@@ -33,12 +33,12 @@ date). With it we can, for the first time:
    - One check fails in the committed run record. The cause was a sort-order bug in our comparison script, not in
      the notebook; once fixed, all 15 rows match.
 2. **Service workload is concentrated by product and not by customer, and it mostly follows the installed base.**
-   - Three model families (LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0) account for 48% of tickets. That mostly reflects how
+   - Three models (LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0) account for 48% of tickets. That mostly reflects how
      many are installed: on the installed base they hold 42% of machine-months and 51% of unplanned tickets.
    - The ten busiest facilities account for only 11% of tickets. The two largest differ once their fleets are known:
-     - Customer 171 (123 tickets) has about twice the unplanned tickets its 68 machines would generate at fleet
-       rates;
-     - Customer 029 (116 tickets, 107 machines) is in line with its fleet.
+     - Customer 171 (123 tickets in all) has 113 unplanned tickets on its 68 listed machines against 59 expected,
+       about twice its fleet's rate;
+     - Customer 029 (116 tickets in all) has 114 against 102 expected on 107 machines, in line with its fleet.
    - Deposit Door is the most common recorded issue: 1,124 tickets, 16% of unplanned service.
 3. **New: adjusted for exposure and machine age, the main models are close to the fleet rate.**
    - **Fleet rate:** 6.2 unplanned tickets per 100 installed machine-months, about 0.74 per machine per year.
@@ -73,7 +73,7 @@ date). With it we can, for the first time:
 7. **High-ticket machines hold up on installed exposure, as a continuum.**
    - Of the 113 machines flagged on 14 October, 106 are on the list and 93 stay flagged; 30 are consistent outliers.
    - On the whole list, 128 machines are flagged and 36 are consistent outliers.
-   - A model that allows for the spread between machines still flags none.
+   - A model that allows for the spread between machines now flags none (2 on 14 October).
    - Machines flagged on the first half alone fell from 12.6 to 2.9 times their expected tickets in the second
      half: regression to the mean, but a real excess remains.
 8. **About one in four tickets is followed by another on the same machine within 30 days (23.6%).**
@@ -109,7 +109,7 @@ date). With it we can, for the first time:
 |---|---|---|
 | 1 | **Machines removed or replaced during August 2025 to August 2026, with removal dates, and parent accounts.** | The list holds active machines only. 433 unplanned tickets sit on 226 serials that are not on it, mostly older models, so their rates are understated. Parent accounts give health-system rates. |
 | 2 | **A field check of the 18 consistent-outlier customers and 36 consistent-outlier machines** (list available on request). | Only IPA can tell whether the signal reflects heavy use, site practice, reporting habits or problem units. |
-| 3 | **Service channels.** Does Vogeltronix-plan service reach Salesforce? Is A-series service handled elsewhere? What does "Not Serviceable" mean? Do you have contract and warranty dates? | The 239 Vogeltronix machines had 3 tickets in a year, so we left them out. A-series machines have almost none. Coverage on the list is a snapshot. |
+| 3 | **Service channels.** Does Vogeltronix-plan service reach Salesforce? Is A-series service handled elsewhere? What does "Not Serviceable" mean? Do you have contract and warranty dates? | The 239 Vogeltronix machines had 3 unplanned tickets in 13 months, so we left them out. A-series machines have almost none. Coverage on the list is a snapshot. |
 | 4 | IPA's code definitions (being sent), and which codes each machine family or firmware version can emit. | They replace our provisional buckets for the association analysis and the fault-code comparison by type. |
 | 5 | **How "Monitoring – Daily/Poll" tickets are created, and whether they count as customer demand.** | There are 138 of them, involved in 11% of repeat contacts. If telemetry alerts create them, matching them back to telemetry is circular. |
 | 6 | **Whether technicians look at clearView error history when they assign Category and Sub Category; where the intake Trouble Code is kept; a Field History Tracking export.** | If technicians use clearView, part of the ticket-to-telemetry association is built in. The export holds only the final Trouble Code. |
@@ -133,7 +133,7 @@ date). With it we can, for the first time:
 
 *Definitions.*
 - **Unplanned tickets** exclude preventive maintenance and installations, cancelled requests and duplicate cases.
-- **Installed machine-month** (findings 3 and 6): one month of a listed machine being installed, from its install
+- **Installed machine-month** (findings 2, 3, 6 and 7): one month of a listed machine being installed, from its install
   date (or 1 August 2025) to 31 August 2026. The 239 machines on a third-party service plan are left out.
 - **Expected tickets:** what the machines would generate at fleet rates for their model and age.
 - **Flagged:** both of these hold:
