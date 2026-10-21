@@ -80,4 +80,17 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
   - Where is the Trouble Code entered at ticket creation stored? The export shows the final value: 63 of 64 open
     tickets have none.
   - A Field History Tracking export for Trouble Code, Category and Sub Category.
-  - Confirm that `devices.location_name` comes from the asset record, i.e. that it is the account.
+  - ~~Confirm that `devices.location_name` comes from the asset record, i.e. that it is the account.~~ Superseded
+    on 21 Oct: IPA's installed-base list gives each machine's account directly (docs/06).
+
+## Fleet exposure follow-ups (added 21 October)
+- [x] **Customer-level and model-level rates on installed exposure**, and consistent outliers: `docs/06`,
+  `verification/fleet_exposure.py`, charts `viz/fleet_exposure/`.
+- [ ] **Run the database extract** (`python3 -I verification/fleet_db_extract.py --db <db>`, then zip and upload
+  `verification/outputs/fleet/db/`). After that, re-running `verification/fleet_exposure.py` gives telemetry-type rates
+  on installed exposure, networked vs non-networked rates and the full model × type crosswalk; chart `fx_05` switches
+  basis by itself.
+- [ ] **Stratify the association analysis by model** (item 6) using the list's model for every machine, not only
+  ticketed ones.
+- [ ] **Re-run with IPA's removal dates and parent accounts** when they arrive (docs/06 §8, asks 1 and 6).
+- [ ] **Fold in IPA's field check** of the 18 consistent-outlier customers and 36 machines.

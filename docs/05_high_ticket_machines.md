@@ -2,8 +2,9 @@
 
 *Script: `verification/high_ticket_machines.py` (33 self-checks; it runs locally in about 20 s from the workbook and
 the committed `fu_*` and `db_*` CSVs, with no database). Figures: `viz/figures/htm_*.png`, drawn by one plain
-matplotlib script per chart in `viz/high_ticket/` (`htm_01_*.py` … `htm_10_*.py`; charts 6 and 9 each write two
-figures; `run_all.py` draws them all) in the shared style of `viz/style/`. Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
+matplotlib script per chart in `viz/high_ticket/` (`htm_01_*.py` … `htm_08_*.py`; chart 6 writes two figures;
+`run_all.py` draws them all) in the shared style of `viz/style/`. Charts 9 and 10 were retired on 21 October in favour of
+`viz/fleet_exposure/` (see the update below). Every number below is in `verification/outputs/htm_summary.json` or an `htm_*.csv`, unless it is marked
 as coming from the review pass.*
 
 **Terms.** *Workload-outsized*: 5 or more unplanned tickets, the top 5% of ticketed machines. *Chronic outlier*: a
@@ -16,6 +17,29 @@ of a defect. Every chart that uses either term prints its definition.
 profile and episodes, and privacy. Each returned *holds with caveats*; the caveats are in the text below. The
 robustness figures marked "review" come from the reviewers' scratch code. They are not yet in the committed
 script.
+
+> **Update, 21 October 2026.** IPA's installed-base list (19 October) gives install dates, models and accounts for
+> 9,294 active machines. `docs/06_fleet_exposure.md` re-runs the exposure view on it (`verification/fleet_exposure.py`).
+> The original text below is kept as the dated record; superseded statements are marked *[Updated 21 Oct]*.
+> - **The flags hold up on installed exposure.**
+>   - Of the 113 chronic outliers, 106 are in the installed-base population. 93 of those stay flagged when expected
+>     tickets come from model and age instead of telemetry type and telemetry months.
+>   - 30 are also *consistent outliers*: flagged under at least 10 of 12 method variants and above expected in
+>     both halves of the period.
+>   - On the list as a whole, 128 machines are flagged and 36 are consistent outliers.
+>   - A negative-binomial check still flags none (`fx_summary.json` machines, docs05_overlap).
+> - **The 22 machines with under 12 months of exposure:**
+>   - 19 are on the list. 7 were installed during the period, so their short exposure was real; 12 were installed
+>     earlier and had quiet months.
+>   - 16 of the 19 stay flagged.
+> - **Persistence:** machines with 3 or more tickets in the first half had 2.6 times their expected tickets in the
+>   second half. Permuting among machines of the same customer gives 1.45, so the excess is partly site-level and
+>   partly the machine (`fx_outlier_machine_persistence.csv`).
+> - **Charts 9 and 10 are retired.** Raw counts and telemetry-span rates are replaced by `fx_01` (share of the
+>   installed base vs share of tickets), `fx_02` (rate by model, now computable) and `fx_05` (rate by telemetry
+>   type).
+> - **Model rates exist now.** Model is on the installed-base list, so rates by model no longer depend on tickets
+>   (docs/06 §3).
 
 ## Bottom line
 1. **Tickets are much more concentrated than chance.** That holds once machine type and months active are allowed
@@ -178,13 +202,17 @@ From `fu_ticket_last10.csv`: 30-day lookback on the corrected clock, 5,312 usabl
 ![Pre-ticket non-success rate](../viz/figures/htm_06_pre_ticket_nonsuccess.png)
 
 ## F. Which machine types generate the most tickets
+*[Updated 21 Oct: charts 9 and 10 are retired. Rates by model on installed exposure are in docs/06 §3 and charts
+`fx_01`, `fx_02` and `fx_05`. The text of this section is kept as the 14 October record.]*
+
 **Charts 9 show raw counts, which are not adjusted for fleet size.** A type can rank high simply because many machines
 of that type are installed. Chart 10 adjusts for this with machine-months.
 
 - **By model**, as recorded on tickets: LVD-Remote-2.0, LVRR-WP-2.0 and MV-2.0 generate 49% of the 7,186 unplanned
   tickets (1,393, 1,211 and 897).
   - Model is recorded only on tickets, so the number of installed machines per model is unknown.
-  - Per-machine rates by model therefore cannot be computed from these data.
+  - Per-machine rates by model therefore cannot be computed from these data. *[Updated 21 Oct: IPA's
+    installed-base list gives every machine's model; rates by model are in docs/06 §3.]*
 - **By telemetry machine type:** scrubex2.0-2, scrubex2.0-3 and scrubex2.0-4 generate 52% of the 5,921 tickets
   matched to a telemetry device.
 - **Machine-month:** one month of a machine in service. Each telemetry device counts the calendar months from its
@@ -199,9 +227,9 @@ of that type are installed. Chart 10 adjusts for this with machine-months.
   - the highest rate among types with at least 100 machine-months is sbsx-51: 21.9 per 100 machine-months, on 33
     devices.
 
-![Tickets by model](../viz/figures/htm_09_tickets_by_model.png)
-![Tickets by telemetry machine type](../viz/figures/htm_09_tickets_by_machine_type.png)
-![Ticket rate per 100 machine-months by machine type](../viz/figures/htm_10_ticket_rate_by_machine_type.png)
+![Share of the installed base vs share of tickets, by model](../viz/figures/fx_01_fleet_vs_ticket_share.png)
+![Ticket rate per 100 installed machine-months by model](../viz/figures/fx_02_rate_by_model.png)
+![Ticket rate by telemetry machine type](../viz/figures/fx_05_rate_by_telemetry_type.png)
 
 ## Questions for IPA
 1. **Field check of the robust core.**
@@ -211,7 +239,8 @@ of that type are installed. Chart 10 adjusts for this with machine-months.
    - *Why:* only IPA can say whether the statistical signal matches known reality.
 2. **Monitoring tickets.** How are "Monitoring – Daily/Poll" tickets created?
    - *Why:* they are concentrated on these machines, and 26 of the 113 depend on them.
-3. **Install and removal dates.** Install and decommission dates per serial.
+3. **Install and removal dates.** Install and decommission dates per serial. *[Updated 21 Oct: install dates
+   received with the installed-base list; removal dates for machines no longer active are still needed.]*
    - *Why:* 22 flagged machines have under 12 months of exposure, and some have tickets outside their telemetry
      span. Both negative-binomial survivors are among these.
 4. **Ticket rollovers.** Are tickets opened within hours of the previous one closing re-opens or rollovers rather
@@ -221,7 +250,8 @@ of that type are installed. Chart 10 adjusts for this with machine-months.
 ## Limits
 - Exposure comes from first and last transaction dates. Gaps are counted, overstating active months by about 3%
   (71,559 against Zac's 69,155).
-- Model is known only for ticketed machines.
+- Model is known only for ticketed machines. *[Updated 21 Oct: the installed-base list gives every listed machine's
+  model.]*
 - The usage proxy exists only for devices with a matched ticket.
 - Measuring usage and fault-code rates for machines **without** tickets, and active months that account for gaps,
   would need another database run. That is deferred, following the decision to avoid Colab.

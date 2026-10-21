@@ -7,6 +7,21 @@ account-to-system map are kept in `data/private/fleet_private_*.csv` (gitignored
 telemetry DB is not in this container); **[inferred]** = our reasoning or outside knowledge, not verified by IPA;
 **[pending DB]** = decided by the checks in §7 once the DB arrives.
 
+> **Update, 21 October 2026.** IPA sent its active installed-base list (19 October: serial, account, model,
+> install date). `docs/06_fleet_exposure.md` uses it to compute customer-level rates. Its account field is the
+> install's account on the asset record, so the location-name route below is no longer needed for rates.
+> - **Agreement with tickets:** 3,540 of the 3,773 ticket serials are on the list. Where they match, the ticket's
+>   account equals the list's account on 99.4% of rows and the model on 100%.
+> - **Rates by customer:** each customer's tickets are compared with what its own machines would generate at fleet
+>   rates for their model and age (`fx_customer_rates.csv`).
+>   - 63 customers have more tickets than their fleet predicts, beyond chance.
+>   - 18 are consistent outliers, flagged under at least 10 of 12 variants and above expected in both halves.
+>   - Customer 029, which has the most unplanned tickets on listed machines, is in line with its fleet.
+> - **Still facility-level:** accounts are facilities; health-system rates still need parent accounts.
+> - **Snapshot:** the list holds active machines only, so machines removed during the period are missing (docs/06 §1).
+> - **Statements marked *[Updated 14 Oct]* below** that customer rates are not yet computed are superseded by
+>   docs/06.
+
 > **Update, 14 October 2026.** This document was written on 12 October from the case export and Zac's device
 > dictionary, before the full-database run. The original text below is kept as the dated record; superseded
 > statements are marked *[Updated 14 Oct]*. What the database added:
