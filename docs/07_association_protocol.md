@@ -5,8 +5,8 @@ Category has been computed. One power check before v0 counted pairs, discordant 
 three Category sets of a hypothetical crosswalk (§10, look 4). The analysis script, `verification/association.py`, is
 to follow. It reads only the committed files listed in §1 and runs without the database. This document fixes what will
 be computed, on which tickets and how, before any ticket-against-control result by Category is seen. Later changes are
-dated amendments (`*[Amended <date>: …]*`), and the original text is kept. Every count in §2, §3 and §6 was computed
-from those files during planning. `association.py` re-derives each one as a check and writes it to
+dated amendments (`*[Amended <date>: …]*`), and the original text is kept. Every count in §2–§6 was computed from
+those files during planning. `association.py` re-derives each one as a check and writes it to
 `verification/outputs/assoc/as_summary.json`.*
 
 **Why a protocol first.** TODOS.md item 1 asks for a crosswalk from ticket Categories to telemetry codes, agreed with
@@ -83,6 +83,8 @@ strings** (`dtype=str, keep_default_na=False`). Codes keep their leading zeros, 
 - **`verification/reference/crosswalk_v0.csv`:** this protocol's crosswalk (§3).
 - **`verification/outputs/htm_device_exposure.csv`** (M id to S id) and **`verification/outputs/fleet/fx_machine_flags.csv`**
   (`install_year` by S id): used only for S5's secondary check.
+- **`verification/outputs/flags/flags_by_case.csv`** (optional; not yet produced): the local text-flag export (§6). It
+  is used only for S2 and S10.
 
 **Windows** (`db_followup.py` L57–62, L292–416). A is the ticket's creation time, converted from US Eastern to UTC.
 
@@ -130,7 +132,8 @@ no other ticket's 30-day window overlaps the control, and none opened in the 2 d
       to lead to tickets, that depletes code-heavy controls. This biases H1, item 2 and the item 4 fraction away from no
       effect. In H2a it is removed only if the depletion is the same before target and comparator tickets, which is not
       measured.
-    - **Partly unobserved guard.** For 16 tickets, A − 67 d falls before the case history begins.
+    - **Partly unobserved guard.** For 17 tickets, A − 67 d falls before the case history begins. The case history
+      begins on 1 August 2025 at 00:00 US Eastern, which is 04:00 UTC, and A is compared with it in UTC.
   - **Categories.** Analyses by Category also drop the 39 primary tickets with no Category. 12 of them have a Trouble
     Code and count in the overall rows only.
 - **A4. Text flags are not a primary exclusion.** A ticket that quotes a code or mentions clearView often does so
@@ -157,13 +160,14 @@ no other ticket's 30-day window overlaps the control, and none opened in the 2 d
     list is complete, and nothing is undetermined.
   - **Not judged per outcome.** Undetermined is a property of the window and k, not of the outcome. Keeping a window
     only when its outcome happens to be listed would select on the outcome.
-  - **Pairs left out.** At each k below 720 h, a pair is left out of every analysis at that k when either of its
-    windows is undetermined. That covers buckets, codes, target sets, marginal shares, H2a and H1, so every outcome at
-    a given k uses the same pairs.
-  - **Counts in the primary population.** At 7 d, 29 ticket and 17 control windows, so 39 pairs leave and 2,911
-    remain. At 24 h, 1 ticket window and 1 pair. From 0.5 h to 6 h, none.
-  - **At 720 h (30 d)** the outcome is membership of the last-10 list, which is the TODOS definition, and no pair is
-    left out. 137 ticket and 94 control windows have more than 10 distinct codes. There, list membership can miss a
+  - **Pairs left out.** A pair is left out when either of its windows is undetermined at 7 d. The remaining **2,911
+    pairs** are used for **every k ≤ 7 d** and every analysis: buckets, codes, target sets, marginal shares, H2a, H1,
+    item 3 and item 4. Curves over k therefore run over one fixed set of pairs.
+    - At 7 d, 29 ticket and 17 control windows are undetermined, which removes 39 pairs.
+    - At shorter k, only 1 window (at 24 h) would be undetermined, and that pair is already among the 39.
+  - **What the 2,911 pairs hold:** 610 account clusters, 2,350 machines and 1,706 mapped tickets.
+  - **At 720 h (30 d)** the outcome is membership of the last-10 list, which is the TODOS definition. All 2,950 pairs
+    are used. 137 ticket and 94 control windows have more than 10 distinct codes. There, list membership can miss a
     code that did occur (§12).
 - **A9. Discordant pairs.** For a set s and a ticket:
   - **b:** s is present in the ticket window but not in the control;
@@ -294,7 +298,7 @@ into H2a's target group. "T on emitting types" is the count left after A10.
 | Curtain (477 / 215), medium | none; Mechanical | Map 15 "Blocked Door" and 56/57 "Top/Bottom Door not Closed" under Door issue (mechanism only: the curtain guards the door opening)? **Default: no codes.** |
 | User Door (399 / 223), low | 02, 11, 27, 41–48; Door issue | Keep the generic lock codes 02 "Door did not unlock", 11 "Door Did not Open" and 27 "Door did not lock"? The literal drafter kept only 41–48; the mechanism drafter also added 14, 15 and 26. With 02/11/27 in, alEx and mlc types count as able to emit the set (A10). **Default: keep 02, 11 and 27.** T: 220. |
 | Power Supply (170 / 85), medium | none; Electronics | Map 13 and 25 for low voltage (mechanism only)? If so, Power Supply joins Computer Board's set (A7). **Default: no codes.** |
-| Counterweight System (102 / 47), low | 66, 67; Mechanical | 66 and 67, "Did not reach horizontal/vertical position", are inferred, and A10 finds them emitted only by sbsx-49 and sbsx-51, while every Counterweight ticket is on alEx or mlc machines. Keep, map none (literal), or use 56, 57 and 59 (mechanism)? **Default: 66, 67, which cannot be tested (T: 0).** |
+| Counterweight System (102 / 47), low | 66, 67; Mechanical | 66 and 67, "Did not reach horizontal/vertical position", are inferred, and A10 finds them emitted only by sbsx-49 and sbsx-51, while every Counterweight ticket is on alEx or mlc machines. Keep, map none (literal), or add 56, 57 and 59 to 66 and 67 (mechanism)? **Default: 66, 67, which cannot be tested (T: 0).** |
 | Loading Error (86 / 31), low | 77; Stock-out | Keep 77 "Item not stocked"? If kept, Loading Error tickets leave the Stock-out negative control (§4). The skeptic drafter added 03 "Item not available"; the mechanism drafter mapped 30, 31 and 76 under User behavior instead. **Default: 77.** T: 23. |
 | Service Door (51 / 22), medium | none; Door issue | Map 30 "Main Door not Closed" (mechanism only: the service-door switch may report through the main-door interlock)? It would partly overlap Main Door {30, 31}. **Default: no codes.** |
 | Improper Use (31 / 17), low | 04, 19, 60, 61, 78; User behavior | Keep these five user-behaviour codes, which are common in normal use, or map none (literal)? **Default: keep.** T: 9. |
@@ -356,8 +360,9 @@ target_bucket`. Editing a rationale or a note does not change it.
   comparator for several sets; the bootstrap and the permutation keep that dependence. If no set enters, H2a is not
   estimable and does not succeed.
 - **Interval.** Account-cluster bootstrap.
-  - **Cluster order.** The clusters are the A11 labels of the analysed population, sorted: 613 for the primary
-    population.
+  - **Cluster order.** The clusters are the sorted A11 labels of the pairs analysed at that k:
+    - 610 for the 2,911 pairs used at every k ≤ 7 d;
+    - 613 for the 2,950 pairs used at 30 d.
   - **Weights.** `W = boot_weights(len(clusters), 2000, 15072)` (`fleet_exposure.py` L288), and column j weights
     `clusters[j]`.
   - **One W per population and cluster type.** It serves every estimate on that population: each set's H2a, the pooled
@@ -365,14 +370,15 @@ target_bucket`. Editing a rationale or a note does not change it.
   - **Fixed entering sets.** The entering sets are fixed at their observed values. Each replicate recomputes every
     stratified sum over those sets, without re-applying the entry rule.
   - The 95% percentile interval follows A13.
-- **Null.** Category is permuted among the mapped primary tickets within each type × quarter stratum, 2,000 times.
+- **Null.** Category is permuted among the mapped tickets of the analysed pairs within each type × quarter stratum,
+  2,000 times. That is 1,706 tickets at 7 d and 1,736 at 30 d.
   - **Generator.** One generator, `np.random.default_rng(15072)`, is created once.
   - **Order.** Strata are taken sorted by type, then quarter. Within each stratum the tickets are sorted by `case_id`,
     and their Categories are reordered with `rng.permutation`.
   - **What is recomputed.** Each permutation recomputes the whole pooled statistic from the permuted labels, entry rule
     included. A permutation in which no set enters counts as below the observed value.
-  - **p-value.** One-sided: (permutations ≥ observed + 1) / 2,001. Its Monte Carlo standard error is
-    √(p(1 − p)/2,000).
+  - **p-value.** One-sided: p = (1 + the number of permutations whose pooled statistic is at least the observed value)
+    / 2,001. Its Monte Carlo standard error is √(p(1 − p)/2,000).
 - **Decision.** H2a succeeds if the pooled estimate is above 0 and the one-sided permutation p is at most 0.05. The
   bootstrap interval is reported alongside.
 
@@ -392,7 +398,7 @@ reported either way, marked "not tested" when the gate stops before them. The it
 1. **H2a.**
 2. **H1.**
    - **Population:** every mapped primary ticket whose type can emit its own target set (A10), Unknown left out, whether
-     or not its set entered H2a. On v0 that is 1,469 tickets before the A8 exclusion.
+     or not its set entered H2a. On v0 that is 1,439 tickets at 7 d and 1,469 at 30 d.
    - **Estimator:** Σb / Σc, with an account-cluster bootstrap interval.
    - **Test:** Durkalski on account clusters (§5).
    - **Decision:** H1 succeeds if Σb > Σc and the two-sided Durkalski p is at most 0.05.
@@ -469,13 +475,19 @@ reported either way, marked "not tested" when the gate stops before them. The it
 - **Pairs where both windows have the target.** Descriptive shares of those pairs where:
   - the ticket window's most recent target code is more recent than the control's;
   - the ticket window's target count is higher.
-- **Match rates.** Precision and recall at 7 d and 30 d, overall and by Category, with the control windows' values
-  alongside:
-  - "target code present": any of the Category's `target_codes`, for mapped Categories;
-  - "matching bucket present": a code whose team bucket equals the Category's `target_bucket`, as TODOS asks. This is
-    defined only where `target_bucket` is a team bucket, including Categories with no target codes.
-
-  Both are **descriptive**: Category is a label set at closure, not a gold standard.
+- **Match rates.** Precision and recall at 7 d and 30 d, for two kinds of match. Both are computed on ticket windows,
+  then recomputed with control-window presence in place of ticket-window presence as the chance baseline.
+  - **Target code present** (per set s). Population: primary tickets with a Category, on types able to emit s, with
+    Unknown left out.
+    - Recall: the share of tickets whose Category targets s that have s present.
+    - Precision: among tickets with s present, the share whose Category targets s.
+  - **Matching bucket present** (per team bucket B, as TODOS asks). Population: primary tickets with a Category.
+    - Recall: the share of tickets whose `target_bucket` is B that have a code of team bucket B present.
+    - Precision: among tickets with a B code present, the share whose `target_bucket` is B.
+    - This covers Categories with no target codes but a team bucket.
+  - **Overall:** the micro-average, which sums true positives and denominators over the sets, or over the buckets.
+  - **By Category:** recall only. Precision belongs to a set or a bucket, not to a Category.
+  - Both kinds are **descriptive**: Category is a label set at closure, not a gold standard.
 
 **Item 6. Machine type and model.**
 - H1 and per-set enrichment by machine type, on emitting types and on all types.
@@ -496,13 +508,18 @@ draws its own bootstrap weights over its own sorted clusters.
 | S6 | Lookback-truncated windows included | adds pairs with a truncated window | TODOS item 5. |
 | S7 | Undetermined pairs at 7 d counted both ways | 39 pairs (29 ticket, 17 control windows) | A8. |
 | S8 | Machine instead of account clusters | none | A11. |
-| S9 | All 5,312 usable unplanned tickets, ticket side only | adds tickets without a clean control | Shows whether the paired subset is typical. A per-ticket D5 episode flag is applied (gap over 7 d starts a new episode; the first ticket is kept). |
+| S9 | Usable unplanned tickets, ticket side only | 5,031 tickets: the 5,312 with both A1 and the A3 step-2 span rule applied, which leaves out 281 tickets with empty windows | Shows whether the paired subset is typical. A per-ticket D5 episode flag is applied (a gap over 7 d starts a new episode; the first ticket is kept). |
 | S10 | Interval-based clean rule | needs close times from `flags_by_case.csv` | Pre-declared now: a pair is unclean when either window overlaps any other ticket's [opened, closed + 2 d]. |
 | S11 | Time trend | none | The slope of target presence on calendar date across control windows, × 35 d, gives the bias it would add to the paired difference. |
 | S12 | Crosswalk v1 | when it exists | Replaces v0 as the confirmatory version. |
 | S13 | Deposit Door without codes 19 and 78 | none | Negative-control variant (§4). |
 
-**The local flag export** (`python3 -I verification/flags.py --write`) writes `flags_by_case.csv`.
+**The local flag export (to be written).** A `--write` mode will be added to `verification/flags.py`, and you run it
+locally on the raw workbook. It writes `flags_by_case.csv`. S2 and S10 cannot run until that file exists.
+- **Rules it carries.** It copies two rules into `flags.py` rather than importing them, because
+  `timestamp_semantics.py` runs its whole pipeline on import:
+  - `CODE_REF_RE`, from `timestamp_semantics.py` L184–188;
+  - the wrong-machine rule `ERROR_NOTE`, from `customer_fleet_audit.py` L64–66.
 - **Columns:**
   - `case_id`;
   - per-field booleans for the monitoring template, telemetry mention and quoted-code rules;
@@ -525,8 +542,8 @@ draws its own bootstrap weights over its own sorted clusters.
   template.
 
 **Splits.**
-- **By time:** the test period ends at least two weeks before the export date, 31 August 2026 (docs/04 §5.2), and
-  results are reported by period. The ticket template drifted from December 2025.
+- **By time:** the test period ends at least two weeks before the end of the case history, 31 August 2026 (docs/04
+  §5.2; the export itself is dated 1 September 2026), and results are reported by period. The ticket template drifted from December 2025.
 - **By machine:** no machine is in both the labelled development sample and the test set.
 
 **Text handling.**
@@ -542,17 +559,17 @@ draws its own bootstrap weights over its own sorted clusters.
   - Electronics 20.3% vs 13.1%; Door 67.9 vs 61.1; Mechanical 54.6 vs 52.2; Stock-out 46.3 vs 45.3; any code 90.2
     vs 89.0;
   - Electro/Mechanical tickets, Door: 1,781 tickets, 78.2 vs 67.8.
-- **It pins every count stated in §2, §3, §4 and §6** and writes each to `as_summary.json`:
+- **It pins every count stated in §2–§6** and writes each to `as_summary.json`:
   - A2: 3,259 / 2,504.
-  - A3: 157; 102 on 85 machines; 50 on 47; 2,950 / 2,376; 42 and 31; 292 / 56 / 341 / 16; 39 and 12.
+  - A3: 157; 102 on 85 machines; 50 on 47; 2,950 / 2,376; 42 and 31; 292 / 56 / 341 / 17; 39 and 12.
   - A5: 23 + Unknown 14. A6: 731 / 870 / 812 / 537. A7: 1,736.
-  - A8: 29 / 17 / 39 / 2,911; 1; 137 / 94.
+  - A8: 29 / 17 / 39 / 2,911; 610 clusters, 2,350 machines, 1,706 mapped; 137 / 94.
   - A10: 3,388 windows, and the emitting types per set.
   - A11: 613 (2,902 / 48).
   - §3: 26 / 9 / 6; 10 sets; 3,298; the eleven codes in no set.
-  - §4: the T counts; H1 1,469; K 281.
+  - §4: the T counts; H1 1,439 (7 d) and 1,469 (30 d); K 281.
   - §5: the 35 frequent codes.
-  - §6: S1 +99; S4 2,330; S5 177, 521 and 132; S9 5,312.
+  - §6: S1 +99; S4 2,330; S5 177, 521 and 132; S9 5,031.
 - **Window checks.** Control hours are at most 720. The guard windows hold no code under 0.5 h or 1 h.
 - **Crosswalk checks.** The hash matches, all 41 Categories are covered, and every listed code exists.
 - **Bootstrap check.** A replicate with all weights equal to 1 reproduces the point estimate.
@@ -610,7 +627,7 @@ Recorded so readers can judge what this protocol could have been tuned to. Bases
    - **Bucket shares at 7 d and 24 h:** Electronics 12.9% vs 5.2% at 7 d, on the 3,259 paired set, with undetermined
      windows counted as absent.
    - **The reviewers' bucket-level figures:** matched odds ratios at 7 d and 30 d; the final-hour shares (23.9% of
-     ticket windows against 8.8% of controls have a code in the last 30 minutes, on 3,102 tickets); and bucket shares
+     ticket windows against 8.8% of controls have a code in the final 30 minutes, on 3,102 tickets); and bucket shares
      under different undetermined rules (finding notes, 22 October).
    - **A power check by one first-panel reviewer, before v0 existed.** For a hypothetical crosswalk, it counted pairs,
      discordant pairs and control-window prevalence per Category set. What reached the protocol author:
