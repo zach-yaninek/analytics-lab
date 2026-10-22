@@ -151,18 +151,60 @@ review_note, status, version`.
 - **Voting.** A code enters a Category's target set when a majority of drafters chose it. The bucket is the majority
   bucket.
 - **The `drafters` and `review_note` columns** record each drafter's choice and where they disagreed.
+- **Confidence** measures agreement:
+  - *high* when all three drafters chose the same codes and bucket (26 rows);
+  - *medium* when two drafters' choices equal the final row (9);
+  - *low* when only one drafter's codes equal it (6).
+- **Coverage.** 10 Categories have a non-empty target set. Together they cover 3,298 of the 6,113 matched tickets.
+- **Overlap.** Two sets overlap: Improper Use {04, 19, 60, 61, 78} and Deposit Door {19, 20, 78, 79, 80} share 19 and
+  78. Under H2a each leaves the other's comparison (§4).
+- **Not in any set.** Five codes appear in no target set:
+  - 05 "Already Dispensed";
+  - 15 "Blocked Door";
+  - 26 "Open Door Dispense";
+  - 81 "Opening Door Blocked";
+  - 28 "Undefined".
+- **The largest Electronics Categories have empty sets.** Touchscreen (472 tickets) and Badge Reader (91) have no code
+  that describes them, so electronics enrichment can only be tied to a Category through Computer Board (13, 25) and
+  Weight Scale (16).
 
 **Review and freezing.**
 - **The team reviews v0 first,** the "team" step of item 1. The rows flagged for review are listed at the end of
   this section.
-- **Then it is frozen.** The sha256 of the four columns that drive the analysis (`trouble_code, category,
-  target_codes, target_bucket`) is computed on the CSV rows sorted by category, with `\n` line endings. It is
-  recorded here, and `association.py` checks it on every run. Editing a rationale does not break the freeze.
+- **Then it is frozen.** The hash covers the four columns that drive the analysis: `trouble_code, category,
+  target_codes, target_bucket`.
+  - **How it is computed.** Write those four columns, header included, as CSV with Python's `csv` module (minimal
+    quoting, `\n` line endings), with rows sorted by `category`. Take the sha256 of the UTF-8 bytes.
+  - **Where it is used.** The value is recorded here, and `association.py` checks it on every run.
+  - **What it ignores.** Editing a rationale or a note does not break the freeze.
 - **Frozen hash: pending team sign-off.**
 - **v1** is the IPA-reviewed crosswalk. It is frozen before any run that uses it and becomes the confirmatory
   version. v0 results stay in the record as provisional. Rows that change from v0 to v1 are listed.
 
-**Rows flagged for review.** *(Filled in from the drafters' disagreements; see the CSV's `review_note`.)*
+**Rows flagged for review.** These are the rows where the drafters disagreed, by how much they matter. The CSV's
+`review_note` gives each disagreement in full.
+
+| Category (matched tickets) | v0 | Question for the reviewer |
+|---|---|---|
+| Deposit Door (994), low | 19, 20, 78, 79, 80 | Keep 19 "Deposit Door not Opened" and 78 "Receiver Deposit Door not completely opened"? The team's lookup calls them user behaviour, and the skeptic left them out. Add 81 "Opening Door Blocked" (mechanism only)? |
+| Computer Board (529), low | 13, 25 | Keep 25 "No Communications with Dispenser", which does not name the board? Add 05 "Already Dispensed" (mechanism only)? |
+| SAM (491), medium | 14, 17, 18, 32–35 | Keep 14 "Broken Limit Switches", which does not name the SAM? |
+| Curtain (477), medium | none | The mechanism drafter mapped 15 "Blocked Door" and 56/57 "Top/Bottom Door not Closed" under Door issue. |
+| User Door (399), low | 02, 11, 27, 41–48 | Keep the generic lock codes 02 "Door did not unlock", 11 "Door Did not Open" and 27 "Door did not lock"? The literal drafter kept only 41–48; the mechanism drafter also added 14, 15 and 26. |
+| Power Supply (170), medium | none | The mechanism drafter mapped 13 and 25 for low voltage. |
+| Counterweight System (102), low | 66, 67 | The link to "Did not reach horizontal/vertical position" is inferred. The literal drafter mapped none; the mechanism drafter added 56, 57 and 59. |
+| Loading Error (86), low | 77 | "Item not stocked" puts an operator-error Category on a stock-out code, so Stock-out is no longer a clean negative control (§4). The mechanism drafter mapped 30, 31 and 76 instead. |
+| Service Door (51), medium | none | The mechanism drafter mapped 30 "Main Door not Closed". |
+| Improper Use (31), low | 04, 19, 60, 61, 78 | These user-behaviour codes are common in normal use. They overlap Deposit Door on 19 and 78. |
+| Weight Scale (16), medium | 16 | The bucket is Electronics; the team's lookup puts 16 "Bad Weight" in Mechanical. |
+| Issue (29), Decoder (12), medium | none | The mechanism drafter mapped 05 and 13 respectively. |
+| Device Not Found (4), Troubleshooting (1), medium | none | Bucket only: Not in telemetry, Administrative or No identifiable issue. |
+
+**Unanimous rows worth a glance:**
+- **Main Door** maps to 30 and 31. Code 31, "Slot Doors in Improper Position", comes in through the Slot Door
+  sub-category.
+- **Packer** maps to 76. Its bucket is Mechanical, while the team's lookup puts 76 in Operational status.
+- **Touchscreen and Badge Reader** map to no code.
 
 ## 4. Outcome, hypotheses and estimators
 **Primary outcome:** a target code is present within 7 days (A8, k = 168 h).
@@ -218,8 +260,12 @@ review_note, status, version`.
 Everything else is descriptive, with intervals; the exception is item 2's tests, which TODOS asks for.
 
 **Negative controls.**
-- **Stock-out as an outcome** (codes 03, 77). No Category targets it. Enrichment here estimates the generic "a machine
-  is in trouble" effect. Restocking visits can also produce these codes.
+- **Stock-out as an outcome** (codes 03, 77), among tickets whose target set contains neither code. That is every
+  ticket except Loading Error, which v0 maps to 77.
+  - Enrichment here estimates the generic "a machine is in trouble" effect.
+  - Restocking visits can also produce these codes.
+  - TODOS noted that no Category corresponds to Stock-out. The v0 drafters disagree for Loading Error; see the
+    flagged rows in §3.
 - **Deposit Door without codes 19 and 78.** These two are user-behaviour codes ("Deposit Door not Opened", "Receiver
   Deposit Door not completely opened"). This variant shows how much of any Deposit Door result rests on them.
 
