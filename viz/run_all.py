@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Draw every chart in viz/: the high-ticket-machine charts, Zac's notebook figures and the fleet-exposure charts,
-all in the IPA style.
+"""Draw every chart in viz/: the high-ticket-machine charts, Zac's notebook figures, the fleet-exposure charts and
+the association charts, all in the IPA style.
 
 Run:  cd /home/user/analytics-lab && python3 -I viz/run_all.py
 Each section also runs on its own (viz/high_ticket/run_all.py, viz/zac_notebook/run_all.py,
-viz/fleet_exposure/run_all.py), and so does each chart script. Each section checks its figures after drawing
+viz/fleet_exposure/run_all.py, viz/association/run_all.py), and so does each chart script. Each section checks its figures after drawing
 (numbers against the data, definitions, privacy) and raises RuntimeError on a failed definition or privacy check, the
 fleet section also on a failed number check; that stops this run. Figures go to viz/figures/; real-name variants go
 to deliverables/ (gitignored).
@@ -26,7 +26,7 @@ def section(name):
 
 def main():
     written = []
-    for name in ('high_ticket', 'zac_notebook', 'fleet_exposure'):
+    for name in ('high_ticket', 'zac_notebook', 'fleet_exposure', 'association'):
         written += section(name).main()
     print(f'viz: {len(written)} figures in total')
     return written
