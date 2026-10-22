@@ -126,6 +126,14 @@ EMIT_TYPES = {  # types with >= 5 machines showing the set in clean control wind
                        'scrubex2.0-3', 'scrubex2.0-4', 'scrubex2.0-5'],
 }
 
+# Headline results, pinned exactly after the clean-room builds agreed and the outputs were unblinded (22 Oct 2026).
+RESULT_PINS = {
+    ('h2a', 168.0): (1.1683283379184424, 0.8514412699068736, 1.5633884185110032, 0.0004997501249375),
+    ('h2a', 720.0): (0.6425975750192976, 0.3259633549478429, 1.012459758156402, 0.000999500249875),
+    ('h1', 168.0): (6.479166666666667, 4.951612903225806, 8.868421052631579, 311, 48),
+    ('h1', 720.0): (4.1, 3.064516129032258, 5.785714285714286, 205, 50),
+}
+
 CHECKS = []
 PUBLIC = {}
 BLIND = False
@@ -996,9 +1004,18 @@ def main():
         sr['enriched'] = ((sr.status == 'tested') & (sr.b > sr.c) & (sr.bh_q <= 0.05)).astype(int)
         set_rows.append(sr)
     summary['decision'] = decision
-    save(pd.DataFrame(h2a_rows), 'h2a')
+    hd, h1d = pd.DataFrame(h2a_rows), pd.DataFrame(h1_rows)
+    for k in (K7, K30):
+        r = hd[(hd.k == k) & (hd.set == 'POOLED')].iloc[0]
+        rnd = lambda t: tuple(round(float(x), 12) for x in t)  # noqa: E731
+        check(f'pinned pooled H2a at k={k:g} (estimate, interval, permutation p)', rnd(RESULT_PINS[('h2a', k)]),
+              rnd((r.estimate, r.ci_lo, r.ci_hi, r.perm_p)))
+        r = h1d[h1d.k == k].iloc[0]
+        check(f'pinned H1 at k={k:g} (estimate, interval, b, c)', rnd(RESULT_PINS[('h1', k)]),
+              rnd((r.estimate, r.ci_lo, r.ci_hi, r.sum_b, r.sum_c)))
+    save(hd, 'h2a')
     save(pd.DataFrame(h2b_rows), 'h2b')
-    save(pd.DataFrame(h1_rows), 'h1')
+    save(h1d, 'h1')
     save(pd.concat(set_rows, ignore_index=True), 'sets')
     neg = negative_controls(D, P, E, core)
     save(neg, 'negative_controls')

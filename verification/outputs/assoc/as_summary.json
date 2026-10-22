@@ -1,0 +1,1442 @@
+{
+ "generated_by": "verification/association.py",
+ "protocol": "docs/07_association_protocol.md",
+ "crosswalk_sha256": "947b96ce805ba8b8593aa43c728fad97afc382e4386ae06cca36ce5139f05d79",
+ "seed": 15072,
+ "n_boot": 2000,
+ "n_perm": 2000,
+ "pinned_counts": {
+  "A2 paired tickets": 3259,
+  "A2 paired machines": 2504,
+  "A3 other ticket in [A-5d, A)": 157,
+  "A3 never transacting": 102,
+  "A3 never transacting machines": 85,
+  "A3 last_active before window": 50,
+  "A3 last_active before window machines": 47,
+  "A3 primary tickets": 2950,
+  "A3 primary machines": 2376,
+  "A3 kept, silent before ticket day": 42,
+  "A3 kept, silent before A-7d": 31,
+  "A3 lead-in ticket [A-102,A-67)": 292,
+  "A3 lead-in within 9 d": 56,
+  "A3 before 11 Nov 2025": 341,
+  "A3 A-67d before case history": 17,
+  "A3 no Category": 39,
+  "A3 Trouble Code but no Category": 12,
+  "A5 named types": 23,
+  "A5 Unknown tickets": 14,
+  "A6 2025Q4": 731,
+  "A6 2026Q1": 870,
+  "A6 2026Q2": 812,
+  "A6 2026Q3": 537,
+  "A7 mapped primary": 1736,
+  "A8 undetermined ticket windows 7d": 29,
+  "A8 undetermined control windows 7d": 17,
+  "A8 pairs left out 7d": 39,
+  "A8 determined pairs 7d": 2911,
+  "A8 clusters 7d": 610,
+  "A8 machines 7d": 2350,
+  "A8 mapped 7d": 1706,
+  "A8 ticket windows > 10 distinct": 137,
+  "A8 control windows > 10 distinct": 94,
+  "A10 windows": 3388,
+  "A11 clusters": 613,
+  "A11 by assigned_customer": 2902,
+  "A11 by ticket_customer": 48,
+  "xw high": 26,
+  "xw medium": 9,
+  "xw low": 6,
+  "xw mapped Categories": 10,
+  "xw mapped matched tickets": 3298,
+  "H1 population 7d": 1439,
+  "H1 population 30d": 1469,
+  "H2b K (Not in telemetry, primary)": 281,
+  "frequent codes": 35,
+  "frequent windows": 5900,
+  "S1 added pairs": 99,
+  "S4 tickets": 2330,
+  "S5 dropped": 177,
+  "S5 dropped machines": 175,
+  "S5b install year >= 2025": 521,
+  "S5b no install year": 132,
+  "S9 tickets": 5031
+ },
+ "t_on_emitting_types": {
+  "19|20|78|79|80": 563,
+  "02|11|27|41|42|43|44|45|46|47|48": 220,
+  "14|17|18|32|33|34|35": 213,
+  "13|25": 208,
+  "30|31": 139,
+  "76": 88,
+  "77": 23,
+  "04|19|60|61|78": 9,
+  "16": 6,
+  "66|67": 0
+ },
+ "emitting_types": {
+  "02|11|27|41|42|43|44|45|46|47|48": [
+   "alex2.0-1",
+   "alex2.0-3",
+   "mlc-1",
+   "sbsx-51",
+   "scrubex-1",
+   "scrubex-2",
+   "scrubex-4",
+   "scrubex-5",
+   "scrubex2.0-2",
+   "scrubex2.0-4",
+   "scrubex2.0-5",
+   "sd-49"
+  ],
+  "04|19|60|61|78": [
+   "sbsx-49",
+   "sbsx-51",
+   "scrubex-1",
+   "scrubex-3",
+   "scrubex-4",
+   "scrubex-5",
+   "scrubex-7",
+   "scrubex2.0-3",
+   "scrubex2.0-4",
+   "scrubex2.0-5"
+  ],
+  "13|25": [
+   "scrubex-1",
+   "scrubex-2",
+   "scrubex-4",
+   "scrubex2.0-2",
+   "scrubex2.0-3",
+   "scrubex2.0-4",
+   "scrubex2.0-5",
+   "sd-49"
+  ],
+  "14|17|18|32|33|34|35": [
+   "scrubex-1",
+   "scrubex-2",
+   "scrubex-4",
+   "scrubex-5",
+   "scrubex2.0-2",
+   "scrubex2.0-4",
+   "scrubex2.0-5",
+   "sd-49"
+  ],
+  "16": [
+   "alex2.0-1",
+   "alex2.0-3",
+   "mlc-1"
+  ],
+  "19|20|78|79|80": [
+   "scrubex-1",
+   "scrubex-3",
+   "scrubex-4",
+   "scrubex-5",
+   "scrubex-7",
+   "scrubex2.0-3",
+   "scrubex2.0-4",
+   "scrubex2.0-5"
+  ],
+  "30|31": [
+   "scrubex-1",
+   "scrubex-2",
+   "scrubex-4",
+   "scrubex-5",
+   "scrubex2.0-2",
+   "scrubex2.0-4",
+   "scrubex2.0-5",
+   "sd-49"
+  ],
+  "66|67": [
+   "sbsx-49",
+   "sbsx-51"
+  ],
+  "76": [
+   "scrubex-3",
+   "scrubex-4",
+   "scrubex-7",
+   "scrubex2.0-3",
+   "scrubex2.0-4",
+   "scrubex2.0-5"
+  ],
+  "77": [
+   "scrubex-1",
+   "scrubex-2",
+   "scrubex-4",
+   "scrubex-5",
+   "scrubex2.0-2",
+   "scrubex2.0-4",
+   "scrubex2.0-5"
+  ]
+ },
+ "frequent_codes": [
+  "01",
+  "03",
+  "04",
+  "11",
+  "13",
+  "15",
+  "16",
+  "17",
+  "18",
+  "19",
+  "20",
+  "25",
+  "26",
+  "28",
+  "30",
+  "31",
+  "32",
+  "33",
+  "34",
+  "35",
+  "41",
+  "42",
+  "43",
+  "44",
+  "45",
+  "46",
+  "47",
+  "48",
+  "66",
+  "76",
+  "77",
+  "78",
+  "79",
+  "80",
+  "81"
+ ],
+ "decision": {
+  "h2a_success": true,
+  "h1_success": true
+ },
+ "checks": {
+  "pass": 147,
+  "fail": 0
+ },
+ "check_list": [
+  {
+   "check": "fu_ticket_last10 rows",
+   "expected": 24452,
+   "actual": 24452,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard0: one row per ticket",
+   "expected": 6113,
+   "actual": 6113,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard30: one row per ticket",
+   "expected": 6113,
+   "actual": 6113,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard60: one row per ticket",
+   "expected": 6113,
+   "actual": 6113,
+   "status": "PASS"
+  },
+  {
+   "check": "control_minus35d: one row per ticket",
+   "expected": 6113,
+   "actual": 6113,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard0: hours never decrease along each list",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard0: list length = min(10, distinct_codes)",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard0: buckets column aligned with codes",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard30: hours never decrease along each list",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard30: list length = min(10, distinct_codes)",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard30: buckets column aligned with codes",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard60: hours never decrease along each list",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard60: list length = min(10, distinct_codes)",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard60: buckets column aligned with codes",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "control_minus35d: hours never decrease along each list",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "control_minus35d: list length = min(10, distinct_codes)",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "control_minus35d: buckets column aligned with codes",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "control hours <= 720",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard30: no code under 0.5 h",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "corrected_guard60: no code under 1.0 h",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk sha256 = frozen hash (docs/07 \u00a73)",
+   "expected": "947b96ce805ba8b8593aa43c728fad97afc382e4386ae06cca36ce5139f05d79",
+   "actual": "947b96ce805ba8b8593aa43c728fad97afc382e4386ae06cca36ce5139f05d79",
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk covers the 41 Categories",
+   "expected": 41,
+   "actual": 41,
+   "status": "PASS"
+  },
+  {
+   "check": "every ticket Category is in the crosswalk",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk confidence high",
+   "expected": 26,
+   "actual": 26,
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk confidence medium",
+   "expected": 9,
+   "actual": 9,
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk confidence low",
+   "expected": 6,
+   "actual": 6,
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk mapped Categories",
+   "expected": 10,
+   "actual": 10,
+   "status": "PASS"
+  },
+  {
+   "check": "crosswalk mapped matched tickets",
+   "expected": 3298,
+   "actual": 3298,
+   "status": "PASS"
+  },
+  {
+   "check": "every crosswalk code exists in the code table",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "valid codes in no target set (docs/07 \u00a73)",
+   "expected": [
+    "01",
+    "03",
+    "05",
+    "15",
+    "26",
+    "28",
+    "56",
+    "57",
+    "58",
+    "59",
+    "81"
+   ],
+   "actual": [
+    "01",
+    "03",
+    "05",
+    "15",
+    "26",
+    "28",
+    "56",
+    "57",
+    "58",
+    "59",
+    "81"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A2 paired tickets",
+   "expected": 3259,
+   "actual": 3259,
+   "status": "PASS"
+  },
+  {
+   "check": "A2 paired machines",
+   "expected": 2504,
+   "actual": 2504,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 other ticket in [A-5d, A)",
+   "expected": 157,
+   "actual": 157,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 never transacting",
+   "expected": 102,
+   "actual": 102,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 never transacting machines",
+   "expected": 85,
+   "actual": 85,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 last_active before window",
+   "expected": 50,
+   "actual": 50,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 last_active before window machines",
+   "expected": 47,
+   "actual": 47,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 primary tickets",
+   "expected": 2950,
+   "actual": 2950,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 primary machines",
+   "expected": 2376,
+   "actual": 2376,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 kept, silent before ticket day",
+   "expected": 42,
+   "actual": 42,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 kept, silent before A-7d",
+   "expected": 31,
+   "actual": 31,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 lead-in ticket [A-102,A-67)",
+   "expected": 292,
+   "actual": 292,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 lead-in within 9 d",
+   "expected": 56,
+   "actual": 56,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 before 11 Nov 2025",
+   "expected": 341,
+   "actual": 341,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 A-67d before case history",
+   "expected": 17,
+   "actual": 17,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 no Category",
+   "expected": 39,
+   "actual": 39,
+   "status": "PASS"
+  },
+  {
+   "check": "A3 Trouble Code but no Category",
+   "expected": 12,
+   "actual": 12,
+   "status": "PASS"
+  },
+  {
+   "check": "A5 named types",
+   "expected": 23,
+   "actual": 23,
+   "status": "PASS"
+  },
+  {
+   "check": "A5 Unknown tickets",
+   "expected": 14,
+   "actual": 14,
+   "status": "PASS"
+  },
+  {
+   "check": "A6 2025Q4",
+   "expected": 731,
+   "actual": 731,
+   "status": "PASS"
+  },
+  {
+   "check": "A6 2026Q1",
+   "expected": 870,
+   "actual": 870,
+   "status": "PASS"
+  },
+  {
+   "check": "A6 2026Q2",
+   "expected": 812,
+   "actual": 812,
+   "status": "PASS"
+  },
+  {
+   "check": "A6 2026Q3",
+   "expected": 537,
+   "actual": 537,
+   "status": "PASS"
+  },
+  {
+   "check": "A11 clusters",
+   "expected": 613,
+   "actual": 613,
+   "status": "PASS"
+  },
+  {
+   "check": "A11 by assigned_customer",
+   "expected": 2902,
+   "actual": 2902,
+   "status": "PASS"
+  },
+  {
+   "check": "A11 by ticket_customer",
+   "expected": 48,
+   "actual": 48,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 undetermined ticket windows 7d",
+   "expected": 29,
+   "actual": 29,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 undetermined control windows 7d",
+   "expected": 17,
+   "actual": 17,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 pairs left out 7d",
+   "expected": 39,
+   "actual": 39,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 determined pairs 7d",
+   "expected": 2911,
+   "actual": 2911,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 clusters 7d",
+   "expected": 610,
+   "actual": 610,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 machines 7d",
+   "expected": 2350,
+   "actual": 2350,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 ticket windows > 10 distinct",
+   "expected": 137,
+   "actual": 137,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 control windows > 10 distinct",
+   "expected": 94,
+   "actual": 94,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 no extra undetermined pair at k=0.5 h within the 7-d pairs",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 no extra undetermined pair at k=1 h within the 7-d pairs",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 no extra undetermined pair at k=2 h within the 7-d pairs",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 no extra undetermined pair at k=6 h within the 7-d pairs",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 no extra undetermined pair at k=24 h within the 7-d pairs",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 no extra undetermined pair at k=168 h within the 7-d pairs",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "A7 mapped primary",
+   "expected": 1736,
+   "actual": 1736,
+   "status": "PASS"
+  },
+  {
+   "check": "A8 mapped 7d",
+   "expected": 1706,
+   "actual": 1706,
+   "status": "PASS"
+  },
+  {
+   "check": "S1 added pairs",
+   "expected": 99,
+   "actual": 99,
+   "status": "PASS"
+  },
+  {
+   "check": "S4 tickets",
+   "expected": 2330,
+   "actual": 2330,
+   "status": "PASS"
+  },
+  {
+   "check": "S5 dropped",
+   "expected": 177,
+   "actual": 177,
+   "status": "PASS"
+  },
+  {
+   "check": "S5 dropped machines",
+   "expected": 175,
+   "actual": 175,
+   "status": "PASS"
+  },
+  {
+   "check": "S5b install year >= 2025",
+   "expected": 521,
+   "actual": 521,
+   "status": "PASS"
+  },
+  {
+   "check": "S5b no install year",
+   "expected": 132,
+   "actual": 132,
+   "status": "PASS"
+  },
+  {
+   "check": "S9 tickets",
+   "expected": 5031,
+   "actual": 5031,
+   "status": "PASS"
+  },
+  {
+   "check": "first look: Electronics/software/comms (ticket, control %)",
+   "expected": [
+    20.3,
+    13.1
+   ],
+   "actual": [
+    20.3,
+    13.1
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "first look: Door issue (ticket, control %)",
+   "expected": [
+    67.9,
+    61.1
+   ],
+   "actual": [
+    67.9,
+    61.1
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "first look: Mechanical fault (ticket, control %)",
+   "expected": [
+    54.6,
+    52.2
+   ],
+   "actual": [
+    54.6,
+    52.2
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "first look: Stock-out (ticket, control %)",
+   "expected": [
+    46.3,
+    45.3
+   ],
+   "actual": [
+    46.3,
+    45.3
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "first look: any code (ticket, control %)",
+   "expected": [
+    90.2,
+    89.0
+   ],
+   "actual": [
+    90.2,
+    89.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "first look: Electro/Mechanical Door (n, ticket %, control %)",
+   "expected": [
+    1781,
+    78.2,
+    67.8
+   ],
+   "actual": [
+    1781,
+    78.2,
+    67.8
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 windows",
+   "expected": 3388,
+   "actual": 3388,
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 02|11|27|41|42|43|44|45|46|47|48",
+   "expected": [
+    "alex2.0-1",
+    "alex2.0-3",
+    "mlc-1",
+    "sbsx-51",
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "actual": [
+    "alex2.0-1",
+    "alex2.0-3",
+    "mlc-1",
+    "sbsx-51",
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 04|19|60|61|78",
+   "expected": [
+    "sbsx-49",
+    "sbsx-51",
+    "scrubex-1",
+    "scrubex-3",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex-7",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "actual": [
+    "sbsx-49",
+    "sbsx-51",
+    "scrubex-1",
+    "scrubex-3",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex-7",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 13|25",
+   "expected": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex2.0-2",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "actual": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex2.0-2",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 14|17|18|32|33|34|35",
+   "expected": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "actual": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 16",
+   "expected": [
+    "alex2.0-1",
+    "alex2.0-3",
+    "mlc-1"
+   ],
+   "actual": [
+    "alex2.0-1",
+    "alex2.0-3",
+    "mlc-1"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 19|20|78|79|80",
+   "expected": [
+    "scrubex-1",
+    "scrubex-3",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex-7",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "actual": [
+    "scrubex-1",
+    "scrubex-3",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex-7",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 30|31",
+   "expected": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "actual": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5",
+    "sd-49"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 66|67",
+   "expected": [
+    "sbsx-49",
+    "sbsx-51"
+   ],
+   "actual": [
+    "sbsx-49",
+    "sbsx-51"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 76",
+   "expected": [
+    "scrubex-3",
+    "scrubex-4",
+    "scrubex-7",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "actual": [
+    "scrubex-3",
+    "scrubex-4",
+    "scrubex-7",
+    "scrubex2.0-3",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 emitting types for 77",
+   "expected": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "actual": [
+    "scrubex-1",
+    "scrubex-2",
+    "scrubex-4",
+    "scrubex-5",
+    "scrubex2.0-2",
+    "scrubex2.0-4",
+    "scrubex2.0-5"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 02|11|27|41|42|43|44|45|46|47|48",
+   "expected": 220,
+   "actual": 220,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 04|19|60|61|78",
+   "expected": 9,
+   "actual": 9,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 13|25",
+   "expected": 208,
+   "actual": 208,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 14|17|18|32|33|34|35",
+   "expected": 213,
+   "actual": 213,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 16",
+   "expected": 6,
+   "actual": 6,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 19|20|78|79|80",
+   "expected": 563,
+   "actual": 563,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 30|31",
+   "expected": 139,
+   "actual": 139,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 66|67",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 76",
+   "expected": 88,
+   "actual": 88,
+   "status": "PASS"
+  },
+  {
+   "check": "T on emitting types: 77",
+   "expected": 23,
+   "actual": 23,
+   "status": "PASS"
+  },
+  {
+   "check": "H2b K (Not in telemetry, primary)",
+   "expected": 281,
+   "actual": 281,
+   "status": "PASS"
+  },
+  {
+   "check": "frequent windows",
+   "expected": 5900,
+   "actual": 5900,
+   "status": "PASS"
+  },
+  {
+   "check": "frequent codes",
+   "expected": [
+    "01",
+    "03",
+    "04",
+    "11",
+    "13",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "25",
+    "26",
+    "28",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "41",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "66",
+    "76",
+    "77",
+    "78",
+    "79",
+    "80",
+    "81"
+   ],
+   "actual": [
+    "01",
+    "03",
+    "04",
+    "11",
+    "13",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "25",
+    "26",
+    "28",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "41",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "66",
+    "76",
+    "77",
+    "78",
+    "79",
+    "80",
+    "81"
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "primary k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "primary k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "pinned pooled H2a at k=168 (estimate, interval, permutation p)",
+   "expected": [
+    1.168328,
+    0.851441,
+    1.563388,
+    0.0005
+   ],
+   "actual": [
+    1.168328,
+    0.851441,
+    1.563388,
+    0.0005
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "pinned H1 at k=168 (estimate, interval, b, c)",
+   "expected": [
+    6.479167,
+    4.951613,
+    8.868421,
+    311.0,
+    48.0
+   ],
+   "actual": [
+    6.479167,
+    4.951613,
+    8.868421,
+    311.0,
+    48.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "pinned pooled H2a at k=720 (estimate, interval, permutation p)",
+   "expected": [
+    0.642598,
+    0.325963,
+    1.01246,
+    0.001
+   ],
+   "actual": [
+    0.642598,
+    0.325963,
+    1.01246,
+    0.001
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "pinned H1 at k=720 (estimate, interval, b, c)",
+   "expected": [
+    4.1,
+    3.064516,
+    5.785714,
+    205.0,
+    50.0
+   ],
+   "actual": [
+    4.1,
+    3.064516,
+    5.785714,
+    205.0,
+    50.0
+   ],
+   "status": "PASS"
+  },
+  {
+   "check": "A10 windows",
+   "expected": 3388,
+   "actual": 3388,
+   "status": "PASS"
+  },
+  {
+   "check": "each Trouble Code row equals the sum of its Category rows",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "presence never decreases with k and sits inside 30-d list membership",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "guard-window presence sits inside corrected_guard0 presence at each k",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "exclusive bins add up to the cumulative curve",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S1 planned/cancelled/duplicate put back k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S1 planned/cancelled/duplicate put back k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 0.5 h, control lower bound k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 0.5 h, control lower bound k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 0.5 h, control upper bound k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 0.5 h, control upper bound k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 1 h, control lower bound k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 1 h, control lower bound k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 1 h, control upper bound k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S3 guard 1 h, control upper bound k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S4 ticket-free lead-in (A >= 11 Nov 2025) k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S4 ticket-free lead-in (A >= 11 Nov 2025) k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S5 recently activated machines dropped k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S5 recently activated machines dropped k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S5b installed 2025 or later dropped k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S5b installed 2025 or later dropped k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S6 lookback-truncated windows included k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S6 lookback-truncated windows included k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S7 undetermined pairs counted absent k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S7 undetermined pairs counted absent k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S7 undetermined pairs counted present k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S7 undetermined pairs counted present k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S8 machine clusters k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S8 machine clusters k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "all-ones bootstrap replicate reproduces every point estimate",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "Durkalski = McNemar with one pair per cluster",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "privacy: no unexpected 4+-digit token in any text column",
+   "expected": 0,
+   "actual": 0,
+   "status": "PASS"
+  }
+ ],
+ "elapsed_s": 126.7
+}
