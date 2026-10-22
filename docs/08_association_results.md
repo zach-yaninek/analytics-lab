@@ -87,7 +87,8 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      - **Recall.** The final 2 hours catch the codes for only 39% of tickets (exploratory).
      - **Recency is not the fault.** Codes of unrelated sets also rise in the final hours (11% vs 3% at 30 minutes), so
        recency alone does not identify the fault.
-4. **Part of the code signal is owed to whatever led to the ticket, if the control is a fair stand-in** (`as_item4.csv`).
+4. **Part of the code signal is owed to whatever led to the ticket, if the control is a fair stand-in** (`as_item4.csv`;
+   chart as_05).
    The base is the tickets with their own code set in the final 7 days.
    - **Whole week.** Between 27% (95% 23% to 30%) and 73% would have had no code from the set all week without
      whatever led to the ticket. The rest would have had one anyway, as background.
@@ -99,7 +100,7 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      figure is 20% (exploratory). Whether the codes match the Category is H2a's question.
    - **What these are.** Bounds, not estimates.
 5. **At 7 days, robust to every sensitivity that could be computed.** The pooled specificity ratio stays between 2.3
-   and 3.5, with its interval above 1, in all of these (`as_sensitivities.csv`):
+   and 3.5, with its interval above 1, in all of these (`as_sensitivities.csv`; chart as_06):
    - guard bands that drop the final 30 or 60 minutes from both windows (S3);
    - a matched ticket-free lead-in (S4);
    - dropping recently activated or recently installed machines (S5);
@@ -118,7 +119,7 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      That question is open with IPA. The text-flag sensitivity (S2) that bounds it from the ticket text is pending.
    - **Other machine families.** The Category results rest almost entirely on scrubex machines. alEx and mlc
      machines, about one pair in five, seldom log the codes their Categories point at. So the study cannot say whether
-     Category agrees with the codes on them (§7).
+     Category agrees with the codes on them (§7; chart as_07).
 
 ## 1. The data
 - **Primary population** (docs/07 A3): 2,950 unplanned tickets on 2,376 machines, opened 5 October 2025 to
@@ -209,7 +210,7 @@ BH q ≤ 0.05).
 | Packer | 33 to 0, unbounded | 59% vs 21% |
 | Computer Board (not shown to be enriched) | 2.0 (1.0–4.8); q = 0.08 | — |
 
-## 4. Item 2: enrichment by bucket and by code (`as_item2_buckets.csv`, `as_item2_codes.csv`)
+## 4. Item 2: enrichment by bucket and by code (`as_item2_buckets.csv`, `as_item2_codes.csv`; charts as_04, as_08)
 **Final 7 days, 2,911 pairs, machine-cluster intervals.**
 
 | Bucket | Ticket | Control | Matched OR (95%) | BH q |
@@ -295,7 +296,7 @@ The later bins are smaller before tickets only because most tickets already fall
 - **Earlier activity.** Activity around the call earlier than the final hour cannot be separated from the fault in this
   data.
 
-## 6. Items 4 and 6: how much the codes explain, and machine types (`as_item4.csv`, `as_match_rates.csv`, `as_by_type.csv`)
+## 6. Items 4 and 6: how much the codes explain, and machine types (`as_item4.csv`, `as_match_rates.csv`, `as_by_type.csv`; charts as_05, as_07)
 **Excess presence fraction (pT − pC)/pT.** If the control is valid, this is a lower bound on the share of tickets with
 their own codes in the window that would not have had them there without whatever led to the ticket.
 
@@ -405,6 +406,11 @@ part of this is generic too. Counts cover only codes in the last-10 list.
 ![A ticket's own codes show up before it rather than in its control at 3.2x the odds seen for other faults' tickets](../viz/figures/as_01_specificity_by_set.png)
 ![A ticket's own codes appear in its final 30 minutes for 23% of tickets, against 2% of controls](../viz/figures/as_02_recency.png)
 ![5 of 6 code sets are clearly more often present before their tickets; Computer Board is not shown to be](../viz/figures/as_03_enrichment_by_set.png)
+![Electronics codes appear before 13% of tickets against 5% of controls; stock-out codes, the negative control, do not rise](../viz/figures/as_04_bucket_enrichment.png)
+![For 49% of tickets with their own codes, the final 6 h hold one that would not otherwise be there; for unrelated codes, 20%](../viz/figures/as_05_signal_bounds.png)
+![At 7 days the main result holds in all 11 sensitivity variants run so far: the pooled specificity ratio stays between 2.3x and 3.5x](../viz/figures/as_06_robustness.png)
+![The Category results rest on 1,439 of 2,911 tickets, 97% of them on scrubex machines](../viz/figures/as_07_coverage.png)
+![Door codes rise before No Trouble Found and cancelled tickets about as much as before all tickets (+11.5 and +13.5 points, against +11.5)](../viz/figures/as_08_breakdowns.png)
 
 ## Privacy
 - **Public outputs:** `verification/outputs/assoc/` holds only T##### and M##### ids, Customer NNN as cluster labels,

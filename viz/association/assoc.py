@@ -31,6 +31,20 @@ SPECIFICITY_DEFINITION = ('Specificity ratio: among tickets with the set\'s code
                           'shares; 1 means no more specific than other faults.')
 RECENCY_CONTROL_DEFINITION = ('Control: the same machine\'s ticket-free 30 days ending 35 days before the ticket. '
                               'Each point compares the same final span of both windows.')
+BUCKET_DEFINITION = ('Bucket: the team\'s provisional grouping of telemetry codes (e.g. Door issue, Mechanical fault), not '
+                     'yet confirmed by IPA. A bucket is present when any of its codes was logged in the window\'s final '
+                     '7 days.')
+NEGATIVE_CONTROL_DEFINITION = ('Negative control: the stock-out codes (03, 77). No Category except Loading Error points '
+                               'at them, so they should not rise if the comparison is fair.')
+OWED_DEFINITION = ('Share owed to whatever led to the ticket: of tickets with their own code set in the final 7 days, '
+                   'the share with an own code in the final k hours that the control says would not otherwise be there, '
+                   '(pT(k) - pC(k)) / pT(7 days). It is a lower bound if the control is valid, and it is not specific '
+                   'to the Category.')
+SENSITIVITY_DEFINITION = ('Sensitivity check: the same pooled test re-run with one pre-specified change to the '
+                          'tickets, the windows or the clustering (docs/07 §6).')
+LOGS_DEFINITION = ('Logs its own code set: the ticket\'s machine type shows that code set in the clean control windows '
+                   'of at least 5 other machines of the type (docs/07 A10). Otherwise the codes can neither confirm nor '
+                   'contradict the Category.')
 
 
 def load(name):

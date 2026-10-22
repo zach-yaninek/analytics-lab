@@ -121,6 +121,11 @@ number on the chart equals that number in the data" assertions.
 | `association/as_01_specificity_by_set.py` | H2a: specificity ratio per code set and pooled, with 95% intervals |
 | `association/as_02_recency.py` | Code-set presence within 30 min to 30 days, ticket window vs control |
 | `association/as_03_enrichment_by_set.py` | H1 per code set: matched odds ratio with 95% intervals |
+| `association/as_04_bucket_enrichment.py` | Item 2: each team bucket, ticket window vs control at 7 days, with the stock-out negative control |
+| `association/as_05_signal_bounds.py` | Item 4: share of the own-code signal owed to whatever led to the ticket, by final span, with unrelated sets and the whole-week bounds |
+| `association/as_06_robustness.py` | Pooled H2a at 7 days under each sensitivity variant, with 95% intervals |
+| `association/as_07_coverage.py` | Which tickets the Category results cover: paired, mapped, checkable, scrubex |
+| `association/as_08_breakdowns.py` | Descriptive rows: door codes before No Trouble Found and cancelled tickets; electronics before repeat tickets |
 
 High-ticket charts 9 (raw ticket counts by model and telemetry type) and 10 (rates per 100 machine-months by telemetry
 type) were retired in favour of `fx_01`, `fx_02` and `fx_05`, which use IPA's installed-base list.

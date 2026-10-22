@@ -18,6 +18,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
+from matplotlib.ticker import NullLocator  # noqa: E402
 
 import assoc  # noqa: E402
 import ipa_style as style  # noqa: E402
@@ -75,6 +76,7 @@ def plot(out_dir=assoc.FIG_DIR):
     ax.set_xlim(LO, HI * 4)
     ax.set_xticks([0.25, 0.5, 1, 2, 4, 8, 16, 32])
     ax.set_xticklabels(['0.25', '0.5', '1', '2', '4', '8', '16', '32'])
+    ax.xaxis.set_minor_locator(NullLocator())
     ax.set_ylim(-0.7, n - 0.3)
     style.style_axes(ax, grid='x', baseline=None)
     ax.set_xlabel('Specificity ratio (log scale; 1 = no more specific than other faults)')
@@ -93,6 +95,13 @@ def plot(out_dir=assoc.FIG_DIR):
             why = 'a zero in the comparator ratio'
         reasons.append(f'{r.categories} ({why})')
     style.check('as_01 every set accounted for', len(sets), len(entered) + len(left_out))
+    codes = assoc.load('item2_codes')
+    c25 = codes[(codes.k == assoc.K7) & (codes.outcome.astype(str).str.zfill(2) == '25')].iloc[0]
+    style.check('as_01 code 25 OR = b / c', c25.mor, c25.b / c25.c, 1e-9)
+    cb = entered[entered.categories == 'Computer Board']
+    cb_note = (f'Computer Board ({cb.estimate_x.iloc[0]:.2f}x): its code 25 rises before tickets in general '
+               f'({c25.pT:.1%} vs {c25.pC:.1%} of controls), and at least as much before '
+               f'other faults\' tickets, so it does not pick out Computer Board tickets.') if len(cb) else None
     style.frame(
         fig, title,
         f'H2a, the protocol\'s primary test, final 7 days: the {mapped:,} of 2,911 paired tickets whose Category has a '
@@ -103,10 +112,11 @@ def plot(out_dir=assoc.FIG_DIR):
         + (f'; Main Door only just (lower end {np.exp(md.ci_lo.iloc[0]):.2f}, permutation p {md.perm_p.iloc[0]:.2f})'
            if len(md) and md.ci_lo.iloc[0] > 0 else '') + '.',
         definitions=[assoc.SPECIFICITY_DEFINITION, assoc.TARGET_DEFINITION, assoc.CONTROL_DEFINITION],
-        notes=['Not in the pooled test (entry rule, docs/07 §4): ' + '; '.join(reasons) + '.',
-               '95% intervals: bootstrap over 610 account clusters. Per-set results are descriptive; only the pooled '
-               'test decides H2a.',
-               assoc.source('h2a')])
+        notes=['Not in the pooled test (entry rule, docs/07 §4): ' + '; '.join(reasons) + '.']
+              + ([cb_note] if cb_note else [])
+              + ['95% intervals: bootstrap over 610 account clusters. Per-set results are descriptive; only the pooled '
+                 'test decides H2a.',
+                 assoc.source('h2a', 'item2_codes')])
     return [style.save(fig, out_dir / PNG)]
 
 

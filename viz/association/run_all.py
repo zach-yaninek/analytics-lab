@@ -22,7 +22,8 @@ sys.path[:0] = [str(HERE), str(HERE.parent / 'style')]  # python3 -I leaves the 
 import assoc  # noqa: E402
 import ipa_style as style  # noqa: E402
 
-CHARTS = ['as_01_specificity_by_set', 'as_02_recency', 'as_03_enrichment_by_set']
+CHARTS = ['as_01_specificity_by_set', 'as_02_recency', 'as_03_enrichment_by_set', 'as_04_bucket_enrichment',
+          'as_05_signal_bounds', 'as_06_robustness', 'as_07_coverage', 'as_08_breakdowns']
 
 
 def _flat(text):
@@ -32,7 +33,9 @@ def _flat(text):
 def defined_terms():
     return {'specificity ratio': [assoc.SPECIFICITY_DEFINITION], 'code set': [assoc.TARGET_DEFINITION],
             'control': [assoc.CONTROL_DEFINITION, assoc.RECENCY_CONTROL_DEFINITION],
-            'matched odds ratio': [assoc.MOR_DEFINITION]}
+            'matched odds ratio': [assoc.MOR_DEFINITION], 'bucket': [assoc.BUCKET_DEFINITION],
+            'negative control': [assoc.NEGATIVE_CONTROL_DEFINITION], 'owed to': [assoc.OWED_DEFINITION],
+            'sensitivity check': [assoc.SENSITIVITY_DEFINITION], 'logs that code set': [assoc.LOGS_DEFINITION]}
 
 
 def definition_problems(texts):

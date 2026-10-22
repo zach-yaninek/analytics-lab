@@ -44,6 +44,14 @@ def plot(out_dir=assoc.FIG_DIR):
     gd = assoc.load('guard')
     g30 = gd[(gd.outcome == 'target set') & (gd.k == 6.0) & (gd.guard_h == 0.5)].iloc[0]
     first = t.iloc[0]
+    mr = assoc.load('match_rates')
+    mr = mr[(mr.kind == 'exploratory: target code by look-back') & (mr.unit == 'MICRO (overall)')]
+    mr = mr.drop_duplicates(['k', 'side']).set_index(['k', 'side'])
+    for (k, side), m in mr.iterrows():
+        style.check(f'as_02 precision k={k:g} {side} = true_pos / n_present', m.precision, m.true_pos / m.n_present,
+                    1e-12)
+    style.check('as_02 look-back recall at 7 days = ticket share at 7 days', t[t.k == assoc.K7].pT.iloc[0],
+                mr.loc[(assoc.K7, 'ticket'), 'recall'], 1e-9)
     title = (f'A ticket\'s own codes appear in its final 30 minutes for {first.pT:.0%} of tickets, against '
              f'{first.pC:.0%} of controls')
 
@@ -87,7 +95,12 @@ def plot(out_dir=assoc.FIG_DIR):
                f'dropped from both windows, the set is present within 6 hours before {g30.p_guard:.0%} of tickets and '
                f'{g30.p_control_guard_lo:.0%}-{g30.p_control_guard_hi:.0%} of controls, and the guard bands leave the '
                f'pooled H2a result of chart as_01 at {g_lo:.1f}x to {g_hi:.1f}x.',
-               assoc.source('recency', 'item4', 'guard')])
+               f'For a linker (exploratory): among tickets showing a set\'s codes in the final 30 minutes, '
+               f'{mr.loc[(0.5, "ticket"), "precision"]:.0%} have the matching Category (control windows '
+               f'{mr.loc[(0.5, "control"), "precision"]:.0%}); over 7 days, '
+               f'{mr.loc[(assoc.K7, "ticket"), "precision"]:.0%} ({mr.loc[(assoc.K7, "control"), "precision"]:.0%}). '
+               f'The short look-back is more precise but finds the codes for fewer tickets (the blue line).',
+               assoc.source('recency', 'item4', 'guard', 'match_rates')])
     return [style.save(fig, out_dir / PNG)]
 
 
