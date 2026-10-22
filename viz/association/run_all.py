@@ -31,7 +31,8 @@ def _flat(text):
 
 def defined_terms():
     return {'specificity ratio': [assoc.SPECIFICITY_DEFINITION], 'code set': [assoc.TARGET_DEFINITION],
-            'control': [assoc.CONTROL_DEFINITION], 'matched odds ratio': [assoc.MOR_DEFINITION]}
+            'control': [assoc.CONTROL_DEFINITION, assoc.RECENCY_CONTROL_DEFINITION],
+            'matched odds ratio': [assoc.MOR_DEFINITION]}
 
 
 def definition_problems(texts):

@@ -765,6 +765,19 @@ needed the Monte Carlo tolerances. Each comparison covered 33,515 cells:
 
 Both builds also reproduced every count pinned in §8.
 
+**Noted 22 October 2026, after unblinding (item 8 skeptic review). Nothing above changed.** The review found that
+some pre-specified outputs had been computed but not reported, or not computed at all.
+- **Now computed and reported:**
+  - S13 in full, with its interval, pooled H2a and H1;
+  - the S1 Cancelled-request row;
+  - the control-side guard bounds of §5 item 3;
+  - per-set enrichment by machine type (§5 item 6);
+  - the interval of the 30-day item 4 fraction.
+- **Effect on headline results:** none of these changes any headline result. They are pinned as checks.
+- **Exploratory additions,** not pre-specified and labelled exploratory wherever they appear in docs/08:
+  - the item 4 fraction and the concordant-pair shares for codes of unrelated sets;
+  - micro-averaged precision and recall by look-back.
+
 ## Privacy
 - **Inputs.** Committed pseudonymous outputs only:
   - T#####, M#####, S##### (S5 only), Customer NNN, Host NNN and Location NNNN;

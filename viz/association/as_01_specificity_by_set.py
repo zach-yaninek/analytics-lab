@@ -49,7 +49,10 @@ def plot(out_dir=assoc.FIG_DIR):
                         float(pooled.perm_p))
     style.check('as_01 pooled interval contains the estimate', 1, int(lo <= ratio <= hi))
     above = entered[entered.ci_lo > 0]
-    title = f'The codes a ticket\'s Category points at rise {ratio:.1f}x more before it than before other faults\' tickets'
+    mapped = S['pinned_counts']['A8 mapped 7d']
+    md = entered[entered.categories == 'Main Door']
+    title = (f'A ticket\'s own codes show up before it rather than in its control at {ratio:.1f}x the odds seen for '
+             f'other faults\' tickets')
 
     rows = [(assoc.set_label(r.categories, r.set), r.estimate_x, r.ci_lo_x, r.ci_hi_x, r.ci_lo > 0)
             for r in entered.itertuples()]
@@ -84,17 +87,21 @@ def plot(out_dir=assoc.FIG_DIR):
         elif disc < 10:
             why = f'{disc} discordant pairs (needs 10)'
         elif r.c_T == 0:
-            why = f'all {disc} discordant pairs point to the ticket window, so the ratio has a zero and is left out'
+            why = (f'all {disc} discordant pairs point to the ticket window, so the ratio has a zero and is left '
+                   f'out; including it would raise the pooled ratio')
         else:
             why = 'a zero in the comparator ratio'
         reasons.append(f'{r.categories} ({why})')
     style.check('as_01 every set accounted for', len(sets), len(entered) + len(left_out))
     style.frame(
         fig, title,
-        f'H2a, the protocol\'s primary test: 2,911 unplanned tickets with a clean control on the same machine, final '
-        f'7 days. Pooled specificity ratio {ratio:.1f}x (95% interval {lo:.1f} to {hi:.1f}); permutation p = {p:.4f} '
-        f'(Category shuffled within machine type x quarter, 2,000 times), so H2a succeeds. '
-        f'{len(above)} of {len(entered)} sets are clearly specific on their own.',
+        f'H2a, the protocol\'s primary test, final 7 days: the {mapped:,} of 2,911 paired tickets whose Category has a '
+        f'code set ({int(pooled.n_T):,} ticket-set combinations as targets), each against a clean control on the same '
+        f'machine. Pooled specificity ratio {ratio:.1f}x (95% interval {lo:.1f} to {hi:.1f}); permutation p = {p:.4f} '
+        f'(Category shuffled within machine type x quarter, 2,000 times), so H2a succeeds. {len(above)} of '
+        f'{len(entered)} sets have intervals above 1 on their own'
+        + (f'; Main Door only just (lower end {np.exp(md.ci_lo.iloc[0]):.2f}, permutation p {md.perm_p.iloc[0]:.2f})'
+           if len(md) and md.ci_lo.iloc[0] > 0 else '') + '.',
         definitions=[assoc.SPECIFICITY_DEFINITION, assoc.TARGET_DEFINITION, assoc.CONTROL_DEFINITION],
         notes=['Not in the pooled test (entry rule, docs/07 §4): ' + '; '.join(reasons) + '.',
                '95% intervals: bootstrap over 610 account clusters. Per-set results are descriptive; only the pooled '

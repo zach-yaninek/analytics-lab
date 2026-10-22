@@ -44,7 +44,7 @@ def plot(out_dir=assoc.FIG_DIR):
     weak = tested[tested.enriched == 0]
     weak_txt = ', '.join(cat[x] for x in weak.set)
     title = (f'{n_enr} of {len(tested)} code sets are clearly more often present before their tickets'
-             + (f'; {weak_txt} {"is" if len(weak) == 1 else "are"} not' if len(weak) else ''))
+             + (f'; {weak_txt} {"is" if len(weak) == 1 else "are"} not shown to be' if len(weak) else ''))
 
     n = len(tested)
     fig, ax = style.figure(max(11.0, 0.12 * len(title) + 2 * style.MARGIN), 3.4 + 0.5 * n)
@@ -53,11 +53,17 @@ def plot(out_dir=assoc.FIG_DIR):
     for yi, r in zip(y, tested.itertuples()):
         hot = r.enriched == 1
         col = style.BLUE if hot else style.GRAY
-        x_hi = assoc.x_of(r.mor_hi, LO, HI)
-        ax.hlines(yi, assoc.x_of(r.mor_lo, LO, HI), x_hi, color=col if hot else style.GRAY_LIGHT, lw=2)
-        if np.isinf(r.mor_hi):
-            ax.annotate('', xy=(HI * 1.3, yi), xytext=(HI, yi), arrowprops=dict(arrowstyle='->', color=col, lw=1.5))
-        ax.scatter(assoc.x_of(r.mor, LO, HI), yi, s=55, color=col, edgecolors=style.SURFACE, linewidths=1.2, zorder=3)
+        if np.isinf(r.mor):  # all discordant pairs one way: no point estimate, an unbounded arrow from the 50 tick
+            ax.annotate('', xy=(HI * 1.3, yi), xytext=(50, yi), arrowprops=dict(arrowstyle='->', color=col, lw=1.8))
+            ax.text(50, yi + 0.28, 'unbounded', ha='left', va='bottom', fontsize=8.5, color=col)
+        else:
+            x_hi = assoc.x_of(r.mor_hi, LO, HI)
+            ax.hlines(yi, assoc.x_of(r.mor_lo, LO, HI), x_hi, color=col if hot else style.GRAY_LIGHT, lw=2)
+            if np.isinf(r.mor_hi):
+                ax.annotate('', xy=(HI * 1.3, yi), xytext=(HI, yi),
+                            arrowprops=dict(arrowstyle='->', color=col, lw=1.5))
+            ax.scatter(assoc.x_of(r.mor, LO, HI), yi, s=55, color=col, edgecolors=style.SURFACE, linewidths=1.2,
+                       zorder=3)
         mor = 'b/c = ' + (f'{int(r.b)}/0' if np.isinf(r.mor) else f'{r.mor:.1f}')
         ax.text(HI * 1.6, yi, f'{mor}   {r.pT:.0%} vs {r.pC:.0%}   (n = {int(r.n_pairs)})', va='center', ha='left',
                 fontsize=9.5, color=style.INK if hot else style.INK2)
@@ -78,7 +84,8 @@ def plot(out_dir=assoc.FIG_DIR):
         f'control: matched odds ratio {h1.estimate:.1f} (95% {h1.ci_lo:.1f} to {h1.ci_hi:.1f}). Shares on the right: '
         f'ticket window vs control.',
         definitions=[assoc.MOR_DEFINITION, assoc.TARGET_DEFINITION, assoc.CONTROL_DEFINITION],
-        notes=[f'Below the reporting threshold (30 tickets, 10 discordant pairs): {left}.',
+        notes=[f'Below the reporting threshold (30 tickets, 10 discordant pairs): {left}. Controls are chosen to be '
+               f'ticket-free, which pushes these ratios up (docs/07 A3); H1 was expected to be positive.',
                'Blue: b > c and Benjamini-Hochberg q <= 0.05 across the tested sets (Durkalski test on account '
                'clusters). 95% intervals: bootstrap over account clusters.',
                assoc.source('sets', 'h1')])

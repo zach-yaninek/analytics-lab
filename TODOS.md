@@ -80,7 +80,8 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
     test).
   - **Text:** masked vs unmasked (quoted codes, system names, the `Device FW` line). Redact phone numbers and e-mail
     addresses (~300 tickets) before any text goes to a language model.
-- [ ] **8. Adversarial verification.** Independent re-derivation plus skeptic review of every number before it goes
+- [x] **8. Adversarial verification.** *Done 22 Oct: two blind clean-room builds matched all 33,515 compared cells;
+  five-lens skeptic review, 45 findings applied (docs/08 header, docs/07 §14).* Independent re-derivation plus skeptic review of every number before it goes
   into a doc or a sponsor update.
 - [ ] **9. Open questions for IPA.**
   - Do technicians look at clearView error history when they assign the Category? If so, part of the association is

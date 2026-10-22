@@ -9,8 +9,22 @@ on 13 October 2026).*
 > - `docs/02`–`docs/06`. `docs/02`–`05` carry dated update notes.
 > - Full-database results: `verification/outputs/db/db_summary.md` and `verification/outputs/fu/fu_summary.md`.
 > - Fleet-exposure results: `verification/outputs/fleet/fx_summary.json` (`docs/06`).
-> - Association-analysis plan: `TODOS.md`.
+> - Association study: `docs/07` (protocol, frozen before results) and `docs/08` (results).
 > - Charts: `viz/figures/`.
+
+> **Update, 22 October 2026: association study** (`docs/07`, `docs/08`; provisional).
+> - **Primary result.** On average over the five code sets that could be tested, a ticket's Category agrees with the
+>   telemetry codes logged in the final 7 days before it. Those codes appear before the ticket rather than in the same
+>   machine's quiet period 35 days earlier at 3.2 times the odds seen for tickets of other faults (95% 2.3 to 4.8;
+>   permutation p = 0.0005).
+> - **Verification.** This is the pre-specified primary test. Two blind clean-room builds and a skeptic review
+>   verified it.
+> - **By code set.** Clear for the SAM, user-door and deposit-door codes; borderline for the main door. The
+>   computer-board codes (13, 25) rise before tickets of every kind and are not specific to Computer Board tickets.
+> - **Timing.** The codes concentrate in the final hours: a ticket's own codes appear in its final 30 minutes for 23%
+>   of tickets, against 2% of controls.
+> - **Limits.** The results rest almost entirely on scrubex machines. They stay provisional until IPA's code
+>   definitions (crosswalk v1) and a local run of the text-flag export.
 
 ## Purpose
 Our SQL pipeline links IPA's 13-month Salesforce case history to machine telemetry:

@@ -17,15 +17,20 @@ ASSOC = ROOT / 'verification' / 'outputs' / 'assoc'
 FIG_DIR = ROOT / 'viz' / 'figures'
 K7, K30 = 168.0, 720.0
 
-TARGET_DEFINITION = ('Code set: the telemetry codes a ticket\'s Category points at in crosswalk v0, drafted from the '
-                     'code descriptions alone and approved by the team before any result was computed (docs/07 §3).')
+TARGET_DEFINITION = ('Code set: the telemetry codes a ticket\'s Category points at in crosswalk v0. It was drafted '
+                     'without seeing any data linking tickets to codes, and approved by the team before any '
+                     'ticket-against-control result by Category was computed (docs/07 §3, §10).')
 CONTROL_DEFINITION = ('Control: the same machine\'s ticket-free 30 days ending 35 days before the ticket. The final 7 '
                       'days of the ticket window are compared with the final 7 days of the control.')
 MOR_DEFINITION = ('Matched odds ratio: tickets with the codes present only before the ticket, divided by tickets with '
                   'them present only in the control. Above 1 means present before tickets more often.')
-SPECIFICITY_DEFINITION = ('Specificity ratio: the matched odds ratio for tickets whose Category points at the set, '
-                          'divided by the same ratio for tickets of other faults on the same machine types '
-                          '(Mantel-Haenszel within machine type x quarter).')
+SPECIFICITY_DEFINITION = ('Specificity ratio: among tickets with the set\'s codes in only one of the two windows, '
+                          'the split "only before the ticket" to "only in the control" for tickets whose Category '
+                          'points at the set, divided by the same split for tickets of other faults on the same '
+                          'machine types (Mantel-Haenszel within machine type x quarter). It compares odds, not '
+                          'shares; 1 means no more specific than other faults.')
+RECENCY_CONTROL_DEFINITION = ('Control: the same machine\'s ticket-free 30 days ending 35 days before the ticket. '
+                              'Each point compares the same final span of both windows.')
 
 
 def load(name):

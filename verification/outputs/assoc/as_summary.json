@@ -209,7 +209,7 @@
   "h1_success": true
  },
  "checks": {
-  "pass": 147,
+  "pass": 153,
   "fail": 0
  },
  "check_list": [
@@ -1420,6 +1420,42 @@
    "status": "PASS"
   },
   {
+   "check": "S1 Cancelled request pairs 7d",
+   "expected": 89,
+   "actual": 89,
+   "status": "PASS"
+  },
+  {
+   "check": "A10 windows",
+   "expected": 3388,
+   "actual": 3388,
+   "status": "PASS"
+  },
+  {
+   "check": "S13 Deposit Door without 19 and 78 k=168: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S13 Deposit Door without 19 and 78 k=720: unpermuted labels reproduce the observed H2a",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S13 k=168: Core per-set estimate = negative-control estimate",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
+   "check": "S13 k=720: Core per-set estimate = negative-control estimate",
+   "expected": true,
+   "actual": true,
+   "status": "PASS"
+  },
+  {
    "check": "all-ones bootstrap replicate reproduces every point estimate",
    "expected": true,
    "actual": true,
@@ -1438,5 +1474,5 @@
    "status": "PASS"
   }
  ],
- "elapsed_s": 126.7
+ "elapsed_s": 129.7
 }

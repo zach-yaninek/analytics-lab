@@ -38,6 +38,7 @@ and the item 3 curves. They were compared while this script's outcomes were stil
 Deterministic: fixed seed, stable sorts. Exit status 1 if any check fails.
 """
 import argparse
+import copy
 import csv
 import hashlib
 import io
@@ -1031,6 +1032,10 @@ def main():
     print('G. Sensitivities')
     sens = sensitivities(D, P, E, core)
     save(sens, 'sensitivities')
+    for k in (K7, K30):
+        a = float(neg.loc[(neg.k == k) & neg.h2a_s13.notna(), 'h2a_s13'].iloc[0])
+        b = float(sens.loc[sens.variant.str.startswith('S13') & (sens.k == k), 'dd_h2a'].iloc[0])
+        check(f'S13 k={k:g}: Core per-set estimate = negative-control estimate', True, bool(np.isclose(a, b)))
     check('all-ones bootstrap replicate reproduces every point estimate', True, all(ONES_OK))
     durk_mcnemar_check()
     pairs = pd.DataFrame({'case_id': D.ids, 'machine_id': D.mid, 'in_paired': P['paired'].astype(int),
@@ -1266,16 +1271,22 @@ def recency(D, P, E, core):
     for w, g in GUARDS.items():
         Wg = D.W[w]
         fixg = fix & ~Wg.undetermined(K7)
+        gc = GuardedControl(WC, g)
         for k in (6.0, 24.0, K7):
             r0 = WT.present(k, MB)[fixg].mean(0)
             rg = Wg.present(k, MB)[fixg].mean(0)
-            for o, a, b_ in zip(OUTS, r0, rg):
+            c0 = WC.present(k, MB)[fixg].mean(0)
+            clo, chi = (x[fixg].mean(0) for x in gc.bounds(k, MB))
+            for o, a, b_, c_, l_, h_ in zip(OUTS, r0, rg, c0, clo, chi):
                 guard.append(dict(window=w, guard_h=g, k=k, outcome=o, n_pairs=int(fixg.sum()), p_guard0=a,
-                                  p_guard=b_))
+                                  p_guard=b_, p_control=c_, p_control_guard_lo=l_, p_control_guard_hi=h_))
             hp = h1pop7 & ~Wg.undetermined(K7)
             ii = np.flatnonzero(hp)
+            blo, bhi = gc.bounds(k, MS)
             guard.append(dict(window=w, guard_h=g, k=k, outcome='target set', n_pairs=len(ii),
-                              p_guard0=WT.present(k, MS)[ii, own[ii]].mean(), p_guard=Wg.present(k, MS)[ii, own[ii]].mean()))
+                              p_guard0=WT.present(k, MS)[ii, own[ii]].mean(), p_guard=Wg.present(k, MS)[ii, own[ii]].mean(),
+                              p_control=WC.present(k, MS)[ii, own[ii]].mean(), p_control_guard_lo=blo[ii, own[ii]].mean(),
+                              p_control_guard_hi=bhi[ii, own[ii]].mean()))
     save(pd.concat(rows, ignore_index=True), 'recency')
     save(pd.DataFrame(bins), 'recency_bins')
     save(pd.DataFrame(guard), 'guard')
@@ -1323,10 +1334,18 @@ def item4(D, P, E, core):
     # 30 d
     h30 = core.results[('h1', K30)]
     i3 = np.flatnonzero(h30['pop'])
-    pT3 = WT.present(K30, MS)[i3, own[i3]].mean()
-    pC3 = WC.present(K30, MS)[i3, own[i3]].mean()
+    xt3 = WT.present(K30, MS)[i3, own[i3]].astype(float)
+    xc3 = WC.present(K30, MS)[i3, own[i3]].astype(float)
+    pT3, pC3 = xt3.mean(), xc3.mean()
+    X3 = np.zeros((int(h30['sel'].sum()), 3))
+    r3 = np.array([h30['pos'][i] for i in i3])
+    X3[r3, 0], X3[r3, 1], X3[r3, 2] = 1, xt3, xc3
+    R3 = h30['boot'].rep(X3)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        e3 = np.where(R3[:, 1] > 0, (R3[:, 1] - R3[:, 2]) / R3[:, 1], np.nan)
+    lo3, hi3, und3 = ci(e3)
     rows.append(dict(measure='excess presence fraction', k=K30, n_pairs=len(i3), pT=pT3, pC=pC3,
-                     estimate=(pT3 - pC3) / pT3 if pT3 > 0 else np.nan,
+                     estimate=(pT3 - pC3) / pT3 if pT3 > 0 else np.nan, ci_lo=lo3, ci_hi=hi3, undefined_reps=und3,
                      upper_bound=min(1.0, (1 - pC3) / pT3) if pT3 > 0 else np.nan))
     # concordant pairs at 7 d: more recent / more occurrences
     both = XT[:, -1].astype(bool) & XC[:, -1].astype(bool)
@@ -1346,6 +1365,26 @@ def item4(D, P, E, core):
         rows.append(dict(measure=nm, k=K7, n_pairs=int(both.sum()),
                          estimate=flag[both].mean() if both.any() else np.nan, ci_lo=lo, ci_hi=hi,
                          undefined_reps=und))
+    # Exploratory, added after unblinding (item 8 skeptic review; not pre-specified): the same measures for the codes
+    # of every set that shares no code with the ticket's own set (the H2a comparator definition, docs/07 §4). They
+    # show how much of the fraction is generic activity before a ticket rather than specific to the Category.
+    sc = [set(x.split('|')) for x in D.sets]
+    MU = D.mask([sorted(set().union(*(b for b in sc if not (a & b)))) for a in sc])
+    uT = np.array([WT.present(k, MU)[ii, own[ii]].mean() for k in ks])
+    uC = np.array([WC.present(k, MU)[ii, own[ii]].mean() for k in ks])
+    for j, k in enumerate(ks):
+        rows.append(dict(measure='exploratory: excess presence fraction, unrelated sets', k=k, n_pairs=len(ii),
+                         pT=uT[j], pC=uC[j], estimate=(uT[j] - uC[j]) / uT[j] if uT[j] > 0 else np.nan))
+    tu = (uT - uC) / uT[-1]
+    rows.append(dict(measure='exploratory: tightest bound, unrelated sets', k=ks[int(np.argmax(tu))], n_pairs=len(ii),
+                     estimate=float(tu.max())))
+    bothu = WT.present(K7, MU)[ii, own[ii]] & WC.present(K7, MU)[ii, own[ii]]
+    mhTu, mhCu = WT.min_hours(MU)[ii, own[ii]], WC.min_hours(MU)[ii, own[ii]]
+    occTu = (WT.O[ii] * MU[:, own[ii]].T).sum(1)
+    occCu = (WC.O[ii] * MU[:, own[ii]].T).sum(1)
+    for nm, flag in (('exploratory: unrelated sets, both present at 7 d: ticket code more recent', mhTu < mhCu),
+                     ('exploratory: unrelated sets, both present at 7 d: ticket window count higher', occTu > occCu)):
+        rows.append(dict(measure=nm, k=K7, n_pairs=int(bothu.sum()), estimate=flag[bothu].mean()))
     save(pd.DataFrame(rows), 'item4')
     match_rates(D, P, E)
 
@@ -1355,6 +1394,23 @@ def match_rates(D, P, E):
     prim, det7 = P['primary'], P['det7']
     rows = []
     team = sorted(set(b for b in D.cat_bucket.values() if b and b not in NON_TEAM_TARGETS))
+    # Exploratory (after unblinding; skeptic review): micro-averaged target-code precision and recall by look-back,
+    # on the same 7-d pairs, to show what a linker gains by looking only at the final hours.
+    sel7 = prim & det7 & (D.category != '')
+    MS = D.set_mask(D.sets)
+    for k in [x for x in K_GRID if x <= K7]:
+        for side, Wd in (('ticket', WT), ('control', WC)):
+            X = Wd.present(k, MS)
+            tp = pr = pos = 0
+            for j, s in enumerate(D.sets):
+                pop = sel7 & E[:, j] & (D.type != 'Unknown')
+                tgt = pop & (D.target == s)
+                tp += int((tgt & X[:, j]).sum())
+                pr += int((pop & X[:, j]).sum())
+                pos += int(tgt.sum())
+            rows.append(dict(k=k, side=side, kind='exploratory: target code by look-back', unit='MICRO (overall)',
+                             true_pos=tp, n_present=pr, n_target=pos, recall=tp / pos if pos else np.nan,
+                             precision=tp / pr if pr else np.nan))
     for k in (K7, K30):
         sel = prim & (det7 if k <= K7 else True) & (D.category != '')
         MS = D.set_mask(D.sets)
@@ -1427,8 +1483,21 @@ def item6(D, P, E, core):
                 ii = np.flatnonzero(m)
                 xt, xc = XT[ii, own[ii]], XC[ii, own[ii]]
                 r = enrich(xt[:, None], xc[:, None], Boot(D.account[m]), ['target set'], with_ci=False).iloc[0].to_dict()
-                r.update(k=k, scope=scope, type=tp)
+                r.update(k=k, scope=scope, type=tp, set='own set')
                 rows.append(r)
+                if scope.startswith('emitting'):  # docs/07 §5 item 6: per-set enrichment by machine type
+                    for j, s_ in enumerate(D.sets):
+                        mj = m & (own == j)
+                        if not mj.any():
+                            continue
+                        jj = np.flatnonzero(mj)
+                        r = enrich(XT[jj, j][:, None], XC[jj, j][:, None], Boot(D.account[mj]), ['target set'],
+                                   with_ci=False).iloc[0].to_dict()
+                        r.update(k=k, scope=scope, type=tp, set=s_)
+                        rows.append(r)
+        nonemit = mapped_all & ~h['pop']
+        rows.append(dict(k=k, scope='mapped tickets on types that do not log their own set (or Unknown)',
+                         type='(all)', set='own set', n_pairs=int(nonemit.sum())))
         pop = h['pop']
         for (tp, mo) in sorted(set(zip(D.type[pop], D.model[pop]))):
             m = pop & (D.type == tp) & (D.model == mo)
@@ -1506,6 +1575,39 @@ def sensitivities(D, P, E, core):
             for o, v in zip(BUCKET_FAMILY, pT):
                 r[f'bucket:{o}:pT'] = v
             rows.append(r)
+    # S1, Cancelled request only (docs/07 §6: "A separate Cancelled request row tests 'faults that cleared on their
+    # own'"). Administrative, no code set: H2a and H1 n/a. Item 2 bucket table with machine clusters, as in item2().
+    MBs = D.bucket_mask(BUCKET_FAMILY)
+    for k in (K7, K30):
+        m = P['lifted'] & (D.service_group == 'Cancelled request') & keep(k)
+        rb = enrich(WT.present(k, MBs)[m], WC.present(k, MBs)[m], Boot(D.mid[m]), list(BUCKET_FAMILY), with_ci=True)
+        r = dict(variant='S1 Cancelled request only', k=k, n_pairs=int(m.sum()), n_clusters=len(set(D.mid[m])),
+                 h2a='n/a', h1='n/a')
+        for _, x in rb.iterrows():
+            for f in ('pT', 'pC', 'mor', 'mor_lo', 'mor_hi', 'rd', 'durkalski_p'):
+                r[f'bucket:{x.outcome}:{f}'] = x[f]
+        rows.append(r)
+    check('S1 Cancelled request pairs 7d', 89, int((P['lifted'] & (D.service_group == 'Cancelled request') & det7).sum()))
+    # S13 (docs/07 §4, §6, §14.7): Deposit Door's set without 19 and 78; A10 recomputed; Improper Use joins K
+    old = '19|20|78|79|80'
+    D13 = copy.copy(D)  # shallow: windows shared; crosswalk maps replaced, D untouched
+    D13.cat_set = {c: (S13_SET if x == old else x) for c, x in D.cat_set.items()}
+    D13.target = np.array([S13_SET if t == old else t for t in D.target], dtype=object)
+    D13.sets = sorted(set(v for v in D13.cat_set.values() if v))
+    E13, _ = emit_matrix(D13, D13.sets)
+    print('  S13 Deposit Door without 19 and 78')
+    cc = Core(D13, P, E13, 'S13 Deposit Door without 19 and 78', prim, base, keep)
+    j13 = D13.sets.index(S13_SET)
+    for k in (K7, K30):
+        r, R = cc.results[('row', k)], cc.results[('h2a', k)]
+        o = R['obs']
+        bT, cT, bK, cK = o['parts']
+        lo, hi, und = ci(R['reps'][False][0][:, j13])
+        r.update(dd_set=S13_SET, dd_entered=int(o['enter'][j13]), dd_n_T=int(o['T'][:, j13].sum()),
+                 dd_n_K=int(o['K'][:, j13].sum()), dd_b_T=int(bT[:, j13].sum()), dd_c_T=int(cT[:, j13].sum()),
+                 dd_b_K=int(bK[:, j13].sum()), dd_c_K=int(cK[:, j13].sum()), dd_h2a=float(o['per'][j13]),
+                 dd_h2a_lo=lo, dd_h2a_hi=hi, dd_h2a_undefined_reps=und)
+        rows.append(r)
     # S11: time trend across control windows
     for k in (K7, K30):
         sel = prim & keep(k)
@@ -1528,7 +1630,8 @@ def sensitivities(D, P, E, core):
     if flags_ok:
         rows.extend(text_flag_rows(D, P, E, base, keep))
     rows.append(dict(variant='S12 crosswalk v1', k=np.nan, status='pending v1 (IPA code definitions)'))
-    rows.append(dict(variant='S13 Deposit Door without 19 and 78', k=np.nan, status='see as_negative_controls.csv'))
+    rows.append(dict(variant='S13 Deposit Door without 19 and 78', k=np.nan,
+                     status='computed above (dd_* columns); also as_negative_controls.csv'))
     return pd.DataFrame(rows)
 
 
