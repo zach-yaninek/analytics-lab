@@ -100,8 +100,9 @@ def plot(out_dir=assoc.FIG_DIR):
     style.check('as_01 code 25 OR = b / c', c25.mor, c25.b / c25.c, 1e-9)
     cb = entered[entered.categories == 'Computer Board']
     cb_note = (f'Computer Board ({cb.estimate_x.iloc[0]:.2f}x): its code 25 rises before tickets in general '
-               f'({c25.pT:.1%} vs {c25.pC:.1%} of controls), and at least as much before '
-               f'other faults\' tickets, so it does not pick out Computer Board tickets.') if len(cb) else None
+               f'({c25.pT:.1%} vs {c25.pC:.1%} of controls), and its codes, mainly 25, rise at least as much '
+               f'before other faults\' tickets, so these data do not show a Computer Board-specific match.') \
+        if len(cb) else None
     style.frame(
         fig, title,
         f'H2a, the protocol\'s primary test, final 7 days: the {mapped:,} of 2,911 paired tickets whose Category has a '

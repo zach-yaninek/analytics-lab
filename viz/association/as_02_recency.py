@@ -56,22 +56,24 @@ def plot(out_dir=assoc.FIG_DIR):
              f'{first.pC:.0%} of controls')
 
     fig, ax = style.figure(max(10.5, 0.12 * len(title) + 2 * style.MARGIN), 6.2)
-    x = np.arange(len(t))
+    x = np.arange(len(t), dtype=float)
     line = (t.k <= assoc.K7).to_numpy()  # k <= 7 d: one fixed set of pairs; 30 d: last-10 list, drawn apart
+    x[~line] += 1.2  # room for the series names between the 7-day end and the 30-day column
     ax.plot(x[line], 100 * t.pT[line], color=style.BLUE, lw=2, marker='o', ms=6, zorder=3)
     ax.plot(x[line], 100 * t.pC[line], color=style.GRAY, lw=2, marker='o', ms=6, zorder=2)
     ax.scatter(x[~line], 100 * t.pT[~line], s=40, facecolors=style.SURFACE, edgecolors=style.BLUE, linewidths=2,
                zorder=3)
     ax.scatter(x[~line], 100 * t.pC[~line], s=40, facecolors=style.SURFACE, edgecolors=style.GRAY, linewidths=2,
                zorder=2)
-    for xi, a, b in zip(x, t.pT, t.pC):
+    for xi, a, b, lin in zip(x, t.pT, t.pC, line):
         ax.text(xi, 100 * a + 2.5, f'{a:.0%}', ha='center', va='bottom', fontsize=9.5, color=style.INK)
-        ax.text(xi, 100 * b - 3, f'{b:.0%}', ha='center', va='top', fontsize=9.5, color=style.INK2)
-    ax.text(x[-1] + 0.15, 100 * t.pT.iloc[-1], 'Before the ticket', color=style.BLUE, va='center', fontsize=10)
-    ax.text(x[-1] + 0.15, 100 * t.pC.iloc[-1], 'Control, 35 days earlier', color=style.INK2, va='center', fontsize=10)
+        ax.text(xi, 100 * b - (3 if lin else 4.5), f'{b:.0%}', ha='center', va='top', fontsize=9.5, color=style.INK2)
+    xe = x[line][-1] + 0.2
+    ax.text(xe, 100 * t.pT[line].iloc[-1], 'Before the ticket', color=style.BLUE, va='center', fontsize=10)
+    ax.text(xe, 100 * t.pC[line].iloc[-1], 'Control, 35 days earlier', color=style.INK2, va='center', fontsize=10)
     ax.set_xticks(x)
     ax.set_xticklabels([LABELS[k] if k <= assoc.K7 else '30 days\n(last-10 list)' for k in t.k], color=style.INK2)
-    ax.set_xlim(-0.4, len(t) + 1.4)
+    ax.set_xlim(-0.4, x[-1] + 0.6)
     ax.set_ylim(-8, 90)
     style.pct_axis(ax.yaxis)
     style.style_axes(ax, grid='y', baseline='bottom')
@@ -95,9 +97,10 @@ def plot(out_dir=assoc.FIG_DIR):
                f'dropped from both windows, the set is present within 6 hours before {g30.p_guard:.0%} of tickets and '
                f'{g30.p_control_guard_lo:.0%}-{g30.p_control_guard_hi:.0%} of controls, and the guard bands leave the '
                f'pooled H2a result of chart as_01 at {g_lo:.1f}x to {g_hi:.1f}x.',
-               f'For a linker (exploratory): among tickets showing a set\'s codes in the final 30 minutes, '
-               f'{mr.loc[(0.5, "ticket"), "precision"]:.0%} have the matching Category (control windows '
-               f'{mr.loc[(0.5, "control"), "precision"]:.0%}); over 7 days, '
+               f'For a linker (exploratory; micro-averaged over code sets, so a ticket counts once for each set '
+               f'whose codes it shows): of the set-code hits in the final 2 hours, '
+               f'{mr.loc[(2.0, "ticket"), "precision"]:.0%} are on tickets whose Category points at that set (control '
+               f'windows {mr.loc[(2.0, "control"), "precision"]:.0%}); over 7 days, '
                f'{mr.loc[(assoc.K7, "ticket"), "precision"]:.0%} ({mr.loc[(assoc.K7, "control"), "precision"]:.0%}). '
                f'The short look-back is more precise but finds the codes for fewer tickets (the blue line).',
                assoc.source('recency', 'item4', 'guard', 'match_rates')])

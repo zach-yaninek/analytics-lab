@@ -59,8 +59,13 @@ def plot(out_dir=assoc.FIG_DIR):
     up = [row(s, p, assoc.K7)[0] for p in ('S3 guard 0.5 h, control upper', 'S3 guard 1 h, control upper')]
     s4 = row(s, 'S4 ', assoc.K30)
     style.check('as_06 S4 at 30 days reaches 1', 1, int(np.exp(s4[1]) < 1))
-    title = (f'At 7 days the main result holds in all {len(rows) - 1} sensitivity variants run so far: the pooled '
-             f'specificity ratio stays between {ratios.min():.1f}x and {ratios.max():.1f}x')
+    ran = s[(s.k == assoc.K7) & s.h2a.notna() & (s.variant != 'primary')]
+    style.check('as_06 variants run = drawn + the two S3 upper-bound rows', len(rows) - 1 + 2, len(ran))
+    style.check('as_06 every variant run has its interval above 1', 1, int((np.exp(ran.h2a_lo) > 1).all()))
+    style.check('as_06 undrawn variants inside the drawn range', 1,
+                int(ratios.min() <= np.exp(ran.h2a).min() and np.exp(ran.h2a).max() <= ratios.max()))
+    title = (f'At 7 days the main result holds in every sensitivity variant run so far: the pooled specificity ratio '
+             f'stays between {ratios.min():.1f}x and {ratios.max():.1f}x')
 
     n = len(rows)
     fig, ax = style.figure(max(11.0, 0.12 * len(title) + 2 * style.MARGIN), 3.4 + 0.42 * n)
@@ -94,8 +99,9 @@ def plot(out_dir=assoc.FIG_DIR):
                f'{np.exp(up[0]):.2f}x and {np.exp(up[1]):.2f}x. Truncated windows (S6): most added pairs have a control '
                f'window with no events at all, so this mainly checks that empty controls do not reverse the result.',
                f'At 30 days (secondary) one check reaches 1: the ticket-free lead-in (S4) gives {np.exp(s4[0]):.2f}x '
-               f'({np.exp(s4[1]):.2f} to {np.exp(s4[2]):.2f}). Pending: text-flag exclusions (S2), the interval-based '
-               f'clean rule (S10) and crosswalk v1 (S12). S9 (ticket side only) and S11 (calendar drift) give no ratio.',
+               f'({np.exp(s4[1]):.2f} to {np.exp(s4[2]):.2f}). Pending: text-flag exclusions (S2, the check on agreement '
+               f'built in if technicians read clearView when setting Category), the interval-based clean rule (S10) '
+               f'and crosswalk v1 with IPA\'s code meanings (S12). S9 (ticket side only) and S11 (calendar drift) give no ratio.',
                assoc.source('sensitivities', 'h2a')])
     return [style.save(fig, out_dir / PNG)]
 

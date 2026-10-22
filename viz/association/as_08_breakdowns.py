@@ -59,8 +59,10 @@ def plot(out_dir=assoc.FIG_DIR):
     y = np.arange(n)[::-1].astype(float)
     y[3:] -= 0.4  # a gap between the door and electronics groups
     for yi, (lab, pt, pc, mor, npairs, ref) in zip(y, rows):
-        col = style.GRAY if ref else style.BLUE
-        ax.hlines(yi, pc * 100, pt * 100, color=style.GRAY_LIGHT if ref else style.BLUE, lw=2, zorder=1)
+        hot = not ref and lab.startswith('Door')  # colour only what the title talks about
+        col = style.BLUE if hot else style.GRAY
+        ax.hlines(yi, pc * 100, pt * 100, color=style.BLUE if hot else style.GRAY if not ref else style.GRAY_LIGHT,
+                  lw=2, zorder=1)
         ax.scatter(pc * 100, yi, s=55, color=style.GRAY, edgecolors=style.SURFACE, linewidths=1.2, zorder=2)
         ax.scatter(pt * 100, yi, s=55, color=col, edgecolors=style.SURFACE, linewidths=1.2, zorder=3)
         ax.text(66, yi, f'{pt:.1%} vs {pc:.1%}   OR {mor:.1f}   ({npairs:,} tickets)', va='center', ha='left',
@@ -87,7 +89,7 @@ def plot(out_dir=assoc.FIG_DIR):
                f'there is no clear No Trouble Found door difference ({ntf30.pT:.1%} vs {ntf30.pC:.1%}); the '
                f'cancelled row is small.',
                'Repeat tickets: the 157 tickets left out because another ticket on the machine opened in the 5 days '
-               'before them (146 with a determinable 7-day window). Their window contains the earlier ticket and '
+               'before them (146 after the span rule and the 7-day determination). Their window contains the earlier ticket and '
                'possibly its service visit, so their codes may come from the earlier fault or its repair as much as '
                'from the new call.',
                assoc.source('item2_buckets', 'item2_breakdowns', 'sensitivities')])

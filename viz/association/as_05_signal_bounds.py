@@ -43,16 +43,17 @@ def plot(out_dir=assoc.FIG_DIR):
     style.check('as_05 unrelated maximum = exploratory tightest bound', tight_u.estimate, y_unr.max(), 1e-9)
     style.check('as_05 week lower bound = (pT - pC) / pT at 7 days', week.estimate, y_own[-1], 1e-9)
     style.check('as_05 week upper bound = (1 - pC) / pT', week.upper_bound, min(1, (1 - week.pC) / week.pT), 1e-9)
-    title = (f'For {tight.estimate:.0%} of tickets with their own codes, the final {LABELS[tight.k]} hold one that '
-             f'would not otherwise be there; for unrelated codes, {tight_u.estimate:.0%}')
+    title = (f'For at least {tight.estimate:.0%} of tickets with their own codes, the final {LABELS[tight.k]} hold one '
+             f'that would not otherwise be there; for unrelated codes (exploratory), {tight_u.estimate:.0%}')
 
     fig, ax = style.figure(max(10.5, 0.12 * len(title) + 2 * style.MARGIN), 6.2)
     x = np.arange(len(own))
     ax.plot(x, 100 * y_own, color=style.BLUE, lw=2, marker='o', ms=6, zorder=3)
     ax.plot(x, 100 * y_unr, color=style.GRAY, lw=2, marker='o', ms=6, zorder=2)
-    ax.vlines(x[j], 100 * tight.ci_lo, 100 * tight.ci_hi, color=style.BLUE, lw=2, zorder=3)
+    ax.errorbar(x[j], 100 * y_own[j], yerr=[[100 * (y_own[j] - tight.ci_lo)], [100 * (tight.ci_hi - y_own[j])]],
+                fmt='none', ecolor=style.BLUE, elinewidth=2, capsize=4, zorder=3)
     for xi, a in zip(x, y_own):
-        ax.text(xi, 100 * a + 2.5, f'{a:.0%}', ha='center', va='bottom', fontsize=9.5,
+        ax.text(xi, 100 * (tight.ci_hi if xi == x[j] else a) + 2.5, f'{a:.0%}', ha='center', va='bottom', fontsize=9.5,
                 color=style.INK, weight='bold' if xi == x[j] else 'normal')
     for xi, a in zip(x, y_unr):
         ax.text(xi, 100 * a - 2.5, f'{a:.0%}', ha='center', va='top', fontsize=9.5, color=style.INK2)
@@ -77,16 +78,19 @@ def plot(out_dir=assoc.FIG_DIR):
     style.pct_axis(ax.yaxis)
     style.style_axes(ax, grid='y', baseline='bottom')
     ax.set_xlabel('Final span before the ticket')
-    ax.set_ylabel('Share of tickets with own codes in 7 days')
+    ax.set_ylabel('Share owed to whatever\nled to the ticket')
     style.frame(
         fig, title,
         f'Base: the {int(week.n_pairs):,} tickets whose Category has a code set their machine type logs, counting those '
-        f'with an own code in the final 7 days ({week.pT:.0%} of them). The blue line peaks at {LABELS[tight.k]} '
-        f'({tight.estimate:.0%}, 95% {tight.ci_lo:.0%} to {tight.ci_hi:.0%}); the gray line shows how much of it any '
-        f'code set would show before a ticket. Over the whole week, between {week.estimate:.0%} and '
+        f'with an own code in the final 7 days ({week.pT:.0%} of them). The blue line, a lower bound, peaks at '
+        f'{LABELS[tight.k]} ({tight.estimate:.0%}, 95% {tight.ci_lo:.0%} to {tight.ci_hi:.0%}); the gray line is the '
+        f'same measure for codes of unrelated sets on the same tickets (exploratory), a rough guide to generic activity '
+        f'before any ticket. If the control is a fair stand-in, over the whole week between {week.estimate:.0%} and '
         f'{week.upper_bound:.0%} of these tickets would have had no own code at all without whatever led to the ticket.',
         definitions=[assoc.OWED_DEFINITION, assoc.TARGET_DEFINITION, assoc.RECENCY_CONTROL_DEFINITION],
-        notes=['The peak is the best of six windows, which makes it slightly optimistic. Bounds, not estimates: both '
+        notes=[f'The {LABELS[tight.k]} figure is not a tighter version of the whole-week {week.estimate:.0%}: some of '
+               f'these tickets would still have had an own code earlier in the week. '
+               'The peak is the best of six windows, which makes it slightly optimistic. Bounds, not estimates: both '
                'assume the control is a fair stand-in, and docs/07 A3 lists two ways it may not be, pushing in '
                'opposite directions. Whether the codes match the Category is H2a (chart as_01).',
                assoc.source('item4')])

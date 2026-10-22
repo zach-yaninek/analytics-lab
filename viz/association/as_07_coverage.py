@@ -61,6 +61,7 @@ def plot(out_dir=assoc.FIG_DIR):
     gap = (alltypes - emit.reindex(alltypes.index).fillna(0)).astype(int)
     by_fam = gap.groupby([family(t) for t in gap.index]).sum()
     by_fam = by_fam[by_fam > 0].sort_values(ascending=False)
+    n_unk = int(gap.get('Unknown', 0))
     style.check('as_07 not checkable = mapped - checkable', mapped - checkable, int(by_fam.sum()))
     xw = pd.read_csv(assoc.ROOT / 'verification' / 'reference' / 'crosswalk_v0.csv', dtype=str,
                      keep_default_na=False).set_index('category')
@@ -69,8 +70,8 @@ def plot(out_dir=assoc.FIG_DIR):
     miss = {c: (int(n - checked.get(xw.loc[c, 'target_codes'], 0)), int(n)) for c, n in per_cat.items()}
     top = sorted(miss.items(), key=lambda kv: -kv[1][0])[:3]
     share = scrubex / checkable
-    title = (f'The Category results rest on {checkable:,} of {paired:,} tickets, {share:.0%} of them on scrubex '
-             f'machines')
+    title = (f'H1 and the per-set results rest on {checkable:,} of {paired:,} tickets, {share:.0%} of them on '
+             f'scrubex machines')
 
     stages = [(f'{paired:,} tickets with a clean control, final 7 days', paired, False),
               (f'{mapped:,} whose Category has a code set', mapped, False),
@@ -93,8 +94,9 @@ def plot(out_dir=assoc.FIG_DIR):
     style.frame(
         fig, title,
         f'{paired - mapped:,} tickets have a Category with no code set (Touchscreen, Curtain, No Trouble Found, power, '
-        f'network and others) or no Category, so the codes cannot speak to them. Of the {mapped:,} that have one, {mapped - checkable} are on '
-        f'machine types that do not log it. The rest, the base of H1 and of every per-set result, are almost all on '
+        f'network and others) or no Category, so the codes cannot speak to them. Of the {mapped:,} that have one, '
+        f'{mapped - checkable} cannot be checked: {mapped - checkable - n_unk} are on machine types that do not log it '
+        f'and {n_unk} are of unknown type. The rest, the base of H1 and of every per-set result, are almost all on '
         f'scrubex machines.',
         definitions=[assoc.LOGS_DEFINITION, assoc.TARGET_DEFINITION, assoc.CONTROL_DEFINITION],
         notes=[f'Mapped tickets that cannot be checked, by family: {fam_txt}. Most affected Categories: {cat_txt}. '

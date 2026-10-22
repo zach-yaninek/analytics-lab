@@ -407,9 +407,9 @@ part of this is generic too. Counts cover only codes in the last-10 list.
 ![A ticket's own codes appear in its final 30 minutes for 23% of tickets, against 2% of controls](../viz/figures/as_02_recency.png)
 ![5 of 6 code sets are clearly more often present before their tickets; Computer Board is not shown to be](../viz/figures/as_03_enrichment_by_set.png)
 ![Electronics codes appear before 13% of tickets against 5% of controls; stock-out codes, the negative control, do not rise](../viz/figures/as_04_bucket_enrichment.png)
-![For 49% of tickets with their own codes, the final 6 h hold one that would not otherwise be there; for unrelated codes, 20%](../viz/figures/as_05_signal_bounds.png)
-![At 7 days the main result holds in all 11 sensitivity variants run so far: the pooled specificity ratio stays between 2.3x and 3.5x](../viz/figures/as_06_robustness.png)
-![The Category results rest on 1,439 of 2,911 tickets, 97% of them on scrubex machines](../viz/figures/as_07_coverage.png)
+![For at least 49% of tickets with their own codes, the final 6 h hold one that would not otherwise be there; for unrelated codes (exploratory), 20%](../viz/figures/as_05_signal_bounds.png)
+![At 7 days the main result holds in every sensitivity variant run so far: the pooled specificity ratio stays between 2.3x and 3.5x](../viz/figures/as_06_robustness.png)
+![H1 and the per-set results rest on 1,439 of 2,911 tickets, 97% of them on scrubex machines](../viz/figures/as_07_coverage.png)
 ![Door codes rise before No Trouble Found and cancelled tickets about as much as before all tickets (+11.5 and +13.5 points, against +11.5)](../viz/figures/as_08_breakdowns.png)
 
 ## Privacy
