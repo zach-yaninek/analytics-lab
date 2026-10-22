@@ -29,9 +29,20 @@ telemetry_mention(text)  -- "mentions a telemetry system" (broader)
     verb and excluded. NOT included: the bare words 'monitor'/'monitoring', 'Canopy', 'IoT'
     and quoted numeric error codes (report those separately if needed).
 
+code_ref(text), wrong_machine_note(text)  -- copied rules for the association study export (docs/07 S2)
+    code_ref: a quoted numeric error code (timestamp_semantics.py L184-188). wrong_machine_note: a note that the
+    ticket was logged against the wrong machine, serial, site or account (customer_fleet_audit.py L64-66), applied
+    to Administrative Notes + Trouble Resolution together, as the source does.
+
 Run: cd /home/user/analytics-lab && python3 -I verification/flags.py
 Prints pseudonymous aggregates only (counts, shares, taxonomy labels, T##### ids). Free text is
 read in memory and never printed or written.
+
+Export: python3 -I verification/flags.py --write [--xlsx <workbook>] [--out verification/outputs/flags]
+Writes flags_by_case.csv (case_id; per-field booleans for monitoring_template, telemetry_mention and code_ref on
+Trouble Reported / Trouble Resolution / Administrative Notes; wrong_machine_note; closed_at_eastern) and
+flags_by_case.meta.json (workbook sha256, rows, counts). Booleans and a timestamp only, never text. On the committed
+workbook it checks code_ref (Trouble Reported) = 350, templates = 138 and wrong-machine notes >= 39.
 """
 import re
 import sys
@@ -53,6 +64,18 @@ LEGACY = {
     "substring 'monitoring' (135)": re.compile(r'monitoring', re.I),
 }
 NARRATIVE_RE = re.compile(r'\bmonitoring\b', re.I)  # sensitivity only: non-template 'monitoring' wording
+
+# Copied, not imported: timestamp_semantics.py runs its pipeline on import. Source: timestamp_semantics.py L184-185,
+# applied case-insensitively at L188 ("at least 350 tickets quote a numeric error code", docs/04 §5.1).
+CODE_REF_RE = re.compile(r'\b(?:error|err|code)\s*(?:code\s*)?#?\s*\d{1,2}\b|\b\d{2}\s+errors?\b|'
+                         r'\bcode\s+\d{2}\b', re.I)
+# Source: customer_fleet_audit.py L64-66, applied to Administrative Notes + Trouble Resolution together (L362-363,
+# high_ticket_machines.py L284).
+ERROR_NOTE = re.compile(r'wrong machine|wrong serial|wrong unit|wrong (?:site|location|account)|'
+                        r'incorrect (?:machine|serial|site|location|account)|location was incorrect|called wrong',
+                        re.I)
+EXPORT_FIELDS = (('Trouble Reported', 'reported'), ('Trouble Resolution', 'resolution'),
+                 ('Administrative Notes', 'administrative'))
 
 # Zac's 30 pilot tickets (pseudonyms as printed in notebook cell 33 output).
 PILOT = ('T00705 T00783 T00951 T00957 T01157 T01287 T01629 T01795 T01796 T01797 T02128 T02229 T02268 T03075 '
@@ -81,6 +104,63 @@ def telemetry_mention(text):
     return bool(TEMPLATE_RE.search(t)) or bool(SYSTEM_RE.search(t))
 
 
+def code_ref(text):
+    """True if the text quotes a numeric error code (CODE_REF_RE)."""
+    return bool(CODE_REF_RE.search(_text(text)))
+
+
+def wrong_machine_note(text):
+    """True if the text says the ticket was logged against the wrong machine, serial, site or account."""
+    return bool(ERROR_NOTE.search(_text(text)))
+
+
+def write_export(xlsx, out):
+    """Per-ticket flags for the association study (docs/07 S2, S10): booleans and the close time, no text.
+
+    Writes <out>/flags_by_case.csv and flags_by_case.meta.json (workbook sha256, row count, counts)."""
+    import json
+    import pandas as pd
+    from common import ZAC_WORKBOOK_SHA256, build_cases, build_maps, load_raw, sha256_file
+
+    raw = load_raw(xlsx)
+    maps = build_maps(raw)
+    cases = build_cases(raw, maps)
+    flags = pd.DataFrame({'case_id': cases.case_id.to_numpy()})
+    for column, label in EXPORT_FIELDS:
+        text = raw[column].to_numpy()
+        flags[f'monitoring_template_{label}'] = [monitoring_template(t) for t in text]
+        flags[f'telemetry_mention_{label}'] = [telemetry_mention(t) for t in text]
+        flags[f'code_ref_{label}'] = [code_ref(t) for t in text]
+    for column, label in EXPORT_FIELDS[1:]:
+        flags[f'wrong_machine_note_{label}'] = [wrong_machine_note(t) for t in raw[column].to_numpy()]
+    joined = [_text(a) + ' ' + _text(b) for a, b in zip(raw['Administrative Notes'], raw['Trouble Resolution'])]
+    flags['wrong_machine_note'] = [wrong_machine_note(t) for t in joined]
+    flags['closed_at_eastern'] = cases.closed_at.to_numpy()
+    flags = flags.sort_values('case_id', kind='mergesort').reset_index(drop=True)
+    sha = sha256_file(xlsx)
+    counts = {'tickets': len(flags),
+              'code_ref_reported': int(flags.code_ref_reported.sum()),
+              'monitoring_template_reported': int(flags.monitoring_template_reported.sum()),
+              'wrong_machine_note': int(flags.wrong_machine_note.sum())}
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    flags.to_csv(out / 'flags_by_case.csv', index=False)
+    meta = {'generated_by': 'verification/flags.py --write', 'workbook_sha256': sha, 'rows': len(flags),
+            'counts': counts}
+    (out / 'flags_by_case.meta.json').write_text(json.dumps(meta, indent=1))
+    print(f"wrote {out / 'flags_by_case.csv'} ({len(flags):,} rows) and flags_by_case.meta.json")
+    print('counts:', counts)
+    if sha == ZAC_WORKBOOK_SHA256:  # reference values for the committed workbook (docs/04 §5.1, docs/03)
+        problems = [name for name, ok in (('code_ref on Trouble Reported = 350', counts['code_ref_reported'] == 350),
+                                          ('monitoring templates = 138', counts['monitoring_template_reported'] == 138),
+                                          ('wrong-machine notes >= 39', counts['wrong_machine_note'] >= 39)) if not ok]
+        for p in problems:
+            print('  [FAIL]', p)
+        return 1 if problems else 0
+    print('  (not the committed workbook: reference counts not checked)')
+    return 0
+
+
 def _pct(a, b):
     return f'{a:,}/{b:,} ({100 * a / b:.2f}%)' if b else f'{a}/0'
 
@@ -101,11 +181,20 @@ def _repeat(conn, population='1=1'):
 
 
 def main():
+    import argparse
     import numpy as np
     import pandas as pd
-    from common import build_cases, build_maps, case_database, load_raw
+    from common import OUTPUTS, XLS, build_cases, build_maps, case_database, load_raw
 
-    raw = load_raw()
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--write', action='store_true', help='write the per-ticket flag export (docs/07 S2, S10)')
+    ap.add_argument('--xlsx', default=str(XLS))
+    ap.add_argument('--out', default=str(OUTPUTS / 'flags'))
+    args = ap.parse_args()
+    if args.write:
+        return write_export(args.xlsx, args.out)
+
+    raw = load_raw(args.xlsx)
     maps = build_maps(raw)
     cases = build_cases(raw, maps)
     reported = raw['Trouble Reported']
@@ -198,4 +287,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

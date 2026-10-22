@@ -291,10 +291,70 @@ def run_db_extract():
     return ok
 
 
+def run_flags():
+    """flags.py --write (the association study's text-flag export) on the extended fixture workbook, plus the copied
+    regexes: planted matches and non-matches, and equality with their sources."""
+    import ast
+    import flags
+    problems = []
+    planted = [(flags.code_ref, 'Error 41 at the user door', True), (flags.code_ref, 'code 76 again', True),
+               (flags.code_ref, 'replaced 2 doors', False), (flags.monitoring_template, 'Monitoring - Daily poll', True),
+               (flags.telemetry_mention, 'seen in clearView', True),
+               (flags.telemetry_mention, 'please clarify what happened', False),
+               (flags.wrong_machine_note, 'Customer called wrong unit', True),
+               (flags.wrong_machine_note, 'wrong part shipped', False)]
+    for fn, text, want in planted:
+        if fn(text) != want:
+            problems.append(f'{fn.__name__}({text!r}) != {want}')
+
+    def source_pattern(path, name):
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Assign) and any(getattr(t, 'id', None) == name for t in node.targets):
+                v = node.value
+                return v.args[0].value if isinstance(v, ast.Call) else v.value
+    if source_pattern(HERE.parent / 'timestamp_semantics.py', 'CODE_REF_RE') != flags.CODE_REF_RE.pattern:
+        problems.append('CODE_REF_RE differs from timestamp_semantics.py')
+    if source_pattern(HERE.parent / 'customer_fleet_audit.py', 'ERROR_NOTE') != flags.ERROR_NOTE.pattern:
+        problems.append('ERROR_NOTE differs from customer_fleet_audit.py')
+    xlsx = BASE / 'extended' / 'fake_cases.xlsx'
+    if not xlsx.exists():
+        make_fixture.build(BASE / 'extended', 'utc', '', 'full', seed=11, extended=True)
+    out = BASE / 'extended' / 'flags'
+    run = subprocess.run([sys.executable, '-I', str(HERE.parent / 'flags.py'), '--write', '--xlsx', str(xlsx),
+                          '--out', str(out)], capture_output=True, text=True)
+    if run.returncode != 0:
+        problems.append(f'flags.py --write exit {run.returncode}: {run.stderr[-300:]}')
+    else:
+        f = pd.read_csv(out / 'flags_by_case.csv', dtype=str, keep_default_na=False)
+        meta = json.loads((out / 'flags_by_case.meta.json').read_text())
+        n_cases = len(common.load_raw(xlsx))
+        bool_cols = [c for c in f.columns if c not in ('case_id', 'closed_at_eastern')]
+        expected = {f'{rule}_{field}' for rule in ('monitoring_template', 'telemetry_mention', 'code_ref')
+                    for field in ('reported', 'resolution', 'administrative')} | \
+            {'wrong_machine_note_resolution', 'wrong_machine_note_administrative', 'wrong_machine_note'}
+        if set(bool_cols) != expected:
+            problems.append(f'columns {sorted(set(bool_cols) ^ expected)}')
+        if len(f) != n_cases or meta['rows'] != n_cases:
+            problems.append(f'rows {len(f)} / meta {meta["rows"]} != cases {n_cases}')
+        if not set(f[bool_cols].to_numpy().ravel()) <= {'True', 'False'}:
+            problems.append('non-boolean flag values')
+        if f.apply(lambda col: col.str.contains('Fake', case=False)).to_numpy().any():
+            problems.append('fixture text leaked into the export')
+        if meta['workbook_sha256'] != common.sha256_file(xlsx):
+            problems.append('meta sha256 mismatch')
+        if not f.case_id.str.fullmatch(r'T\d{5}').all():
+            problems.append('case ids not pseudonymous')
+    ok = not problems
+    print(f"{'flags --write':15s} {len(planted)} planted cases, copied regexes, export on the fixture  "
+          f"{'OK' if ok else 'PROBLEM ' + '; '.join(problems)}")
+    return ok
+
+
 def main():
     results = [run_variant(*v) for v in VARIANTS]
     results.append(run_followup())
     results.append(run_db_extract())
+    results.append(run_flags())
     # index-only mode: steps 0-3, the pilot and the indexed DST-transition test must run without errors
     out = BASE / 'local'
     with contextlib.redirect_stdout(io.StringIO()):

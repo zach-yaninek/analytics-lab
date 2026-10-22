@@ -730,6 +730,41 @@ this section and an earlier section differ, this section governs.
 9. **Ties and empty permutations.** The observed statistic is computed by the same function on the unpermuted labels,
    so ties compare exactly. A permutation in which no set enters scores −∞.
 
+**Amended 22 October 2026, after the clean-room builds and before unblinding.** Two independent clean-room builds (§8)
+each kept a log of ambiguities. Every reading below was settled, and the code was aligned with it, while every outcome
+was still hidden. The comparison printed only agree or disagree for each table cell.
+
+10. **Benjamini–Hochberg families in item 2** are exactly the outcomes listed in §5: 8 buckets, and the 35 frequent
+    codes at each k. A12 marks a row "not estimable" but does not remove it from its family. That is the literal
+    reading of §5. A12 gates testing only for the per-set step in §4.
+11. **The POOLED H2a row.** Its n_T, n_K, b and c are summed over the entering sets as ticket–set combinations, so
+    one comparator can count once for each set it serves.
+12. **Sets that do not enter H2a.** Their estimate (the A13 log ratio) and bootstrap interval are still reported, as
+    descriptive figures. Their permutation p is left blank.
+13. **"Any code" and the outcome list.**
+    - "Any code" includes the two malformed values.
+    - The item 2 breakdowns and the item 3 bucket curves cover the same ten outcomes as the item 2 table: the 8
+      buckets, Malformed and "any code".
+14. **Permutation mechanics.**
+    - `rng.permutation` is called on every stratum, including strata of one ticket and Unknown-type strata. Those
+      strata never enter H2a, but they still consume random draws.
+    - Strata are taken in Python code-point order of (type, quarter).
+15. **The frequent-code threshold** is inclusive: at least 59 of the 5,900 windows. Exactly one code sits on the
+    boundary.
+16. **A10 windows** are the control windows that are clean and not lookback-truncated, whatever their service group
+    or `after_telemetry_end`. That is what gives the pinned 3,388.
+
+**The comparison.** With those readings, both builds matched `association.py` in every compared cell, all exactly; none
+needed the Monte Carlo tolerances. Each comparison covered 33,515 cells:
+- the pairs (3,259 tickets × 8 fields);
+- the item 2 bucket and code tables, including bootstrap intervals and BH q-values;
+- 860 breakdown rows;
+- H2a for every set and pooled, including intervals and permutation p-values;
+- H1;
+- the item 3 curves.
+
+Both builds also reproduced every count pinned in §8.
+
 ## Privacy
 - **Inputs.** Committed pseudonymous outputs only:
   - T#####, M#####, S##### (S5 only), Customer NNN, Host NNN and Location NNNN;
