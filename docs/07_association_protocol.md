@@ -626,7 +626,7 @@ Recorded so readers can judge what this protocol could have been tuned to. Bases
 4. **After the reviewer proposed 7 days:**
    - **Bucket shares at 7 d and 24 h:** Electronics 12.9% vs 5.2% at 7 d, on the 3,259 paired set, with undetermined
      windows counted as absent.
-   - **The reviewers' bucket-level figures:** matched odds ratios at 7 d and 30 d; the final-hour shares (23.9% of
+   - **The reviewers' bucket-level figures:** matched odds ratios at 7 d and 30 d; the final-30-minute shares (23.9% of
      ticket windows against 8.8% of controls have a code in the final 30 minutes, on 3,102 tickets); and bucket shares
      under different undetermined rules (finding notes, 22 October).
    - **A power check by one first-panel reviewer, before v0 existed.** For a hypothetical crosswalk, it counted pairs,
