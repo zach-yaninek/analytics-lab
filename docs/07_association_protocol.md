@@ -1,7 +1,8 @@
 # Association study protocol: ticket fields and the telemetry codes before each ticket
 
-*22 October 2026. Status: **pre-specified protocol, draft for team review.** No ticket-against-control result by
-Category has been computed. One power check before v0 counted pairs, discordant pairs and control-window prevalence for
+*22 October 2026. Status: **frozen protocol; crosswalk v0 team-approved** (§3), with a pre-run amendment (§14).
+*[Amended 22 Oct 2026: the status was "pre-specified protocol, draft for team review".]* No ticket-against-control
+result by Category has been computed. One power check before v0 counted pairs, discordant pairs and control-window prevalence for
 three Category sets of a hypothetical crosswalk (§10, look 4). The analysis script, `verification/association.py`, is
 to follow. It reads only the committed files listed in §1 and runs without the database. This document fixes what will
 be computed, on which tickets and how, before any ticket-against-control result by Category is seen. Later changes are
@@ -177,7 +178,8 @@ no other ticket's 30-day window overlaps the control, and none opened in the 2 d
   control as only before the ticket. Above 1 means it is more often present only before the ticket. Pairs where both
   windows have s, or neither does, carry no information about it.
 - **A10. Able to emit.** Machine type τ can emit set s, for machine m of that type, when some code of s appears
-  anywhere in the last-10 list of the control window of **at least 5 other machines** of type τ.
+  anywhere in the last-10 list of the control window of **at least 5 other machines** of type τ. *[Amended 22 Oct
+  2026: per machine and set; §14.1.]*
   - **Windows counted:** the control windows, from all 6,113 tickets, that are clean and not lookback-truncated: 3,388
     windows.
   - **Why only those:** a clean control overlaps no ticket's 30-day window, so no ticket-window period enters the rule,
@@ -322,7 +324,13 @@ target_bucket`. Editing a rationale or a note does not change it.
   4. Take the sha256 of the UTF-8 bytes.
 - **Test vector.** The v0 draft committed on 22 October gives
   `947b96ce805ba8b8593aa43c728fad97afc382e4386ae06cca36ce5139f05d79`.
-- **Frozen hash: pending team sign-off.** `association.py` checks it on every run.
+- **Frozen hash: `947b96ce805ba8b8593aa43c728fad97afc382e4386ae06cca36ce5139f05d79`.** `association.py` checks it on
+  every run.
+  - **Sign-off.** Signed off on 22 October 2026 by the repository owner, with every default accepted. No row changed,
+    so the frozen hash equals the test vector, and every row's `status` is now "team-approved 2026-10-22, pending IPA".
+  - **Blinding.** Before sign-off the owner was asked to report any viewing of tables of codes by Category, and none
+    was reported. That is what was asked and answered. It is not a separate confirmation from each team member.
+  - *[Amended 22 Oct 2026: this line read "Frozen hash: pending team sign-off".]*
 - **v1 and v0.** v1, reviewed by IPA, is frozen before any run that uses it, and becomes the confirmatory version. v0
   results stay in the record as provisional. Rows that change from v0 to v1 are listed.
 
@@ -372,7 +380,8 @@ target_bucket`. Editing a rationale or a note does not change it.
   - The 95% percentile interval follows A13.
 - **Null.** Category is permuted among the mapped tickets of the analysed pairs within each type × quarter stratum,
   2,000 times. That is 1,706 tickets at 7 d and 1,736 at 30 d.
-  - **Generator.** One generator, `np.random.default_rng(15072)`, is created once.
+  - **Generator.** One generator, `np.random.default_rng(15072)`, is created once. *[Amended 22 Oct 2026: generator
+    scope, ties and empty permutations, §14.3 and §14.9.]*
   - **Order.** Strata are taken sorted by type, then quarter. Within each stratum the tickets are sorted by `case_id`,
     and their Categories are reordered with `rng.permutation`.
   - **What is recomputed.** Each permutation recomputes the whole pooled statistic from the permuted labels, entry rule
@@ -388,7 +397,8 @@ that entered H2a:
 - **K** is the primary tickets on types able to emit s whose `target_bucket` is Not in telemetry. There are 281 such
   tickets in the primary population before the type restriction. Administrative tickets join K only in S1.
 - The estimator, strata, pooling and bootstrap are as in H2a. The permutation is among T ∪ K, within type × quarter.
-- H2b is reported with its permutation p as a descriptive secondary, and no claim rests on it.
+- H2b is reported with its permutation p as a descriptive secondary, and no claim rests on it. *[Amended 22 Oct 2026:
+  pooled permutation, §14.2.]*
 
 **No Trouble Found** is in neither H2a nor H2b, and is reported descriptively. It may mean no fault, or a fault the
 technician could not reproduce; which one is asked of IPA (§13).
@@ -462,7 +472,7 @@ reported either way, marked "not tested" when the gate stops before them. The it
   - A8 is applied to the guard window's own list. No k ≤ g is computed.
   - Reported on the ticket side at k = 6 h, 24 h and 7 d, with S3's control-side bounds.
 
-**Item 4. How much of the target signal the ticket explains.**
+**Item 4. How much of the target signal the ticket explains.** *[Amended 22 Oct 2026: §14.5.]*
 - **Excess presence fraction.**
   - **Definition:** (pT − pC)/pT for the ticket's own target set, at each k, on the H1 population.
   - **What it bounds:** if the control is valid, it is a **lower bound** on the share of target-present tickets whose
@@ -495,7 +505,8 @@ reported either way, marked "not tested" when the gate stops before them. The it
   list (docs/06).
 
 ## 6. Sensitivities (TODOS item 5)
-Each is reported for H2a, H1 and the item 2 bucket table at 7 d and 30 d, in one table. Each sensitivity population
+Each is reported for H2a, H1 and the item 2 bucket table at 7 d and 30 d, in one table. *[Amended 22 Oct 2026: S3 at
+30 d, S9 and S13, §14.4 and §14.7.]* Each sensitivity population
 draws its own bootstrap weights over its own sorted clusters.
 
 | # | Variant | Population | Purpose |
@@ -679,6 +690,45 @@ Category-level outcome quantities seen are the look-4 power counts above.
 - Whether technicians look at clearView when they set Category and Sub Category. If they do, part of the association is
   built in.
 - What "No Trouble Found" means in practice: no fault, or a fault that could not be reproduced?
+
+## 14. Amendments
+**Amended 22 October 2026, before the first run.** An independent review of the implementation plan found nine places
+where the text above allows more than one reading. Each is settled here before any code computes an outcome. Where
+this section and an earlier section differ, this section governs.
+1. **A10 is per machine and per set.** Each ticket i and set s gets its own `emit[i, s]`, which leaves out the ticket's
+   own machine. So in a type with exactly 5 emitting machines, the type does not emit for those 5 machines.
+2. **Pooled H2b permutation.**
+   - Category is permuted within type × quarter among every ticket in T_s ∪ K_s for some set s that entered H2a.
+   - T_s and K_s are then recomputed from the permuted labels. K follows the permuted Category's `target_bucket`.
+3. **Random-number generator scope.** The primary permutation (H2a, pooled, 7 d) draws from a fresh
+   `np.random.default_rng(15072)`. Every other permutation family gets its own fresh `default_rng(15072)`, so the
+   primary p-value does not depend on the order in which analyses run. The other families are:
+   - H2a at 30 d;
+   - H2b;
+   - the per-set H2a p-values;
+   - each sensitivity.
+4. **S3 at 30 d.** On the control side, the outcome is *unknown* when:
+   - the guard dropped a code of s whose `occurrences` is above 1; or
+   - `distinct_codes` is above 10 and the guard dropped at least one code, because another code may then have been
+     pushed out of the list.
+5. **Item 4.**
+   - **Tightest bound.** Its argmax over k is recomputed in each bootstrap replicate.
+   - **"Target count higher".** This compares the summed whole-window `occurrences` of the listed target codes.
+   - **Micro-averages.** These pool different per-set populations, and one ticket can count in the precision
+     denominators of several sets. The tables say so.
+6. **The 157 row (item 2 breakdowns).** The 7-day determination (A8) and the span rule (A3 step 2) apply to it. It
+   gets its own machine-cluster weights over its own sorted machines.
+7. **S13 and S9.**
+   - **S13.** A10 is recomputed for {20, 79, 80}. Improper Use then no longer overlaps the Deposit Door set, so it
+     joins K.
+   - **S9.** This has no control window. Its H2a and H1 rows read "n/a", and only ticket-side shares are reported.
+8. **Reporting.**
+   - The per-set H2a permutation p-values are descriptive. Only the pooled p decides H2a.
+   - Steps after a failed gate are marked "not tested", with their estimates shown.
+   - `as_summary.json` is written with `allow_nan=False`. An interval endpoint that is infinite or undefined is stored
+     as an explicit flag (`unbounded` or `undefined`) with the count of undefined replicates (A13).
+9. **Ties and empty permutations.** The observed statistic is computed by the same function on the unpermuted labels,
+   so ties compare exactly. A permutation in which no set enters scores −∞.
 
 ## Privacy
 - **Inputs.** Committed pseudonymous outputs only:
