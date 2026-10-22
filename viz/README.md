@@ -12,6 +12,7 @@ viz/
   high_ticket/          high-ticket-machine charts (docs/05); htm.py = their data and term definitions
   zac_notebook/         Zac's 10 notebook figures, rebuilt in this style; zac_data.py = data and definitions
   fleet_exposure/       fleet-exposure charts (docs/06); fleet.py = their data and term definitions
+  association/          association charts (docs/08); assoc.py = their data and term definitions
   figures/              rendered PNGs (pseudonymous)
   run_all.py            redraw everything and run the checks
 ```
@@ -117,6 +118,9 @@ number on the chart equals that number in the data" assertions.
 | `fleet_exposure/fx_10_customer_persistence.py` | Each customer's STR, first half vs second (+ real-name variant) |
 | `fleet_exposure/fx_11_machine_persistence.py` | Second-half ratio of machines grouped by first-half tickets |
 | `fleet_exposure/fx_12_outlier_drivers.py` | What drives each consistent outlier's excess (+ real-name variant) |
+| `association/as_01_specificity_by_set.py` | H2a: specificity ratio per code set and pooled, with 95% intervals |
+| `association/as_02_recency.py` | Code-set presence within 30 min to 30 days, ticket window vs control |
+| `association/as_03_enrichment_by_set.py` | H1 per code set: matched odds ratio with 95% intervals |
 
 High-ticket charts 9 (raw ticket counts by model and telemetry type) and 10 (rates per 100 machine-months by telemetry
 type) were retired in favour of `fx_01`, `fx_02` and `fx_05`, which use IPA's installed-base list.
@@ -130,6 +134,9 @@ The `fx_*` charts read `verification/outputs/fleet/fx_*.csv` and `fx_summary.jso
 `verification/fleet_exposure.py` from IPA's installed-base list joined to the case export (`fx_05` also reads three
 `htm_*` outputs for its checks and its note on the retired chart 10).
 
+The `as_*` charts read `verification/outputs/assoc/as_*.csv` and `as_summary.json`, written by
+`verification/association.py` from committed outputs only (docs/07, docs/08).
+
 None of these needs the database. Only the real-name variants and the privacy scans read gitignored inputs (the
 workbook, the equipment list, `data/private/`).
 
@@ -137,16 +144,17 @@ workbook, the equipment list, `data/private/`).
 
 ```bash
 python3 -I viz/run_all.py                                  # every chart, then the checks
-python3 -I viz/high_ticket/run_all.py                      # one section (also zac_notebook/, fleet_exposure/)
+python3 -I viz/high_ticket/run_all.py                      # one section (also zac_notebook/, fleet_exposure/, association/)
 python3 -I viz/zac_notebook/zac_04_issue_mix.py            # one chart
 ```
 
-Each of the three sections' `run_all.py` runs its own set of three checks on the figures it draws:
+Each section's `run_all.py` runs its own set of three checks on the figures it draws:
 - **Numbers:** numbers drawn on the charts match the data (`check()` calls).
 - **Definitions:** every chart that uses a defined term draws its definition. High-ticket: chronic outlier,
   workload-outsized. Zac: unplanned tickets, active machine-months, repeat contact, provisional fault codes. Fleet
   (`defined_terms()` in `fleet_exposure/run_all.py`): installed and telemetry machine-months, unplanned tickets,
-  expected tickets, STR, age-standardised ratio, flagged, consistent outlier, funnel.
+  expected tickets, STR, age-standardised ratio, flagged, consistent outlier, funnel. Association
+  (`association/run_all.py`): specificity ratio, code set, control, matched odds ratio.
 - **Privacy:** no real customer name, serial or address appears on a pseudonymous figure.
 
 A failed definition or privacy check stops the run with an error. The fleet section also stops on a failed number

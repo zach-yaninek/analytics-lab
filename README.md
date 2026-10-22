@@ -12,6 +12,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
 | `docs/04_timestamp_semantics.md` | Case and telemetry clocks, field-update timing, implications for the classifier |
 | `docs/05_high_ticket_machines.md` | Machines with an outsized share of tickets: workload and exposure-adjusted views, figures |
 | `docs/06_fleet_exposure.md` | Ticket rates adjusted for fleet exposure (IPA's installed-base list): models, ages, customers, consistent outliers |
+| `docs/07_association_protocol.md` | Pre-specified protocol for the association study (ticket Category ↔ codes before the ticket), frozen before any result |
+| `docs/08_association_results.md` | Results of the association study: specificity (H2a), enrichment, recency, sensitivities |
 | `TODOS.md` | Plan for the association analysis (ticket fields ↔ last 10 telemetry codes before the ticket) |
 
 ### Layout
@@ -23,12 +25,15 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   `verify_with_db.py` (everything that needs the telemetry DB), `db_followup.py` (last-10 codes per ticket on the
   corrected clock; also needs the DB), and `high_ticket_machines.py` (local only, reads the committed
   `fu_*`/`db_*` outputs), `fleet_exposure.py` (rates on IPA's installed-base list; local only) and
-  `fleet_db_extract.py` (joins telemetry devices to the installed-base list; needs the DB).
+  `fleet_db_extract.py` (joins telemetry devices to the installed-base list; needs the DB), `association.py` (the
+  association study of docs/07 and docs/08; committed outputs only) with its crosswalk in `verification/reference/`,
+  and `flags.py --write` (per-ticket text flags for the association sensitivities; needs the case export).
 - `viz/`: every chart, in one shared style (see `viz/README.md`).
   - `viz/style/`: the reusable style: `ipa.mplstyle` (a plain matplotlib style sheet) and `ipa_style.py` (palette,
     title band, footer for definitions and notes, save).
   - `viz/high_ticket/`: one script per high-ticket-machine chart (`htm_01_*.py` … `htm_08_*.py`).
   - `viz/fleet_exposure/`: one script per fleet-exposure chart (`fx_01_*.py` … `fx_12_*.py`).
+  - `viz/association/`: one script per association chart (`as_01_*.py` … `as_03_*.py`).
   - `viz/zac_notebook/`: Zac's 10 notebook figures rebuilt in the same style (`zac_01_*.py` … `zac_10_*.py`).
   - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py`.
@@ -55,6 +60,8 @@ python3 -I verification/verify_with_db.py --db data/raw/ipa_transaction_events_2
 python3 -I verification/high_ticket_machines.py   # ~20 s, no DB; ends by drawing the htm_* figures
 python3 -I verification/fleet_exposure.py         # ~30 s, no DB; installed-base rates and consistent outliers
 python3 -I verification/fleet_db_extract.py --db data/raw/ipa_transaction_events_202508_202608.db  # optional
+python3 -I verification/association.py            # ~2 min, no raw data, no DB; association study (docs/07, docs/08)
+python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
 python3 -I viz/run_all.py                                 # redraw every chart and run the chart checks
 python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py, zac_NN_*.py or fx_NN_*.py)
 ```

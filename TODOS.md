@@ -1,5 +1,9 @@
 # TODOS: Association analysis (ticket fields ↔ last 10 telemetry codes before the ticket)
 
+*[Updated 22 Oct 2026: the study is pre-specified in `docs/07_association_protocol.md` (frozen before any result;
+crosswalk v0 team-approved) and reported in `docs/08_association_results.md` (`verification/association.py`). Items
+are ticked from the deviations table in docs/07 §9. The text below is kept as the 21 October plan.]*
+
 **Goal.** Measure how well a ticket's recorded issue (Trouble Code / Category / Sub Category, and later the
 classifier's prediction from the ticket text) lines up with the **last 10 non-success telemetry codes generated
 before the ticket was created**. Then use that to design and evaluate the zero-shot classifier.
@@ -32,28 +36,32 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
 
 ## Work items
 
-- [ ] **1. Target mapping (crosswalk).** Agree with the team, then IPA, how each Category (with its parent Trouble
+- [x] **1. Target mapping (crosswalk).** *Done 22 Oct: `verification/reference/crosswalk_v0.csv`, code sets plus
+  a bucket, drafted blind by three drafters, team-approved and frozen by hash (docs/07 §3). IPA review → v1 is open.* Agree with the team, then IPA, how each Category (with its parent Trouble
   Code) maps to telemetry buckets, or to "no identifiable issue" or "not in telemetry".
   - *Inputs:* the 41 Categories (`verification/outputs/repro_clean_issue_mix.csv`) and the code dictionary
     (`verification/outputs/db/db_codes_buckets.csv`).
   - *Note:* no Category corresponds to Stock-out. Sub Category mostly records the repair action, not a fault subtype.
   - *Done when:* a versioned crosswalk CSV in the repo, with the rationale for each mapping.
-- [ ] **2. Enrichment, ticket window vs paired control window.** For each bucket and each frequent code:
+- [x] **2. Enrichment, ticket window vs paired control window.** *Done 22 Oct (docs/08 §4; reproduced exactly by two
+  clean-room builds).* For each bucket and each frequent code:
   - share of ticket windows with ≥1 occurrence in the last-10 list vs share of the same tickets' clean controls;
   - risk difference, lift and McNemar's paired test;
   - machine-clustered bootstrap confidence intervals, because a machine's tickets are not independent;
   - stratified by Trouble Code and Category.
 
   *Done when:* a table with intervals, reproduced by a second independent implementation.
-- [ ] **3. Recency.** Lift by how long before the ticket the code appeared: 0–2 h, 2–6 h, 6–24 h, 1–7 d and 7–30 d.
+- [x] **3. Recency.** *Done 22 Oct (docs/08 §5): the signal is concentrated in the final hours.* Lift by how long before the ticket the code appeared: 0–2 h, 2–6 h, 6–24 h, 1–7 d and 7–30 d.
   Use `last10_*_hours_before`. The most recent code is typically 2.4 h before the ticket.
   - Sensitivity: the 30 and 60-minute guard bands, which change the last-10 list for 10% and 15% of tickets.
   - *Done when:* we know whether the signal is concentrated in the final hours, which tells us how far back a
     classifier should look.
-- [ ] **4. Category ↔ last-10 match rate.** Using the crosswalk from item 1: how often does the ticket's matching
+- [x] **4. Category ↔ last-10 match rate.** *Done 22 Oct (docs/08 §6): excess presence fraction (a lower bound) and
+  precision/recall for target codes and the matching bucket.* Using the crosswalk from item 1: how often does the ticket's matching
   bucket appear among its last 10 codes, against the control window? Report precision and recall of "matching bucket
   present", overall and by Category.
-- [ ] **5. Exclusions and sensitivities.** Report each result with and without:
+- [ ] **5. Exclusions and sensitivities.** *22 Oct: done except the text-flag exclusions (S2) and the interval-based
+  clean rule (S10), which need the local export below (docs/08 §7).* Report each result with and without:
   - monitoring-template tickets (`verification/flags.py`; 138 tickets);
   - tickets whose text quotes telemetry codes or systems (≥350 quote a code; `telemetry_mention`);
   - wrong-machine tickets (at least 39, about 52 on manual review);
@@ -61,10 +69,10 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
   - lookback-truncated windows;
   - repeat tickets whose windows overlap (23.6% have another ticket within 30 days). Use one ticket per episode, or
     cluster by machine.
-- [ ] **6. Stratify by machine type.** Code support differs by family: scrubex-3, scrubex-7 and scrubex2.0-3 log
+- [x] **6. Stratify by machine type.** *Done 22 Oct (docs/08 §6; `as_by_type.csv`, `as_by_model.csv`).* Code support differs by family: scrubex-3, scrubex-7 and scrubex2.0-3 log
   almost no mechanical or electronics codes, while sd-49 logs about 100 per 1,000. Report enrichment per type, or for
   types that can emit the bucket.
-- [ ] **7. Classifier evaluation design.**
+- [x] **7. Classifier evaluation design.** *Design done 22 Oct (docs/07 §7). Drawing and labelling the sample is open.*
   - **Reference labels:** an independent human-labelled set. Zac's pilot review template is still unlabelled. Redraw
     it from closed, unplanned, customer-reported tickets, stratified on the target buckets.
   - **Inputs vs reference:** never use the same field as both input and reference.
@@ -82,6 +90,19 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
   - A Field History Tracking export for Trouble Code, Category and Sub Category.
   - ~~Confirm that `devices.location_name` comes from the asset record, i.e. that it is the account.~~ Superseded
     on 21 Oct: IPA's installed-base list gives each machine's account directly (docs/06).
+  - *Added 22 Oct (docs/07 §13, docs/08 §7):* review of crosswalk v0 and IPA's code definitions for v1; which board
+    code 13 refers to, and whether 25 "No Communications with Dispenser" is a symptom of many faults; which family
+    logs 66/67; which codes each family or firmware can emit; what "No Trouble Found" means in practice.
+
+## Association follow-ups (added 22 October)
+- [ ] **Run the text-flag export locally** (`python3 -I verification/flags.py --write`, then commit
+  `verification/outputs/flags/`) and re-run `verification/association.py`: this fills S2 (text-flag exclusions)
+  and S10 (interval-based clean rule).
+- [ ] **Crosswalk v1** from IPA's code definitions: freeze it before any run, then re-run as the confirmatory version
+  (docs/07 §3, S12).
+- [ ] **Database re-extraction** (docs/07 §12): windows without the last-10 cap; four referent weeks per ticket with
+  a Mantel-Haenszel OR; a case-time-control analysis; a code × machine type table for the full year (replaces A10).
+- [ ] **Classifier reference sample** (docs/07 §7): a phone/e-mail redaction rule first, then draw and label.
 
 ## Fleet exposure follow-ups (added 21 October)
 - [x] **Customer-level and model-level rates on installed exposure**, and consistent outliers: `docs/06`,
@@ -90,7 +111,8 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
   `verification/outputs/fleet/db/`). After that, re-running `verification/fleet_exposure.py` gives telemetry-type rates
   on installed exposure, networked vs non-networked rates and the full model × type crosswalk; chart `fx_05` switches
   basis by itself.
-- [ ] **Stratify the association analysis by model as well as telemetry type** (item 6). Every ticketed machine
+- [x] **Stratify the association analysis by model as well as telemetry type** (item 6). *Done 22 Oct
+  (`as_by_model.csv`, model within type).* Every ticketed machine
   already has its model (ticket model = list model on all 7,018 matched rows).
 - [ ] **Measure how many of the 18 consistent-outlier customers chance alone would produce:** extend the stratified
   shuffle null (docs/06 §5) to the full rule (10 of 12 variants and both halves). Report separately the 8 with
