@@ -7,7 +7,8 @@ the tickets its machines would generate at the fleet's rate for their age (joint
 interval; 1 = in line with the fleet age for age. One dot per model with its interval; blue = interval wholly above
 1, gray = interval includes 1. Rows: the three models with the most tickets, the three small models whose
 age-standardised interval is above 1, and alEx LC-D (above the fleet on the crude rate of fx_02, not once age is
-allowed for), sorted by ratio. Every model shown has its own rate (at least 100 installed machine-months).
+allowed for), sorted by ratio. Every model shown has its own rate (at least 100 installed machine-months); the card
+header counts the blue models against all 27 such models, checked here.
 
 Input:  verification/outputs/fleet/fx_model_rates.csv, verification/outputs/fleet/fx_summary.json
 Output: viz/figures/slides/sl_03_model_ratio.png (half card)
@@ -57,6 +58,11 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_03 first three = the three models with the most tickets', 1, int(busy == MODELS[:3]))
     own_above = m[m.own_rate & (m.age_std_vs_fleet == 'above')].model
     S.check('sl_03 all five models above the fleet age for age are shown', 1, int(set(own_above) <= set(MODELS)))
+    # The card header: "5 of 27 models" = above age for age, of the models with their own rate (as fx_02 counts).
+    S.check('sl_03 header: 27 models with their own rate', 27, int(m.own_rate.sum()))
+    S.check('sl_03 header: 5 of them above the fleet age for age', 5, len(own_above))
+    S.check('sl_03 header: the 5 blue models are those 5', 1,
+            int(set(own_above) == set(d.index[d.age_std_lo > 1])))
     S.check('sl_03 alEx LC-D: above on the crude rate (fx_02), not age-standardised', 1,
             int(d.loc['alEx LC-D', 'vs_fleet'] == 'above' and d.loc['alEx LC-D', 'age_std_vs_fleet'] != 'above'))
     for name, (r, lo, hi) in EXPECTED.items():

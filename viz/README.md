@@ -126,6 +126,7 @@ number on the chart equals that number in the data" assertions.
 | `association/as_06_robustness.py` | Pooled H2a at 7 days under each sensitivity variant, with 95% intervals |
 | `association/as_07_coverage.py` | Which tickets the Category results cover: paired, mapped, checkable, scrubex |
 | `association/as_08_breakdowns.py` | Descriptive rows: door codes before No Trouble Found and cancelled tickets; electronics before repeat tickets |
+| `slides/sl_*.py` | Slide versions for the IPA meeting deck (`python3 -I viz/slides/run_all.py`): the same committed outputs and data logic as the page charts above, plot only, card-sized, in the A-Lab deck palette (`slides/deck_style.py`); output in `figures/slides/` |
 
 High-ticket charts 9 (raw ticket counts by model and telemetry type) and 10 (rates per 100 machine-months by telemetry
 type) were retired in favour of `fx_01`, `fx_02` and `fx_05`, which use IPA's installed-base list.

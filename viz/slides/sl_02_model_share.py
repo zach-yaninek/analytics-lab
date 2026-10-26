@@ -6,7 +6,8 @@ Slide version of viz/fleet_exposure/fx_01_fleet_vs_ticket_share.py, from the sam
 machine-months, blue = share of unplanned tickets; two bars of equal length = the fleet's ticket rate. Rows: the
 TOP_N models with the most unplanned tickets (all of them are rows of the page chart, which lists the 10 models with
 the most installed machine-months). The three busiest models (bold) together hold 42% of the machine-months and 51%
-of the tickets; the card header carries that comparison, checked here.
+of the tickets; the card header carries that comparison and the page chart's verdict on it ("mostly": their combined
+rate is at most 1.5 times the fleet's, fx_01's rule), both checked here.
 
 Input:  verification/outputs/fleet/fx_model_rates.csv, verification/outputs/fleet/fx_summary.json
 Output: viz/figures/slides/sl_02_model_share.png (half card)
@@ -30,8 +31,12 @@ BAR_H, OFFSET = 0.36, 0.19
 
 def plot(out_dir=S.FIG_DIR):
     fleet = S.OUT / 'fleet'
-    F = json.loads((fleet / 'fx_summary.json').read_text())['fleet']
+    summary = json.loads((fleet / 'fx_summary.json').read_text())
+    F = summary['fleet']
     m = pd.read_csv(fleet / 'fx_model_rates.csv')
+    start, end = (pd.Timestamp(d) for d in summary['definitions']['period'])
+    period = f'{start:%b %Y} to {end:%b %Y}'  # as fleet.period_text() in the page chart
+    S.check('sl_02 period drawn = Aug 2025 to Aug 2026', 1, int(period == 'Aug 2025 to Aug 2026'))
 
     # Same population and totals as fx_01: the model table covers every listed machine with exposure and every ticket.
     S.check('sl_02 model tickets = fleet tickets (6,750)', 6750, m.tickets.sum())
@@ -60,8 +65,10 @@ def plot(out_dir=S.FIG_DIR):
     # The card header's comparison (as in the page chart's title).
     S.check('sl_02 three busiest: 42% of installed machine-months', 42, round(busy.months.sum() / F['months'] * 100))
     S.check('sl_02 three busiest: 51% of unplanned tickets', 51, round(busy.tickets.sum() / F['tickets'] * 100))
-    S.check('sl_02 three busiest: combined rate 1.21x the fleet\'s', 1.21,
-            round((busy.tickets.sum() / busy.months.sum()) / (F['tickets'] / F['months']), 2))
+    busy_ratio = (busy.tickets.sum() / busy.months.sum()) / (F['tickets'] / F['months'])
+    S.check('sl_02 three busiest: combined rate 1.21x the fleet\'s', 1.21, round(busy_ratio, 2))
+    S.check('sl_02 header "mostly from": combined rate 1 to 1.5x the fleet\'s (fx_01 "mostly reflects" rule)', 1,
+            int(1 <= busy_ratio <= 1.5))
 
     fig, ax = S.figure(S.HALF)
     y = -np.arange(TOP_N, dtype=float)
@@ -93,8 +100,9 @@ def plot(out_dir=S.FIG_DIR):
     ax.set_xticks([0, 5, 10, 15, 20, 25])
     S.pct_axis(ax.xaxis)
     S.style_axes(ax, grid='x', baseline='left')
-    ax.legend(loc='lower right', handlelength=1.2, borderaxespad=0.2)
-    ax.set_xlabel('Share of the fleet, Aug 2025 to Aug 2026')
+    ax.legend(loc='lower right', handlelength=1.2, borderaxespad=0.2, frameon=True, facecolor=S.WHITE,
+              edgecolor='none', framealpha=1)  # opaque, so the gridlines do not run through the text
+    ax.set_xlabel(f'Share of the fleet, {period}')
     return [S.save(fig, Path(out_dir) / PNG)]
 
 
