@@ -52,10 +52,10 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      same code sets before tickets for other faults it is 644 against 321, about 2 to 1; a ticket counts once for each
      set it is compared on. Compared within machine type and quarter, the first split is **3.2 times** the second.
    - **The numbers.** 95% interval 2.3 to 4.8; permutation p = 0.0005, the smallest possible with 2,000 permutations
-     (`as_h2a.csv`; chart as_01).
+     (`as_h2a.csv`; chart [as_01](../viz/figures/as_01_specificity_by_set.png)).
    - **How to read it.** This specificity ratio compares odds, not shares. It does not mean the codes' share rises 3.2
      times as much.
-2. **By code set the estimates are imprecise.**
+2. **By code set the estimates are imprecise** (chart [as_01](../viz/figures/as_01_specificity_by_set.png)).
 
    | Code set | Specificity ratio (95%) |
    |---|---|
@@ -72,7 +72,7 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      a zero, and the entry rule leaves it out of the pooled test. Including it would raise the pooled ratio from 3.2
      to 3.7, so leaving it out does not inflate the result.
 3. **The codes are concentrated in the final hours.** Among the 1,439 tickets whose Category has a code set that their
-   machine type logs:
+   machine type logs (1,469 at 30 days):
 
    | Window before the ticket | Ticket window | Control |
    |---|---|---|
@@ -80,15 +80,15 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
    | 7 days | 68% | 50% |
    | 30 days | 76% | 65% |
 
-   (`as_recency.csv`; chart as_02)
+   (`as_recency.csv`; chart [as_02](../viz/figures/as_02_recency.png))
    - **For a retrospective linker:** look first at the final hours, and expect to miss many tickets.
-     - **Precision.** Among tickets showing a set's codes in the final 2 hours, about 42% have the matching Category,
-       against 19% over 7 days.
+     - **Precision.** Of the set-code hits in the final 2 hours, about 42% are on tickets whose Category points at that
+       set, against 19% over 7 days. Micro-averaged over code sets; the 2-hour figure is exploratory.
      - **Recall.** The final 2 hours catch the codes for only 39% of tickets (exploratory).
      - **Recency is not the fault.** Codes of unrelated sets also rise in the final hours (11% vs 3% at 30 minutes), so
        recency alone does not identify the fault.
 4. **Part of the code signal is owed to whatever led to the ticket, if the control is a fair stand-in** (`as_item4.csv`;
-   chart as_05).
+   chart [as_05](../viz/figures/as_05_signal_bounds.png)).
    The base is the tickets with their own code set in the final 7 days.
    - **Whole week.** Between 27% (95% 23% to 30%) and 73% would have had no code from the set all week without
      whatever led to the ticket. The rest would have had one anyway, as background.
@@ -100,7 +100,8 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      figure is 20% (exploratory). Whether the codes match the Category is H2a's question.
    - **What these are.** Bounds, not estimates.
 5. **At 7 days, robust to every sensitivity that could be computed.** The pooled specificity ratio stays between 2.3
-   and 3.5, with its interval above 1, in all of these (`as_sensitivities.csv`; chart as_06):
+   and 3.5, with its interval above 1, in all of these (`as_sensitivities.csv`; chart
+   [as_06](../viz/figures/as_06_robustness.png)):
    - guard bands that drop the final 30 or 60 minutes from both windows (S3);
    - a matched ticket-free lead-in (S4);
    - dropping recently activated or recently installed machines (S5);
@@ -119,7 +120,7 @@ code definitions. The text-flag sensitivities (S2, S10) wait for a local run of 
      That question is open with IPA. The text-flag sensitivity (S2) that bounds it from the ticket text is pending.
    - **Other machine families.** The Category results rest almost entirely on scrubex machines. alEx and mlc
      machines, about one pair in five, seldom log the codes their Categories point at. So the study cannot say whether
-     Category agrees with the codes on them (§7; chart as_07).
+     Category agrees with the codes on them (§7; chart [as_07](../viz/figures/as_07_coverage.png)).
 
 ## 1. The data
 - **Primary population** (docs/07 A3): 2,950 unplanned tickets on 2,376 machines, opened 5 October 2025 to
