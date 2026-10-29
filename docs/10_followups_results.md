@@ -108,12 +108,12 @@
      | LVRR-WP | ×2.44 |
 
      alEx LC-D is the exception: ×0.77 (0.47–1.31).
-   - **Mix.** The mix differs by age within LVD-Remote-2.0, LVRR-WP-2.0 (q = 0.001 each) and LVRR-WP (q = 0.02):
+   - **Mix.** The mix differs by age within LVD-Remote-2.0, LVRR-WP-2.0 (q = 0.0015 each) and LVRR-WP (q = 0.022):
      - LVRR-WP-2.0's young machines: Door 60% of tickets against 47%; Mechanical 5% against 14%;
-     - LVD-Remote-2.0's young machines: Electronics 32% against 22%; Mechanical 18% against 28%.
+     - LVD-Remote-2.0's young machines: Electronics 31% against 22%; Mechanical 18% against 28%.
 6. **Telemetry type mostly re-labels model** (docs/09 §3.6). Of the types that add information:
    - alex2.0-1 and alex2.0-3, which span the alEx models, show no age difference in mix (q = 0.21);
-   - scrubex-7 does (q = 0.002). It carries 57 of LVRR-WP's 63 under-4 tickets.
+   - scrubex-7 does (q = 0.0023). It carries 57 of LVRR-WP's 63 under-4 tickets.
 
    Rates on installed months by telemetry type still need the database extract.
 7. **Robustness** (`ag_tests.csv`):
