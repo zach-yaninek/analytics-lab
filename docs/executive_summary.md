@@ -5,7 +5,8 @@ IPA meeting on 13 October 2026).*
 *Team: Zachary Yaninek, Zachary Baylis, Varun Ram Narayanan, Nathanael Muller.*
 
 > Repository version. Customer names are pseudonymised, following the repo convention; the Word memo given to IPA
-> (`deliverables/IPA_Executive_Summary.docx`, not committed) uses real facility names. Supporting detail:
+> (`deliverables/IPA_Executive_Summary.docx`, not committed) uses real facility names; `viz/deliverables/build_memo.py`
+> rebuilds it from this file. Supporting detail:
 > - `docs/02`–`docs/06`. `docs/02`–`05` carry dated update notes.
 > - Full-database results: `verification/outputs/db/db_summary.md` and `verification/outputs/fu/fu_summary.md`.
 > - Fleet-exposure results: `verification/outputs/fleet/fx_summary.json` (`docs/06`).
@@ -93,7 +94,7 @@ date). With it we can, for the first time:
    - **Charts:** [zac_03](../viz/figures/zac_03_model_workload.png) the three models' 48%;
      [fx_01](../viz/figures/fx_01_fleet_vs_ticket_share.png) 51% of tickets against 42% of machine-months;
      [zac_02](../viz/figures/zac_02_customer_workload.png) the ten busiest facilities;
-     [fx_06](../viz/figures/fx_06_busiest_customers.png) Customers 171 and 029 against their fleets;
+     [fx_06](../viz/figures/fx_06_busiest_customers.png) Customer 171 and Customer 029 against their fleets;
      [zac_04](../viz/figures/zac_04_issue_mix.png) Deposit Door.
 3. **New: adjusted for exposure and machine age, the main models are close to the fleet rate.**
    - **Fleet rate:** 6.2 unplanned tickets per 100 installed machine-months, about 0.74 per machine per year.
@@ -260,6 +261,10 @@ date). With it we can, for the first time:
 what to point at and where a chart's numbers differ from the text. Customer charts use pseudonyms; the real-name
 variants of zac_02, fx_06, fx_07, fx_10 and fx_12 are drawn locally to `deliverables/` and are not committed.*
 
+### IPA's follow-ups on slides 4 and 5 (update, 29 October)
+The follow-up charts, `sl_18`–`sl_31`, are on slides 4a–4e and 5a–5e of the deck; each prints its definitions under
+the chart, and `docs/10` links each one to its finding. They are drawn for slides, too wide for a portrait page.
+
 ### Association study (update, 22 October)
 ![A ticket's own codes show up before it rather than in its control at 3.2x the odds seen for other faults' tickets](../viz/figures/as_01_specificity_by_set.png)
 
@@ -301,7 +306,7 @@ machines (blue).
 ![10 of the 15 customers with the most tickets are flagged, 6 consistently; the top one (by 1 ticket) is in line with its fleet](../viz/figures/fx_06_busiest_customers.png)
 
 *Point at:* Customer 171, 113 against 59 expected (blue: a consistent outlier); Customer 029, 114 against 102, in line
-with its fleet. On unplanned tickets on listed machines 029 is the busiest by one ticket, hence the title.
+with its fleet. On unplanned tickets on listed machines Customer 029 is the busiest by one ticket, hence the title.
 
 ![Deposit Door leads with 15.6% of unplanned tickets, 1.7× the next category](../viz/figures/zac_04_issue_mix.png)
 
