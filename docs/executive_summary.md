@@ -25,11 +25,11 @@ on 13 October 2026).*
 >   - No sign yet that they were fixed: the Touchscreen gap widened in the second half, and Deposit Door's held. IPA's
 >     fix dates would turn this into a test.
 > - **Repeat contacts (slide 5).**
->   - 31% of repeats are the same Category and 32% a different group; 27% involve a Monitoring ticket, No Trouble
+>   - 31% of repeats are the same Category and 32% a different group; 28% involve a Monitoring ticket, No Trouble
 >     Found or a blank Category.
 >   - Quick follow-ups are more often the same problem: 46% within a day against 27% beyond six months.
->   - No model or telemetry type repeats more than its ticket volume and timing explain. Random timing gives 15.4%
->     against the observed 23.6%.
+>   - Every model repeats more than random timing would give (15.4% for the fleet against 23.6% observed), but once
+>     ticket volume and timing are allowed for, no model or telemetry type stands out from the fleet.
 
 > **Update, 22 October 2026: association study** (`docs/07`, `docs/08`; provisional).
 > - **Primary result.** On average over the five code sets that could be tested, a ticket's Category agrees with the

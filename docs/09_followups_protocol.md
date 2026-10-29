@@ -444,6 +444,14 @@ Where this section and an earlier one differ, this section governs.
      - "Several types" never occurs, since every serial matches one device.
 5. **Definitions.** The definition strings the charts draw live in `viz/slides/followup_terms.py`, filled with numbers
    from `followups_summary.json`, not in the summary itself.
+6. **Corrections after the independent review (29 October 2026).** Two output rows did not follow this text, and one
+   column name was ambiguous. No test, q-value or conclusion changes.
+   - **"Unknown"** (57 eligible tickets, 12 repeats) had been pooled into "Other telemetry types" in B5 and B6. As
+     item 4 says, it is now a row of its own and is not tested.
+   - **The pooled "Other models" row** reported 0 listed machine-months. It now holds every listed model without a
+     row of its own: 15,240 machine-months. A check confirms the model rows hold every listed machine-month.
+   - **`same_category_share_of_repeats`** is renamed `same_category_share_recorded_pairs`. It is the share among the
+     repeats where both tickets have a recorded Category and neither is a monitoring ticket, not among all repeats.
 
 ## Privacy
 - **Outputs.** Pseudonyms only: S#####, M#####, T#####, Customer NNN. Model, Category and type labels.

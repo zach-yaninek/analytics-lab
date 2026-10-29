@@ -53,12 +53,18 @@ No device match,276,Category blank,22,0.07971014493,telemetry type
 No device match,276,Same Category,77,0.2789855072,telemetry type
 No device match,276,"Same group, other Category",34,0.1231884058,telemetry type
 No device match,276,Different group,79,0.2862318841,telemetry type
-Other telemetry types,228,Monitoring involved,25,0.1096491228,telemetry type
-Other telemetry types,228,No Trouble Found involved,35,0.1535087719,telemetry type
-Other telemetry types,228,Category blank,4,0.01754385965,telemetry type
-Other telemetry types,228,Same Category,65,0.2850877193,telemetry type
-Other telemetry types,228,"Same group, other Category",20,0.08771929825,telemetry type
-Other telemetry types,228,Different group,79,0.3464912281,telemetry type
+Other telemetry types,216,Monitoring involved,25,0.1157407407,telemetry type
+Other telemetry types,216,No Trouble Found involved,32,0.1481481481,telemetry type
+Other telemetry types,216,Category blank,4,0.01851851852,telemetry type
+Other telemetry types,216,Same Category,60,0.2777777778,telemetry type
+Other telemetry types,216,"Same group, other Category",20,0.09259259259,telemetry type
+Other telemetry types,216,Different group,75,0.3472222222,telemetry type
+Unknown,12,Monitoring involved,0,0,telemetry type
+Unknown,12,No Trouble Found involved,3,0.25,telemetry type
+Unknown,12,Category blank,0,0,telemetry type
+Unknown,12,Same Category,5,0.4166666667,telemetry type
+Unknown,12,"Same group, other Category",0,0,telemetry type
+Unknown,12,Different group,4,0.3333333333,telemetry type
 alex2.0-1,69,Monitoring involved,3,0.04347826087,telemetry type
 alex2.0-1,69,No Trouble Found involved,6,0.08695652174,telemetry type
 alex2.0-1,69,Category blank,1,0.01449275362,telemetry type

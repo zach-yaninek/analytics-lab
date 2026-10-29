@@ -5,7 +5,7 @@
 **Script and inputs.**
 - The script is `verification/followups.py`. It runs locally in about 15 seconds.
 - It reads the two raw workbooks, which are gitignored, and the committed ticket-to-device map.
-- It has 64 self-checks. 36 of them tie the run to numbers already committed, and 27 of those run before any new
+- It has 66 self-checks. 36 of them tie the run to numbers already committed, and 27 of those run before any new
   result.
 
 **Where everything is.**
@@ -139,9 +139,10 @@
    | No Trouble Found involved | 13% |
    | A blank Category involved | 4% |
 
+   - **The three process classes** (Monitoring, No Trouble Found or a blank Category involved) are 28% together.
    - **Within 7 days:** same Category 33%, Monitoring 17%, different group 26%.
-   - **Monitoring.** It is mostly the follow-up: 125 times a monitoring ticket follows a ticket (a help-desk check),
-     against 45 monitoring-raised index tickets.
+   - **Monitoring.** It is mostly the follow-up: a monitoring ticket is the follow-up in 128 repeats (125 of them after
+     another kind of ticket, a help-desk check), and the index only in 45.
    - **No Trouble Found** splits both ways: 96 as the index only, 82 as the follow-up only, 23 both.
    - Charts [sl_24](../viz/figures/slides/sl_24_repeat_pairings_7d.png) (7 days) and
      [sl_25](../viz/figures/slides/sl_25_repeat_pairings_30d.png) (30 days).
@@ -158,8 +159,9 @@
      | Over 180 days | 27% |
    - **Per machine.** Pairs within 30 days share a Category 13 points more often than pairs 90+ days apart (95% 9–18; 390
      machines).
-   - **Against the machine's own mix.** Repeat pairs share a Category **39%** of the time, against **33%** if each
-     machine's Categories came in random order (p < 0.001).
+   - **Against the machine's own mix.** Of the 833 repeats where both tickets have a recorded Category and neither is
+     a monitoring ticket, **39%** share it, against **33%** if each machine's Categories came in random order
+     (p < 0.001). (Item 8's 31% is of all 1,574 repeats.)
    - **But a follow-up does not clearly match its own index more than the machine's other repeats.** On
      non-overlapping pairs it matches 38% of the time against 37% by chance (p = 0.16). Quick repeats tend to be the
      machine's current problem.
@@ -168,22 +170,25 @@
      - Door 49%;
      - Electronics 46%;
      - Network 38%.
-10. **Offenders by volume are the biggest models; no model repeats more than its ticket volume explains.**
+10. **Offenders by volume are the biggest models; once ticket volume and timing are allowed for, no model or telemetry
+    type stands out from the fleet.**
     - **The random-timing baseline.** If each machine's tickets came at random over its own months, 15.4% of tickets
       would repeat within 30 days. 23.6% do (×1.53). Within 7 days it is 4.1% against 9.5% (×2.30).
     - **By volume:** LVD-Remote-2.0 holds 19% of all repeats, LVRR-WP-2.0 17% and MV-2.0 12%.
     - **By model, beyond volume:** raw repeat rates run from 14.8% (LC-30) to 36.9% (scrubBank 480), but they track
-      tickets per machine. Against random timing, no model differs from the fleet after Benjamini–Hochberg:
+      tickets per machine. Every model repeats more than random timing gives (observed ÷ expected 1.11 to 1.78), as
+      the fleet does (1.53). Relative to the fleet's ratio, no model differs after Benjamini–Hochberg:
       - LC-30 is lowest, at 0.73 (0.50–0.97);
       - LVD-Remote is highest, at 1.16 (1.00–1.35);
       - q = 0.17 for both.
-    - **By telemetry type:** no type differs either.
+    - **By telemetry type:** no type differs either. "No device match" and "Unknown" are rows of their own but are not
+      telemetry types, so they are not tested.
     - Charts [sl_28](../viz/figures/slides/sl_28_repeat_models.png) and
       [sl_29](../viz/figures/slides/sl_29_repeat_types.png).
 11. **Pairings per model** (charts [sl_30](../viz/figures/slides/sl_30_class_mix_models.png),
     [sl_31](../viz/figures/slides/sl_31_class_mix_types.png) and
     [sl_32](../viz/figures/slides/sl_32_model_matrices.png)).
-    - **Same-Category share of repeats:**
+    - **Same Category, as a share of all the model's repeats** (the class mix):
 
       | Model | Same Category |
       |---|---|
@@ -194,11 +199,14 @@
       | MV | 23% |
       | LVD-Remote | 21% |
 
-    - **Against each model's own long-gap mix:**
-      - LVD-Remote-2.0's repeats are the same Category twice as often as its tickets 90+ days apart (lift 1.97);
-      - MV-2.0 1.75;
-      - LVRR-WP-2.0 1.22;
-      - alEx LC-D 1.00. Its tickets are mostly curtain repairs, so same Category is the norm at any gap.
+    - **Against each model's own long-gap mix.** This uses the repeats where both tickets have a recorded Category and
+      neither is a monitoring ticket (`same_category_share_recorded_pairs`), against the same model's ticket pairs
+      90+ days apart:
+      - LVD-Remote-2.0: 39% against 20%, twice as often (lift 1.97);
+      - MV-2.0: 43% against 24% (1.75);
+      - LVRR-WP-2.0: 44% against 36% (1.22);
+      - alEx LC-D: 48% against 48% (1.00). Its tickets are mostly curtain repairs, so same Category is the norm at any
+        gap.
     - **Telemetry types:** alex2.0-1's repeats are 49% the same Category; mlc-1's are 53% a different group.
 12. **Slide 5's random-timing figure.**
     - The "about 14.8%" in slide 5's notes (docs/02 F2) is what one common window for every machine gives: 14.8% here.
@@ -286,8 +294,11 @@
   - share of all repeats;
   - random-timing %, observed ÷ expected and SRR, with interval, p and q, and SRR in each half;
   - repeats per 100 machine-months up to 2 Aug (listed machines);
-  - the share of repeats on the top 5% of machines (40–67%);
-  - same-Category share and lift.
+  - the share of repeats on the top 5% of machines (40–67% of a model's repeats, 35–58% of a telemetry type's);
+  - the same-Category share of the repeats where both tickets have a recorded Category and neither is a monitoring
+    ticket (`same_category_share_recorded_pairs`), and its lift over the unit's pairs 90+ days apart.
+  - "No device match" and "Unknown" are rows of their own and are not tested. The pooled "Other" rows hold only models
+    or types with under 100 eligible tickets.
 - **Class mixes and matrices per model and type:** `rp_class_mix.csv` and `rp_model_matrices.csv` (cells under 5
   flagged).
 - **Repeat % by index type** (`rp_index_type.csv`):
@@ -312,7 +323,7 @@
 - **The fix list.** What was changed (design, part or firmware), when, and on which models or install dates.
   Deposit Door and Touchscreen are the Categories to check first.
 - **Revisits.** Whether a revisit gets a new case number.
-- **Monitoring.** How "Monitoring – Daily/Poll" tickets are raised. They are the follow-up in 125 repeats.
+- **Monitoring.** How "Monitoring – Daily/Poll" tickets are raised. They are the follow-up in 128 repeats.
 - **The database extract** for telemetry-type rates on installed months.
 
 ## Figures (slide charts, `viz/figures/slides/`)

@@ -80,7 +80,8 @@ GAP_BINS = [(0, 1, '1 day or less'), (1, 7, 'over 1 to 7 days'), (7, 30, 'over 7
 CLASS_BINS = GAP_BINS[:3]
 CLASSES = ['Monitoring involved', 'No Trouble Found involved', 'Category blank', 'Same Category',
            'Same group, other Category', 'Different group']
-NO_MATCH, SEVERAL = 'No device match', 'Several types'
+NO_MATCH, SEVERAL, UNKNOWN = 'No device match', 'Several types', 'Unknown'
+NOT_TYPES = (NO_MATCH, SEVERAL, UNKNOWN)   # telemetry-type rows that are not types: shown, never pooled or tested
 PREFIX_A, PREFIX_B = 'ag_', 'rp_'
 
 CHECKS = []
@@ -831,7 +832,7 @@ def part_a(out, m, t, unl, W, accounts, n_perm):
         rows_t = ty_idx == ti
         ny, no = alln[rows_t & young].sum(), alln[rows_t & ~young].sum()
         shown_t = ty not in ('No ticket',) and ny >= MIN_SHOWN_TICKETS and no >= MIN_SHOWN_TICKETS \
-            and ty not in (NO_MATCH, SEVERAL)
+            and ty not in NOT_TYPES
         p = p_se = X = np.nan
         if shown_t:
             sup_t = np.zeros(len(tm_levels), bool)
@@ -1469,7 +1470,7 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
 
     def offenders(key, label, plural):
         n_el = pairs.groupby(key).size()
-        big = n_el.index[n_el >= MIN_ELIGIBLE]
+        big = n_el.index[(n_el >= MIN_ELIGIBLE) | (n_el.index.isin(NOT_TYPES) & (key == 'telemetry_type'))]
         unit = pairs[key].where(pairs[key].isin(big), f'Other {plural}')
         rows = []
         for u in sorted(unit.unique(), key=lambda v: (v.startswith('Other '), -int((unit == v).sum()), v)):
@@ -1503,26 +1504,26 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
                    'srr': srr, 'srr_lo': slo, 'srr_hi': shi, 'srr_undefined_draws': sund, 'srr_p': ratio_p(srr_b),
                    'repeats_on_top5pct_machines_share': per_m.iloc[:top_n].sum() / o if o else np.nan,
                    'top5pct_machines': top_n,
-                   'same_category_share_of_repeats': (rr_.index_category == rr_.next_category).mean()
+                   'same_category_share_recorded_pairs': (rr_.index_category == rr_.next_category).mean()
                    if len(rr_) else np.nan, 'same_category_repeats_considered': len(rr_),
                    'baseline_same_share_over_90d': bl.same.mean() if len(bl) else np.nan,
                    'baseline_pairs': len(bl)}
-            row['same_category_lift'] = row['same_category_share_of_repeats'] / row['baseline_same_share_over_90d'] \
+            row['same_category_lift'] = row['same_category_share_recorded_pairs'] / row['baseline_same_share_over_90d'] \
                 if row['baseline_same_share_over_90d'] else np.nan
             for h in ('h1', 'h2'):
                 gh = g[g.half == h]
                 eh = gh.null_p30_half.sum()
                 row[f'srr_{h}'] = (gh.repeat_30.sum() / eh) / halves_fleet[h] if eh > 0 else np.nan
                 row[f'eligible_{h}'] = len(gh)
-            if label == 'model':
-                ml = m_listed[m_listed.model == u]
+            if label == 'model':                 # the pooled row: every listed model without a row of its own
+                ml = m_listed[~m_listed.model.isin(big)] if row['pooled'] else m_listed[m_listed.model == u]
                 rl = g[g.machine_id.isin(listed_ids & set(ml.serial_id))]
                 mm = ml.months_to_cutoff.sum()
                 row['repeats_per_100_months_listed'] = 100 * rl.repeat_30.sum() / mm if mm > 0 else np.nan
                 row['listed_months_to_cutoff'] = mm
             rows.append(row)
         df = pd.DataFrame(rows)
-        test = ~df.pooled & ~df[label].isin([NO_MATCH, SEVERAL, 'Unknown'])
+        test = ~df.pooled & ~df[label].isin(NOT_TYPES)
         df['srr_q'] = np.nan
         if test.any():
             df.loc[test, 'srr_q'] = bh_q(df.loc[test, 'srr_p'])
@@ -1536,6 +1537,10 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
     by_type, unit_t = offenders('telemetry_type', 'telemetry_type', 'telemetry types')
     check('B5: model rows sum to the eligible tickets', len(pairs), int(by_model.eligible.sum()))
     check('B5: type rows sum to the eligible tickets', len(pairs), int(by_type.eligible.sum()))
+    check('B5: model rows hold every listed machine-month to the cutoff', float(m_listed.months_to_cutoff.sum()),
+          float(by_model.listed_months_to_cutoff.sum()), 1e-6)
+    check('B5: rows that are not telemetry types stand alone, never pooled',
+          sorted(set(pairs.telemetry_type) & set(NOT_TYPES)), sorted(set(by_type.telemetry_type) & set(NOT_TYPES)))
 
     irows = []
     for g_, gg in pairs.groupby('index_group'):
@@ -1557,7 +1562,7 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
         rows = []
         Ru = R.assign(unit=unit[pairs.repeat_30.to_numpy()].to_numpy())
         cnt = Ru.groupby('unit').size()
-        keep = cnt.index[cnt >= MIN_REPEATS]
+        keep = cnt.index[(cnt >= MIN_REPEATS) | (cnt.index.isin(NOT_TYPES) & (label == 'telemetry_type'))]
         Ru['unit'] = Ru.unit.where(Ru.unit.isin(keep), f'Other {plural}')
         for u, g in Ru.groupby('unit'):
             for c in CLASSES:

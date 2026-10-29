@@ -315,7 +315,7 @@
     }
   },
   "checks": {
-    "pass": 64,
+    "pass": 66,
     "fail": 0,
     "list": [
       {
@@ -764,6 +764,24 @@
         "check": "B5: type rows sum to the eligible tickets",
         "expected": 6665,
         "actual": 6665,
+        "status": "PASS"
+      },
+      {
+        "check": "B5: model rows hold every listed machine-month to the cutoff",
+        "expected": 100839.359343,
+        "actual": 100839.359343,
+        "status": "PASS"
+      },
+      {
+        "check": "B5: rows that are not telemetry types stand alone, never pooled",
+        "expected": [
+          "No device match",
+          "Unknown"
+        ],
+        "actual": [
+          "No device match",
+          "Unknown"
+        ],
         "status": "PASS"
       },
       {
