@@ -57,6 +57,9 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_18 definition: under 4 = the young bands <1, 1-2, 2-4', 1,
             int(s['definitions']['young_bands'] == ['<1', '1-2', '2-4']
                 and '(<1, 1-2 and 2-4 years)' in T.terms()['under4'][1]))
+    S.check('sl_18 definition: Aug 2025 to Aug 2026 = the period', 1,
+            int(s['definitions']['period'] == ['2025-08-01', '2026-08-31']
+                and '(Aug 2025 to Aug 2026)' in T.terms()['under4'][1]))
 
     # The note: all unplanned tickets, recomputed from tickets and months.
     u_all = 100 * a.under4_tickets / a.under4_months
@@ -85,15 +88,17 @@ def plot(out_dir=S.FIG_DIR):
         ax.scatter(u, i, s=DOT, color=S.BLUE, edgecolor=S.WHITE, linewidth=1.2, zorder=3)
         ax.text(XV, i, label, va='center', ha='right', fontsize=S.SMALL, color=S.INK2)
     S.check('sl_18 rows sorted by the under-4 rate', 1, int(d.under4_rate_per_100.is_monotonic_increasing))
+    S.check('sl_18 every mark left of the value column (below 3)', 1,
+            int(d[['under4_rate_per_100', 'plus4_rate_per_100']].max().max() < 3))
 
-    ax.text(XV, n - 1 + 1.05, note, ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
-            bbox=dict(boxstyle='square,pad=0.1', facecolor=S.WHITE, edgecolor='none'))  # masks the grid
+    ax.text(XV, n - 1 + 1.15, note, ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
+            bbox={'boxstyle': 'square,pad=0.1', 'facecolor': S.WHITE, 'edgecolor': 'none'})  # masks the grid
     ax.set_xlim(0, XV + 0.04)
     ax.set_xticks([0, 0.5, 1, 1.5, 2, 2.5])
     ax.set_xticklabels(['0', '0.5', '1', '1.5', '2', '2.5'])
     ax.set_yticks(np.arange(n))
     ax.set_yticklabels(d.type)
-    ax.set_ylim(-0.6, n - 1 + 1.5)
+    ax.set_ylim(-0.6, n - 1 + 1.6)
     S.style_axes(ax, grid='x', baseline=None)
     ax.set_xlabel('Unplanned tickets per 100 installed machine-months')
     handles = [Line2D([], [], ls='', marker='o', ms=9.5, mfc=S.BLUE, mec=S.WHITE, mew=1.2, label='under 4 years'),

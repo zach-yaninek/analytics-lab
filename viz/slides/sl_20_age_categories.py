@@ -25,6 +25,7 @@ import followup_terms as T  # noqa: E402
 PNG = 'sl_20_age_categories.png'
 TERMS = ['share_ratio_cat', 'interval', 'cat_test']
 N_SHOWN = 12
+SIG_LABEL = 'differs (q < 0.05)'
 
 
 def plot(out_dir=S.FIG_DIR):
@@ -59,6 +60,8 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_20 definition: the 12 most frequent Categories', len(d), int(m.group(2)))
     named = re.search(r'groups that differ \(([^)]*)\)', terms['cat_test'][1]).group(1).split(', ')
     S.check('sl_20 definition: the groups tested = the significant groups', 1, int(sorted(named) == groups_sig))
+    S.check('sl_20 legend: q < 0.05 = the protocol alpha', s['definitions']['alpha'],
+            float(re.search(r'q < ([\d.]+)', SIG_LABEL).group(1)))
     S.check('sl_20 definition: 2,000 bootstrap draws', s['n_boot'],
             int(re.search(r'\(([\d,]+) draws\)', terms['interval'][1]).group(1).replace(',', '')))
 
@@ -80,8 +83,8 @@ def plot(out_dir=S.FIG_DIR):
         S.check(f'sl_20 {r.type} label {label}', r.share_ratio_mh, float(label), 0.005)
         S.check(f'sl_20 {r.type} interval contains the estimate', 1,
                 int(r.share_ratio_lo <= r.share_ratio_mh <= r.share_ratio_hi))
-        S.check(f'sl_20 {r.type} interval inside the axes (0.2 to 5)', 1,
-                int(0.2 < r.share_ratio_lo and r.share_ratio_hi < 5))
+        S.check(f'sl_20 {r.type} interval inside the axes, left of the value column (0.2 to 4.5)', 1,
+                int(0.2 < r.share_ratio_lo and r.share_ratio_hi < 4.5))
     ax.axvline(1, color=S.INK2, lw=1.2, ls=(0, (4, 3)), zorder=1)
     ax.set_xscale('log')
     ticks = [0.25, 0.5, 1, 2, 4]
@@ -94,13 +97,13 @@ def plot(out_dir=S.FIG_DIR):
     ax.set_ylim(-1.3, len(d) + 0.1)
     S.style_axes(ax, grid='x', baseline=None)
     ax.set_xlabel('Share ratio, under 4 vs 4+ years, same model (log scale)')
-    mask = dict(boxstyle='square,pad=0.1', facecolor=S.WHITE, edgecolor='none')  # hides the grid behind the text
+    mask = {'boxstyle': 'square,pad=0.1', 'facecolor': S.WHITE, 'edgecolor': 'none'}  # hides the grid behind the text
     ax.text(0.95, -1.05, '← more often on 4+', ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
             bbox=mask)
     ax.text(1.05, -1.05, 'more often under 4 →', ha='left', va='center', fontsize=S.SMALL, color=S.INK2,
             bbox=mask)
     handles = [Line2D([], [], color=S.BLUE, lw=2.5, marker='o', ms=9.5, mfc=S.BLUE, mec=S.WHITE, mew=1.5,
-                      label='differs (q < 0.05)'),
+                      label=SIG_LABEL),
                Line2D([], [], color=S.GRAY, lw=2.5, marker='o', ms=9.5, mfc=S.GRAY, mec=S.WHITE, mew=1.5,
                       label='tested, not significant'),
                Line2D([], [], color=S.GRAY_LIGHT, lw=2.5, marker='o', ms=9.5, mfc=S.WHITE, mec=S.GRAY, mew=2,

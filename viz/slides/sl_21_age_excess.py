@@ -62,6 +62,12 @@ def plot(out_dir=S.FIG_DIR):
             int(((sup_models['size'] == 2) & (sup_models['min'] >= 100)).all()))
     S.check('sl_21 definition: 15 support models', len(sup_models),
             int(re.search(r'on the (\d+) models with 100\+', terms['support'][1]).group(1)))
+    S.check('sl_21 definition: 100+ machine-months = the protocol minimum', s['definitions']['min_support_months'],
+            int(re.search(r'with (\d+)\+ machine-months', terms['support'][1]).group(1)))
+    S.check('sl_21 definition: under 4 = <1, 1-2, 2-4 in Aug 2025 to Aug 2026', 1,
+            int(s['definitions']['young_bands'] == ['<1', '1-2', '2-4']
+                and s['definitions']['period'] == ['2025-08-01', '2026-08-31']
+                and '(Aug 2025 to Aug 2026)' in terms['under4'][1] and '(<1, 1-2 and 2-4 years)' in terms['under4'][1]))
 
     # The note.
     note = f'All: {a.extra_tickets:,.0f} extra tickets; {a.within_model_age_tickets:,.0f} within model'
@@ -89,14 +95,14 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_21 every mark inside the axes (-470 to 760)', 1, int(-470 < lo and hi < 760))
 
     ax.axvline(0, color=S.INK2, lw=1.2, ls=(0, (4, 3)), zorder=2)
-    ax.text(XV, n - 1 + 1.05, note, ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
-            bbox=dict(boxstyle='square,pad=0.1', facecolor=S.WHITE, edgecolor='none'))  # masks the grid
+    ax.text(XV, n - 1 + 1.15, note, ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
+            bbox={'boxstyle': 'square,pad=0.1', 'facecolor': S.WHITE, 'edgecolor': 'none'})  # masks the grid
     ax.set_xlim(-470, XV + 10)
     ax.set_xticks([-400, -200, 0, 200, 400, 600])
     ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f'{v:,.0f}'.replace('-', MINUS)))
     ax.set_yticks(np.arange(n))
     ax.set_yticklabels(d.type)
-    ax.set_ylim(-0.6, n - 1 + 1.5)
+    ax.set_ylim(-0.6, n - 1 + 1.6)
     S.style_axes(ax, grid='x', baseline=None)
     ax.set_xlabel('Extra tickets on under-4 machines, vs 4+ rates')
     handles = [Line2D([], [], ls='', marker='o', ms=9.5, mfc=S.WHITE, mec=S.GRAY, mew=2, label='all extra tickets'),

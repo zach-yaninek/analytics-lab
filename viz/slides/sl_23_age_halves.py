@@ -41,11 +41,17 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_23 three Categories', 3, len(d))
     S.check('sl_23 the Categories = summary (A6 rule), in order', 1,
             int(list(d.category) == s['facts']['a6_categories']))
+    # The A6 rule recomputed: the three estimable Categories in the first seven groups with the largest positive
+    # within-model excess over the full period.
     dec = pd.read_csv(T.FU / 'ag_decomposition.csv')
-    cat = dec[(dec.level == 'category') & dec.group.isin(['Door', 'Mechanical', 'Electronics', 'Network', 'Software',
-                                                          'Operator error', 'Other'])]
+    adj = pd.read_csv(T.FU / 'ag_type_adjusted.csv')
+    est = set(adj.type[(adj.variant == 'primary') & (adj.level == 'category') & (adj.estimable == True)])  # noqa: E712
+    S.check('sl_23 ag_decomposition Categories = the estimable Categories', 1,
+            int(set(dec.type[dec.level == 'category']) == est))
+    cat = dec[(dec.level == 'category') & dec.type.isin(est)
+              & dec.group.isin(['Door', 'Mechanical', 'Electronics', 'Network', 'Software', 'Operator error', 'Other'])]
     top3 = list(cat[cat.within_model_age_tickets > 0].nlargest(3, 'within_model_age_tickets').type)
-    S.check('sl_23 the Categories = the three largest within-model excesses (ag_decomposition)', 1,
+    S.check('sl_23 the Categories = the three largest within-model excesses (A6 rule)', 1,
             int(top3 == list(d.category)))
 
     # The definition's and the legend's dates: the split on 15 Feb 2026 and the period Aug 2025 to Aug 2026.
@@ -98,8 +104,8 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_23 every interval inside the axes (-0.32 to 1.6)', 1, int(-0.32 < lo and hi < 1.6))
 
     ax.axvline(0, color=S.INK2, lw=1.2, ls=(0, (4, 3)), zorder=1)
-    ax.text(XV, n - 1 + 0.55, f'Change, 2nd {MINUS} 1st (95% interval)', ha='right', va='bottom', fontsize=S.SMALL,
-            color=S.INK2)
+    ax.text(XV, n - 1 + 0.85, f'Change, 2nd {MINUS} 1st (95% interval)', ha='right', va='top', fontsize=S.SMALL,
+            color=S.INK2, bbox={'boxstyle': 'square,pad=0.1', 'facecolor': S.WHITE, 'edgecolor': 'none'})  # hides grid
     ax.set_xlim(-0.32, XV + 0.02)
     ax.set_xticks([0, 0.5, 1, 1.5])
     ax.set_xticklabels(['0', '0.5', '1', '1.5'])
