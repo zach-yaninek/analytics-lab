@@ -83,7 +83,10 @@
       "devices_matched": 2993,
       "machines_one_type": 2993,
       "machines_several_types": 0,
-      "machines_no_match": 692
+      "machines_no_match": 692,
+      "machines_unknown_type": 35,
+      "tickets_on_typed_machines": 5858,
+      "tickets": 7186
     },
     "support": {
       "support_models": [
@@ -192,6 +195,11 @@
           "global_pass": true,
           "groups_significant": "Mechanical; Electronics"
         },
+        "A3 unstratified (descriptive)": {
+          "p": 4.3e-05,
+          "global_pass": null,
+          "groups_significant": null
+        },
         "S-A1 within model x account": {
           "p": 0.024988,
           "global_pass": true,
@@ -291,7 +299,7 @@
       "fleet_observed_over_expected_30": 1.532459,
       "fleet_null_pct_7": 4.107487,
       "fleet_observed_over_expected_7": 2.304905,
-      "docs02_helper_null_pct_30": 14.180351,
+      "high_ticket_helper_null_pct_30": 14.180351,
       "models_above": [],
       "models_below": [],
       "types_above": [],
@@ -315,7 +323,7 @@
     }
   },
   "checks": {
-    "pass": 66,
+    "pass": 67,
     "fail": 0,
     "list": [
       {
@@ -656,6 +664,12 @@
         "check": "A4: groups sum to the total (extra tickets)",
         "expected": 1447.162002,
         "actual": 1447.162002,
+        "status": "PASS"
+      },
+      {
+        "check": "A6: pooled install-year tickets = the per-model rows (three Categories)",
+        "expected": 2061,
+        "actual": 2061,
         "status": "PASS"
       },
       {

@@ -576,9 +576,12 @@ def run_followups():
                 problems.append('planted monitoring tickets not in the Monitoring group')
             ts = pd.read_csv(pdir / 'out' / 'ag_type_adjusted.csv').query("variant == 'primary' and "
                                                                          "type == 'Touchscreen'")
-            if ts.empty or not (ts.share_ratio_mh.iloc[0] > 1 and ts.share_ratio_mh.iloc[0] >
-                                base_ts.share_ratio_mh.iloc[0]):
-                problems.append('planted Touchscreen excess not seen in the share ratio')
+            # The fixture's Touchscreen row is too small to be estimable, so it is reported as counts only (docs/09
+            # §4): the planted tickets must all be counted as under-4 Touchscreen tickets, and no ratio printed.
+            if ts.empty or ts.under4_tickets.iloc[0] - base_ts.under4_tickets.iloc[0] != len(planted['touchscreen']):
+                problems.append('planted Touchscreen tickets not counted under 4')
+            if not ts.empty and not ts.estimable.iloc[0] and ts[['share_ratio_mh', 'p_perm']].notna().any(axis=None):
+                problems.append('a Touchscreen row that is not estimable still carries a ratio or p-value')
     unit = subprocess.run([sys.executable, '-I', str(HERE / 'test_followups_units.py')], capture_output=True,
                           text=True)
     if unit.returncode != 0:

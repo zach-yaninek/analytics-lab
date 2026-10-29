@@ -64,8 +64,13 @@ def plot(out_dir=S.FIG_DIR):
             int(re.search(r'on the (\d+) models with 100\+', terms['extra'][1]).group(1)))
     S.check('sl_21 definition: 100+ machine-months = the protocol minimum', s['definitions']['min_support_months'],
             int(re.search(r'with (\d+)\+ machine-months', terms['extra'][1]).group(1)))
+    m = re.search(r'outside the comparison \((\d+) in all; ([−+]\d+) to ([−+]\d+) by group\)', terms['extra'][1])
     S.check('sl_21 definition: tickets on models outside the comparison', f['extra_outside_support'],
-            int(re.search(r'plus (\d+) tickets outside the comparison', terms['extra'][1]).group(1)), 0.5)
+            int(m.group(1)), 0.5)
+    og = d.outside_support_tickets                  # the group rows drawn
+    S.check('sl_21 definition: outside-the-comparison range by group (low)', og.min(),
+            int(m.group(2).replace('−', '-')), 0.5)
+    S.check('sl_21 definition: outside-the-comparison range by group (high)', og.max(), int(m.group(3)), 0.5)
     S.check('sl_21 definition: under 4 = <1, 1-2, 2-4 in Aug 2025 to Aug 2026', 1,
             int(s['definitions']['young_bands'] == ['<1', '1-2', '2-4']
                 and s['definitions']['period'] == ['2025-08-01', '2026-08-31']

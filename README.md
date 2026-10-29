@@ -39,6 +39,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   - `viz/fleet_exposure/`: one script per fleet-exposure chart (`fx_01_*.py` … `fx_12_*.py`).
   - `viz/association/`: one script per association chart (`as_01_*.py` … `as_03_*.py`).
   - `viz/zac_notebook/`: Zac's 10 notebook figures rebuilt in the same style (`zac_01_*.py` … `zac_10_*.py`).
+  - `viz/slides/`: card-sized versions for the IPA meeting deck (`sl_01_*.py` … `sl_31_*.py`); `sl_18` to `sl_31` are
+    IPA's follow-ups (docs/10) and print their definitions on the image.
   - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
@@ -69,7 +71,8 @@ python3 -I verification/association.py            # ~2 min, no raw data, no DB; 
 python3 -I verification/followups.py              # ~15 s, no DB; IPA follow-ups (docs/09, docs/10)
 python3 -I verification/tests/test_followups_units.py  # ~20 s; unit tests for followups.py
 python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
-python3 -I viz/run_all.py                                 # redraw every chart and run the chart checks
+python3 -I viz/run_all.py                                 # redraw the page charts and run their checks
+python3 -I viz/slides/run_all.py                          # redraw the slide charts (incl. follow-ups sl_18-sl_31)
 python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py, zac_NN_*.py or fx_NN_*.py)
 ```
 

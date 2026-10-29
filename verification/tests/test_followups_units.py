@@ -104,6 +104,30 @@ def test_mh_cmh():
                                                                           acc_b.sum(0).sum(-1))[0]) < 1e-12)
 
 
+def test_cmh_excess():
+    rng = np.random.default_rng(7)
+    a = rng.integers(0, 30, size=(4, 3)).astype(float)
+    b = rng.integers(0, 30, size=(4, 3)).astype(float)
+    n1, n0 = a.sum(1) + 5, b.sum(1) + 5
+    X, _ = F.cmh(a, b, n1, n0)
+    D = F.cmh_excess(a, b, n1, n0)
+    N = (n1 + n0)[:, None]
+    E1, E0 = (n1[:, None] * (a + b) / N).sum(0), (n0[:, None] * (a + b) / N).sum(0)
+    ok('cmh_excess = observed - expected under-4 tickets, and gives cmh X', np.allclose(D, a.sum(0) - E1)
+       and abs(X - (D ** 2 * (1 / E1 + 1 / E0)).sum()) < 1e-9)
+
+
+def test_chi2():
+    import high_ticket_machines as H
+    even = [(33.872, 8), (5.0, 2), (0.5, 4), (20.0, 6)]
+    ok('chi2_sf = the Poisson closed form for even df', all(
+        abs(F.chi2_sf(x, df) - (1 - H.poisson_sf(df // 2, x / 2))) < 1e-12 for x, df in even))
+    ok('chi2_sf at the 5% critical values (df 1, 3, 9)', all(
+        abs(F.chi2_sf(x, df) - 0.05) < 1e-9 for x, df in [(3.841458820694124, 1), (7.814727903251178, 3),
+                                                            (16.918977604620448, 9)]))
+    ok('chi2_sf(0) = 1 and a tiny upper tail stays positive', F.chi2_sf(0, 8) == 1 and 0 < F.chi2_sf(100, 8) < 1e-15)
+
+
 def test_decomposition():
     rng = np.random.default_rng(1)
     T = rng.integers(0, 50, size=(5, 2, 3)).astype(float)
@@ -182,7 +206,7 @@ def test_copies():
 
 
 def main():
-    for t in (test_pairs, test_mh_cmh, test_decomposition, test_simulator, test_label_permutation,
+    for t in (test_pairs, test_mh_cmh, test_cmh_excess, test_chi2, test_decomposition, test_simulator, test_label_permutation,
               test_request_types, test_copies):
         print(t.__name__)
         t()

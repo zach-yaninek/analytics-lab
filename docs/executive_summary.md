@@ -1,7 +1,7 @@
 # Service Tickets & Telemetry: Executive Summary
 
-*Roper IPA × MIT Analytics Lab. Updated 21 October 2026 (previous update 14 October; first issued for the IPA meeting
-on 13 October 2026).*
+*Roper IPA × MIT Analytics Lab. Updated 29 October 2026 (previous updates 22, 21 and 14 October; first issued for the
+IPA meeting on 13 October 2026).*
 *Team: Zachary Yaninek, Zachary Baylis, Varun Ram Narayanan, Nathanael Muller.*
 
 > Repository version. Customer names are pseudonymised, following the repo convention; the Word memo given to IPA
@@ -14,22 +14,29 @@ on 13 October 2026).*
 > - Charts: `viz/figures/`. Each finding below links its charts; "Charts by finding" at the end shows them in
 >   order, with what to point at.
 
-> **Update, 29 October 2026: IPA's follow-ups on slides 4 and 5** (`docs/09`, `docs/10`; slide charts `sl_18`–`sl_30`).
+> **Update, 29 October 2026: IPA's follow-ups on slides 4 and 5** (`docs/09`, `docs/10`; slide charts `sl_18`–`sl_31`).
 > - **Young machines' tickets (slide 4).**
->   - Machines under 4 years old have more tickets of almost every type, not different ones (8.0 against 4.8 per 100
->     machine-months).
->   - Within model, the mix shifts modestly but beyond chance (p < 0.001): Electronics is a larger share (mostly
->     Touchscreen, 1.85 times), and Mechanical a smaller one (mostly Packer).
+>   - Machines under 4 years old have more tickets of almost every type (8.0 against 4.8 per 100 machine-months), but
+>     not equally more: some Categories, notably Touchscreen and Deposit Door, make up a larger share.
+>   - Within model, the mix shifts modestly but beyond chance (p < 0.001; the protocol was set after a preview of these
+>     shares): Electronics is a larger share (mostly Touchscreen, 1.85 times), and Mechanical a smaller one (Packer,
+>     SAM and Curtain).
 >   - 80% of the 1,447 extra tickets are age within model, not model mix; Deposit Door and Touchscreen carry most of
 >     them.
->   - No sign yet that they were fixed: the Touchscreen gap widened in the second half, and Deposit Door's held. IPA's
->     fix dates would turn this into a test.
+>   - "Fixed" cannot be shown without IPA's dates, but Touchscreen tickets cluster on machines installed in 2022–23
+>     (1.5 per 100 machine-months, 3.9 times the rate on machines installed since 2024, which are back near the earlier
+>     rate). That fits a production change, or a failure peak at 2–4 years; one year of data cannot tell which.
+>   - The newest machines are not better overall: Deposit Door tickets rise with each newer install year. Within the
+>     year, Touchscreen's gap to older machines widened, and Computer Board's closed (partly because older machines'
+>     rate rose).
 > - **Repeat contacts (slide 5).**
->   - 31% of repeats are the same Category and 32% a different group; 28% involve a Monitoring ticket, No Trouble
+>   - 31% of all repeats are the same Category and 32% a different group; 28% involve a Monitoring ticket, No Trouble
 >     Found or a blank Category.
->   - Quick follow-ups are more often the same problem: 46% within a day against 27% beyond six months.
->   - Every model repeats more than random timing would give (15.4% for the fleet against 23.6% observed), but once
->     ticket volume and timing are allowed for, no model or telemetry type stands out from the fleet.
+>   - Quick follow-ups are more often the same problem: of ticket pairs with a recorded Category (monitoring
+>     excluded), 46% of the 63 pairs a day or less apart share it (95% 33–60%), against 27% of pairs more than six
+>     months apart.
+>   - Nearly every model repeats more than random timing would give (15.4% for the fleet against 23.6% observed), and
+>     once ticket volume and timing are allowed for, no model or telemetry type stands out from the fleet.
 
 > **Update, 22 October 2026: association study** (`docs/07`, `docs/08`; provisional).
 > - **Primary result.** On average over the five code sets that could be tested, a ticket's Category agrees with the

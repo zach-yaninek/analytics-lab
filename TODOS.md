@@ -97,10 +97,13 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
 
 ## IPA follow-ups on slides 4 and 5 (added 29 October)
 - [x] **Request types on machines under 4 vs 4+ years, and repeat-contact pairings**: `docs/09` (protocol),
-  `docs/10` (results), `verification/followups.py`, slide charts `sl_18`–`sl_30`.
+  `docs/10` (results), `verification/followups.py`, slide charts `sl_18`–`sl_31`.
 - [ ] **Ask IPA for the fix list:** what was changed (design, part, firmware), when, and on which models or install
-  dates. Deposit Door and Touchscreen first. Then re-run the halves check (docs/09 A6) as a test against those
-  dates.
+  dates. First: what changed in touchscreens between 2022–23 and 2024 production (Touchscreen tickets cluster on
+  2022–23 installs), and what is happening to Deposit Doors on the newest machines. Then re-run the halves and
+  install-year checks (docs/09 A6, §12 item 7) as a test against those dates.
+- [ ] **Ask IPA for a year or two of earlier ticket history**, to tell a 2022–23 production problem from a
+  Touchscreen failure peak at 2–4 years.
 - [ ] **Ask IPA whether a revisit gets a new case number** (request 7). It decides whether repeats are revisits.
 - [ ] **Telemetry-type rates on installed months** wait for the database extract (`fleet_db_extract.py`, above).
 

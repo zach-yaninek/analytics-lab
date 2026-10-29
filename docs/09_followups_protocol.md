@@ -443,7 +443,7 @@ Where this section and an earlier one differ, this section governs.
        not tested.
      - "Several types" never occurs, since every serial matches one device.
 5. **Definitions.** The definition strings the charts draw live in `viz/slides/followup_terms.py`, filled with numbers
-   from `followups_summary.json`, not in the summary itself.
+   from `followups_summary.json` and the `ag_*`/`rp_*` tables, not in the summary itself.
 6. **Corrections after the independent review (29 October 2026).** Two output rows did not follow this text, and one
    column name was ambiguous. No test, q-value or conclusion changes.
    - **"Unknown"** (57 eligible tickets, 12 repeats) had been pooled into "Other telemetry types" in B5 and B6. As
@@ -452,6 +452,27 @@ Where this section and an earlier one differ, this section governs.
      row of its own: 15,240 machine-months. A check confirms the model rows hold every listed machine-month.
    - **`same_category_share_of_repeats`** is renamed `same_category_share_recorded_pairs`. It is the share among the
      repeats where both tickets have a recorded Category and neither is a monitoring ticket, not among all repeats.
+7. **Corrections and one addition after the second independent review (29 October 2026).** Reviewers re-derived the
+   Part A numbers and checked the documents; a skeptic confirmed each finding. No test, gate outcome or q-value changes.
+   - **Things this text asked for that the first run left out:**
+     - A3's descriptive unstratified chi-square on the 2 × 9 table is now a row of `ag_tests.csv` (33.9 on 8 degrees of
+       freedom).
+     - Every permutation p now has its Monte Carlo SE (§6), the Categories' too.
+     - Types that are not estimable are now reported as counts only (§4): their ratios, z, p and intervals are blank.
+     - A4's per-100 parts now have bootstrap intervals.
+   - **Clearer outputs:**
+     - The IPF cross-check is fitted on the same 15 support models as the Mantel–Haenszel ratio it checks.
+     - Each type's CMH numerator (`excess_under4_tickets`: under-4 tickets minus those expected at the same
+       within-model mix) is written.
+     - Offenders carry an interval for observed ÷ expected.
+     - The null row computed with `high_ticket_machines.random_timing_followup` is labelled as that helper's, not
+       docs/02's.
+     - The telemetry facts count the machines with a blank device type ("Unknown").
+   - **Added after the results, descriptive (A6):** the install-year rows pooled over the support models, by install
+     year and by cohort (2016–18, 2019–21, 2022–23, 2024–26), with account-bootstrap intervals and each cohort's ratio
+     to 2024–26 (`ag_install_pooled.csv`). §4 A6 named the install-year rows as where a change to new production would
+     show; the protocol reported them by model only. The cohort grouping was chosen after the review saw the
+     Touchscreen peak, so its ratios are descriptive.
 
 ## Privacy
 - **Outputs.** Pseudonyms only: S#####, M#####, T#####, Customer NNN. Model, Category and type labels.

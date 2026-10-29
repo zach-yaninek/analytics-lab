@@ -82,6 +82,11 @@ CLASSES = ['Monitoring involved', 'No Trouble Found involved', 'Category blank',
            'Same group, other Category', 'Different group']
 NO_MATCH, SEVERAL, UNKNOWN = 'No device match', 'Several types', 'Unknown'
 NOT_TYPES = (NO_MATCH, SEVERAL, UNKNOWN)   # telemetry-type rows that are not types: shown, never pooled or tested
+NOT_ESTIMABLE_BLANK = ('share_ratio_mh', 'rate_ratio_mh', 'z_cmh', 'excess_under4_tickets', 'p_perm', 'p_mc_se',
+                       'share_ratio_lo',
+                       'share_ratio_hi', 'share_ratio_undefined_draws', 'rate_ratio_lo', 'rate_ratio_hi',
+                       'rate_ratio_ipf')   # docs/09 §4: a type that is not estimable is reported as counts only
+INSTALL_COHORTS = [(2016, 2018), (2019, 2021), (2022, 2023), (2024, 2026)]   # §12 item 7: descriptive, added after
 PREFIX_A, PREFIX_B = 'ag_', 'rp_'
 
 CHECKS = []
@@ -209,6 +214,37 @@ def bh_q(p):
     return FX.bh_q(np.asarray(p, float))
 
 
+def chi2_sf(x, df):
+    """P(chi-square with df degrees of freedom > x): the regularized upper incomplete gamma Q(df/2, x/2), by its
+    series below a + 1 and its continued fraction above (no scipy here)."""
+    a, z = df / 2, x / 2
+    if x <= 0:
+        return 1.0
+    lead = math.exp(-z + a * math.log(z) - math.lgamma(a))
+    if z < a + 1:
+        term = total = 1 / a
+        n = 0
+        while abs(term) > abs(total) * 1e-15 and n < 10_000:
+            n += 1
+            term *= z / (a + n)
+            total += term
+        return max(0.0, 1 - lead * total)
+    b, c, d = z + 1 - a, 1e300, 1 / (z + 1 - a)
+    h = d
+    for i in range(1, 10_000):
+        an = -i * (i - a)
+        b += 2
+        d = an * d + b
+        d = 1e-300 if abs(d) < 1e-300 else d
+        c = b + an / c
+        c = 1e-300 if abs(c) < 1e-300 else c
+        d = 1 / d
+        h *= d * c
+        if abs(d * c - 1) < 1e-15:
+            break
+    return lead * h
+
+
 def request_types_hash(path):
     rows = sorted(csv.DictReader(open(path, newline='', encoding='utf-8')),
                   key=lambda x: (x['trouble_code'], x['category']))
@@ -303,7 +339,10 @@ def load(xlsx, equipment, fu_dir):
                               'devices_matched': int(x.device.nunique()),
                               'machines_one_type': int((per != SEVERAL).sum()),
                               'machines_several_types': int((per == SEVERAL).sum()),
-                              'machines_no_match': int(sc.loc[sc.ttype == NO_MATCH, 'machine_id'].nunique())}
+                              'machines_no_match': int(sc.loc[sc.ttype == NO_MATCH, 'machine_id'].nunique()),
+                              'machines_unknown_type': int((per == UNKNOWN).sum()),
+                              'tickets_on_typed_machines': int((~sc.ttype.isin(NOT_TYPES)).sum()),
+                              'tickets': len(sc)}
 
     m_all, t_all = FX.machine_frame(eq, maps, sc)
     return raw, maps, cases, conn, sc, eq, m_all, t_all
@@ -442,6 +481,15 @@ def cmh(a, b, n1, n0):
     return X, z
 
 
+def cmh_excess(a, b, n1, n0):
+    """D_k = sum over strata of (a - E1): under-4 tickets of type k minus those expected at the same within-model
+    mix (the numerator of cmh's z); arrays ..., S, K."""
+    N = (n1 + n0)[..., None]
+    with np.errstate(divide='ignore', invalid='ignore'):
+        E1 = np.where(N > 0, n1[..., None] * (a + b) / np.where(N > 0, N, 1), 0.0)
+    return (a - E1).sum(-2)
+
+
 def perm_labels(young, s_idx, rows, strata, n_perm, rng):
     """{stratum: (machine rows, n_perm x n boolean labels)}: the under-4 label permuted among the given rows within
     each stratum, strata in the given (sorted) order so the random stream is fixed."""
@@ -494,12 +542,14 @@ class AgeTest:
         self.bc = tab(Ccat, o, s_idx, S)[sup] if Ccat is not None else None
         self.sr, self.rr = mh_share(self.a, self.b, self.n1, self.n0), mh_rate(self.a, self.b, self.M1, self.M0)
         self.X, self.z = cmh(self.a, self.b, self.n1, self.n0)
+        self.D = cmh_excess(self.a, self.b, self.n1, self.n0)
         self.acc = (n_accounts(Cfam, y, acc_idx), n_accounts(Cfam, o, acc_idx))
         self.est = (self.a.sum(0) >= MIN_EST_TICKETS) & (self.b.sum(0) >= MIN_EST_TICKETS) & \
             (self.acc[0] >= MIN_EST_ACCOUNTS) & (self.acc[1] >= MIN_EST_ACCOUNTS)
         if Ccat is not None:
             self.src = mh_share(self.ac, self.bc, self.n1, self.n0)
             _, self.zc = cmh(self.ac, self.bc, self.n1, self.n0)
+            self.Dc = cmh_excess(self.ac, self.bc, self.n1, self.n0)
             self.accc = (n_accounts(Ccat, y, acc_idx), n_accounts(Ccat, o, acc_idx))
             self.estc = (self.ac.sum(0) >= MIN_EST_TICKETS) & (self.bc.sum(0) >= MIN_EST_TICKETS) & \
                 (self.accc[0] >= MIN_EST_ACCOUNTS) & (self.accc[1] >= MIN_EST_ACCOUNTS)
@@ -524,7 +574,9 @@ class AgeTest:
                 AC, _ = perm_tables(L, Ccat, tot, target, len(sup), n_perm)
                 BC = (self.ac + self.bc)[None] - AC
                 _, zcp = cmh(AC, BC, N1, N0)
-                self.pzc = np.array([perm_p(abs(self.zc[k]), np.abs(zcp[:, k]))[0] for k in range(len(self.cats))])
+                pc = [perm_p(abs(self.zc[k]), np.abs(zcp[:, k])) for k in range(len(self.cats))]
+                self.pzc = np.array([x[0] for x in pc])
+                self.pzc_se = np.array([x[1] for x in pc])
         self.gate()
 
     def gate(self):
@@ -564,14 +616,20 @@ class AgeTest:
                 'groups_tested': int(self.tested.sum())}
 
     def type_rows(self, ci_sr=None, ci_rr=None, ipf=None):
+        """One row per group and Category. docs/09 §4: a type that is not estimable is reported as counts only, so its
+        ratios, z, p and intervals are left blank."""
         rows = []
+
+        def counts_only(row):
+            return row if row['estimable'] else row | {k: np.nan for k in NOT_ESTIMABLE_BLANK if k in row}
         for k, g in enumerate(self.fam):
             row = {'variant': self.name, 'level': 'group', 'type': g, 'group': g,
                    'under4_tickets': self.a[:, k].sum(), 'plus4_tickets': self.b[:, k].sum(),
                    'under4_accounts': self.acc[0][k], 'plus4_accounts': self.acc[1][k],
                    'under4_share': self.a[:, k].sum() / self.n1.sum(), 'plus4_share': self.b[:, k].sum() / self.n0.sum(),
                    'estimable': bool(self.est[k]), 'share_ratio_mh': self.sr[k], 'rate_ratio_mh': self.rr[k],
-                   'z_cmh': self.z[k], 'p_perm': self.pz[k] if self.pz is not None else np.nan,
+                   'z_cmh': self.z[k], 'excess_under4_tickets': self.D[k],
+                   'p_perm': self.pz[k] if self.pz is not None else np.nan,
                    'p_mc_se': self.pz_se[k] if self.pz is not None else np.nan, 'tested': bool(self.tested[k]),
                    'q_bh': self.q[k], 'significant': bool(self.sig[k])}
             if ci_sr is not None:
@@ -579,7 +637,7 @@ class AgeTest:
                         ci_sr[k][2], 'rate_ratio_lo': ci_rr[k][0], 'rate_ratio_hi': ci_rr[k][1]}
             if ipf is not None:
                 row['rate_ratio_ipf'] = ipf.get(g, np.nan)
-            rows.append(row)
+            rows.append(counts_only(row))
         if self.ac is not None:
             for k, c in enumerate(self.cats):
                 row = {'variant': self.name, 'level': 'category', 'type': c, 'group': self.cat_group[k],
@@ -589,7 +647,9 @@ class AgeTest:
                        'plus4_share': self.bc[:, k].sum() / self.n0.sum(), 'estimable': bool(self.estc[k]),
                        'share_ratio_mh': self.src[k],
                        'rate_ratio_mh': mh_rate(self.ac[:, [k]], self.bc[:, [k]], self.M1, self.M0)[0],
-                       'z_cmh': self.zc[k], 'p_perm': self.pzc[k] if self.pzc is not None else np.nan,
+                       'z_cmh': self.zc[k], 'excess_under4_tickets': self.Dc[k],
+                       'p_perm': self.pzc[k] if self.pzc is not None else np.nan,
+                       'p_mc_se': self.pzc_se[k] if self.pzc is not None else np.nan,
                        'tested': bool(self.testedc[k]) if self.pzc is not None else False,
                        'q_bh': self.qc[k] if self.pzc is not None else np.nan,
                        'significant': bool(self.sigc[k]) if self.pzc is not None else False}
@@ -598,7 +658,7 @@ class AgeTest:
                     row |= {'share_ratio_lo': ci_sr[j][0], 'share_ratio_hi': ci_sr[j][1],
                             'share_ratio_undefined_draws': ci_sr[j][2], 'rate_ratio_lo': ci_rr[j][0],
                             'rate_ratio_hi': ci_rr[j][1]}
-                rows.append(row)
+                rows.append(counts_only(row))
         return rows
 
 
@@ -701,8 +761,9 @@ def part_a(out, m, t, unl, W, accounts, n_perm):
     ci_sr = [interval(srb[:, j]) for j in range(len(sel))]
     ci_rr = [interval(rrb[:, j]) for j in range(len(sel))]
     ipf = {}
+    in_support = np.isin(s_idx, sup)               # the same machines as the Mantel-Haenszel rate ratio
     for k, g in enumerate(PRIMARY):
-        d = mx.assign(n=Cf[:, k])
+        d = mx[in_support].reset_index(drop=True).assign(n=Cf[in_support, k])
         _, mult, _ = FX.ipf(d, 'n', ['model', 'age_group'])
         ag = mult['age_group']
         ipf[g] = float(ag.get(AGE_LABELS[0], np.nan) / ag.get(AGE_LABELS[1], np.nan)) \
@@ -773,8 +834,11 @@ def part_a(out, m, t, unl, W, accounts, n_perm):
             for part, pv, bv in zip(('extra', 'within_model_age', 'model_mix', 'outside_support'), point[:4],
                                     boot[:4]):
                 lo, hi, und = interval(bv[:, k])
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    lo100, hi100, _ = interval(100 * bv[:, k] / boot[4][:, 0])
                 row |= {f'{part}_tickets': pv[k], f'{part}_lo': lo, f'{part}_hi': hi,
-                        f'{part}_per_100': 100 * pv[k] / point[4][0], f'{part}_undefined_draws': und}
+                        f'{part}_per_100': 100 * pv[k] / point[4][0], f'{part}_per_100_lo': lo100,
+                        f'{part}_per_100_hi': hi100, f'{part}_undefined_draws': und}
             drows.append(row)
     decomp = pd.DataFrame(drows)
     tot_row = decomp[decomp.level == 'all'].iloc[0]
@@ -914,9 +978,54 @@ def part_a(out, m, t, unl, W, accounts, n_perm):
                               'rate_per_100': 100 * cc[idx].sum() / months[idx].sum() if months[idx].sum() else np.nan,
                               'under4_machines': int(young[idx].sum())})
     inst = pd.DataFrame(yrows)
+    # docs/09 §12 item 7 (added after the review; descriptive): the install-year rows pooled over the support models,
+    # by install year and by cohort, with account-bootstrap intervals and each cohort's ratio to the newest cohort.
+    yr = mxy.install_year.to_numpy()
+    in_sup = np.isin(s_idx, sup)
+    newest = '{}-{}'.format(INSTALL_COHORTS[-1][0], str(INSTALL_COHORTS[-1][1])[2:])
+    prows = []
+    for c in fixed + ['All unplanned tickets']:
+        cc = (Cc[:, cats.index(c)] if c in cats else Cg.sum(1)).astype(float)
+        units = [('year', str(int(y)), yr == y) for y in sorted(np.unique(yr[in_sup]))]
+        units += [('cohort', '{}-{}'.format(a, str(b)[2:]), (yr >= a) & (yr <= b)) for a, b in INSTALL_COHORTS]
+        reps_ = {}
+        for kind, lab, sel in units:
+            sel = sel & in_sup
+            if not sel.any():                      # a cohort with no machine on the support models
+                continue
+            T_a = np.bincount(acc_idx[sel], weights=cc[sel], minlength=n_acc)
+            M_a = np.bincount(acc_idx[sel], weights=months[sel], minlength=n_acc)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                rb = 100 * (W @ T_a) / (W @ M_a)
+            lo, hi, und = interval(rb)
+            reps_[lab] = rb
+            prows.append({'category': c, 'unit': kind, 'install': lab, 'machines': int(sel.sum()),
+                          'months': float(months[sel].sum()), 'tickets': int(cc[sel].sum()),
+                          'rate_per_100': 100 * cc[sel].sum() / months[sel].sum(), 'rate_lo': lo, 'rate_hi': hi,
+                          'rate_undefined_draws': und, 'under4_share_of_machines': float(young[sel].mean())})
+        point_c = {r['install']: r['rate_per_100'] for r in prows if r['category'] == c}
+        for r in prows:
+            if r['category'] == c and r['unit'] == 'cohort' and newest in reps_:
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    lo, hi, und = interval(reps_[r['install']] / reps_[newest])
+                r |= {'ratio_to_newest_cohort': r['rate_per_100'] / point_c[newest] if point_c[newest] else np.nan,
+                      'ratio_lo': lo, 'ratio_hi': hi, 'ratio_undefined_draws': und}
+    inst_pooled = pd.DataFrame(prows)
+    check('A6: pooled install-year tickets = the per-model rows (three Categories)',
+          int(inst.tickets.sum()) if len(inst) else 0,
+          int(inst_pooled[(inst_pooled.unit == 'year') & inst_pooled.category.isin(fixed)].tickets.sum()))
 
     # ------------------------------------------------------------- sensitivities (ag_tests, extra adjusted rows)
     tests = [prim.test_row('Primary: within model (support models), 9 groups')]
+    O = np.vstack([Cf[young].sum(0), Cf[~young].sum(0)])          # docs/09 §4 A3: descriptive only
+    O = O[:, O.sum(0) > 0]
+    E = O.sum(1, keepdims=True) * O.sum(0, keepdims=True) / O.sum()
+    chi2 = float(((O - E) ** 2 / E).sum())
+    tests.append({'variant': 'A3 unstratified (descriptive)',
+                  'description': f'Unstratified chi-square on the 2 x {O.shape[1]} table, all models: it mixes models '
+                                 'and ignores clustering, so it is descriptive only and not part of the gate',
+                  'statistic_X': chi2, 'df': O.shape[1] - 1, 'p': chi2_sf(chi2, O.shape[1] - 1),
+                  'tickets': int(O.sum())})
     rng_s = lambda k: np.random.default_rng((SEED_PERM, 10 + k))  # noqa: E731
     acct_model = (mx.model + ' | ' + mx.customer).to_numpy()
     am_levels = sorted(set(acct_model))
@@ -1056,6 +1165,7 @@ def part_a(out, m, t, unl, W, accounts, n_perm):
     save(out, status, PREFIX_A + 'by_status')
     save(out, halves, PREFIX_A + 'halves')
     save(out, inst, PREFIX_A + 'install_year')
+    save(out, inst_pooled, PREFIX_A + 'install_pooled')
     FACTS['part_a'] = {'global_X': prim.X, 'global_p': prim.p, 'global_p_mc_se': prim.p_se,
                        'global_pass': bool(prim.global_pass),
                        'groups_significant': [g for g, s in zip(PRIMARY, prim.sig) if s],
@@ -1444,11 +1554,12 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
                         'null_pct_sim_p2_5': 100 * float(np.percentile(rate, 2.5)),
                         'null_pct_sim_p97_5': 100 * float(np.percentile(rate, 97.5))}
             nrows.append(row)
-    # docs/02 F2's figure: high_ticket_machines.random_timing_followup (one common window, all tickets as the
-    # denominator), re-run at 30 days for the record.
+    # high_ticket_machines.random_timing_followup (docs/05's helper: one common window, all tickets as the
+    # denominator), re-run at 30 days for the record. docs/02 F2's 14.8% is the full-period window row above.
     med, lo_, hi_ = H.random_timing_followup(mach_n.to_numpy(), sc.ts.min(), sc.ts.max(), gap_days=CUTOFF_DAYS,
                                              n_sim=200)
-    nrows.append({'variant': 'docs/02 F2 helper: one common window, all tickets as denominator (200 simulations)',
+    nrows.append({'variant': 'high_ticket_machines helper (docs/05): one common window, all tickets as denominator '
+                             '(200 simulations)',
                   'window': '30 days', 'machines': len(mach_n), 'null_pct_sim_median': 100 * med,
                   'null_pct_sim_p2_5': 100 * lo_, 'null_pct_sim_p97_5': 100 * hi_})
     nulls = pd.DataFrame(nrows)
@@ -1482,8 +1593,10 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
             Ng = np.bincount(g.account_idx, minlength=len(accts_b)).astype(float)
             with np.errstate(divide='ignore', invalid='ignore'):
                 pct_b = 100 * (WB @ Og) / (WB @ Ng)
-                srr_b = ((WB @ Og) / (WB @ Eg)) / fleet_b
+                oe_b = (WB @ Og) / (WB @ Eg)
+                srr_b = oe_b / fleet_b
             plo, phi, _ = interval(pct_b)
+            oelo, oehi, _ = interval(oe_b)
             n_acc_g = int(g.customer.nunique())
             if n_acc_g < MIN_FLOOR_ACCOUNTS:
                 wlo, whi = wilson(o, el)
@@ -1501,7 +1614,7 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
                    'repeats_7': int(g.repeat_7.sum()), 'repeat_7_pct': 100 * g.repeat_7.mean(),
                    'share_of_all_repeats': o / pairs.repeat_30.sum(), 'share_of_eligible': el / len(pairs),
                    'expected_repeats': ex, 'null_pct': 100 * ex / el, 'observed_over_expected': o / ex if ex else np.nan,
-                   'srr': srr, 'srr_lo': slo, 'srr_hi': shi, 'srr_undefined_draws': sund, 'srr_p': ratio_p(srr_b),
+                   'observed_over_expected_lo': oelo, 'observed_over_expected_hi': oehi, 'srr': srr, 'srr_lo': slo, 'srr_hi': shi, 'srr_undefined_draws': sund, 'srr_p': ratio_p(srr_b),
                    'repeats_on_top5pct_machines_share': per_m.iloc[:top_n].sum() / o if o else np.nan,
                    'top5pct_machines': top_n,
                    'same_category_share_recorded_pairs': (rr_.index_category == rr_.next_category).mean()
@@ -1602,7 +1715,7 @@ def part_b(out, sc, conn, m_all, m, W_seed, n_boot, n_perm, n_sim):
         'fleet_null_pct_30': float(nulls.iloc[0].null_pct), 'fleet_observed_over_expected_30': fleet_oe,
         'fleet_null_pct_7': float(nulls.iloc[1].null_pct),
         'fleet_observed_over_expected_7': float(nulls.iloc[1].observed_over_expected),
-        'docs02_helper_null_pct_30': 100 * med,
+        'high_ticket_helper_null_pct_30': 100 * med,
         'models_above': sorted(by_model.model[by_model.vs_fleet == 'above']),
         'models_below': sorted(by_model.model[by_model.vs_fleet == 'below']),
         'types_above': sorted(by_type.telemetry_type[by_type.vs_fleet == 'above']),

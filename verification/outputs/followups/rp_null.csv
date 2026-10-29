@@ -6,4 +6,4 @@ variant,window,machines,eligible,observed_repeats,observed_pct,expected_repeats,
 "own window, uniform, listed machines only",7 days,3459,6237,570,9.139009139,249.6872961,4.00332365,2.282855432,6194.684,245.565,,,
 "full period window, uniform",30 days,3685,6665,1574,23.61590398,989.3676492,14.84422579,1.590915168,6641.104,977.377,14.72798019,14.01964423,15.43083719
 "full period window, uniform",7 days,3685,6665,631,9.467366842,261.1540262,3.918289966,2.416198628,6641.104,257.899,3.882468487,3.426402166,4.341431217
-"docs/02 F2 helper: one common window, all tickets as denominator (200 simulations)",30 days,3685,,,,,,,,,14.18035068,13.49846925,14.86431951
+"high_ticket_machines helper (docs/05): one common window, all tickets as denominator (200 simulations)",30 days,3685,,,,,,,,,14.18035068,13.49846925,14.86431951

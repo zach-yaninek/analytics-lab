@@ -1,12 +1,13 @@
-variant,description,statistic_X,null_median,null_p97_5,p,p_mc_se,strata,ticketed_machines,tickets,global_pass,groups_significant,groups_tested
-primary,"Primary: within model (support models), 9 groups",33.77601303,5.783994401,14.08090637,0.0004997501249,0.0004997501249,15,2883,5551,True,Mechanical; Electronics,9
-S-A1 within model x account,"S-A1: permutation within model x account (strata with both age groups hold 574 of 5,551 support tickets)",33.77601303,26.28600904,33.73193407,0.02498750625,0.003490209935,15,2883,5551,True,,9
-S-A2 cut at 2 years,"S-A2: under 2 vs 2+ years, within model",55.15318138,8.198443033,19.05770974,0.0004997501249,0.0004997501249,12,2521,4876,True,Door; Electronics; Other; Monitoring,8
-S-A2 cut at 6 years,"S-A2: under 6 vs 6+ years, within model",5.097752319,2.463226257,6.22725226,0.05947026487,0.005288362339,14,2816,5385,False,,0
-S-A5 excluding new installs,S-A5: excluding machines installed on or after 1 Aug 2025,36.0788012,5.905779855,13.84889572,0.0004997501249,0.0004997501249,15,2521,4885,True,Mechanical; Electronics,9
-S-A6 without Monitoring and No Trouble Found,"S-A6: 7 groups, without Monitoring and No Trouble Found",29.54726099,4.19067648,12.0344216,0.0004997501249,0.0004997501249,15,2743,5015,True,Mechanical; Electronics,7
-S-A7 with Not categorised,"S-A7: 10 groups, with Not categorised",34.63534935,6.511330602,14.60269906,0.0004997501249,0.0004997501249,15,2926,5716,True,Mechanical; Electronics,10
-S-A9 h1,S-A9: first half only (age group as over the full period),11.977585,5.501390558,13.20027097,0.04747626187,0.00475511653,15,1711,2688,True,Mechanical; Software,8
-S-A9 h2,S-A9: second half only (age group as over the full period),26.23275147,5.486756114,13.44232235,0.0009995002499,0.000706576694,15,1828,2863,True,Mechanical; Electronics,6
-S-A4 Lexis split,S-A4: Lexis split (share ratios only; no test),,,,,,,,,,,
-S-A8 unlisted tickets as 4+,S-A8: 287 tickets on unlisted serials of support models added to 4+ (share ratios only),,,,,,,,,,,
+variant,description,statistic_X,null_median,null_p97_5,p,p_mc_se,strata,ticketed_machines,tickets,global_pass,groups_significant,groups_tested,df
+primary,"Primary: within model (support models), 9 groups",33.77601303,5.783994401,14.08090637,0.0004997501249,0.0004997501249,15,2883,5551,True,Mechanical; Electronics,9,
+A3 unstratified (descriptive),"Unstratified chi-square on the 2 x 9 table, all models: it mixes models and ignores clustering, so it is descriptive only and not part of the gate",33.8719832,,,4.2854613e-05,,,,6554,,,,8
+S-A1 within model x account,"S-A1: permutation within model x account (strata with both age groups hold 574 of 5,551 support tickets)",33.77601303,26.28600904,33.73193407,0.02498750625,0.003490209935,15,2883,5551,True,,9,
+S-A2 cut at 2 years,"S-A2: under 2 vs 2+ years, within model",55.15318138,8.198443033,19.05770974,0.0004997501249,0.0004997501249,12,2521,4876,True,Door; Electronics; Other; Monitoring,8,
+S-A2 cut at 6 years,"S-A2: under 6 vs 6+ years, within model",5.097752319,2.463226257,6.22725226,0.05947026487,0.005288362339,14,2816,5385,False,,0,
+S-A5 excluding new installs,S-A5: excluding machines installed on or after 1 Aug 2025,36.0788012,5.905779855,13.84889572,0.0004997501249,0.0004997501249,15,2521,4885,True,Mechanical; Electronics,9,
+S-A6 without Monitoring and No Trouble Found,"S-A6: 7 groups, without Monitoring and No Trouble Found",29.54726099,4.19067648,12.0344216,0.0004997501249,0.0004997501249,15,2743,5015,True,Mechanical; Electronics,7,
+S-A7 with Not categorised,"S-A7: 10 groups, with Not categorised",34.63534935,6.511330602,14.60269906,0.0004997501249,0.0004997501249,15,2926,5716,True,Mechanical; Electronics,10,
+S-A9 h1,S-A9: first half only (age group as over the full period),11.977585,5.501390558,13.20027097,0.04747626187,0.00475511653,15,1711,2688,True,Mechanical; Software,8,
+S-A9 h2,S-A9: second half only (age group as over the full period),26.23275147,5.486756114,13.44232235,0.0009995002499,0.000706576694,15,1828,2863,True,Mechanical; Electronics,6,
+S-A4 Lexis split,S-A4: Lexis split (share ratios only; no test),,,,,,,,,,,,
+S-A8 unlisted tickets as 4+,S-A8: 287 tickets on unlisted serials of support models added to 4+ (share ratios only),,,,,,,,,,,,
