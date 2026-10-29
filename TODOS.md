@@ -95,6 +95,15 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
     code 13 refers to, and whether 25 "No Communications with Dispenser" is a symptom of many faults; which family
     logs 66/67; which codes each family or firmware can emit; what "No Trouble Found" means in practice.
 
+## IPA follow-ups on slides 4 and 5 (added 29 October)
+- [x] **Request types on machines under 4 vs 4+ years, and repeat-contact pairings**: `docs/09` (protocol),
+  `docs/10` (results), `verification/followups.py`, slide charts `sl_18`–`sl_32`.
+- [ ] **Ask IPA for the fix list:** what was changed (design, part, firmware), when, and on which models or install
+  dates. Deposit Door and Touchscreen first. Then re-run the halves check (docs/09 A6) as a test against those
+  dates.
+- [ ] **Ask IPA whether a revisit gets a new case number** (request 7). It decides whether repeats are revisits.
+- [ ] **Telemetry-type rates on installed months** wait for the database extract (`fleet_db_extract.py`, above).
+
 ## Association follow-ups (added 22 October)
 - [ ] **Run the text-flag export locally** (`python3 -I verification/flags.py --write`, then commit
   `verification/outputs/flags/`) and re-run `verification/association.py`: this fills S2 (text-flag exclusions)

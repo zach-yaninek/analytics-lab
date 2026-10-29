@@ -10,8 +10,26 @@ on 13 October 2026).*
 > - Full-database results: `verification/outputs/db/db_summary.md` and `verification/outputs/fu/fu_summary.md`.
 > - Fleet-exposure results: `verification/outputs/fleet/fx_summary.json` (`docs/06`).
 > - Association study: `docs/07` (protocol, frozen before results) and `docs/08` (results).
+> - IPA's follow-ups on slides 4 and 5: `docs/09` (protocol, frozen before results) and `docs/10` (results).
 > - Charts: `viz/figures/`. Each finding below links its charts; "Charts by finding" at the end shows them in
 >   order, with what to point at.
+
+> **Update, 29 October 2026: IPA's follow-ups on slides 4 and 5** (`docs/09`, `docs/10`; slide charts `sl_18`–`sl_32`).
+> - **Young machines' tickets (slide 4).**
+>   - Machines under 4 years old have more tickets of almost every type, not different ones (8.0 against 4.8 per 100
+>     machine-months).
+>   - Within model, the mix shifts modestly but beyond chance (p < 0.001): Electronics is a larger share (mostly
+>     Touchscreen, 1.85 times), and Mechanical a smaller one (mostly Packer).
+>   - 80% of the 1,447 extra tickets are age within model, not model mix; Deposit Door and Touchscreen carry most of
+>     them.
+>   - No sign yet that they were fixed: the Touchscreen gap widened in the second half, and Deposit Door's held. IPA's
+>     fix dates would turn this into a test.
+> - **Repeat contacts (slide 5).**
+>   - 31% of repeats are the same Category and 32% a different group; 27% involve a Monitoring ticket, No Trouble
+>     Found or a blank Category.
+>   - Quick follow-ups are more often the same problem: 46% within a day against 27% beyond six months.
+>   - No model or telemetry type repeats more than its ticket volume and timing explain. Random timing gives 15.4%
+>     against the observed 23.6%.
 
 > **Update, 22 October 2026: association study** (`docs/07`, `docs/08`; provisional).
 > - **Primary result.** On average over the five code sets that could be tested, a ticket's Category agrees with the

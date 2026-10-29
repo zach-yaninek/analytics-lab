@@ -14,6 +14,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
 | `docs/06_fleet_exposure.md` | Ticket rates adjusted for fleet exposure (IPA's installed-base list): models, ages, customers, consistent outliers |
 | `docs/07_association_protocol.md` | Pre-specified protocol for the association study (ticket Category ↔ codes before the ticket), frozen before any result |
 | `docs/08_association_results.md` | Results of the association study: specificity (H2a), enrichment, recency, sensitivities |
+| `docs/09_followups_protocol.md` | Protocol for IPA's follow-ups on slides 4 and 5 (request types by machine age; repeat pairings), frozen before results |
+| `docs/10_followups_results.md` | Results of the follow-ups: request types on machines under 4 vs 4+ years; what repeat contacts are; offenders |
 | `TODOS.md` | Plan for the association analysis (ticket fields ↔ last 10 telemetry codes before the ticket) |
 
 ### Layout
@@ -27,7 +29,9 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   `fu_*`/`db_*` outputs), `fleet_exposure.py` (rates on IPA's installed-base list; local only) and
   `fleet_db_extract.py` (joins telemetry devices to the installed-base list; needs the DB), `association.py` (the
   association study of docs/07 and docs/08; committed outputs only) with its crosswalk in `verification/reference/`,
-  and `flags.py --write` (per-ticket text flags for the association sensitivities; needs the case export).
+  and `flags.py --write` (per-ticket text flags for the association sensitivities; needs the case export), and
+  `followups.py` (IPA's follow-ups of docs/09 and docs/10; local only, with its request-type groups in
+  `verification/reference/request_types_v0.csv`).
 - `viz/`: every chart, in one shared style (see `viz/README.md`).
   - `viz/style/`: the reusable style: `ipa.mplstyle` (a plain matplotlib style sheet) and `ipa_style.py` (palette,
     title band, footer for definitions and notes, save).
@@ -36,7 +40,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   - `viz/association/`: one script per association chart (`as_01_*.py` … `as_03_*.py`).
   - `viz/zac_notebook/`: Zac's 10 notebook figures rebuilt in the same style (`zac_01_*.py` … `zac_10_*.py`).
   - `viz/figures/`: the rendered PNGs.
-- `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py`.
+- `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
+  files, and `test_followups_units.py` (fast unit tests for `followups.py`).
 - `verification/outputs/`: pseudonymous aggregate outputs.
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
   machine.
@@ -61,6 +66,8 @@ python3 -I verification/high_ticket_machines.py   # ~20 s, no DB; ends by drawin
 python3 -I verification/fleet_exposure.py         # ~30 s, no DB; installed-base rates and consistent outliers
 python3 -I verification/fleet_db_extract.py --db data/raw/ipa_transaction_events_202508_202608.db  # optional
 python3 -I verification/association.py            # ~2 min, no raw data, no DB; association study (docs/07, docs/08)
+python3 -I verification/followups.py              # ~15 s, no DB; IPA follow-ups (docs/09, docs/10)
+python3 -I verification/tests/test_followups_units.py  # ~20 s; unit tests for followups.py
 python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
 python3 -I viz/run_all.py                                 # redraw every chart and run the chart checks
 python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py, zac_NN_*.py or fx_NN_*.py)
