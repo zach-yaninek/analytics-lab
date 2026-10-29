@@ -7,7 +7,7 @@ are pooled as Other (followup_terms.MATRIX_MAP). Cell = share of the row's 7-day
 shaded white to blue, the diagonal (same group) outlined in navy. Row label: the row's follow-ups and the share of
 that group's eligible index tickets that have one.
 
-Also holds the cell helpers the other heat tables share (sl_22, sl_25, sl_32): the white-to-blue ramp, the text
+Also holds the cell helpers the other heat tables share (sl_22, sl_25, sl_30): the white-to-blue ramp, the text
 colour by contrast, and the whole-percent cell label.
 
 Input:  verification/outputs/followups/rp_pairs.csv (one row per eligible index ticket), rp_matrix.csv,
@@ -29,13 +29,13 @@ import deck_style as S  # noqa: E402
 import followup_terms as T  # noqa: E402
 
 PNG = 'sl_24_repeat_pairings_7d.png'
-TERMS = ['repeat7', 'pairing', 'other_groups']
+TERMS = ['repeat7', 'pairing7', 'other_groups']
 
 RAMP_TOP = 0.6          # a share of 60% or more is full BLUE; 0 is WHITE
 GAP = 2.0               # white gap between cells, points
 
 
-# ---- cell helpers shared by the heat tables (sl_22, sl_24, sl_25, sl_32) ----
+# ---- cell helpers shared by the heat tables (sl_22, sl_24, sl_25, sl_30) ----
 
 def cell_color(share):
     """WHITE at 0, BLUE at RAMP_TOP or more, straight between (one hue, light to dark)."""

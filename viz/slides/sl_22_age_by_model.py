@@ -2,8 +2,8 @@
 """Slide chart 22 (follow-up to slide 4): the request-type mix of under-4 and 4+ machines, model by model.
 
 Heat table (docs/09 §4 A5): the six models with 30+ unplanned tickets in each age group, then, below a divider, the
-three telemetry types that add information beyond model (§3.6: alex2.0-1 and alex2.0-3 each span four alEx models,
-scrubex-7 is part of LVRR-WP). One row per age group: tickets, the rate per 100 installed machine-months (models
+three telemetry types that cut across models (§3.6: alex2.0-1 and alex2.0-3 each span four alEx models, scrubex-7
+spans LVRR-WP and LVRR-WP-2.0). One row per age group: tickets, the rate per 100 installed machine-months (models
 only; telemetry types have no installed months, §10), then each request group's share of the row's tickets (Rest =
 Software, Operator error, Other and Not categorised), shaded white to blue, and the within-model mix test's
 Benjamini-Hochberg q once per pair (bold = q < 0.05).
@@ -25,8 +25,8 @@ import followup_terms as T  # noqa: E402
 from sl_24_repeat_pairings_7d import GAP, cell_color, pct_drawn, pct_text, text_color  # noqa: E402
 
 PNG = 'sl_22_age_by_model.png'
-TERMS = ['by_model', 'telemetry_type', 'under4']
-TYPES = ['alex2.0-1', 'alex2.0-3', 'scrubex-7']        # the telemetry types that split a model (docs/09 §3.6)
+TERMS = ['by_model', 'rate_model', 'mix_test', 'telemetry_type_cut', 'under4']
+TYPES = T.CUT_TYPES                                   # the telemetry types that cut across models (docs/09 §3.6)
 AGES = ['Under 4', '4+']
 SHOWN = ['Door', 'Mechanical', 'Electronics', 'Network', 'No Trouble Found', 'Monitoring']
 REST = ['Software', 'Operator error', 'Other', 'Not categorised']
@@ -37,7 +37,9 @@ X_AGE, X_TICKETS, X_RATE = 1.80, 3.45, 4.75            # age label (left), ticke
 X_CELLS, CELL_W = 5.00, 1.50                           # share cells: left edge, width
 X_MIX = X_CELLS + len(COLS) * CELL_W + 0.95            # mix test (centre)
 WIDTH = 17.3
-HEAD, SECTION, FOOT = 1.15, 1.3, 0.2                   # header band, section band, bottom margin; row units
+HEAD, SECTION, FOOT = 1.0, 1.1, 0.1                    # header band, section band, bottom margin; row units
+ROW_FONT = S.DEF                                       # the numbers in the rows: 18 rows share the card with five
+                                                       # definitions
 
 
 def q_text(q):
@@ -107,11 +109,11 @@ def plot(out_dir=S.FIG_DIR):
             row = d.loc[age]
             S.check(f'{tag} {age} shown shares and Rest sum to 1', 1, float(share.loc[age, COLS].sum()), 1e-9)
             if r == 0:
-                ax.text(0, yc, name, ha='left', va='center_baseline', fontsize=S.TICK, color=S.INK)
-            ax.text(X_AGE, yc, age, ha='left', **kw)
+                ax.text(0, yc, name, ha='left', va='center_baseline', fontsize=S.SMALL, color=S.INK)
+            ax.text(X_AGE, yc, age, ha='left', **dict(kw, fontsize=ROW_FONT))
             ticket_txt = f'{int(row.tickets):,}'
             S.check(f'{tag} {age} tickets', row.tickets, int(ticket_txt.replace(',', '')))
-            ax.text(X_TICKETS, yc, ticket_txt, ha='right', va='center_baseline', fontsize=S.SMALL, color=S.INK)
+            ax.text(X_TICKETS, yc, ticket_txt, ha='right', va='center_baseline', fontsize=ROW_FONT, color=S.INK)
             if kind == 'model':
                 rate_txt = f'{row.rate_per_100:.1f}'
                 S.check(f'{tag} {age} rate per 100 = 100 x tickets / months', row.rate_per_100,
@@ -119,7 +121,7 @@ def plot(out_dir=S.FIG_DIR):
                 S.check(f'{tag} {age} rate per 100 drawn', row.rate_per_100, float(rate_txt), 0.05)
             else:
                 rate_txt = '–'
-            ax.text(X_RATE, yc, rate_txt, ha='right', va='center_baseline', fontsize=S.SMALL,
+            ax.text(X_RATE, yc, rate_txt, ha='right', va='center_baseline', fontsize=ROW_FONT,
                     color=S.INK if kind == 'model' else S.INK2)
             for j, c in enumerate(COLS):
                 v = share.loc[age, c]
@@ -130,7 +132,7 @@ def plot(out_dir=S.FIG_DIR):
                 csv_share = row[f'share_{c}'] if c != 'Rest' else sum(row[f'share_{g}'] for g in REST)
                 S.check(f'{tag} {age} {c} share', 100 * csv_share, pct_drawn(txt), 0.5 + 5e-4)  # CSV: 6 dp
                 ax.text(X_CELLS + (j + 0.5) * CELL_W, yc, txt, ha='center', va='center_baseline',
-                        fontsize=S.SMALL, color=text_color(bg), zorder=3)
+                        fontsize=ROW_FONT, color=text_color(bg), zorder=3)
         # The mix test, once per pair: q (Benjamini-Hochberg over the models, or over the telemetry types).
         q = d.mix_q.iloc[0]
         S.check(f'{tag} one mix test for both rows', 0, abs(d.mix_q.iloc[0] - d.mix_q.iloc[1]))
@@ -148,7 +150,7 @@ def plot(out_dir=S.FIG_DIR):
     # The divider and the section label above the telemetry types.
     ty = ys[('type', TYPES[0])]
     ax.plot([0, WIDTH], [ty - SECTION, ty - SECTION], color=S.BASE, lw=1.0, solid_capstyle='butt', zorder=2)
-    ax.text(0, ty - SECTION / 2 + 0.05, 'Telemetry types that split a model', ha='left', va='center_baseline',
+    ax.text(0, ty - SECTION / 2 + 0.05, 'Telemetry types that cut across models', ha='left', va='center_baseline',
             fontsize=S.SMALL, color=S.INK2, style='italic')
 
     ax.set_xlim(0, WIDTH)

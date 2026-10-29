@@ -11,7 +11,7 @@
 **Where everything is.**
 - **Tables:** `verification/outputs/followups/`. Every number below is in `followups_summary.json` or an `ag_*` /
   `rp_*` table there.
-- **Slide charts:** `viz/figures/slides/sl_18` to `sl_32`, which print their definitions on the image.
+- **Slide charts:** `viz/figures/slides/sl_18` to `sl_30`, which print their definitions on the image.
 - **Protocol:** `docs/09_followups_protocol.md`, frozen and pushed before any result. Its §12 records the amendments
   made after the first run.
 
@@ -183,11 +183,9 @@
       - q = 0.17 for both.
     - **By telemetry type:** no type differs either. "No device match" and "Unknown" are rows of their own but are not
       telemetry types, so they are not tested.
-    - Charts [sl_28](../viz/figures/slides/sl_28_repeat_models.png) and
-      [sl_29](../viz/figures/slides/sl_29_repeat_types.png).
-11. **Pairings per model** (charts [sl_30](../viz/figures/slides/sl_30_class_mix_models.png),
-    [sl_31](../viz/figures/slides/sl_31_class_mix_types.png) and
-    [sl_32](../viz/figures/slides/sl_32_model_matrices.png)).
+    - Chart [sl_28](../viz/figures/slides/sl_28_repeat_offenders.png) (by model and by telemetry type).
+11. **Pairings per model** (charts [sl_29](../viz/figures/slides/sl_29_class_mix.png), by model and by telemetry
+    type, and [sl_30](../viz/figures/slides/sl_30_model_matrices.png)).
     - **Same Category, as a share of all the model's repeats** (the class mix):
 
       | Model | Same Category |
@@ -346,11 +344,9 @@
 | sl_25 | 30-day pairing matrix |
 | sl_26 | Same Category by gap |
 | sl_27 | Pairing classes by gap |
-| sl_28 | Offenders by model |
-| sl_29 | Offenders by telemetry type |
-| sl_30 | Pairing classes per model |
-| sl_31 | Pairing classes per telemetry type |
-| sl_32 | Pairing matrices for the four models with the most repeats |
+| sl_28 | Offenders by model and by telemetry type |
+| sl_29 | Pairing classes per model and per telemetry type |
+| sl_30 | Pairing matrices for the four models with the most repeats |
 
 Every chart prints its definitions on the image. `viz/slides/run_all.py` checks every drawn number against the
 tables and every definition against `viz/slides/followup_terms.py`.

@@ -24,7 +24,7 @@ import deck_style as S  # noqa: E402
 import followup_terms as T  # noqa: E402
 
 PNG = 'sl_21_age_excess.png'
-TERMS = ['extra', 'support', 'under4']
+TERMS = ['extra', 'interval_within', 'under4']
 MINUS = '−'
 
 
@@ -61,9 +61,11 @@ def plot(out_dir=S.FIG_DIR):
     S.check('sl_21 support models have 100+ months in each age group', 1,
             int(((sup_models['size'] == 2) & (sup_models['min'] >= 100)).all()))
     S.check('sl_21 definition: 15 support models', len(sup_models),
-            int(re.search(r'on the (\d+) models with 100\+', terms['support'][1]).group(1)))
+            int(re.search(r'on the (\d+) models with 100\+', terms['extra'][1]).group(1)))
     S.check('sl_21 definition: 100+ machine-months = the protocol minimum', s['definitions']['min_support_months'],
-            int(re.search(r'with (\d+)\+ machine-months', terms['support'][1]).group(1)))
+            int(re.search(r'with (\d+)\+ machine-months', terms['extra'][1]).group(1)))
+    S.check('sl_21 definition: tickets on models outside the comparison', f['extra_outside_support'],
+            int(re.search(r'plus (\d+) tickets outside the comparison', terms['extra'][1]).group(1)), 0.5)
     S.check('sl_21 definition: under 4 = <1, 1-2, 2-4 in Aug 2025 to Aug 2026', 1,
             int(s['definitions']['young_bands'] == ['<1', '1-2', '2-4']
                 and s['definitions']['period'] == ['2025-08-01', '2026-08-31']

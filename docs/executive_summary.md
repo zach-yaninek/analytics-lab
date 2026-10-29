@@ -14,7 +14,7 @@ on 13 October 2026).*
 > - Charts: `viz/figures/`. Each finding below links its charts; "Charts by finding" at the end shows them in
 >   order, with what to point at.
 
-> **Update, 29 October 2026: IPA's follow-ups on slides 4 and 5** (`docs/09`, `docs/10`; slide charts `sl_18`–`sl_32`).
+> **Update, 29 October 2026: IPA's follow-ups on slides 4 and 5** (`docs/09`, `docs/10`; slide charts `sl_18`–`sl_30`).
 > - **Young machines' tickets (slide 4).**
 >   - Machines under 4 years old have more tickets of almost every type, not different ones (8.0 against 4.8 per 100
 >     machine-months).

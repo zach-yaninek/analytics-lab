@@ -97,7 +97,7 @@ Network tickets show no enrichment in any bucket. Having *some* code is near-uni
 
 ## IPA follow-ups on slides 4 and 5 (added 29 October)
 - [x] **Request types on machines under 4 vs 4+ years, and repeat-contact pairings**: `docs/09` (protocol),
-  `docs/10` (results), `verification/followups.py`, slide charts `sl_18`–`sl_32`.
+  `docs/10` (results), `verification/followups.py`, slide charts `sl_18`–`sl_30`.
 - [ ] **Ask IPA for the fix list:** what was changed (design, part, firmware), when, and on which models or install
   dates. Deposit Door and Touchscreen first. Then re-run the halves check (docs/09 A6) as a test against those
   dates.

@@ -32,10 +32,39 @@ CLASS4_COLOR = {'Same Category': S.BLUE, 'Same group, other Category': S.LIGHT, 
 CLASS4_TEXT = {'Same Category': S.WHITE, 'Same group, other Category': S.INK, 'Different group': S.WHITE,
                'Monitoring, NTF or blank': S.INK}
 
+# The telemetry types sl_22 shows under the models: each spans more than one model (docs/09 §3.6), unlike the
+# scrubex2.0 types, which re-label one model each.
+CUT_TYPES = ['alex2.0-1', 'alex2.0-3', 'scrubex-7']
+
 
 @lru_cache(maxsize=1)
 def summary():
     return json.loads((FU / 'followups_summary.json').read_text())
+
+
+def and_list(xs):
+    xs = list(xs)
+    return xs[0] if len(xs) == 1 else ', '.join(xs[:-1]) + ' and ' + xs[-1]
+
+
+def models_list(models):
+    """and_list with a shared first word said once: 'alEx LC-D, LC-S, MC-D and MC-S'."""
+    first = {m.split(' ', 1)[0] for m in models}
+    if len(models) > 1 and len(first) == 1 and all(' ' in m for m in models):
+        return f"{first.pop()} {and_list(m.split(' ', 1)[1] for m in models)}"
+    return and_list(models)
+
+
+def type_spans():
+    """'alex2.0-1 and alex2.0-3 each span ...; scrubex-7 spans ...': the models of each CUT_TYPES type's ticketed
+    machines (ag_by_type.csv), types with the same models named together."""
+    bt = __import__('pandas').read_csv(FU / 'ag_by_type.csv')
+    spans = {}
+    for ty in CUT_TYPES:
+        models = tuple(sorted({m for v in bt.models[bt.telemetry_type == ty].dropna() for m in v.split('; ')}))
+        spans.setdefault(models, []).append(ty)
+    return '; '.join(f"{and_list(tys)} {'each span' if len(tys) > 1 else 'spans'} {models_list(models)}"
+                     for models, tys in spans.items())
 
 
 def p_text(p, n_perm):
@@ -48,8 +77,15 @@ def terms():
     s = summary()
     f = s['facts']
     sup, a, b, sh = f['support'], f['part_a'], f['part_b'], f['shuffle']
-    gaps = __import__('pandas').read_csv(FU / 'rp_same_by_gap.csv')
+    pd = __import__('pandas')
+    gaps = pd.read_csv(FU / 'rp_same_by_gap.csv')
     lab = sh['label_permutation']
+    adj = pd.read_csv(FU / 'ag_type_adjusted.csv')
+    cat = adj[(adj.variant == 'primary') & (adj.level == 'category') & (adj.significant == True)]  # noqa: E712
+    crosses = cat.type[(cat.share_ratio_lo <= 1) & (cat.share_ratio_hi >= 1)].tolist()
+    und = int(pd.read_csv(FU / 'ag_decomposition.csv').within_model_age_undefined_draws.max())
+    und_h = int(pd.read_csv(FU / 'ag_halves.csv').change_undefined_draws.max())
+    nb = f"{s['n_boot']:,}"
     return {
         'under4': ('Under 4 / 4+', "the machine's age at the midpoint of its months on IPA's list (Aug 2025 to Aug "
                    '2026); under 4 = the first three bars of slide 4 (<1, 1-2 and 2-4 years)'),
@@ -67,43 +103,65 @@ def terms():
                       f"differs overall (p {p_text(a['global_p'], s['n_perm'])}); blue = differs after "
                       'Benjamini-Hochberg (q < 0.05)'),
         'cat_test': ('Tested', 'only Categories in groups that differ (' + ', '.join(
-            g for g in a['groups_significant'] if g not in ('Monitoring', 'No Trouble Found')) + '); open = not tested'),
-        'extra': ('Extra tickets', "under-4 machines' tickets minus what their months would give at 4+ machines' "
-                  f"rates ({a['extra_tickets']:,.0f} in all). Ring: all of it; dot: the part within model (each "
-                  "model's own 4+ rate); the gap is model mix, plus a few tickets on models outside the comparison"),
-        'by_model': ('Cell', "share of the row's tickets; models with 30+ tickets in each age group. Mix test: labels "
-                     "shuffled among the model's machines, Benjamini-Hochberg"),
+            g for g in a['groups_significant'] if g not in ('Monitoring', 'No Trouble Found')) + '), with the same '
+                     'shuffle; blue = differs after Benjamini-Hochberg within its group (q < 0.05); open = not tested'
+                     + ('. The test shuffles machines while the bar resamples accounts, so a blue bar can cross 1 ('
+                        + and_list(crosses) + ')' if crosses else '')),
+        'interval_within': ('Bar', f'95% interval of the dot, bootstrap over accounts ({nb} draws; the {und} in which '
+                            'a model has no 4+ machine-months are left out)'),
+        'interval_halves': ('Bar', f'95% interval, bootstrap over accounts ({nb} draws; the {und_h} in which a model '
+                            "has no 4+ machine-months are left out); bold = the change's interval excludes 0"),
+        'extra': ('Extra tickets', "under-4 machines' tickets minus what their months give at 4+ machines' rates "
+                  f"({a['extra_tickets']:,.0f} in all). Ring: all; dot: within model, at each model's own 4+ rate on "
+                  f"the {len(sup['support_models'])} models with {s['definitions']['min_support_months']}+ "
+                  'machine-months in each age group; the gap: model mix, plus '
+                  f"{a['extra_outside_support']:.0f} tickets outside the comparison"),
+        'by_model': ('Cell', "share of the row's tickets (Rest = Software, Operator error, Other and Not "
+                     'categorised); models with 30+ tickets in each age group'),
+        'rate_model': ('Rate per 100', 'unplanned tickets per 100 installed machine-months; – for telemetry types, '
+                       'which have no installed months until the database extract'),
+        'mix_test': ('Mix test', "under-4 and 4+ labels shuffled among machines of the same model (a type's: of the "
+                     f"same type and model), {s['n_perm']:,} times; Benjamini-Hochberg q, bold = q < 0.05"),
+        'telemetry_type_cut': ('Telemetry type', "the clearView machine type of the device matched to the machine's "
+                               'tickets; ' + type_spans()),
         'telemetry_type': ('Telemetry type', "the clearView machine type of the device matched to the machine's "
                            'tickets; scrubex2.0-2, -3, -4 and -5 are LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0 and '
-                           'SV-48-2.0'),
+                           'SV-48-2.0; No device match and Unknown (a blank device type) are not types and are not '
+                           'tested'),
         'halves': ('Gap', 'extra tickets per 100 under-4 machine-months within model, first half (Aug 2025 to 14 Feb '
                    '2026) vs second (15 Feb to Aug 2026); Categories picked by a rule fixed in advance: the largest '
                    'within-model excess over the year'),
-        'fix_proof': ('Reading', 'a narrowing gap fits a fix but does not prove one: that needs the dates of design or '
-                      'firmware changes'),
+        'fix_proof': ('Reading', 'a narrowing gap fits a fix; proving one needs the dates of design or firmware '
+                      'changes'),
         'repeat': ('Repeat', 'the next unplanned ticket on the same machine opens within 30 days (7-day: within 7) of '
                    f"an index ticket opened before 2 Aug 2026 ({b['eligible']:,}); not necessarily a failed repair"),
-        'pairing': ('Cell', "share of the row's repeats whose next ticket is of the column's type; row label: repeats "
-                    "and the share of that type's tickets that repeat"),
+        'pairing': ('Cell', "share of the row's repeats whose next ticket is of the column's type (outlined: same "
+                    "type; blank: none); row label: repeats and the share of that type's tickets that repeat"),
+        'pairing7': ('Cell', "share of the row's repeats whose next ticket is of the column's type (outlined: same "
+                     "type; blank: none); row label: 7-day repeats and the share of that type's tickets that repeat "
+                     'within 7 days'),
+        'pairing_panel': ('Cell', "share of the row's repeats whose next ticket is of the column's type (outlined: same "
+                          'type; blank: none; italic: fewer than 5 pairs)'),
+        'rest_panel': ('Rest', 'Network, Software, Operator error, Other and Not categorised together; NTF = No Trouble '
+                       'Found'),
         'pairs_gap': ('Pairs', 'every two unplanned tickets on one machine with a recorded Category, monitoring '
                       f"excluded ({int(gaps.pairs.sum()):,} pairs), by days apart; pairs 90+ days apart show the "
                       "machine's usual mix"),
-        'label_test': ('Test', "each machine's Categories shuffled across its own tickets, 2,000 times: repeat pairs "
-                       f"share a Category {100 * sh['observed_share']:.0f}% of the time vs "
-                       f"{100 * lab['null_share']:.0f}% by chance (p {p_text(lab['p'], s['n_perm'])})"),
+        'label_test': ('Test', f"each machine's Categories shuffled across its own tickets, {s['n_perm']:,} times: of "
+                       f"the {sh['pairs']:,} repeats with a recorded Category on both tickets (monitoring excluded), "
+                       f"{100 * sh['observed_share']:.0f}% share it vs {100 * lab['null_share']:.0f}% by chance "
+                       f"(p {p_text(lab['p'], s['n_perm'])})"),
+        'interval_line': ('Line', f'95% interval, bootstrap over accounts ({nb} draws)'),
         'classes': ('Class', 'the first that applies: a Monitoring ticket, No Trouble Found or a blank Category '
                     'involved (one gray segment); same Category; same group, other Category; different group'),
         'repeat7': ('7-day follow-up', 'the next unplanned ticket on the same machine opens within 7 days of an index '
                     f"ticket opened before 2 Aug 2026 ({b['repeats_7']:,} of {b['eligible']:,}); not necessarily a "
                     'failed repair'),
-        'other_groups': ('Other', 'Software, Operator error and Other together; No cat. = no Category; NTF = No '
-                         'Trouble Found'),
+        'other_groups': ('Other', 'Software, Operator error and Other; No cat. = no Category; NTF = No Trouble Found'),
         'share_ratio_cat': ('Share ratio', "a Category's share of under-4 machines' tickets \u00f7 its share of 4+ "
                             "machines' tickets of the same model (Mantel-Haenszel over "
                             f"{len(sup['support_models'])} models); the 12 most frequent Categories"),
-        'support': ('Within model', "each model's own 4+ rate, on the "
-                    f"{len(sup['support_models'])} models with 100+ machine-months in each age group"),
-        'repeat_interval': ('Bar', '95% interval of the repeat rate, bootstrap over accounts (2,000 draws)'),
+        'repeat_interval': ('Line', f'95% interval of the repeat rate, bootstrap over accounts ({nb} draws)'),
         'share_repeats': ('Share', f"of all {b['repeats_30']:,} repeats; models (or types) with 100+ eligible index "
                           'tickets, the rest pooled'),
         'class_units': ('Rows', 'models (or telemetry types) with 50+ repeats within 30 days; the rest pooled'),
@@ -111,7 +169,7 @@ def terms():
                           'is in rp_model_matrices.csv'),
         'random_timing': ('Random timing', "the repeat rate if each machine's tickets fell at random over its own "
                           'months in the period; it rises with tickets per machine'),
-        'srr': ('Beyond chance', "observed ÷ random-timing repeats, relative to the fleet's "
+        'srr': ('Ratio', "observed ÷ random-timing repeats, relative to the fleet's "
                 f"{b['fleet_observed_over_expected_30']:.2f}: " + (
                     'none differs after Benjamini-Hochberg (q < 0.05)' if not (b['models_above'] or b['models_below'])
                     else 'blue = above the fleet, navy = below (interval excludes 1, Benjamini-Hochberg q < 0.05)')),

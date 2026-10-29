@@ -22,7 +22,7 @@ import deck_style as S  # noqa: E402
 import followup_terms as T  # noqa: E402
 
 PNG = 'sl_23_age_halves.png'
-TERMS = ['halves', 'fix_proof']
+TERMS = ['halves', 'interval_halves', 'fix_proof']
 MINUS = '−'
 OFFSET = 0.15
 H1 = 'first half (Aug 2025 to 14 Feb 2026)'

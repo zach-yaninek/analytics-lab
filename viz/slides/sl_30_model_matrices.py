@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Slide chart 32 (follow-up to slide 5): the 30-day pairing matrix of the four models with the most repeats.
+"""Slide chart 30 (follow-up to slide 5): the 30-day pairing matrix of the four models with the most repeats.
 
 Small multiples (docs/09 §5 B6): one group-level pairing matrix per model, for the four models (by the ticket's model)
 with the most repeats within 30 days in rp_by_model.csv ('Other models' left out). Rows = the index ticket's request
@@ -11,7 +11,7 @@ repeats.
 
 Input:  verification/outputs/followups/rp_model_matrices.csv (unit_kind 'model', window '30 days'), rp_by_model.csv,
         rp_pairs.csv, followups_summary.json
-Output: viz/figures/slides/sl_32_model_matrices.png (full card, tall)
+Output: viz/figures/slides/sl_30_model_matrices.png (full card, tall)
 """
 import re
 import sys
@@ -25,8 +25,8 @@ import deck_style as S  # noqa: E402
 import followup_terms as T  # noqa: E402
 from sl_24_repeat_pairings_7d import draw_cells, pct_drawn  # noqa: E402
 
-PNG = 'sl_32_model_matrices.png'
-TERMS = ['pairing', 'repeat', 'matrix_models']
+PNG = 'sl_30_model_matrices.png'
+TERMS = ['pairing_panel', 'rest_panel', 'repeat', 'matrix_models']
 N_PANELS = 4
 OWN = ['Door', 'Mechanical', 'Electronics', 'No Trouble Found', 'Monitoring']   # groups with their own row/column
 ROWS = OWN + ['Rest']
@@ -44,16 +44,16 @@ def plot(out_dir=S.FIG_DIR):
     bym = pd.read_csv(T.FU / 'rp_by_model.csv')
     p = pd.read_csv(T.FU / 'rp_pairs.csv')
     groups = T.summary()['definitions']['groups']
-    S.check('sl_32 every group in the matrices is one of the ten', 0,
+    S.check('sl_30 every group in the matrices is one of the ten', 0,
             len((set(mm.index_group) | set(mm.next_group)) - set(groups)))
-    S.check('sl_32 small_cell flag = fewer than 5 pairs', 0, int((mm.small_cell != (mm.pairs < SMALL_CELL)).sum()))
+    S.check('sl_30 small_cell flag = fewer than 5 pairs', 0, int((mm.small_cell != (mm.pairs < SMALL_CELL)).sum()))
 
     ranked = bym[~bym.pooled.astype(bool) & (bym.model != 'Other models')].sort_values('repeats_30', ascending=False)
     models = ranked.model.head(N_PANELS).tolist()
-    S.check('sl_32 four panels', N_PANELS, len(models))
-    S.check('sl_32 no tie at the cut: the 4th model has more repeats than the 5th', 1,
+    S.check('sl_30 four panels', N_PANELS, len(models))
+    S.check('sl_30 no tie at the cut: the 4th model has more repeats than the 5th', 1,
             int(ranked.repeats_30.iloc[N_PANELS - 1] > ranked.repeats_30.iloc[N_PANELS]))
-    S.check('sl_32 the four = the four largest model matrices in rp_model_matrices.csv', 1,
+    S.check('sl_30 the four = the four largest model matrices in rp_model_matrices.csv', 1,
             int(mm.groupby('unit').pairs.sum().nlargest(N_PANELS).index.tolist() == models))
 
     fig, ax0 = S.figure(S.FULL_TALL)
@@ -61,7 +61,7 @@ def plot(out_dir=S.FIG_DIR):
     axes = fig.subplots(1, N_PANELS)
     fig.get_layout_engine().set(wspace=0.08)       # a clear gap between the panels
     for k, (ax, model) in enumerate(zip(axes, models)):
-        tag = f'sl_32 {model}'
+        tag = f'sl_30 {model}'
         x = mm[mm.unit == model]
         counts = (x.assign(i=x.index_group.map(six), n=x.next_group.map(six))
                   .pivot_table(index='i', columns='n', values='pairs', aggfunc='sum')
@@ -112,12 +112,12 @@ def plot(out_dir=S.FIG_DIR):
 
     # The definitions' numbers.
     t = T.terms()
-    S.check('sl_32 definition: the four with the most repeats within 30 days', 1,
+    S.check('sl_30 definition: the four with the most repeats within 30 days', 1,
             int('the four with the most repeats within 30 days' in t['matrix_models'][1]))
     m = re.search(r'within (\d+) days \(7-day: within (\d+)\) .* before (\d+) Aug 2026 \(([\d,]+)\)', t['repeat'][1])
-    S.check('sl_32 definition: within 30 days', 30, int(m.group(1)))
-    S.check('sl_32 definition: 6,665 eligible', len(p), int(m.group(4).replace(',', '')))
-    S.check('sl_32 every 30-day repeat within 30 days', 0, int((p[p.repeat_30].gap_days > 30).sum()))
+    S.check('sl_30 definition: within 30 days', 30, int(m.group(1)))
+    S.check('sl_30 definition: 6,665 eligible', len(p), int(m.group(4).replace(',', '')))
+    S.check('sl_30 every 30-day repeat within 30 days', 0, int((p[p.repeat_30].gap_days > 30).sum()))
     S.definitions(fig, T.items(TERMS))
     return [S.save(fig, Path(out_dir) / PNG)]
 
