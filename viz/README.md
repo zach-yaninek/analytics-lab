@@ -13,6 +13,8 @@ viz/
   zac_notebook/         Zac's 10 notebook figures, rebuilt in this style; zac_data.py = data and definitions
   fleet_exposure/       fleet-exposure charts (docs/06); fleet.py = their data and term definitions
   association/          association charts (docs/08); assoc.py = their data and term definitions
+  slides/               card-sized charts for the IPA deck (sl_NN_*.py); deck_style.py = their style
+  deliverables/         builds the real-name memo and deck PDF into the gitignored deliverables/
   figures/              rendered PNGs (pseudonymous)
   run_all.py            redraw everything and run the checks
 ```
@@ -128,6 +130,9 @@ number on the chart equals that number in the data" assertions.
 | `association/as_08_breakdowns.py` | Descriptive rows: door codes before No Trouble Found and cancelled tickets; electronics before repeat tickets |
 | `slides/sl_*.py` | Slide versions for the IPA meeting deck (`python3 -I viz/slides/run_all.py`): the same committed outputs and data logic as the page charts above, plot only, card-sized, in the A-Lab deck palette (`slides/deck_style.py`); output in `figures/slides/` |
 | `slides/sl_18_*.py` … `sl_31_*.py` | IPA's follow-ups on slides 4 and 5 (docs/10): request types on machines under 4 vs 4+ years (sl_18–sl_23, and sl_31 by install year) and repeat-contact pairings and offenders (sl_24–sl_30). These print their definitions on the image (`deck_style.definitions`, wording in `slides/followup_terms.py`); `run_all.py` checks every definition is printed |
+| `slides/sl_06_*.py`, `sl_07_*.py` | The deck's two customer charts: also a real-name variant into `deliverables/slides/` (gitignored) when the private name table exists; `plot_named()` draws any name map, e.g. same-length placeholders for a layout check |
+| `deliverables/build_memo.py` | The IPA Word memo: `docs/executive_summary.md` with real names and the real-name customer charts, laid out by `deliverables/memo_docx.js` (docx-js); counts-only checks of the result |
+| `deliverables/build_deck_pdf.py` | The deck as a PDF with real names (Chromium via `deliverables/deck_pdf.js`), from the deck's own files and a map of its image assets; counts-only checks of the result |
 
 High-ticket charts 9 (raw ticket counts by model and telemetry type) and 10 (rates per 100 machine-months by telemetry
 type) were retired in favour of `fx_01`, `fx_02` and `fx_05`, which use IPA's installed-base list.

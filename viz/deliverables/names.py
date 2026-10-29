@@ -22,12 +22,13 @@ MD_SPECIAL = re.compile(r'([\\`*_{}\[\]<>()#+!|~$])')
 
 
 def real_names():
-    """{'Customer NNN': real account name}, or None when the private table is absent."""
+    """{'Customer NNN': real account name}, or None when the private table is absent. A customer whose name cell is
+    blank is left out, so substitute() fails on it instead of writing an empty or 'nan' name."""
     if not NAMES_FILE.exists():
         return None
     import pandas as pd
-    df = pd.read_csv(NAMES_FILE, dtype=str)
-    return dict(zip(df.customer, df.real_account_name))
+    df = pd.read_csv(NAMES_FILE, dtype=str, keep_default_na=False)
+    return {c: n.strip() for c, n in zip(df.customer, df.real_account_name) if n.strip()}
 
 
 def twin(names):
