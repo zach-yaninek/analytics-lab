@@ -55,8 +55,10 @@ def plot(out_dir=S.FIG_DIR):
                     [y.install.astype(int).isin(YEARS)].all()))
     # The shaded years: machines under 4 at the midpoint (90% of 2022 installs, all later ones, none earlier).
     u4 = years[years.category == ALL].set_index('install').under4_share_of_machines
-    S.check('sl_31 install years 2023-2026 are all under 4', 1, int((u4[[str(y) for y in range(2023, 2027)]] == 1).all()))
-    S.check('sl_31 install years up to 2021 are all 4+', 1, int((u4[[str(y) for y in range(2016, 2022)]] == 0).all()))
+    S.check('sl_31 install years 2023-2026 are all under 4', 1,
+            int((u4[[str(y) for y in range(2023, 2027)]] == 1).all()))
+    S.check('sl_31 install years up to 2021 are all 4+', 1,
+            int((u4[[str(y) for y in range(2016, 2022)]] == 0).all()))
     share22 = float(u4['2022'])
 
     fig, ax0 = S.figure(S.FULL_TALL)
@@ -65,7 +67,7 @@ def plot(out_dir=S.FIG_DIR):
     fig.get_layout_engine().set(wspace=0.06)
     cat_max = max(years[years.category.isin(ORDER) & years.install.astype(int).isin(YEARS)].rate_hi.max(), 1)
     ylim_cat = (0, np.ceil(cat_max + 0.25))
-    for k, (ax, c) in enumerate(zip(axes, [ALL] + ORDER)):
+    for ax, c in zip(axes, [ALL] + ORDER):
         S.style_axes(ax, grid='y', baseline='bottom')
         y = years[(years.category == c) & years.install.astype(int).isin(YEARS)].copy()
         y['yr'] = y.install.astype(int)
@@ -87,8 +89,6 @@ def plot(out_dir=S.FIG_DIR):
         ax.set_ylim(0, top)
         if c == ALL:
             ax.set_ylabel('Tickets per 100 machine-months')
-        elif k > 1:
-            ax.tick_params(axis='y', labelleft=False)
         ax.set_title(c, loc='left', fontsize=S.FONT, color=S.INK, pad=26)
         r = cohorts.loc[(c, PEAK)]
         txt = f"{PEAK.replace('-', '–')} vs {NEWEST.replace('-', '–')} installs: {ratio_text(r)}"
@@ -103,11 +103,13 @@ def plot(out_dir=S.FIG_DIR):
                 int(r.ratio_lo <= r.ratio_to_newest_cohort <= r.ratio_hi))
     for ax in axes[2:]:
         ax.sharey(axes[1])
+        ax.tick_params(axis='y', labelleft=True)        # each panel reads its own values
     axes[1].set_ylim(*ylim_cat)
     S.check('sl_31 every Category interval inside its axes', 1,
             int(years[years.category.isin(ORDER) & years.install.astype(int).isin(YEARS)].rate_hi.max() < ylim_cat[1]))
 
-    handles = [Line2D([], [], color=S.BLUE, lw=1.2, marker='o', ms=6.5, mec=S.WHITE, label='install year, with 95% interval'),
+    handles = [Line2D([], [], color=S.BLUE, lw=1.2, marker='o', ms=6.5, mec=S.WHITE,
+                      label='install year, with 95% interval'),
                Line2D([], [], color=S.GRAY, lw=2.0, label='install cohort (2016–18, 2019–21, 2022–23, 2024–26)'),
                Patch(facecolor=S.GRID, alpha=0.55, label='under 4 this year')]
     fig.legend(handles=handles, loc='outside upper center', ncols=3, fontsize=S.SMALL, handlelength=2.2,

@@ -87,6 +87,13 @@ def plot(out_dir=S.FIG_DIR):
                 else:
                     S.check(f'{tag} {gi} -> {gj} blank = no pairs', 0, int(counts.iloc[i, j]))
 
+        for i, gi in enumerate(ROWS):               # each row's repeats, right of the matrix
+            n_txt = f'{int(row_tot[i, 0]):,}'
+            S.check(f'{tag} {gi} row repeats', int(from_pairs.loc[gi].sum()), int(n_txt.replace(',', '')))
+            ax.annotate(n_txt, xy=(1, i + 0.5), xycoords=('axes fraction', 'data'), xytext=(5, 0),
+                        textcoords='offset points', ha='left', va='center_baseline', fontsize=S.DEF, color=S.INK2)
+        ax.annotate('n', xy=(1, 1), xycoords='axes fraction', xytext=(5, 4), textcoords='offset points', ha='left',
+                    va='bottom', fontsize=S.DEF, color=S.INK2)
         title = f'{model} ({n:,} repeats)'
         S.check(f'{tag} title repeats', bym.set_index('model').repeats_30[model],
                 int(re.search(r'\(([\d,]+) repeats\)', title).group(1).replace(',', '')))

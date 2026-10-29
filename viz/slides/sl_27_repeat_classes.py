@@ -32,7 +32,7 @@ from sl_24_repeat_pairings_7d import pct_drawn, pct_text, text_width_pt  # noqa:
 from sl_26_same_problem_by_gap import check_numbers  # noqa: E402
 
 PNG = 'sl_27_repeat_classes.png'
-TERMS = ['classes', 'repeat', 'one_day']
+TERMS = ['classes', 'classes_gap', 'repeat', 'one_day']
 DAGGER = '†' if 'one_day' in TERMS else ''   # marks the 1-day bin once its caveat is defined
 BINS = ['1 day or less', 'over 1 to 7 days', 'over 7 to 30 days', 'all repeats']
 NAMES = ['1 day or less' + DAGGER, '1 to 7 days', '7 to 30 days', 'All repeats']
@@ -168,6 +168,12 @@ def check_definitions(p, rep, s):
         ('before 2 Aug 2026: the cutoff\'s year', r'before \d+ \w+ (\d{4})', cutoff.year, 0),
         ('6,665 eligible index tickets', r'\(([\d,]+)\)', b['eligible'], 0)])
     check_numbers('sl_27', t, 'classes', [])
+    content = rep[rep.pair_class.isin(['Same Category', 'Same group, other Category', 'Different group'])]
+    wo = [100 * (content[content.gap_bin == b].pair_class == 'Same Category').mean() for b in BINS[:3]]
+    check_numbers('sl_27', t, 'classes_gap', [
+        ('same Category without the process classes, 1 day or less', r'is (\d+)%', wo[0], 0.5),
+        ('same Category without the process classes, 1 to 7 days', r'is \d+%, (\d+)%', wo[1], 0.5),
+        ('same Category without the process classes, 7 to 30 days', r'and (\d+)% of', wo[2], 0.5)])
     groups = re.search(r'request type \(([^)]*)\)', t['classes'][1])
     if groups:                                   # the groups the definition names = those in the three content classes
         named = sorted(re.split(r', (?:or )?| or ', groups.group(1)))

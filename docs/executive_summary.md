@@ -36,7 +36,8 @@ IPA meeting on 13 October 2026).*
 >     excluded), 46% of the 63 pairs a day or less apart share it (95% 33–60%), against 27% of pairs more than six
 >     months apart.
 >   - Nearly every model repeats more than random timing would give (15.4% for the fleet against 23.6% observed), and
->     once ticket volume and timing are allowed for, no model or telemetry type stands out from the fleet.
+>     once ticket volume and timing are allowed for, no model or telemetry type with 100+ eligible tickets clearly
+>     stands out from the fleet.
 
 > **Update, 22 October 2026: association study** (`docs/07`, `docs/08`; provisional).
 > - **Primary result.** On average over the five code sets that could be tested, a ticket's Category agrees with the

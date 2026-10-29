@@ -185,7 +185,8 @@ def pairing_figure(days, tag):
                 float(pt.strip('(%)')), 0.5)
     w_pct = max(text_width_pt(fig, t, S.SMALL) for t in pct_txt)
     w_rep = max(text_width_pt(fig, t, S.SMALL) for t in rep_txt)
-    w_name = max(text_width_pt(fig, t, S.TICK) for t in g)
+    names = [T.MATRIX_ROW.get(x, x) for x in g]
+    w_name = max(text_width_pt(fig, t, S.TICK) for t in names)
     gap0, gap1, gap2 = 7, 5, 11           # points: matrix to %, % to repeats, repeats to name
     for i in range(len(g)):
         for txt, x in ((pct_txt[i], -gap0), (rep_txt[i], -(gap0 + w_pct + gap1))):
@@ -193,7 +194,7 @@ def pairing_figure(days, tag):
                         textcoords='offset points', ha='right', va='center_baseline', fontsize=S.SMALL, color=S.INK2)
     pad = gap0 + w_pct + gap1 + w_rep + gap2
     ax.set_yticks(np.arange(len(g)) + 0.5)
-    ax.set_yticklabels(g)
+    ax.set_yticklabels(names)
     ax.tick_params(axis='y', pad=pad)
     for t in ax.get_yticklabels():
         t.set_verticalalignment('center_baseline')

@@ -201,7 +201,7 @@
      the follow-up only, 23 both.
    - Charts [sl_24](../viz/figures/slides/sl_24_repeat_pairings_7d.png) (7 days) and
      [sl_25](../viz/figures/slides/sl_25_repeat_pairings_30d.png) (30 days).
-9. **The same problem comes back quickly** (chart [sl_26](../viz/figures/slides/sl_26_same_problem_by_gap.png)).
+9. **Tickets close together are more often the same problem** (chart [sl_26](../viz/figures/slides/sl_26_same_problem_by_gap.png)).
    - **By gap.** Over every pair of tickets on one machine with a recorded Category, monitoring excluded (6,980 pairs;
      No Trouble Found counts as a Category), the same-Category share falls with the gap between them:
 
@@ -231,7 +231,7 @@
      - Electronics 46%;
      - Network 38%.
 10. **Offenders by volume are the biggest models; once ticket volume and timing are allowed for, no model or telemetry
-    type stands out from the fleet.**
+    type with 100+ eligible tickets clearly stands out from the fleet.**
     - **The random-timing baseline.** If each machine's tickets came at random over its own months, 15.4% of tickets
       would repeat within 30 days. 23.6% do (×1.53). Within 7 days it is 4.1% against 9.5% (×2.30).
     - **By volume:** LVD-Remote-2.0 holds 19% of all repeats, LVRR-WP-2.0 17% and MV-2.0 12%.

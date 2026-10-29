@@ -18,7 +18,8 @@ MATRIX_GROUPS = ['Door', 'Mechanical', 'Electronics', 'Network', 'No Trouble Fou
                  'Other']
 MATRIX_MAP = {'Software': 'Other', 'Operator error': 'Other', 'Other': 'Other'}
 MATRIX_SHORT = {'Door': 'Door', 'Mechanical': 'Mech.', 'Electronics': 'Electr.', 'Network': 'Netw.',
-                'No Trouble Found': 'NTF', 'Monitoring': 'Monit.', 'Not categorised': 'No cat.', 'Other': 'Other'}
+                'No Trouble Found': 'NTF', 'Monitoring': 'Monit.', 'Not categorised': 'No cat.', 'Other': 'Other+'}
+MATRIX_ROW = {'Other': 'Other+'}   # row labels: the pooled group (Software, Operator error, Other) reads Other+
 
 # Pairing classes on a slide: the three process classes shown as one segment (the CSVs keep all six). Blues = the
 # same problem or group, grays = a different group or a process ticket; adjacent pairs pass the dataviz validator's
@@ -72,6 +73,18 @@ def signed(x):
     return f'{x:+.0f}'.replace('-', '−')
 
 
+def same_wo_process():
+    """Same Category as a share of the repeats in each of the first three gap bins, leaving out the three process
+    classes (Monitoring, No Trouble Found or a blank Category involved): sl_27's light-gray segment."""
+    c = __import__('pandas').read_csv(FU / 'rp_classes.csv')
+    out = []
+    for b in ('1 day or less', 'over 1 to 7 days', 'over 7 to 30 days'):
+        x = c[c.gap_bin == b].set_index('pair_class').pairs
+        content = x.reindex(['Same Category', 'Same group, other Category', 'Different group']).sum()
+        out.append(x['Same Category'] / content)
+    return out
+
+
 def p_text(p, n_perm):
     """A permutation p-value as printed: below the smallest reachable value it reads '< 0.001'."""
     floor = 1 / (n_perm + 1)
@@ -110,7 +123,8 @@ def terms():
         'share_ratio': ('Share ratio', "a type's share of under-4 machines' tickets ÷ its share of 4+ machines' "
                         f"tickets of the same model, pooled over the {len(sup['support_models'])} models with 100+ "
                         f"machine-months in each age group ({100 * sup['under4_share_support']:.0f}% of under-4 and "
-                        f"{100 * sup['plus4_share_support']:.0f}% of 4+ tickets; Mantel-Haenszel); 1 = same mix"),
+                        f"{100 * sup['plus4_share_support']:.0f}% of 4+ tickets; Mantel-Haenszel); 1 = same mix; "
+                        'Not categorised is left out'),
         'interval': ('Bar', '95% interval, bootstrap over accounts (2,000 draws)'),
         'perm_test': ('Test', 'under-4 and 4+ labels shuffled among machines of the same model, 2,000 times: the mix '
                       f"differs overall (p {p_text(a['global_p'], s['n_perm'])}); blue = differs after "
@@ -125,8 +139,9 @@ def terms():
         'interval_halves': ('Bar', f'95% interval, bootstrap over accounts ({nb} draws; the {und_h} in which a model '
                             "has no 4+ machine-months are left out); bold = the change's interval excludes 0"),
         'extra': ('Extra tickets', "under-4 machines' tickets minus what their months give at 4+ machines' rates "
-                  f"({a['extra_tickets']:,.0f} in all). Ring: all; dot: within model, at each model's own 4+ rate on "
-                  f"the {len(sup['support_models'])} models with {s['definitions']['min_support_months']}+ "
+                  f"({a['extra_tickets']:,.0f} in all). Ring: all; dot and the numbers on the right: within model, at "
+                  f"each model's own 4+ rate on the {len(sup['support_models'])} models with "
+                  f"{s['definitions']['min_support_months']}+ "
                   'machine-months in each age group; the gap: model mix, plus tickets on models outside the '
                   f"comparison ({a['extra_outside_support']:.0f} in all; {signed(out_g.min())} to "
                   f'{signed(out_g.max())} by group)'),
@@ -134,8 +149,9 @@ def terms():
                      'categorised); models with 30+ tickets in each age group'),
         'rate_model': ('Rate per 100', 'unplanned tickets per 100 installed machine-months; – for telemetry types, '
                        'which have no installed months until the database extract'),
-        'mix_test': ('Mix test', "under-4 and 4+ labels shuffled among machines of the same model (a type's: of the "
-                     f"same type and model), {s['n_perm']:,} times; Benjamini-Hochberg q, bold = q < 0.05"),
+        'mix_test': ('Mix test', 'under-4 and 4+ labels shuffled among machines of the same model (for a telemetry '
+                     f"type: of the same telemetry type and model), {s['n_perm']:,} times; Benjamini-Hochberg q, "
+                     'bold = q < 0.05'),
         'telemetry_type_cut': ('Telemetry type', "the clearView machine type of the device matched to the machine's "
                                'tickets; ' + type_spans()),
         'telemetry_type': ('Telemetry type', 'the clearView type of the matched device; scrubex2.0-2, -3, -4 and -5 '
@@ -149,15 +165,15 @@ def terms():
         'repeat': ('Repeat', 'the next unplanned ticket on the same machine opens within 30 days (7-day: within 7) of '
                    f"an eligible index ticket opened before 2 Aug 2026 ({b['eligible']:,}); not necessarily a failed "
                    'repair'),
-        'pairing': ('Cell', "share of the row's repeats whose next ticket is of the column's type (outlined: same "
-                    "type; blank: none); row label: repeats and the share of that type's tickets that repeat"),
-        'pairing7': ('Cell', "share of the row's repeats whose next ticket is of the column's type (outlined: same "
-                     "type; blank: none); row label: 7-day repeats and the share of that type's tickets that repeat "
+        'pairing': ('Cell', "share of the row's repeats whose next ticket is in the column's group (outlined: same "
+                    "group; blank: none); row label: repeats and the share of that group's tickets that repeat"),
+        'pairing7': ('Cell', "share of the row's repeats whose next ticket is in the column's group (outlined: same "
+                     "group; blank: none); row label: 7-day repeats and the share of that group's tickets that repeat "
                      'within 7 days'),
-        'pairing_panel': ('Cell', "share of the row's repeats whose next ticket is of the column's type (outlined: same "
-                          'type; blank: none; italic: fewer than 5 pairs)'),
-        'rest_panel': ('Rest', 'Network, Software, Operator error, Other and Not categorised together; NTF = No Trouble '
-                       'Found'),
+        'pairing_panel': ('Cell', "share of the row's repeats whose next ticket is in the column's group (outlined: "
+                          "same group; blank: none; italic: fewer than 5 pairs); n = the row's repeats"),
+        'rest_panel': ('Rest', 'Network, Software, Operator error, Other and Not categorised together; NTF = No '
+                       'Trouble Found'),
         'pairs_gap': ('Pairs', f'{int(gaps.pairs.sum()):,} pairs of unplanned tickets on one machine, consecutive or '
                       'not, each with a recorded Category (No Trouble Found counts, Monitoring does not); 90+ days '
                       'apart: the usual mix'),
@@ -167,19 +183,21 @@ def terms():
                        f"{100 * sh['observed_share']:.0f}% share it vs {100 * lab['null_share']:.0f}% by chance (their "
                        f"own mix, not the {100 * usual:.0f}% line; p {p_text(lab['p'], s['n_perm'])})"),
         'interval_line': ('Line on each bar', f'95% interval, bootstrap over accounts ({nb} draws)'),
+        'classes_gap': ('Without light gray', 'same Category is ' + and_list(
+            f'{100 * x:.0f}%' for x in same_wo_process()) + ' of the repeats in the top three rows'),
         'one_day': ('1 day or less†', 'may include duplicate tickets for one call that were not marked as duplicates'),
         'classes': ('Class', 'the first that applies: a Monitoring ticket, No Trouble Found (NTF) or a blank Category '
                     'involved (light gray); same Category; same group, other Category; different group. '
                     'Group = the request type (Door, Mechanical, Electronics, Network, Software, Operator error or '
                     'Other)'),
-        'repeat7': ('7-day follow-up', 'the next unplanned ticket on the same machine opens within 7 days of an index '
+        'repeat7': ('7-day repeat', 'the next unplanned ticket on the same machine opens within 7 days of an index '
                     f"ticket opened before 2 Aug 2026 ({b['repeats_7']:,} of {b['eligible']:,}); not necessarily a "
                     'failed repair'),
-        'other_groups': ('Other', 'Software, Operator error and Other; No cat. = Not categorised: no Category, outside '
-                         'the Electronics, Network, Software and Operator Error codes; NTF = No Trouble Found'),
+        'other_groups': ('Other+', 'Software, Operator error and Other; No cat. = Not categorised: no Category, '
+                         'outside the Electronics, Network, Software and Operator Error codes; NTF = No Trouble Found'),
         'install_rate': ('Rate', "unplanned tickets of the type per 100 installed machine-months (Aug 2025 to Aug "
                          f"2026) on the {n_sup} models with 100+ machine-months in each age group, by the machine's "
-                         f"install year; line: 95% interval, bootstrap over accounts ({nb} draws)"),
+                         f"install year; vertical line: 95% interval, bootstrap over accounts ({nb} draws)"),
         'install_band': ('Shaded', 'install years whose machines are under 4 at the midpoint of their months on '
                          f"IPA's list: the first three bars of slide 4 ({100 * float(u4_2022.iloc[0]):.0f}% of 2022 "
                          'installs)'),
@@ -195,8 +213,8 @@ def terms():
         'repeat_interval': ('Line', f'95% interval of the repeat rate, bootstrap over accounts ({nb} draws)'),
         'share_repeats': ('Share', f"of all {b['repeats_30']:,} repeats; models (or types) with 100+ eligible index "
                           'tickets, the rest pooled'),
-        'class_units': ('Rows', 'models (or telemetry types) with 50+ repeats within 30 days (repeats in brackets), the '
-                        'rest pooled; No device match and Unknown shown apart; descriptive, not tested'),
+        'class_units': ('Rows', 'models (or telemetry types) with 50+ repeats within 30 days (repeats in brackets), '
+                        'the rest pooled; No device match and Unknown shown apart; descriptive, not tested'),
         'matrix_models': ('Models', 'the four with the most repeats within 30 days; every model and telemetry type '
                           'is in rp_model_matrices.csv'),
         'random_timing': ('Random timing', "the repeat rate if each machine's tickets fell at random over its own "
