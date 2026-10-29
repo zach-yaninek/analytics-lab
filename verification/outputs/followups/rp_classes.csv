@@ -1,0 +1,31 @@
+gap_bin,pair_class,pairs,share_of_bin,share_of_eligible,bin_pairs
+1 day or less,Monitoring involved,12,0.1481481481,0.001800450113,81
+1 day or less,No Trouble Found involved,11,0.1358024691,0.001650412603,81
+1 day or less,Category blank,9,0.1111111111,0.001350337584,81
+1 day or less,Same Category,26,0.3209876543,0.003900975244,81
+1 day or less,"Same group, other Category",6,0.07407407407,0.0009002250563,81
+1 day or less,Different group,17,0.2098765432,0.002550637659,81
+over 1 to 7 days,Monitoring involved,93,0.1690909091,0.01395348837,550
+over 1 to 7 days,No Trouble Found involved,65,0.1181818182,0.00975243811,550
+over 1 to 7 days,Category blank,23,0.04181818182,0.003450862716,550
+over 1 to 7 days,Same Category,182,0.3309090909,0.02730682671,550
+over 1 to 7 days,"Same group, other Category",43,0.07818181818,0.006451612903,550
+over 1 to 7 days,Different group,144,0.2618181818,0.02160540135,550
+over 7 to 30 days,Monitoring involved,68,0.07211028632,0.01020255064,943
+over 7 to 30 days,No Trouble Found involved,125,0.1325556734,0.01875468867,943
+over 7 to 30 days,Category blank,29,0.03075291622,0.004351087772,943
+over 7 to 30 days,Same Category,282,0.2990455992,0.04231057764,943
+over 7 to 30 days,"Same group, other Category",101,0.1071049841,0.01515378845,943
+over 7 to 30 days,Different group,338,0.3584305408,0.05071267817,943
+all repeats,Monitoring involved,173,0.1099110546,0.02595648912,1574
+all repeats,No Trouble Found involved,201,0.1277001271,0.03015753938,1574
+all repeats,Category blank,61,0.03875476493,0.009152288072,1574
+all repeats,Same Category,490,0.3113087675,0.07351837959,1574
+all repeats,"Same group, other Category",150,0.09529860229,0.02250562641,1574
+all repeats,Different group,499,0.3170266836,0.07486871718,1574
+all repeats,Monitoring involved: follow-up only,125,0.07941550191,0.01875468867,1574
+all repeats,Monitoring involved: index only,45,0.02858958069,0.006751687922,1574
+all repeats,Monitoring involved: both,3,0.001905972046,0.0004501125281,1574
+all repeats,No Trouble Found involved: index only,96,0.06099110546,0.0144036009,1574
+all repeats,No Trouble Found involved: follow-up only,82,0.05209656925,0.01230307577,1574
+all repeats,No Trouble Found involved: both,23,0.01461245235,0.003450862716,1574

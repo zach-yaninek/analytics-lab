@@ -1,0 +1,109 @@
+unit,repeats,pair_class,pairs,share,unit_kind
+LVD-Remote,134,Monitoring involved,6,0.0447761194,model
+LVD-Remote,134,No Trouble Found involved,19,0.1417910448,model
+LVD-Remote,134,Category blank,14,0.1044776119,model
+LVD-Remote,134,Same Category,28,0.2089552239,model
+LVD-Remote,134,"Same group, other Category",16,0.1194029851,model
+LVD-Remote,134,Different group,51,0.3805970149,model
+LVD-Remote-2.0,299,Monitoring involved,41,0.1371237458,model
+LVD-Remote-2.0,299,No Trouble Found involved,44,0.1471571906,model
+LVD-Remote-2.0,299,Category blank,10,0.03344481605,model
+LVD-Remote-2.0,299,Same Category,91,0.3043478261,model
+LVD-Remote-2.0,299,"Same group, other Category",21,0.07023411371,model
+LVD-Remote-2.0,299,Different group,92,0.3076923077,model
+LVRR-WP,118,Monitoring involved,16,0.1355932203,model
+LVRR-WP,118,No Trouble Found involved,14,0.1186440678,model
+LVRR-WP,118,Category blank,3,0.02542372881,model
+LVRR-WP,118,Same Category,36,0.3050847458,model
+LVRR-WP,118,"Same group, other Category",10,0.08474576271,model
+LVRR-WP,118,Different group,39,0.3305084746,model
+LVRR-WP-2.0,265,Monitoring involved,31,0.1169811321,model
+LVRR-WP-2.0,265,No Trouble Found involved,26,0.09811320755,model
+LVRR-WP-2.0,265,Category blank,6,0.02264150943,model
+LVRR-WP-2.0,265,Same Category,96,0.3622641509,model
+LVRR-WP-2.0,265,"Same group, other Category",29,0.1094339623,model
+LVRR-WP-2.0,265,Different group,77,0.2905660377,model
+MV,93,Monitoring involved,8,0.08602150538,model
+MV,93,No Trouble Found involved,12,0.1290322581,model
+MV,93,Category blank,6,0.06451612903,model
+MV,93,Same Category,21,0.2258064516,model
+MV,93,"Same group, other Category",14,0.1505376344,model
+MV,93,Different group,32,0.3440860215,model
+MV-2.0,183,Monitoring involved,20,0.1092896175,model
+MV-2.0,183,No Trouble Found involved,28,0.1530054645,model
+MV-2.0,183,Category blank,7,0.03825136612,model
+MV-2.0,183,Same Category,62,0.3387978142,model
+MV-2.0,183,"Same group, other Category",19,0.1038251366,model
+MV-2.0,183,Different group,47,0.2568306011,model
+Other models,322,Monitoring involved,28,0.08695652174,model
+Other models,322,No Trouble Found involved,40,0.1242236025,model
+Other models,322,Category blank,12,0.03726708075,model
+Other models,322,Same Category,93,0.2888198758,model
+Other models,322,"Same group, other Category",29,0.0900621118,model
+Other models,322,Different group,120,0.3726708075,model
+alEx LC-D,160,Monitoring involved,23,0.14375,model
+alEx LC-D,160,No Trouble Found involved,18,0.1125,model
+alEx LC-D,160,Category blank,3,0.01875,model
+alEx LC-D,160,Same Category,63,0.39375,model
+alEx LC-D,160,"Same group, other Category",12,0.075,model
+alEx LC-D,160,Different group,41,0.25625,model
+No device match,276,Monitoring involved,30,0.1086956522,telemetry type
+No device match,276,No Trouble Found involved,34,0.1231884058,telemetry type
+No device match,276,Category blank,22,0.07971014493,telemetry type
+No device match,276,Same Category,77,0.2789855072,telemetry type
+No device match,276,"Same group, other Category",34,0.1231884058,telemetry type
+No device match,276,Different group,79,0.2862318841,telemetry type
+Other telemetry types,228,Monitoring involved,25,0.1096491228,telemetry type
+Other telemetry types,228,No Trouble Found involved,35,0.1535087719,telemetry type
+Other telemetry types,228,Category blank,4,0.01754385965,telemetry type
+Other telemetry types,228,Same Category,65,0.2850877193,telemetry type
+Other telemetry types,228,"Same group, other Category",20,0.08771929825,telemetry type
+Other telemetry types,228,Different group,79,0.3464912281,telemetry type
+alex2.0-1,69,Monitoring involved,3,0.04347826087,telemetry type
+alex2.0-1,69,No Trouble Found involved,6,0.08695652174,telemetry type
+alex2.0-1,69,Category blank,1,0.01449275362,telemetry type
+alex2.0-1,69,Same Category,34,0.4927536232,telemetry type
+alex2.0-1,69,"Same group, other Category",5,0.07246376812,telemetry type
+alex2.0-1,69,Different group,20,0.2898550725,telemetry type
+alex2.0-3,142,Monitoring involved,17,0.1197183099,telemetry type
+alex2.0-3,142,No Trouble Found involved,18,0.1267605634,telemetry type
+alex2.0-3,142,Category blank,1,0.007042253521,telemetry type
+alex2.0-3,142,Same Category,52,0.3661971831,telemetry type
+alex2.0-3,142,"Same group, other Category",17,0.1197183099,telemetry type
+alex2.0-3,142,Different group,37,0.2605633803,telemetry type
+mlc-1,57,Monitoring involved,6,0.1052631579,telemetry type
+mlc-1,57,No Trouble Found involved,2,0.0350877193,telemetry type
+mlc-1,57,Category blank,1,0.01754385965,telemetry type
+mlc-1,57,Same Category,15,0.2631578947,telemetry type
+mlc-1,57,"Same group, other Category",3,0.05263157895,telemetry type
+mlc-1,57,Different group,30,0.5263157895,telemetry type
+scrubex-2,96,Monitoring involved,4,0.04166666667,telemetry type
+scrubex-2,96,No Trouble Found involved,16,0.1666666667,telemetry type
+scrubex-2,96,Category blank,11,0.1145833333,telemetry type
+scrubex-2,96,Same Category,20,0.2083333333,telemetry type
+scrubex-2,96,"Same group, other Category",11,0.1145833333,telemetry type
+scrubex-2,96,Different group,34,0.3541666667,telemetry type
+scrubex-3,53,Monitoring involved,3,0.05660377358,telemetry type
+scrubex-3,53,No Trouble Found involved,7,0.1320754717,telemetry type
+scrubex-3,53,Category blank,1,0.01886792453,telemetry type
+scrubex-3,53,Same Category,11,0.2075471698,telemetry type
+scrubex-3,53,"Same group, other Category",5,0.09433962264,telemetry type
+scrubex-3,53,Different group,26,0.4905660377,telemetry type
+scrubex2.0-2,262,Monitoring involved,38,0.1450381679,telemetry type
+scrubex2.0-2,262,No Trouble Found involved,35,0.1335877863,telemetry type
+scrubex2.0-2,262,Category blank,9,0.03435114504,telemetry type
+scrubex2.0-2,262,Same Category,81,0.3091603053,telemetry type
+scrubex2.0-2,262,"Same group, other Category",18,0.06870229008,telemetry type
+scrubex2.0-2,262,Different group,81,0.3091603053,telemetry type
+scrubex2.0-3,221,Monitoring involved,28,0.1266968326,telemetry type
+scrubex2.0-3,221,No Trouble Found involved,21,0.09502262443,telemetry type
+scrubex2.0-3,221,Category blank,5,0.02262443439,telemetry type
+scrubex2.0-3,221,Same Category,78,0.3529411765,telemetry type
+scrubex2.0-3,221,"Same group, other Category",22,0.09954751131,telemetry type
+scrubex2.0-3,221,Different group,67,0.3031674208,telemetry type
+scrubex2.0-4,170,Monitoring involved,19,0.1117647059,telemetry type
+scrubex2.0-4,170,No Trouble Found involved,27,0.1588235294,telemetry type
+scrubex2.0-4,170,Category blank,6,0.03529411765,telemetry type
+scrubex2.0-4,170,Same Category,57,0.3352941176,telemetry type
+scrubex2.0-4,170,"Same group, other Category",15,0.08823529412,telemetry type
+scrubex2.0-4,170,Different group,46,0.2705882353,telemetry type

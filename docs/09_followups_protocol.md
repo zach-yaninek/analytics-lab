@@ -1,6 +1,6 @@
 # Follow-ups protocol: request types by machine age, and repeat-contact pairings
 
-*29 October 2026. Status: **frozen before results**.*
+*29 October 2026. Status: **frozen before results**; amended after the first run (§12).*
 
 **Scope and rules**
 - This document fixes the populations, definitions, estimators, tests and thresholds for two questions IPA raised at
@@ -391,7 +391,59 @@ No Part B pairing matrix, same-by-gap share, class mix, random-timing figure or 
 - **The database extract** for telemetry-type rates on installed months.
 
 ## 12. Amendments
-None yet.
+**Amended 29 October 2026, after the first full run.** Three independent clean-room builds (§8), written from this
+document alone, were compared with `followups.py`. They matched it:
+- Part A's statistic, gate, decomposition and halves;
+- Part B's pairs, classes, directions and same-by-gap shares;
+- the null rates, within Monte Carlo error.
+
+The first run and the comparison raised two problems, one factual error and several readings the text left open.
+Where this section and an earlier one differ, this section governs.
+
+1. **B2 within-machine test (a problem in the design).**
+   - **The flaw.** As written, the shuffle pairs a ticket with itself whenever that ticket is one pair's follow-up
+     and the next pair's index. Such a pairing always matches, so the null is inflated: null mean 383 against 323
+     observed, p = 1.0. 412 of the 833 pairs are chained this way. The main analysis and one clean-room build found
+     this independently.
+   - **Replacement.** Each machine's Category labels are permuted among its own tickets (recorded Category, not
+     Monitoring), with opening times fixed, so the repeat pairs stay the same pairs of tickets. 2,000 permutations,
+     one-sided p.
+   - **Sensitivity.** Only non-overlapping pairs: in time order, a pair is kept when neither ticket is already in a
+     kept pair, and follow-up Categories are shuffled among the kept pairs.
+   - The as-written result is reported for the record.
+2. **B4 computed exactly.**
+   - **Why a closed form exists.** The eligibility cutoff falls exactly 30 days before the window end. So under the
+     uniform null, every eligible ticket has its whole window inside the machine's window, and its repeat
+     probability is exactly 1 − (1 − d/L_i)^(n_i − 1). This is the ratio of expectations the simulation estimates.
+   - **How it is used.** The uniform nulls use the exact value. The 1,000 simulations are kept as a check (the fleet
+     agrees within 1%) and give the null's spread. The calendar-weighted null has no closed form and uses the
+     simulation.
+   - **A full-period variant** is added: every machine's tickets spread over 1 Aug 2025 – 31 Aug 2026. It reproduces
+     docs/02 F2's 14.8%.
+3. **Erratum (Bottom line and §10).** "Six models have machines on both sides of 4 years" is wrong.
+   - 19 models have machines on both sides.
+   - The support rule (at least 100 machine-months in each age group) gives 15 models. They hold 98.6% of under-4 and
+     68.5% of 4+ family tickets.
+   - Six models have at least 30 tickets in each age group, which is A5's threshold.
+4. **Readings where the text allows more than one.** These were fixed before the results were written up. The
+   clean-room builds' alternatives change no conclusion.
+   - **Category level:** shares use the primary family's totals, the same denominators as the groups, and the
+     Category p-values come from the group-level permutations. Using totals over the seven component groups instead
+     moves estimable Categories' share ratios by at most 0.045.
+   - **A1 and A5:** shares use all unplanned tickets as the denominator, so the ten groups sum to 100%.
+   - **A4:** per-100 figures divide by all under-4 machine-months, which keeps the parts additive.
+   - **A6:** per-100 figures divide by the support's under-4 machine-months in each half, giving a rate gap on the
+     models compared.
+   - **A4's third part** is "models outside the support": models short of 100 months in either age group, not only
+     those with no 4+ machines.
+   - **B2:** No Trouble Found counts as a recorded Category, and every same-machine pair is used, with no 2 Aug cutoff.
+   - **B3:** No Trouble Found directions are counted within its class, after Monitoring.
+   - **Telemetry type:**
+     - "No device match", and "Unknown" (a blank device type), are shown as rows but are not telemetry types and are
+       not tested.
+     - "Several types" never occurs, since every serial matches one device.
+5. **Definitions.** The definition strings the charts draw live in `viz/slides/followup_terms.py`, filled with numbers
+   from `followups_summary.json`, not in the summary itself.
 
 ## Privacy
 - **Outputs.** Pseudonyms only: S#####, M#####, T#####, Customer NNN. Model, Category and type labels.

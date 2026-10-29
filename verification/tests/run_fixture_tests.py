@@ -10,11 +10,16 @@ It also exercises the full-scan fallback (--no-chunk) and the index-only mode (-
 It also runs db_followup.py on an extended fixture (the real DB's location and event-time columns) and checks the
 last-10 code lists against an independent plain-pandas recomputation.
 
-Finally it runs fleet_db_extract.py (CLI) on the extended fixture with its fake installed-base list: once on the
+It runs fleet_db_extract.py (CLI) on the extended fixture with its fake installed-base list: once on the
 fixture DB as built (machine ids, hosts and active days must equal db_followup.py's fu_devices.csv) and once on a
 copy with planted gaps (months deleted, a silent device added), checking the schema, M ids against
 common.build_maps, S ids against common.extend_maps, active months / first / last days against plain pandas, the
 match summary against the planted list, and the privacy check (which must also catch planted leaks).
+
+Finally it runs followups.py (CLI, docs/09) on the extended fixture and on a planted copy, checking the pairs, repeats,
+request groups and Part A counts against an independent plain-pandas oracle, the random-timing null's calibration
+(the fixture's ticket times are uniform), planted same-Category repeats, monitoring texts and a Touchscreen excess,
+privacy and byte-identical reruns; and the follow-ups unit tests (test_followups_units.py).
 
 Run:  cd /home/user/analytics-lab && python3 -I verification/tests/run_fixture_tests.py
 """
@@ -26,6 +31,8 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 
 import contextlib  # noqa: E402
+import datetime as dt  # noqa: E402
+import hashlib  # noqa: E402
 import io  # noqa: E402
 
 import json  # noqa: E402
@@ -33,6 +40,8 @@ import shutil  # noqa: E402
 import sqlite3  # noqa: E402
 import subprocess  # noqa: E402
 
+import numpy as np  # noqa: E402
+import openpyxl  # noqa: E402
 import pandas as pd  # noqa: E402
 
 import common  # noqa: E402
@@ -350,11 +359,242 @@ def run_flags():
     return ok
 
 
+FU_FAKE_STRINGS = ('FX1', 'FX7', 'FX8', 'Fake ', 'fake-host', 'Testville', 'example.test')
+FU_CUTOFF = pd.Timestamp('2026-08-02')
+
+
+def followups_oracle(xlsx, equipment):
+    """Plain-pandas recomputation (no followups.py code) of docs/09's pairs, repeats, request groups and the Part A
+    ticket counts by model and age group. Monitoring uses flags.monitoring_template, the shared rule."""
+    import flags
+    raw = common.load_raw(xlsx)
+    maps = common.build_maps(raw)
+    c = pd.DataFrame({'case_id': raw['Case Number'].map(common.clean).map(maps['case']),
+                      'serial': raw['Serial #'].map(common.clean),
+                      'opened': pd.to_datetime(raw['Date/Time Opened']),
+                      'trouble_code': raw['Trouble Code'].map(common.clean),
+                      'category': raw['Trouble Code Category'].map(common.clean),
+                      'record_type': raw['Case Record Type'].map(common.clean),
+                      'monitoring': raw['Trouble Reported'].map(flags.monitoring_template).astype(bool)})
+    c['machine_id'] = c.serial.map(maps['serial'])
+    planned = c.trouble_code.isin(['Preventative Maintenance', 'Installation']) | (c.record_type == 'Install Case')
+    u = c[~planned & ~c.category.isin(['Cancelled Request', 'Duplicate Case'])].copy()
+    ref = pd.read_csv(HERE.parent / 'reference' / 'request_types_v0.csv', dtype=str, keep_default_na=False)
+    lut = {(a, b): g for a, b, g in zip(ref.trouble_code, ref.category, ref.group)}
+    fixed = {'Electronics': 'Electronics', 'Network': 'Network', 'Software': 'Software',
+             'Operator Error': 'Operator error'}
+
+    def group(tc, cat, mon):
+        if mon:
+            return 'Monitoring'
+        tc, cat = ('[blank]' if pd.isna(tc) else tc), ('[blank]' if pd.isna(cat) else cat)
+        if (tc, cat) in lut:
+            return lut[(tc, cat)]
+        return fixed.get(tc, 'Not categorised' if cat == '[blank]' else 'Other')
+    u['group'] = [group(a, b, m) for a, b, m in zip(u.trouble_code, u.category, u.monitoring)]
+    u = u.sort_values(['machine_id', 'opened', 'case_id'])
+    nxt = u.groupby('machine_id')
+    u['next_case_id'] = nxt.case_id.shift(-1)
+    u['next_category'] = nxt.category.shift(-1)
+    u['next_group'] = nxt.group.shift(-1)
+    u['gap_days'] = (nxt.opened.shift(-1) - u.opened).dt.total_seconds() / 86400
+    e = u[u.opened < FU_CUTOFF].copy()
+    e['repeat_30'] = e.gap_days.between(0, 30)
+    e['repeat_7'] = e.gap_days.between(0, 7)
+    e['same_category'] = e.repeat_30 & e.category.notna() & (e.category == e.next_category)
+    # Part A: listed machines, exposure and age at the midpoint (fleet_exposure F1-F3, re-derived here)
+    eq = common.load_equipment(equipment)
+    eq = eq[~eq.service_plan.isin(['Vogeltronix'])]
+    start0, end = pd.Timestamp('2025-08-01'), pd.Timestamp('2026-09-01')
+    t = u[u.serial.isin(set(eq.serial)) & (u.opened >= start0) & (u.opened < end)]
+    first = t.groupby('serial').opened.min().dt.normalize()
+    m = eq.assign(first=eq.serial.map(first))
+    m['start'] = m[['install_date', 'first']].min(axis=1).clip(lower=start0)
+    m['months'] = (end - m.start).dt.days.clip(lower=0) / (365.25 / 12)
+    mid = m.start + (end - m.start) / 2
+    m['young'] = ((mid - m.install_date).dt.days / 365.25).clip(lower=0) < 4
+    m = m[m.months > 0]
+    t = t[t.serial.isin(set(m.serial))].assign(young=lambda d: d.serial.map(dict(zip(m.serial, m.young))))
+    return e, m, t
+
+
+def followups_compare(out, e, m, t):
+    """Problems where followups.py's outputs differ from the oracle."""
+    problems = []
+    p = pd.read_csv(out / 'rp_pairs.csv', keep_default_na=False, na_values=[''])
+    p = p.set_index('case_id').reindex(e.case_id)
+    if p.index.isna().any() or len(p) != len(e) or p.repeat_30.isna().any():
+        return [f'eligible tickets differ ({len(p)} vs oracle {len(e)})']
+    for col in ('repeat_30', 'repeat_7', 'same_category'):
+        if (p[col].astype(bool).to_numpy() != e[col].to_numpy()).any():
+            problems.append(f'{col} differs from the oracle')
+    if (p.next_case_id.fillna('').to_numpy() != e.next_case_id.fillna('').to_numpy()).any():
+        problems.append('next ticket differs from the oracle')
+    gd = np.abs(p.gap_days.to_numpy(float) - e.gap_days.to_numpy(float))
+    if np.nanmax(gd) > 1e-6 or (np.isnan(p.gap_days.to_numpy(float)) != np.isnan(e.gap_days.to_numpy())).any():
+        problems.append('gap days differ from the oracle')
+    if (p.index_group.to_numpy() != e.group.to_numpy()).any() or \
+            (p.next_group.fillna('').to_numpy() != e.next_group.fillna('').to_numpy()).any():
+        problems.append('request groups differ from the oracle')
+    sup = pd.read_csv(out / 'ag_support.csv')
+    mine = sup.assign(young=sup.age_group == 'Under 4').set_index(['model', 'young'])
+    ora_t = t.assign(model=t.serial.map(dict(zip(m.serial, m.model)))).groupby(['model', 'young']).size()
+    ora_m = m.groupby(['model', 'young']).agg(machines=('serial', 'size'), months=('months', 'sum'))
+    ora = ora_m.join(ora_t.rename('tickets')).fillna(0)
+    ora = ora[ora.machines > 0]
+    j = mine.join(ora, rsuffix='_o', how='outer')
+    if j[['machines', 'machines_o', 'tickets', 'tickets_o']].isna().any().any() or \
+            (j.machines != j.machines_o).any() or (j.tickets != j.tickets_o).any() or \
+            (np.abs(j.months - j.months_o) > 1e-6).any():
+        problems.append('Part A support table (machines, months, tickets by model x age) differs from the oracle')
+    rates = pd.read_csv(out / 'ag_type_rates.csv')
+    g = rates[rates.level == 'group'].set_index('type')
+    og = t.groupby(['group', 'young']).size()
+    for grp, row in g.iterrows():
+        if row.under4_tickets != og.get((grp, True), 0) or row.plus4_tickets != og.get((grp, False), 0):
+            problems.append(f'Part A {grp} tickets by age differ from the oracle')
+            break
+    return problems
+
+
+def plant_followups(src, dst, e, equipment):
+    """A copy of the fixture workbook with known answers: 5 same-Category follow-ups 2 days after quiet index
+    tickets, 4 follow-up tickets turned into monitoring templates, and 12 Touchscreen tickets on young LVRR-WP
+    machines. Returns the planted case numbers."""
+    wb = openpyxl.load_workbook(src)
+    ws = wb[common.SHEET]
+    head = [c.value for c in ws[1]]
+    col = {h: i for i, h in enumerate(head)}
+    rows = [list(r) for r in ws.iter_rows(min_row=2, values_only=True)]
+    raw = common.load_raw(src)
+    cmap = common.build_maps(raw)['case']
+    inv = {v: k for k, v in cmap.items()}
+    by_case = {common.clean(r[col['Case Number']]): r for r in rows}
+    opened = pd.to_datetime(raw['Date/Time Opened'])
+    serials = raw['Serial #'].map(common.clean)
+    quiet = []
+    for r in e[e.category.notna() & (e.category != 'No Trouble Found') & (e.opened < '2026-06-01')].itertuples():
+        later = opened[(serials == r.serial) & (opened > r.opened)]
+        if later.empty or (later.min() - r.opened).days > 60:
+            quiet.append(r)
+    repeats = sorted(quiet, key=lambda x: x.case_id)[:5]
+    new_rows, planted = [], {'repeat_index': [], 'repeat_new': [], 'monitoring': [], 'touchscreen': []}
+    for k, r in enumerate(repeats):
+        row = list(by_case[inv[r.case_id]])
+        row[col['Case Number']] = f'99{k:06d}'
+        row[col['Date/Time Opened']] = r.opened.to_pydatetime() + dt.timedelta(days=2)
+        row[col['Trouble Reported']] = 'Fake planted repeat'
+        row[col['Trouble Closed Date/Time']] = r.opened.to_pydatetime() + dt.timedelta(days=3)
+        new_rows.append(row)
+        planted['repeat_index'].append(r.case_id)
+        planted['repeat_new'].append(f'99{k:06d}')
+    follow = sorted(e[e.repeat_30 & ~e.next_case_id.isin([x.case_id for x in repeats])].next_case_id)[:4]
+    for cid in follow:
+        by_case[inv[cid]][col['Trouble Reported']] = 'Monitoring - Daily poll'
+        planted['monitoring'].append(cid)
+    eq = common.load_equipment(equipment)
+    young = sorted(eq[(eq.model == 'LVRR-WP') & (eq.install_date >= '2022-11-01')].serial)[:4]
+    proto = next(r for r in rows if common.clean(r[col['Model #']]) == 'LVRR-WP')
+    acct = dict(zip(raw['Serial #'].map(common.clean), raw['Account Name']))
+    for i, sn in enumerate(young):
+        for j, month in enumerate((1, 4, 7)):
+            row = list(proto)
+            cn = f'98{3 * i + j:06d}'
+            row[col['Case Number']] = cn
+            row[col['Serial #']] = sn
+            row[col['Account Name']] = acct.get(sn, proto[col['Account Name']])
+            row[col['Date/Time Opened']] = dt.datetime(2026, month, 10, 10, 5 * i)
+            row[col['Trouble Closed Date/Time']] = dt.datetime(2026, month, 11, 10, 0)
+            row[col['Status']] = 'Trouble Closed'
+            row[col['Trouble Code']], row[col['Trouble Code Category']] = 'Electronics', 'Touchscreen'
+            row[col['Trouble Code Sub Category']] = None
+            row[col['Trouble Reported']] = 'Fake planted touchscreen'
+            new_rows.append(row)
+            planted['touchscreen'].append(cn)
+    ws.delete_rows(2, ws.max_row)
+    for row in [by_case[common.clean(r[col['Case Number']])] for r in rows] + new_rows:
+        ws.append(row)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(dst)
+    return planted
+
+
+def run_followups_cli(xlsx, equipment, fu_dir, out):
+    run = subprocess.run([sys.executable, '-I', str(HERE.parent / 'followups.py'), '--xlsx', str(xlsx),
+                          '--equipment', str(equipment), '--fu-dir', str(fu_dir), '--out', str(out), '--no-pins',
+                          '--n-boot', '200', '--n-perm', '200', '--n-sim', '200'], capture_output=True, text=True)
+    (out.parent / f'{out.name}.log').write_text(run.stdout + run.stderr)
+    return run.returncode, run.stdout
+
+
+def run_followups():
+    """followups.py (docs/09) on the extended fixture and a planted copy, against an independent oracle."""
+    base = BASE / 'extended'
+    xlsx, equipment, fu_dir = base / 'fake_cases.xlsx', base / make_fixture.EQUIPMENT_FILE, base / 'fu_out'
+    problems = []
+    outs = [base / 'followups_out', base / 'followups_out2']
+    for out in outs:
+        status, log = run_followups_cli(xlsx, equipment, fu_dir, out)
+        if status != 0 or 'checks pass' not in log:
+            problems.append(f'{out.name}: exit {status}')
+    if not problems:
+        e, m, t = followups_oracle(xlsx, equipment)
+        problems += followups_compare(outs[0], e, m, t)
+        hashes = [{f.name: hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(o.iterdir())} for o in outs]
+        if hashes[0] != hashes[1]:
+            problems.append('two runs differ: ' + ', '.join(k for k in hashes[0] if hashes[0][k] != hashes[1].get(k)))
+        null = pd.read_csv(outs[0] / 'rp_null.csv').set_index(['variant', 'window'])
+        for v in ('own window, uniform', 'full period window, uniform'):
+            oe = null.loc[(v, '30 days'), 'observed_over_expected']
+            if not 0.7 < oe < 1.3:
+                problems.append(f'null calibration: {v} O/E {oe:.2f} (uniform planted times: expect about 1)')
+        for f in outs[0].iterdir():
+            if any(x in f.read_text() for x in FU_FAKE_STRINGS):
+                problems.append(f'fixture identifier in {f.name}')
+        base_ts = pd.read_csv(outs[0] / 'ag_type_adjusted.csv').query("variant == 'primary' and type == 'Touchscreen'")
+        # planted copy
+        pdir = base / 'followups_planted'
+        pxlsx = pdir / 'fake_cases.xlsx'
+        planted = plant_followups(xlsx, pxlsx, e, equipment)
+        status, log = run_followups_cli(pxlsx, equipment, fu_dir, pdir / 'out')
+        if status != 0:
+            problems.append(f'planted run exit {status}')
+        else:
+            pe, pm, pt = followups_oracle(pxlsx, equipment)
+            problems += [f'planted: {x}' for x in followups_compare(pdir / 'out', pe, pm, pt)]
+            cmap = common.build_maps(common.load_raw(pxlsx))['case']
+            pairs = pd.read_csv(pdir / 'out' / 'rp_pairs.csv').set_index('case_id')
+            for idx, new in zip(planted['repeat_index'], planted['repeat_new']):
+                r = pairs.loc[idx]
+                if not (r.repeat_30 and r.same_category and r.next_case_id == cmap[new] and abs(r.gap_days - 2) < 1e-9):
+                    problems.append(f'planted repeat after {idx} not recovered')
+            mon = set(planted['monitoring'])
+            inv = pairs[pairs.repeat_30 & (pairs.index.isin(mon) | pairs.next_case_id.isin(mon))]
+            if len(inv) == 0 or (inv.pair_class != 'Monitoring involved').any():
+                problems.append('planted monitoring follow-ups not classed "Monitoring involved"')
+            if not (pairs.loc[pairs.index.isin(mon), 'index_group'] == 'Monitoring').all():
+                problems.append('planted monitoring tickets not in the Monitoring group')
+            ts = pd.read_csv(pdir / 'out' / 'ag_type_adjusted.csv').query("variant == 'primary' and "
+                                                                         "type == 'Touchscreen'")
+            if ts.empty or not (ts.share_ratio_mh.iloc[0] > 1 and ts.share_ratio_mh.iloc[0] >
+                                base_ts.share_ratio_mh.iloc[0]):
+                problems.append('planted Touchscreen excess not seen in the share ratio')
+    unit = subprocess.run([sys.executable, '-I', str(HERE / 'test_followups_units.py')], capture_output=True,
+                          text=True)
+    if unit.returncode != 0:
+        problems.append('unit tests: ' + unit.stdout.strip().splitlines()[-1])
+    ok = not problems
+    print(f"{'followups':15s} fixture + planted copy vs oracle, null calibration, privacy, reruns, unit tests  "
+          f"{'OK' if ok else 'PROBLEM ' + '; '.join(problems)}")
+    return ok
+
+
 def main():
     results = [run_variant(*v) for v in VARIANTS]
     results.append(run_followup())
     results.append(run_db_extract())
     results.append(run_flags())
+    results.append(run_followups())
     # index-only mode: steps 0-3, the pilot and the indexed DST-transition test must run without errors
     out = BASE / 'local'
     with contextlib.redirect_stdout(io.StringIO()):
