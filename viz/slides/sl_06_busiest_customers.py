@@ -10,28 +10,52 @@ but not consistent, gray = not flagged. The busiest, Customer 029 (114 against 1
 fleet; Customer 171, one ticket behind, has 113 against 59 expected.
 
 Left out against the page chart: the machine counts in the row labels and the STR column (STR = observed / expected,
-the ratio of the two numbers drawn on each row). Pseudonymous version only: no real-name variant is drawn here.
+the ratio of the two numbers drawn on each row).
+
+Two versions are drawn from the same data, both on the half card:
+  pseudonymous (Customer NNN), always: plot(out_dir);
+  named: each row labelled with its customer's name, at NAME_PT on one line or two (wrap_names()), the rest as in the
+  pseudonymous chart. plot(out_dir, private=True) draws it with the real names, when the gitignored name table
+  exists, to deliverables/slides/ (gitignored; the _REALNAMES file name marks it, nothing on the image does);
+  plot_named(names_map, path) draws it with any names, e.g. names.twin() placeholders to check the layout without
+  looking at real names. Its checks (named_checks()): each row label is its name, inside the image and clear of the
+  other row labels and the x tick labels; the plot keeps at least MIN_PLOT_IN; the legend is clear of the counts,
+  dots and lines; every text is inside the image.
 
 Input:  verification/outputs/fleet/fx_customer_rates.csv  (one row per customer: tickets, expected, STR, flags)
         verification/outputs/fleet/fx_machine_flags.csv   (every machine with a ticket: independent check of tickets)
         verification/outputs/fleet/fx_summary.json        (flag thresholds, fleet totals, customer flag counts)
+        data/private/fx_private_customer_names.csv        (customer -> real name; private=True only, via
+                                                           viz/deliverables/names.py; gitignored)
 Output: viz/figures/slides/sl_06_busiest_customers.png (half card)
+        deliverables/slides/sl_06_busiest_customers_REALNAMES.png (private=True only; gitignored, never commit)
+
+Run:  cd /home/user/analytics-lab && python3 -I viz/slides/sl_06_busiest_customers.py   (both versions)
 """
 import json
 import math
 import sys
+import textwrap
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / 'deliverables')]  # python3 -I leaves the script directory off sys.path
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
+from matplotlib.text import Text  # noqa: E402
 
 import deck_style as S  # noqa: E402
+import names  # noqa: E402
 
 PNG = 'sl_06_busiest_customers.png'
+REAL_PNG = 'sl_06_busiest_customers_REALNAMES.png'
 FLEET = S.OUT / 'fleet'
 TOP_N = 15                # customers shown: the most unplanned tickets, as in fx_06
+NAME_PT = 12              # named variant: row-label size (pseudonyms: TICK = 15 pt), so 15 rows of names fit the card
+NAME_SPACING = 1.05       # ... line spacing of a two-line name (>= 1, so the measured boxes hold the ink, as checked)
+LABEL_GAP = 2             # ... clear space (points) the checks require between a row label and its neighbours
+MIN_PLOT_IN = 4.8         # ... the plot keeps at least this width (pseudonymous 6.9 in, twin names 5.4 in)
 CLASSES = [  # (key, dot colour, legend label): fx_06's classes in the deck palette
     ('consistent', S.BLUE, 'Consistent outlier'),
     ('flagged', S.LIGHT, 'Flagged, not consistent'),
@@ -135,11 +159,91 @@ def checks(summ, cr, mf):
     return top
 
 
-def plot(out_dir=S.FIG_DIR):
+def load():
+    """The fleet summary and the TOP_N rows in drawing order, after fx_06's checks."""
     summ = json.loads((FLEET / 'fx_summary.json').read_text())
     cr = pd.read_csv(FLEET / 'fx_customer_rates.csv')
     mf = pd.read_csv(FLEET / 'fx_machine_flags.csv')
-    top = checks(summ, cr, mf)
+    return summ, checks(summ, cr, mf)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Named variant: row labels and their layout checks
+# ---------------------------------------------------------------------------------------------------------------
+def two_lines(name):
+    """name on at most two lines of about equal length: textwrap at the narrowest width that gives two (fx_10)."""
+    for width in range(math.ceil(len(name) / 2), len(name) + 1):
+        lines = textwrap.wrap(name, width, break_long_words=False, break_on_hyphens=False)
+        if len(lines) <= 2:
+            return lines
+    return [name]
+
+
+def wrap_names(full):
+    """Row labels of the named variant, top row first: each name on one line when it has at most W characters, else
+    on two (two_lines). W is the narrowest width (so the narrowest label column) that leaves no two neighbouring rows
+    both on two lines and no line longer than W: at NAME_PT a two-line label fits between one-line neighbours, but
+    two two-line labels do not fit in one row pitch."""
+    for w in range(1, max(map(len, full)) + 1):
+        lines = [[s] if len(s) <= w else two_lines(s) for s in full]
+        two = [len(x) > 1 for x in lines]
+        if not any(a and b for a, b in zip(two, two[1:])) and max(len(s) for x in lines for s in x) <= w:
+            return ['\n'.join(x) for x in lines]
+    return list(full)
+
+
+def inside_image(box, fig):
+    return box.x0 >= 0 and box.y0 >= 0 and box.x1 <= fig.bbox.width and box.y1 <= fig.bbox.height
+
+
+def named_checks(fig, ax, top, full):
+    """The named variant's layout, measured at the saved resolution; check names carry pseudonyms only. Each row
+    label is its customer's name (lines joined by a space), inside the image and LABEL_GAP clear of the other row
+    labels; no row label touches an x tick label; the label column leaves the plot at least MIN_PLOT_IN wide; the
+    legend is clear of the counts, dots and lines it sits over; every text is inside the image."""
+    fig.set_dpi(S.DPI)
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    px = S.DPI / 72  # pixels per point
+    S.check(f'sl_06 named: plot at least {MIN_PLOT_IN} in wide', 1, int(ax.bbox.width / S.DPI >= MIN_PLOT_IN))
+    labels = ax.get_yticklabels()  # in set_yticklabels order: top row first
+    boxes = [t.get_window_extent(r) for t in labels]
+    S.check('sl_06 named: one row label per row', len(top), len(labels))
+    for c, name, t, b in zip(top.customer, full, labels, boxes):
+        same = t.get_text().replace('\n', ' ').split() == name.split()
+        S.check(f'sl_06 named: {c} row label = its name', 1, int(same))
+        S.check(f'sl_06 named: {c} row label inside the image', 1, int(inside_image(b, fig)))
+    grown = [b.padded(LABEL_GAP * px / 2) for b in boxes]
+    S.check('sl_06 named: row labels overlapping another row label', 0,
+            sum(grown[i].overlaps(grown[j]) for i in range(len(grown)) for j in range(i + 1, len(grown))))
+    xticks = [t.get_window_extent(r) for t in ax.get_xticklabels() if t.get_visible() and t.get_text()]
+    S.check('sl_06 named: row labels touching an x tick label', 0, sum(b.overlaps(x) for b in boxes for x in xticks))
+
+    # The legend sits over the empty lower right: no count, dot (centre within its radius) or dumbbell line under it.
+    leg = ax.get_legend().get_window_extent(r)
+
+    def under(x, y, pad=0.0):
+        return leg.x0 - pad < x < leg.x1 + pad and leg.y0 - pad < y < leg.y1 + pad
+    hits = sum(leg.overlaps(t.get_window_extent(r)) for t in ax.texts)
+    for coll in ax.collections:
+        xy = ax.transData.transform(coll.get_offsets())
+        rad = (np.sqrt(coll.get_sizes()) / 2 + max(coll.get_linewidths(), default=0) / 2) * px
+        hits += sum(under(x, y, pad) for (x, y), pad in zip(xy, np.broadcast_to(rad, len(xy))))
+    for line in ax.lines:
+        ends = ax.transData.transform(np.column_stack(line.get_data()))
+        hits += int(any(under(x, y) for x, y in ends[0] + np.linspace(0, 1, 50)[:, None] * (ends[-1] - ends[0])))
+    S.check('sl_06 named: counts, dots and lines under the legend', 0, hits)
+    texts = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text()]
+    S.check('sl_06 named: texts outside the image', 0,
+            sum(not inside_image(t.get_window_extent(r), fig) for t in texts))
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Drawing
+# ---------------------------------------------------------------------------------------------------------------
+def draw(summ, top, path, names_map=None):
+    """Draw one version into path: row labels Customer NNN when names_map is None, else each customer's name from
+    names_map (wrap_names(), at NAME_PT) followed by named_checks(). Returns path."""
     n = len(top)
     cls = [class_of(r) for r in top.itertuples()]
 
@@ -171,7 +275,12 @@ def plot(out_dir=S.FIG_DIR):
     ax.set_xlim(0, 130)
     ax.set_xticks([0, 25, 50, 75, 100, 125])
     ax.set_yticks(y)
-    ax.set_yticklabels(top.customer, color=S.INK, fontsize=S.TICK)
+    if names_map is None:
+        ax.set_yticklabels(top.customer, color=S.INK, fontsize=S.TICK)
+    else:
+        full = [names.substitute(c, names_map)[0] for c in top.customer]  # KeyError names only the pseudonym
+        # Centred on the row (va='center'): the default centre-baseline would hang a second line below the row.
+        ax.set_yticklabels(wrap_names(full), color=S.INK, fontsize=NAME_PT, linespacing=NAME_SPACING, va='center')
     S.style_axes(ax, grid='x', baseline='left')
     period = ' to '.join(pd.Timestamp(x).strftime('%b %Y') for x in summ['definitions']['period'])
     S.check('sl_06 period drawn = Aug 2025 to Aug 2026', 1, int(period == 'Aug 2025 to Aug 2026'))
@@ -184,8 +293,31 @@ def plot(out_dir=S.FIG_DIR):
     # The bottom rows have the fewest tickets, so the lower right of the plot is empty.
     ax.legend(handles=handles, loc='lower right', handlelength=1.0, handletextpad=0.5, borderaxespad=0.2, labelspacing=0.35,
               frameon=True, facecolor=S.WHITE, edgecolor='none', framealpha=1)
-    return [S.save(fig, Path(out_dir) / PNG)]
+    if names_map is not None:
+        named_checks(fig, ax, top, full)
+    return S.save(fig, Path(path))
+
+
+def plot(out_dir=S.FIG_DIR, private=False):
+    """Draw the pseudonymous chart into out_dir and, when private and the gitignored name table exists, the real-name
+    variant into deliverables/slides/ (gitignored), whatever out_dir is. Returns every path written."""
+    summ, top = load()
+    written = [draw(summ, top, Path(out_dir) / PNG)]
+    if private:
+        real = names.real_names()
+        if real is None:
+            print('  real-name variant skipped: data/private/fx_private_customer_names.csv not found')
+        else:
+            written.append(plot_named(real, names.DELIVERABLES / 'slides' / REAL_PNG))
+    return written
+
+
+def plot_named(names_map, path):
+    """Draw the named variant into path with names_map ({'Customer NNN': name}: the real names, or names.twin()
+    placeholders for a layout check), with the same number checks as the pseudonymous chart. Returns path."""
+    summ, top = load()
+    return draw(summ, top, Path(path), names_map)
 
 
 if __name__ == '__main__':
-    plot()
+    plot(private=True)

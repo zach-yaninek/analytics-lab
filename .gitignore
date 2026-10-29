@@ -1,6 +1,11 @@
 # Raw and private data never leave the local machine
 data/
 deliverables/
+# ...but the code that builds them is committed
+!/viz/deliverables/
+# real-name charts and the Word memo, wherever they land
+*REALNAMES*
+*.docx
 *.xlsx
 *.db
 *.db.gz
