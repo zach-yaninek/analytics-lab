@@ -268,7 +268,7 @@ def build(mode, deck_dir, assets_path, out_dir=None, twin_charts=None, require=(
         fail(f'{len(absent)} mapped image file(s) not found, for blob(s) {", ".join(absent)}')
 
     real_names = names.real_names()
-    customers = sorted({c for source in slides.values() for c in names.PSEUDONYM.findall(source)})
+    customers = sorted({c for source in slides.values() for c in names.found(source)})
     if mode != 'pseudo':
         if real_names is None:
             fail(f'{names.NAMES_FILE.relative_to(names.ROOT)} not found: no names for the deck')
@@ -317,7 +317,7 @@ def build(mode, deck_dir, assets_path, out_dir=None, twin_charts=None, require=(
             left_shown, left_all = names.pseudonyms_left(after), names.pseudonyms_left(whole)
             if left_shown or left_all:
                 kinds = sorted({p for text in (after, whole)
-                                for p in names.PSEUDONYM.findall(text) + names.OTHER_PSEUDONYMS.findall(text)})
+                                for p in names.found(text) + names.OTHER_PSEUDONYMS.findall(text)})
                 fail(f'slide {sid}: pseudonyms left after substitution, {left_shown} in visible text and {left_all} in '
                      f'the HTML (split by markup or entities, or not a customer): {", ".join(kinds)}')
         titles[sid] = bare(SlideText(printed[sid]).title)

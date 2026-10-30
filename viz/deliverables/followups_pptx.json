@@ -176,6 +176,54 @@
      "notes": "Row = the index ticket's group; cell = share of that row's repeats whose next ticket is in the column's group; n = the row's repeats. LVD-Remote-2.0 (299 repeats): Mechanical 55%, Door and Electronics 45% stay in group. LVRR-WP-2.0 (265; Door is 58% of its eligible tickets): Door 61%. MV-2.0 (183): Electronics 57%, Door 46%, Mechanical 59%. alEx LC-D (160; Mechanical is 55% of its eligible tickets): Mechanical 68%. As a share of all the model's repeats, Door to Door is 35% on LVRR-WP-2.0 and Mechanical to Mechanical 39% on alEx LC-D. Italic text = cells with fewer than 5 pairs. Every model's and telemetry type's matrices are in rp_model_matrices.csv."
     }
    ]
+  },
+  {
+   "key": "C",
+   "label": "Customers and Machines · Update Deck Slides 6–7",
+   "agenda": "Customers Against Their Fleets (Update Deck Slides 6–7)",
+   "real_names_only": true,
+   "slides": [
+    {
+     "label": "6",
+     "title": "Demand is concentrated mostly because fleets are: the top 10% of customers hold 47% of tickets, where fleets plus chance give 39%",
+     "takeaway": "Rank customers by excess over their fleet, not by workload: Customer 171 has about twice its fleet’s tickets; Customer 029 is in line.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Share of tickets held by the busiest customers",
+       "png": "sl_05_concentration.png",
+       "alt": "Cumulative share of unplanned tickets held by the top customers, observed against what their fleets plus chance predict: top 10% hold 47% against 39% predicted"
+      },
+      {
+       "kind": "chart",
+       "header": "Busiest customers: tickets vs. their fleets",
+       "png": "sl_06_busiest_customers.png",
+       "alt": "The 15 customers with the most unplanned tickets, observed against expected from their fleets; Customer 171 has 113 against 59 expected, Customer 029 114 against 102"
+      }
+     ],
+     "notes": "This replaces the midterm’s site-workload view (busiest 10% of sites, 40% of located tickets), which did not allow for how many machines each site has. Expected tickets: what a customer’s machines would generate at fleet rates for their model and age. The concentration curve covers the customers on IPA’s installed-base list, so its customer count differs from the case export’s 845. Customer 171 (68 listed machines) is a consistent outlier and on the field-check list; the reason is not yet known. Customer 029 (107 machines) is in line with its fleet (114 against 102 expected)."
+    },
+    {
+     "label": "7",
+     "title": "63 customers exceed their fleets’ prediction beyond chance, and the gaps tend to last",
+     "takeaway": "Only one customer lies outside the normal spread between customers: the flags are a list for a field check, not a verdict.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Each customer’s tickets against its fleet",
+       "png": "sl_07_customer_funnel.png",
+       "alt": "Funnel plot of each customer’s observed-to-expected ticket ratio against expected tickets, with 95% and 99.8% limits; 63 customers flagged, one outside the 99.8% limit"
+      },
+      {
+       "kind": "chart",
+       "header": "First half vs. second half, by customer",
+       "png": "sl_08_customer_persistence.png",
+       "alt": "Each customer’s first-half against second-half observed-to-expected ratio; rank correlation 0.46, against 0.04 when the halves are shuffled"
+      }
+     ],
+     "notes": "Flagged: 5 or more unplanned tickets and more than expected beyond chance (Poisson test, Benjamini–Hochberg q below 0.05); between them the 63 have 1,732 tickets against 747 expected. “Outside the normal spread” means beyond the 99.8% funnel limit; 32 customers are above the 95% limit. The one outside is a 3-machine site (Customer 695), only just above the limit; Customer 339, a consistent outlier, sits only just inside it, so “one” is a knife edge. Halves: 1 August 2025 to 14 February 2026, and 15 February to 31 August 2026, with expected tickets refitted in each half so season cancels out. The rank correlation covers the 311 customers with at least 3 expected tickets in each half. About 6 of the 15 customers clearly above expected in both halves would be expected by chance, so the pattern holds for customers as a group more than for any single flag."
+    }
+   ]
   }
  ],
  "agenda_notes": "Two parts, one per IPA question: 4.1-4.4 on machines under 4 years (the first three bars of slide 4 of the update deck), 5.1-5.4 on the repeat contacts of slide 5."

@@ -47,7 +47,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     with real names, printed by `deck_pdf.js`) and `names.py` (the private name table, and same-length placeholder
     names for checking layouts without looking at real ones). The code is committed; its outputs never are.
     `followups_pptx.js` builds the follow-up PowerPoint (slides 4.1-5.4, text in `followups_pptx.json`; no customer
-    names) into the same folder.
+    names) into the same folder; `build_followups_pptx.py` builds its real-name version, which adds the update deck's
+    customer slides 6 and 7 with real names.
   - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
@@ -84,6 +85,8 @@ python3 -I viz/deliverables/build_memo.py                 # local only: delivera
 python3 -I viz/deliverables/build_deck_pdf.py --deck DECK_DIR --assets ASSET_MAP.json \
     --require-swaps sl_06_busiest_customers,sl_07_customer_funnel   # local only: the deck PDF with real names
 NODE_PATH=PPTXGENJS_NODE_MODULES node viz/deliverables/followups_pptx.js --assets DECK_IMAGES  # follow-up PowerPoint
+NODE_PATH=PPTXGENJS_NODE_MODULES python3 -I viz/deliverables/build_followups_pptx.py --assets DECK_IMAGES  # local only:
+    # its real-name version, with the update deck's customer slides 6-7
 python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py, zac_NN_*.py or fx_NN_*.py)
 ```
 

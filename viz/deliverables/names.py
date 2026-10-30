@@ -4,9 +4,12 @@ Real names come only from the gitignored data/private/fx_private_customer_names.
 verification/fleet_exposure.py) and go only to deliverables/ (gitignored) or a scratch folder. Nothing here prints or
 returns a name in a message: errors and counts name pseudonyms only.
 
-Twin names: to check a layout without looking at real names, twin() gives each customer a placeholder of the same
-length and word lengths, starting with the customer number ("C171 Xxxxxx Xxxxxxxx"), so text wraps and fits as the
-real name would.
+Twin names: to check a layout without looking at real names, twin() gives each customer a placeholder with exactly
+the real name's word lengths and spacing, its first word of 4+ letters starting with the customer number ("C171xx
+Xxxxxxxx"), so text wraps and fits as the real name would.
+
+A pseudonym is 'Customer NNN' with any whitespace between the two parts (a line break in wrapped text included);
+found() and substitute() read it in its canonical form, 'Customer NNN'.
 """
 import html
 import re
@@ -16,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 NAMES_FILE = ROOT / 'data' / 'private' / 'fx_private_customer_names.csv'
 DELIVERABLES = ROOT / 'deliverables'
 
-PSEUDONYM = re.compile(r'\bCustomer \d{3}\b')
+PSEUDONYM = re.compile(r'\bCustomer\s+(\d{3})\b')
 OTHER_PSEUDONYMS = re.compile(r'\b(?:System \d{3}|[MST]\d{5})\b')   # health systems, machines, serials, telemetry ids
 MD_SPECIAL = re.compile(r'([\\`*_{}\[\]<>()#+!|~$])')
 
@@ -31,15 +34,28 @@ def real_names():
     return {c: n.strip() for c, n in zip(df.customer, df.real_account_name) if n.strip()}
 
 
+def canonical(match):
+    """'Customer NNN' for a PSEUDONYM match, whatever whitespace it was written with."""
+    return f'Customer {match.group(1)}'
+
+
+def found(text):
+    """The customers named in text by pseudonym, in canonical form, sorted."""
+    return sorted({canonical(m) for m in PSEUDONYM.finditer(text)})
+
+
 def twin(names):
-    """The same customers, each with a placeholder of its real name's length and word lengths."""
+    """The same customers, each with a placeholder of exactly its real name's word lengths and spacing; the first word
+    of at least 4 letters starts with the customer number (C171), so the placeholders can be told apart."""
     out = {}
     for customer, name in names.items():
-        name = str(name)
-        shape = ''.join(' ' if ch.isspace() else ('X' if i == 0 or name[i - 1].isspace() else 'x')
-                        for i, ch in enumerate(name))
-        tag = f"C{customer.split()[-1]} "
-        out[customer] = tag + shape[len(tag):] if len(shape) > len(tag) + 1 else shape
+        tag = f"C{customer.split()[-1]}"
+        tokens = re.split(r'(\s+)', str(name))
+        shapes = [tok if not tok or tok.isspace() else 'X' + 'x' * (len(tok) - 1) for tok in tokens]
+        first = next((i for i, tok in enumerate(tokens) if len(tok) >= len(tag) and not tok.isspace()), None)
+        if first is not None:
+            shapes[first] = tag + shapes[first][len(tag):]
+        out[customer] = ''.join(shapes)
     return out
 
 
@@ -53,7 +69,7 @@ def substitute(text, names, escape=None):
 
     Returns (new text, replacements). Raises KeyError, naming only the pseudonyms, if any lacks a name.
     """
-    missing = sorted({m.group(0) for m in PSEUDONYM.finditer(text) if not names.get(m.group(0))})
+    missing = sorted({canonical(m) for m in PSEUDONYM.finditer(text) if not names.get(canonical(m))})
     if missing:
         raise KeyError(f"{len(missing)} pseudonym(s) without a real name: {', '.join(missing)}")
     esc = escape or (lambda s: s)
@@ -62,7 +78,7 @@ def substitute(text, names, escape=None):
     def put(m):
         nonlocal count
         count += 1
-        return esc(str(names[m.group(0)]))
+        return esc(str(names[canonical(m)]))
     return PSEUDONYM.sub(put, text), count
 
 

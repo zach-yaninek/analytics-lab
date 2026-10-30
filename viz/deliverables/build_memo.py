@@ -211,7 +211,7 @@ def customer_forms(source):
         problems.append(f'{len(plural)} plural customer reference(s) ("Customers NNN ...") on line(s) '
                         f'{", ".join(map(str, plural))}')
     for first, text in paragraphs(source):
-        numbers = {m.group(0)[-3:] for m in names.PSEUDONYM.finditer(text)}
+        numbers = {m.group(1) for m in names.PSEUDONYM.finditer(text)}
         rest = names.PSEUDONYM.sub('Customer ###', text)
         for number in sorted(numbers):
             for m in re.finditer(rf'(?<![\w.,]){number}(?!\w|[.,]\d)', rest):
@@ -226,7 +226,7 @@ def step_names(md, customer_names, source):
     if problems:
         fail('step 3: customers written in a form that cannot be substituted (write each as "Customer NNN") in '
              'docs/executive_summary.md: ' + '; '.join(problems))
-    used = sorted(set(names.PSEUDONYM.findall(md)))
+    used = names.found(md)
     if not used:
         fail('step 3: no "Customer NNN" to substitute')
     try:

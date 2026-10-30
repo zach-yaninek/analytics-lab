@@ -15,10 +15,16 @@ It is a structured deck: a theme (Arial, the deck's colours as scheme colours, w
 file is saved), one layout per frame (cover, agenda, content per section, closing) carrying the header, footer, logo,
 takeaway bar and the title, takeaway and label placeholders, and one section per part. Cards are composed per slide.
 
-Inputs:  viz/deliverables/followups_pptx.json; viz/figures/slides/sl_NN_*.png;
+The content's sections flagged real_names_only (the update deck's customer slides 6 and 7) are built only when the
+content sets "real_names": true, which viz/deliverables/build_followups_pptx.py does for the real-name version: it
+substitutes the names, points the customer charts at their real-name files (a card's "path") and may set a smaller
+"takeaway_pt" where names lengthen a takeaway, then passes that content here with --content.
+
+Inputs:  viz/deliverables/followups_pptx.json (or --content FILE); viz/figures/slides/sl_NN_*.png;
          --assets DIR holding the deck's mit_logo.png, ipa_logo.png and sloan_photo.jpg
 Output:  deliverables/IPA_Followups_30Oct2026.pptx, or --out FILE
 Run:     NODE_PATH=<node_modules with pptxgenjs> node viz/deliverables/followups_pptx.js --assets DIR [--out FILE]
+         [--content FILE]
 */
 'use strict';
 const fs = require('fs');
@@ -48,8 +54,9 @@ const CARD_TOP = 232, CARD_H = 634, BAND_H = 67;        // the update deck's car
 function args(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i += 2) {
-    if (!['--assets', '--out'].includes(argv[i]) || argv[i + 1] === undefined) {
-      throw new Error(`usage: node followups_pptx.js --assets DIR [--out FILE] (got ${argv.join(' ')})`);
+    if (!['--assets', '--out', '--content'].includes(argv[i]) || argv[i + 1] === undefined) {
+      throw new Error('usage: node followups_pptx.js --assets DIR [--out FILE] [--content FILE] '
+        + `(got ${argv.join(' ')})`);
     }
     out[argv[i].slice(2)] = argv[i + 1];
   }
@@ -132,7 +139,8 @@ async function writeTheme(file, theme) {
 
 async function main() {
   const opt = args(process.argv.slice(2));
-  const deck = JSON.parse(fs.readFileSync(CONTENT, 'utf8'));
+  const deck = JSON.parse(fs.readFileSync(opt.content || CONTENT, 'utf8'));
+  const sections = deck.sections.filter((sec) => !sec.real_names_only || deck.real_names === true);
   const asset = (name) => {
     const p = path.join(opt.assets, name);
     if (!fs.existsSync(p)) throw new Error(`missing asset ${p}`);
@@ -188,15 +196,15 @@ async function main() {
     ],
   });
   const takeawayPng = 'image/png;base64,' + gradientPng(1000, 160).toString('base64');
-  const dotsLeft = 960 - ((deck.sections.length - 1) * 36 + 18) / 2;   // one dot per section, centred as in the deck
-  for (const [k, sec] of deck.sections.entries()) {
+  const dotsLeft = 960 - ((sections.length - 1) * 36 + 18) / 2;   // one dot per section, centred as in the deck
+  for (const [k, sec] of sections.entries()) {
     pres.defineSlideMaster({
       title: `IPA_CONTENT_${sec.key}`, background: { color: C.background1 },
       objects: [
         { rect: { ...box(56, 18, 10, 46), fill: { color: C.accent1 } } },
         { text: { text: sec.label, options: { ...box(80, 22, 760, 39), fontSize: 13, color: C.text1, margin: 0,
           valign: 'middle' } } },
-        ...deck.sections.map((_, i) => dot(dotsLeft + 36 * i, i === k ? C.accent1 : C.accent3)),
+        ...sections.map((_, i) => dot(dotsLeft + 36 * i, i === k ? C.accent1 : C.accent3)),
         { image: { ...box(mitTop.x, mitTop.y, mitTop.w, mitTop.h), path: MIT, altText: 'MIT logo' } },
         placeholder('title', 'title', box(72, 88, 1776, 125), { fontSize: 24, bold: true, color: C.text2,
           align: 'left', valign: 'top', lineSpacingMultiple: 1.0 }),
@@ -248,8 +256,8 @@ async function main() {
 
   const agenda = pres.addSlide({ masterName: 'IPA_AGENDA', sectionTitle: 'Opening' });
   agenda.addText('Agenda', { placeholder: 'title' });
-  const step = 178, first = 540 - step * (deck.sections.length - 1) / 2 - 50;
-  deck.sections.forEach((sec, i) => {
+  const step = 178, first = 540 - step * (sections.length - 1) / 2 - 50;
+  sections.forEach((sec, i) => {
     const y = first + step * i;
     agenda.addText(String(i + 1), { ...box(846, y, 90, 100), fontSize: 50, bold: true, color: C.background1,
       margin: 0, valign: 'middle', isTextBox: true, objectName: `Agenda number ${i + 1}` });
@@ -268,7 +276,7 @@ async function main() {
       color: C.text1, margin: 0, valign: 'middle', isTextBox: true, objectName: `Card ${n} header` });
   };
   const chart = (slide, x, w, c, n) => {
-    const file = path.join(FIG, c.png);
+    const file = c.path || path.join(FIG, c.png);          // a real-name build points customer charts elsewhere
     const r = contain({ x: x + 17, y: CARD_TOP + BAND_H + 16, w: w - 34, h: 532 }, pngSize(file));
     slide.addImage({ path: file, ...box(r.x, r.y, r.w, r.h), altText: c.alt, objectName: `Card ${n} chart` });
     charts.push(c.png);
@@ -287,12 +295,14 @@ async function main() {
     });
   };
 
-  for (const sec of deck.sections) {
+  for (const sec of sections) {
     pres.addSection({ title: sec.agenda });
     for (const s of sec.slides) {
       const slide = pres.addSlide({ masterName: `IPA_CONTENT_${sec.key}`, sectionTitle: sec.agenda });
       slide.addText(s.title, { placeholder: 'title' });
-      slide.addText(s.takeaway, { placeholder: 'takeaway' });
+      // A smaller takeaway goes on the run: the placeholder's own size would win over an option given here.
+      slide.addText(s.takeaway_pt ? [{ text: s.takeaway, options: { fontSize: s.takeaway_pt } }] : s.takeaway,
+        { placeholder: 'takeaway' });
       slide.addText(s.label, { placeholder: 'label' });
       const slots = s.cards.length === 1 ? [[72, 1776]] : [[72, 862], [986, 862]];
       if (s.cards.length > 2) throw new Error(`slide ${s.label}: at most two cards`);
