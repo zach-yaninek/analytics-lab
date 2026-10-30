@@ -81,12 +81,11 @@ python3 -I verification/tests/test_followups_units.py  # ~20 s; unit tests for f
 python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
 python3 -I viz/run_all.py                                 # redraw the page charts and run their checks
 python3 -I viz/slides/run_all.py                          # redraw the slide charts (incl. follow-ups sl_18-sl_31)
+export NODE_PATH="$(npm root -g)"                         # the Node packages of the four builders below
 python3 -I viz/deliverables/build_memo.py                 # local only: deliverables/IPA_Executive_Summary.docx
-python3 -I viz/deliverables/build_deck_pdf.py --deck DECK_DIR --assets ASSET_MAP.json \
-    --require-swaps sl_06_busiest_customers,sl_07_customer_funnel   # local only: the deck PDF with real names
-NODE_PATH=PPTXGENJS_NODE_MODULES node viz/deliverables/followups_pptx.js --assets DECK_IMAGES  # follow-up PowerPoint
-NODE_PATH=PPTXGENJS_NODE_MODULES python3 -I viz/deliverables/build_followups_pptx.py --assets DECK_IMAGES  # local only:
-    # its real-name version, with the update deck's customer slides 6-7
+python3 -I viz/deliverables/build_deck_pdf.py --deck DECK_DIR --assets ASSET_MAP.json  # local only: the deck PDF
+node viz/deliverables/followups_pptx.js --assets DECK_IMAGES              # the follow-up PowerPoint
+python3 -I viz/deliverables/build_followups_pptx.py --assets DECK_IMAGES  # local only: its real-name version
 python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py, zac_NN_*.py or fx_NN_*.py)
 ```
 
@@ -94,7 +93,11 @@ Requires Python 3.12+ with pandas, numpy and openpyxl; matplotlib for the figure
 missing).
 
 The real-name deliverables also need `data/private/fx_private_customer_names.csv` (written by `fleet_exposure.py`),
-the real-name charts (drawn by `viz/run_all.py` and `viz/slides/run_all.py`), pandoc 3, and Node with the `docx` and
-`playwright` packages (and `pptxgenjs` for the follow-up PowerPoint). The deck PDF reads the deck's own files (`deck.json` and `slides/*.html`, from the Slides
-artifact) and a JSON map from each of its image asset ids to a local copy of that image. Both builders print counts
-and pseudonyms only, never a name; `--twin OUT_DIR` builds a copy with placeholder names for checking the layout.
+the real-name charts (drawn by `viz/run_all.py` and `viz/slides/run_all.py`), pandoc 3, and Node with the `docx`,
+`playwright` and `pptxgenjs` packages and Playwright's Chromium
+(`npm install -g docx playwright pptxgenjs && npx playwright install chromium`), found through `NODE_PATH` as above.
+The deck PDF reads the deck's own files (`deck.json` and `slides/*.html`, from the Slides artifact) and a JSON map
+from each of its image asset ids to a local copy of that image, and requires every customer chart of the deck (each
+slide chart whose script declares `REAL_PNG`) to be swapped for its real-name file. The builders print counts and
+pseudonyms only, never a name; `--twin OUT_DIR` builds a copy with placeholder names (and placeholder customer
+charts) for checking the layout without seeing a real name.

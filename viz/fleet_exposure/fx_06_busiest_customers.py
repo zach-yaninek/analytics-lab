@@ -59,8 +59,7 @@ FIG_H = 5.3               # figure height besides the rows: title band, footer, 
 TITLE_IN_PER_CHAR = 0.12  # approximate width of one title character (15 pt bold), for the figure width
 LABEL_IN_PER_CHAR = 0.075  # approximate width of one tick-label character (10 pt), for the real-name width
 DOT = 62                  # marker area (pt^2): about 8 pt across
-PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                   '(gitignored); never commit.')
+PRIVACY_WARNING = 'Contains IPA customer names: for the project team and IPA only.'  # the variant goes to IPA
 CLASSES = [  # (key, dot colour, legend label): fx_07's classes; mid gray, as light gray would vanish on the line
     ('consistent', style.BLUE, 'Observed: consistent outlier'),
     ('flagged', style.ORANGE, 'Observed: flagged, not consistent'),
@@ -299,8 +298,7 @@ def draw(S, cr, top, path, names=None):
              'expected tickets; it does not allow for tickets clustering within a customer, so it is if anything '
              'too narrow.',
              fleet.source('customer_rates')[:-1]
-             + ('; names from data/private/fx_private_customer_names.csv (gitignored).' if names is not None
-                else '.')]
+             + ("; customer names from IPA's installed-base list." if names is not None else '.')]
     style.frame(fig, title, subtitle, notes=notes,
                 definitions=[fleet.unplanned_definition(), fleet.expected_definition(S), fleet.STR_DEFINITION,
                              fleet.flagged_customer_definition(S), fleet.consistent_definition(S)])

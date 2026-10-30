@@ -12,9 +12,10 @@ to change, and no message names a customer: only pseudonyms, counts and line num
   3. Every 'Customer NNN' becomes its name (names.substitute, Markdown-escaped). A customer written any other way
      cannot be substituted, so the source is checked first: a plural ('Customers 171 and 029') or a customer's
      bare number next to its pseudonym fails the build. Afterwards no pseudonym of any kind may remain.
-  4. Each chart image becomes an absolute path. The five customer charts (CUSTOMER_CHARTS) use their real-name
-     PNGs, deliverables/<stem>_REALNAMES.png, drawn by their chart scripts (not redrawn here: a missing one fails).
-     Every other chart must draw no customer: one with a real-name variant in deliverables/ fails.
+  4. Each chart image becomes an absolute path. A customer chart is one whose script declares REAL_PNG (its
+     real-name file in deliverables/); the five in CUSTOMER_CHARTS use those files, drawn by their chart scripts (not
+     redrawn here: a missing one fails), and a chart that declares REAL_PNG but is not listed fails, as does a listed
+     one that declares none.
   5. Each chart link [label](../viz/figures/X.png) becomes a link to X's caption in "Charts by finding" (bookmark
      fig_X) when X is drawn there, and plain 'label' otherwise.
 pandoc's gfm reader parses the result to a JSON AST: gfm, not pandoc's own markdown, because the source starts its
@@ -26,9 +27,9 @@ Checks on the built document (printed as counts; any failure stops the build and
     Markdown, and the document's numbered paragraphs (Word list level and format) match pandoc's items;
   - privacy: no pseudonym in the document's text (pandoc -t plain, and its AST) or anywhere in its XML parts, and
     the substituted names occur in its text exactly as often as they were substituted;
-  - images: embedded images = Markdown images, each with its file's exact bytes in word/media; the real memo holds
-    the five customer charts' REALNAMES files (sha256) and none of their pseudonymous versions, the twin the
-    reverse; every internal link has its bookmark;
+  - images: embedded images = Markdown images, each with its file's exact bytes in word/media; the customer charts
+    are the files step 4 chose (the real memo: the REALNAMES files; the twin: its sized copies) and none of the
+    pseudonymous (nor, in the twin, the REALNAMES) files; every internal link has its bookmark;
   - headings: every Markdown heading is a heading in the document, at the same level and in the same order;
   - numbers: every number token of the memo's text (23.6%, 1,574, 0.73, ...) occurs in the document's text as often
     (a mismatch is reported with the token and its lines in docs/executive_summary.md);
@@ -36,13 +37,15 @@ Checks on the built document (printed as counts; any failure stops the build and
     quote document text; the twin build shows them).
 
 Twin build (--twin OUT_DIR): the same memo with twin names (names.twin: each customer's placeholder has its real
-name's length and word lengths) and the pseudonymous chart PNGs, to check the layout without seeing a real name.
+name's word lengths) and, for each customer chart, its pseudonymous chart centred on a white canvas the size of its
+real-name file (only that file's dimensions are read), so the pages break as in the real memo; for checking the
+layout without seeing a real name. The canvases go to OUT_DIR/twin_charts/.
 
 Inputs:
   docs/executive_summary.md                      the repository version (pseudonymous)
   data/private/fx_private_customer_names.csv     real names, through names.real_names() (gitignored)
   viz/figures/<stem>.png                         the charts
-  deliverables/<stem>_REALNAMES.png              the five customer charts with real names (real memo only)
+  deliverables/<REAL_PNG>                        the five customer charts with real names (the twin: their size)
   viz/deliverables/memo_docx.js                  AST -> .docx (Node with the docx package)
 Outputs:
   deliverables/IPA_Executive_Summary.docx        the real memo; an existing one is first copied to
@@ -240,19 +243,51 @@ def step_names(md, customer_names, source):
     return md, count, used
 
 
-def step_images(md, real):
-    """4. Chart images -> absolute paths (the real memo's customer charts: their REALNAMES PNGs).
+def real_png(stem):
+    """The real-name file a chart's script declares (REAL_PNG = '...'), or None when it draws no customer."""
+    for script in sorted((names.ROOT / 'viz').glob(f'*/{stem}.py')):
+        m = re.search(r"^REAL_PNG = '([^']+)'", script.read_text(encoding='utf-8'), re.M)
+        if m:
+            return m.group(1)
+    return None
 
-    Returns (md, embedded stems in order, image files in order)."""
-    stems, files = [], []
+
+def twin_chart(stem, real_file, twin_dir):
+    """The pseudonymous chart centred on a white canvas of the real-name file's size, for the twin's page breaks.
+    Only the real file's dimensions are read."""
+    from PIL import Image
+    with Image.open(real_file) as real:
+        size = real.size
+    out = Path(twin_dir) / 'twin_charts' / f'{stem}_TWIN.png'
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with Image.open(FIGURES / f'{stem}.png') as chart:
+        scale = min(size[0] / chart.width, size[1] / chart.height, 1)
+        chart = chart.convert('RGB').resize((round(chart.width * scale), round(chart.height * scale)))
+        canvas = Image.new('RGB', size, 'white')
+        canvas.paste(chart, ((size[0] - chart.width) // 2, (size[1] - chart.height) // 2))
+        canvas.save(out)
+    return out
+
+
+def step_images(md, real, twin_dir=None):
+    """4. Chart images -> absolute paths (customer charts: their REALNAMES files, or the twin's sized copies).
+
+    Returns (md, embedded stems in order, image files in order, {customer chart stem: its file})."""
+    stems, files, customer = [], [], {}
 
     def put(m):
         alt, stem = m.groups()
-        variant = names.DELIVERABLES / f'{stem}_REALNAMES.png'
-        if stem in CUSTOMER_CHARTS:
-            path = variant if real else FIGURES / f'{stem}.png'
-        elif variant.exists():
-            fail(f'step 4: {stem} has a real-name variant in deliverables/ but is not in CUSTOMER_CHARTS')
+        declared = real_png(stem)
+        if declared and stem not in CUSTOMER_CHARTS:
+            fail(f'step 4: {stem} draws customers (its script declares REAL_PNG) but is not in CUSTOMER_CHARTS')
+        if stem in CUSTOMER_CHARTS and not declared:
+            fail(f'step 4: {stem} is in CUSTOMER_CHARTS but its script declares no REAL_PNG')
+        if declared:
+            variant = names.DELIVERABLES / declared
+            if not variant.exists():
+                fail(f'step 4: {variant.relative_to(names.ROOT)} not found: draw it with its chart script')
+            path = variant if real else twin_chart(stem, variant, twin_dir)
+            customer[stem] = path
         else:
             path = FIGURES / f'{stem}.png'
         if not path.exists():
@@ -265,10 +300,10 @@ def step_images(md, real):
         fail('step 4: no chart images')
     if len(set(stems)) != len(stems):
         fail('step 4: a chart is drawn twice (its caption bookmark would not be unique)')
-    customer = [s for s in stems if s in CUSTOMER_CHARTS]
     print(f'  step 4: {len(stems)} chart images -> absolute paths; {len(customer)} customer charts '
-          f'({"REALNAMES" if real else "pseudonymous"} PNGs), {len(stems) - len(customer)} without customers')
-    return md, stems, files
+          f'({"REALNAMES PNGs" if real else "pseudonymous charts at their REALNAMES size"}), '
+          f'{len(stems) - len(customer)} without customers')
+    return md, stems, files, customer
 
 
 def step_links(md, embedded):
@@ -467,7 +502,8 @@ class Checks:
             self.failed.append(name)
 
 
-def check_document(docx, tmp, *, md, ast, stems, files, n_sub, used, customer_names, internal, real, redact):
+def check_document(docx, tmp, *, md, ast, stems, files, customer, n_sub, used, customer_names, internal, real,
+                   redact):
     """Run the checks on the built document; returns the names of the failed checks."""
     check = Checks()
     with zipfile.ZipFile(docx) as z:
@@ -508,14 +544,14 @@ def check_document(docx, tmp, *, md, ast, stems, files, n_sub, used, customer_na
     missing = [f.name for f in files if sha256(f.read_bytes()) not in media]
     check('each image embedded byte for byte', not missing,
           f'{len(files) - len(missing)} of {len(files)} image files found in word/media by sha256')
-    real_png = [names.DELIVERABLES / f'{s}_REALNAMES.png' for s in CUSTOMER_CHARTS]
-    pseudo_png = [FIGURES / f'{s}.png' for s in CUSTOMER_CHARTS]
-    want, avoid = (real_png, pseudo_png) if real else (pseudo_png, real_png)
+    want = list(customer.values())
+    avoid = [FIGURES / f'{s}.png' for s in customer] + ([] if real else [names.DELIVERABLES / real_png(s)
+                                                            for s in customer])
     n_want = sum(sha256(p.read_bytes()) in media for p in want)
     n_avoid = sum(p.exists() and sha256(p.read_bytes()) in media for p in avoid)
     check('customer charts', n_want == len(CUSTOMER_CHARTS) and n_avoid == 0,
-          f'{n_want} of {len(CUSTOMER_CHARTS)} {"REALNAMES" if real else "pseudonymous"} PNGs in word/media '
-          f'(sha256), {n_avoid} {"pseudonymous" if real else "REALNAMES"} ones')
+          f'{n_want} of {len(CUSTOMER_CHARTS)} {"REALNAMES PNGs" if real else "sized twin charts"} in word/media '
+          f'(sha256), {n_avoid} {"pseudonymous" if real else "pseudonymous or REALNAMES"} ones')
     doc = ElementTree.fromstring(part('word/document.xml'))
     marks = {b.get(W + 'name') for b in doc.iter(W + 'bookmarkStart')}
     anchors = [h.get(W + 'anchor') for h in doc.iter(W + 'hyperlink') if h.get(W + 'anchor')]
@@ -573,7 +609,7 @@ def build(twin_dir=None, tmp_parent=None):
         md = step_note(source)
         md = step_charts_sentence(md)
         md, n_sub, used = step_names(md, customer_names, source)
-        md, stems, files = step_images(md, real)
+        md, stems, files, customer = step_images(md, real, twin_dir)
         md, internal = step_links(md, set(stems))
         print(f'  charts embedded: {", ".join(stems)}')
 
@@ -585,8 +621,9 @@ def build(twin_dir=None, tmp_parent=None):
         (tmp / 'memo.json').write_text(ast_json, encoding='utf-8')
         docx = tmp / 'memo.docx'
         run(['node', MEMO_JS, tmp / 'memo.json', docx], 'memo_docx.js', redact)
-        failed = check_document(docx, tmp, md=md, ast=ast, stems=stems, files=files, n_sub=n_sub, used=used,
-                                customer_names=customer_names, internal=internal, real=real, redact=redact)
+        failed = check_document(docx, tmp, md=md, ast=ast, stems=stems, files=files, customer=customer,
+                                n_sub=n_sub, used=used, customer_names=customer_names, internal=internal, real=real,
+                                redact=redact)
         if failed:
             fail(f'{len(failed)} check(s) failed: {", ".join(failed)}; '
                  + ('the existing memo is unchanged' if real else 'no twin written'))

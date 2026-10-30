@@ -486,7 +486,11 @@ function memo(ast) {
     styles: {
       // A Normal style like the document defaults: docx-js bases its heading styles on 'Normal' but defines none,
       // and pandoc's docx reader (the build's checks) then sees no headings.
-      paragraphStyles: [{ id: 'Normal', name: 'Normal', quickFormat: true, ...text }],
+      // The header and footer style: LibreOffice reads the page-number fields' size and colour from the paragraph's
+      // style, not from the run that holds them.
+      paragraphStyles: [{ id: 'Normal', name: 'Normal', quickFormat: true, ...text },
+        { id: 'MemoMargin', name: 'Memo Header and Footer', basedOn: 'Normal', run: { size: SMALL, color: MUTED },
+          paragraph: { spacing: { after: 0 } } }],
       default: {
         document: text,
         heading1: {
@@ -520,6 +524,7 @@ function memo(ast) {
       headers: {
         default: new Header({
           children: [new Paragraph({
+            style: 'MemoMargin',
             alignment: AlignmentType.RIGHT,
             border: { bottom: { ...HAIRLINE, space: 4 } },
             children: [new TextRun({ text: HEADER_TEXT, ...small })],
@@ -529,6 +534,7 @@ function memo(ast) {
       footers: {
         default: new Footer({
           children: [new Paragraph({
+            style: 'MemoMargin',
             tabStops: [{ type: TabStopType.RIGHT, position: TEXT_W }],
             children: [
               new TextRun({ text: FOOTER_TEXT, ...small }),

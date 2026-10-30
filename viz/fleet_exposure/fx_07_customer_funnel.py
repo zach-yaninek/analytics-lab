@@ -63,8 +63,7 @@ NAME_WRAP = 20            # real names longer than this many characters wrap ont
 DOT_GRAY, DOT_COLOUR = 14, 30  # marker areas (pt^2)
 X_RIGHT = 2.4             # x axis ends at this multiple of the largest expected count (room for the line labels)
 AX_W_LESS, AX_H_LESS = 1.04, 0.56  # figure width / plot height less the axes size (tick and axis labels), inches
-PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                   '(gitignored); never commit.')
+PRIVACY_WARNING = 'Contains IPA customer names: for the project team and IPA only.'  # the variant goes to IPA
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -459,8 +458,7 @@ def draw(S, c, counts, path, names=None):
              f'Expected tickets allow for model and machine age only, not coverage, use or reporting. {n_zero} '
              f'customers with no tickets lie on the baseline{over_txt}.',
              fleet.source('customer_rates')[:-1] + '; τ² from fx_summary.json'
-             + ('; names from data/private/fx_private_customer_names.csv (gitignored).' if names is not None
-                else '.')]
+             + ("; customer names from IPA's installed-base list." if names is not None else '.')]
     definitions = [fleet.expected_definition(S), fleet.STR_DEFINITION, fleet.flagged_customer_definition(S),
                    fleet.consistent_definition(S), fleet.funnel_definition(S)]
 

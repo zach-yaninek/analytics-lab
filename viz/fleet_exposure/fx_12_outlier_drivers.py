@@ -70,8 +70,7 @@ COL_PT_PER_CHAR = 5.6     # approximate width of one column character (9.5 pt), 
 COL_GAP_PT = 16           # gap between the plot area and the first column, and between the columns
 FONT = 9.5
 XPAD = 1.3                # x range = largest bar x this, leaving room for the bar-end labels
-PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                   '(gitignored); never commit.')
+PRIVACY_WARNING = 'Contains IPA customer names: for the project team and IPA only.'  # the variant goes to IPA
 
 
 def small_threshold(patterns):
@@ -214,8 +213,7 @@ def draw(S, c, small_n, path, names=None):
              'Top category = most frequent recorded category among the customer\'s unplanned tickets. Expected '
              'tickets allow for model and age only, not coverage, use or reporting.',
              fleet.source('outlier_drivers', 'customer_rates', 'machine_flags')[:-1]
-             + ('; names from data/private/fx_private_customer_names.csv (gitignored).' if names is not None
-                else '.')]
+             + ("; customer names from IPA's installed-base list." if names is not None else '.')]
     definitions = [fleet.unplanned_definition(), fleet.expected_definition(S), fleet.consistent_definition(S)]
 
     labels = [f'{name(x)} ({m:,} machines)' for x, m in zip(c.customer, c.machines)]

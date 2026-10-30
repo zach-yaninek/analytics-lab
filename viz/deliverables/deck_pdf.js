@@ -28,8 +28,9 @@
  *          <assets.json>  {blob id: path of the local file} for every /_blob/<id> the slides use
  * Outputs: <out.pdf>      one 1920 x 1080 px page per slide (not written when a check fails)
  *          stdout         the report, one JSON line: counts, icons, fit adjustments, failures (ids only)
- * The combined document is written next to the PDF as <out>.html for printing and deleted afterwards (kept with
- * --keep-html). Exit status 1 when any check fails.
+ * The combined document is written next to the PDF as <out>.html for printing and deleted afterwards, also when
+ * Chromium fails to start (kept with --keep-html). The PDF is untagged: it carries no alt text, and the speaker notes
+ * are not printed. Exit status 1 when any check fails.
  *
  * Run (normally through build_deck_pdf.py):
  *   node viz/deliverables/deck_pdf.js <deck_dir> <assets.json> <out.pdf> [--keep-html]
@@ -252,10 +253,13 @@ async function main() {
   const { order, doc } = buildDocument(deckDir, assets, report);
   report.slides = order.length;
   const htmlPath = outPdf.replace(/\.pdf$/, '.html');
+  // The document can hold real names: remove it on every exit, including a failed launch or Ctrl-C.
+  if (!keepHtml) process.on('exit', () => fs.rmSync(htmlPath, { force: true }));
   fs.writeFileSync(htmlPath, doc);
 
-  const browser = await chromium.launch();
+  let browser;
   try {
+    browser = await chromium.launch();
     const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
     await page.goto(pathToFileURL(path.resolve(htmlPath)).href, { waitUntil: 'load' });
     report.sections = await page.evaluate(() => document.querySelectorAll('body > section').length);
@@ -286,7 +290,7 @@ async function main() {
       report.pdf = outPdf;
     }
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
     if (!keepHtml) fs.rmSync(htmlPath, { force: true });
   }
   console.log(JSON.stringify(report));

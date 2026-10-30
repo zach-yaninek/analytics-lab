@@ -198,17 +198,21 @@ date). With it we can, for the first time:
 | 5 | **How "Monitoring – Daily/Poll" tickets are created, and whether they count as customer demand.** | There are 138 of them, involved in 11% of repeat contacts. If telemetry alerts create them, matching them back to telemetry is circular. |
 | 6 | **Whether technicians look at clearView error history when they assign Category and Sub Category; where the intake Trouble Code is kept; a Field History Tracking export.** | If technicians use clearView, part of the ticket-to-telemetry association is built in. The export holds only the final Trouble Code. |
 | 7 | Whether the close time is stamped automatically, and whether a ticket opened within hours of the previous one closing is a re-open or rollover. | It decides whether to count tickets or episodes. |
+| 8 | **The fix list: design, part or firmware changes, with dates and the models or install dates they reached; a year or two of earlier tickets.** | Turns the "was it fixed?" checks in the 29 October update into a test: what changed in touchscreens between 2022–23 and 2024 production, and why Deposit Door tickets are higher on new machines. Earlier tickets tell a 2022–23 production problem from a failure peak at 2–4 years. |
 
 ## Next steps
 **Done since 14 October:**
 - installed-base exposure for models, ages and coverage;
 - customer-level rates;
 - the consistent-outlier analysis;
-- the database extract script that joins telemetry devices to the installed base.
+- the database extract script that joins telemetry devices to the installed base;
+- the ticket-to-telemetry association study, under a protocol fixed before results (22 October; provisional);
+- IPA's follow-ups on slides 4 and 5: request types on machines under 4 years, and what the repeat contacts are
+  (29 October).
 
 **Next, in priority order:**
-1. **Association analysis** between ticket fields and the last 10 codes: enrichment against paired control windows
-   with confidence intervals, recency, and a category-to-code crosswalk once IPA's code definitions arrive.
+1. **Confirm the association results:** re-run on IPA's code definitions (crosswalk v1) and add the ticket-text
+   checks.
 2. **Telemetry-type rates on installed exposure:** run `verification/fleet_db_extract.py` on the database. This also
    gives networked vs non-networked rates.
 3. **Consistent outliers:** fold in IPA's field check, then re-run with removal dates and parent accounts.
@@ -301,12 +305,12 @@ machines (blue).
 
 ![No customer dominates: the top 10 of 845 with tickets hold 11.2% of tickets](../viz/figures/zac_02_customer_workload.png)
 
-*Point at:* the top 10 hold 11.2%; Customer 171 has 123 tickets and Customer 029 116 (all tickets).
+*Point at:* the top 10 hold 11.2%; Customer 171 has 123 tickets and Customer 029 has 116 (all tickets).
 
 ![10 of the 15 customers with the most tickets are flagged, 6 consistently; the top one (by 1 ticket) is in line with its fleet](../viz/figures/fx_06_busiest_customers.png)
 
 *Point at:* Customer 171, 113 against 59 expected (blue: a consistent outlier); Customer 029, 114 against 102, in line
-with its fleet. On unplanned tickets on listed machines Customer 029 is the busiest by one ticket, hence the title.
+with its fleet. On unplanned tickets on listed machines, Customer 029 is the busiest by one ticket, hence the title.
 
 ![Deposit Door leads with 15.6% of unplanned tickets, 1.7× the next category](../viz/figures/zac_04_issue_mix.png)
 

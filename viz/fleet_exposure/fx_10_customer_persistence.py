@@ -86,8 +86,7 @@ LABEL_PT = 8.5            # point-label font size
 LABEL_IN_PER_CHAR = 0.066  # approximate width of one character at LABEL_PT (DejaVu Sans), for label boxes
 NAME_WRAP = 24            # real names longer than this wrap onto two lines
 DOT_GRAY, DOT_COLOUR = 16, 34  # marker areas (pt^2)
-PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                   '(gitignored); never commit.')
+PRIVACY_WARNING = 'Contains IPA customer names: for the project team and IPA only.'  # the variant goes to IPA
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -477,7 +476,7 @@ def draw(S, c, k, path, names=None):
              f'against a median of {count(k["sig_med"])} in the shuffles (95%: {count(k["sig_lo"])} to '
              f'{count(k["sig_hi"])}).',
              fleet.source('outlier_customers', 'outlier_persistence')[:-1] + '; half dates and shuffles from '
-             'fx_summary.json' + (f'; names from {NAMES_FILE} (gitignored).' if names is not None else '.')]
+             'fx_summary.json' + ("; customer names from IPA's installed-base list." if names is not None else '.')]
     definitions = [fleet.expected_definition(S), fleet.STR_DEFINITION, fleet.consistent_definition(S)]
 
     width = max(10.5, TITLE_IN_PER_CHAR * len(title) + 2 * style.MARGIN)

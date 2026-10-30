@@ -44,8 +44,7 @@ MULTI = 2                    # customers with this many chronic outliers or more
 MIN_ROWS, MAX_ROWS = 10, 25  # ... unless that gives fewer than MIN_ROWS or more than MAX_ROWS rows (then top MAX_ROWS)
 ROW_IN = 0.38                # inches per customer row
 BAR_H = 0.4                  # bar thickness as a share of the row pitch
-PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                   '(gitignored); never commit.')
+PRIVACY_WARNING = 'Contains IPA customer names: for the project team and IPA only.'  # the variant goes to IPA
 
 
 def draw(S, c, path, names=None):
@@ -95,7 +94,7 @@ def draw(S, c, path, names=None):
     notes = [f'Not shown: {rest_txt} Customer = the device location\'s customer (ticket account where missing). '
              f'Rows sorted by chronic outliers, then devices.',
              'Source: htm_customer_chronic.csv'
-             + (f'; names from {NAMES.relative_to(htm.ROOT)}' if names is not None else '')
+             + ('; account names from the case export' if names is not None else '')
              + '; thresholds from htm_summary.json.']
     subtitle = [f'{n_mach} chronic-outlier machines across {n_cust} customers (tickets counted over the case export, '
                 f'{htm.period_text(S, "case_export_period")}; rate test over {htm.period_text(S)}). '

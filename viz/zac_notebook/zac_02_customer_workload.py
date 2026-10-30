@@ -44,8 +44,7 @@ PNG = 'zac_02_customer_workload.png'
 REAL_PNG = 'zac_02_customer_workload_REALNAMES.png'
 ROW_IN = 0.34     # inches per bar row
 BAR_H = 0.5       # bar thickness as a share of the row pitch
-PRIVACY_WARNING = ('Contains IPA customer names: for the project team and IPA only. Keep in deliverables/ '
-                   '(gitignored); never commit.')
+PRIVACY_WARNING = 'Contains IPA customer names: for the project team and IPA only.'  # the variant goes to IPA
 SOURCE = ('Source: verification/outputs/repro_sql_customer_workload.csv (Zac\'s SQL, notebook cell 17); totals from '
           'repro_sql_record_quality.csv. Customer definition: the team\'s review of account names and addresses '
           '(docs/03_customer_fleet_ownership.md, section 3.1).')
@@ -92,7 +91,7 @@ def draw(top, total, n_cust, median, period, path, names=None):
         notes = [zac_data.WORKLOAD_NOTE + ' Customer NNN labels are stable pseudonyms for the account names.', SOURCE]
         definitions = [zac_data.CUSTOMER_DEFINITION]
     else:
-        notes = [zac_data.WORKLOAD_NOTE + ' Account names from the case-export workbook (gitignored data/raw/).',
+        notes = [zac_data.WORKLOAD_NOTE + ' Account names from the case export.',
                  SOURCE]
         definitions = [PRIVACY_WARNING, zac_data.CUSTOMER_DEFINITION]
     style.frame(

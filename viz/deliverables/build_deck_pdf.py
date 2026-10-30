@@ -5,10 +5,12 @@ The live deck (the Slides artifact) shows customers as pseudonyms ('Customer NNN
 names, built here, locally, into deliverables/ (gitignored); it is never committed. It is made from a downloaded copy
 of the deck (deck.json and slides/<id>.html) and a map from each image's blob id to its local file, in three steps:
   1. Charts: an image whose file is viz/figures/slides/<stem>.png prints its real-name variant,
-     deliverables/slides/<stem>_REALNAMES.png (drawn by viz/slides/run_all.py), when that exists. The swaps are
-     listed; --require-swaps names the ones that must happen.
+     deliverables/slides/<stem>_REALNAMES.png (drawn by viz/slides/run_all.py), when that exists. Every slide chart
+     of the deck whose script declares REAL_PNG (sl_06, sl_07) must swap, or the build fails; --require-swaps STEMS
+     replaces that list ('' for none). A chart image must map to viz/figures/slides/<stem>.png to be swapped.
   2. Names: every 'Customer NNN' in every slide (visible text, alt text and speaker notes) becomes its name
-     (names.substitute, HTML-escaped). Afterwards no pseudonym of any kind may remain.
+     (names.substitute, HTML-escaped). Afterwards no pseudonym of any kind may remain. The PDF itself carries the
+     visible text and the images only: it is untagged, so no alt text, and the speaker notes are left out.
   3. deck_pdf.js prints the slides with Chromium, one 1920 x 1080 px page each, after a fit pass that sets text 1 px
      smaller at a time where it no longer fits its box (a longer name in a Key Takeaway, say).
 No message names a customer: only pseudonyms, slide ids, file names and counts.
@@ -23,10 +25,11 @@ Checks on the built PDF (printed as counts; any failure stops the build and leav
     removed, attributes ignored). Names are compared with whitespace removed, so a name that wraps across lines
     still counts. Every customer of the deck must have a name (blank or missing fails before anything is built).
 
-Twin build (--twin OUT_DIR): twin names (names.twin: each placeholder has its real name's length and word lengths)
-and the twin charts <stem>_TWIN.png from --twin-charts (default OUT_DIR), to check the layout without seeing a real
-name; its text must also hold no real name. Pseudonymous build (--pseudo OUT_DIR): the live deck as it is (no names,
-the pseudonymous charts), for comparison; its text must hold every visible pseudonym and no real name.
+Twin build (--twin OUT_DIR): twin names (names.twin: each placeholder has its real name's word lengths) and the
+twin charts <stem>_TWIN.png, drawn into OUT_DIR/twin_charts/ by the slide scripts' plot_named() (or read from
+--twin-charts DIR), to check the layout without seeing a real name; its text must also hold no real name.
+Pseudonymous build (--pseudo OUT_DIR): the live deck as it is (no names, the pseudonymous charts), for comparison; its
+text must hold every visible pseudonym and no real name.
 
 Inputs:
   --deck DIR                                     the deck: deck.json ("order", "title") and slides/<id>.html
@@ -44,8 +47,9 @@ Temporary files (the substituted slides, the printed document, the PDF before it
 
 Requires Node with Playwright (Chromium) and poppler's pdfinfo and pdftotext.
 
-Run:  cd /home/user/analytics-lab && python3 -I viz/deliverables/build_deck_pdf.py --deck DIR --assets MAP \\
-          [--twin OUT_DIR [--twin-charts DIR] | --pseudo OUT_DIR] [--require-swaps STEM,...] [--tmp DIR]
+Run:  cd /home/user/analytics-lab && NODE_PATH="$(npm root -g)" python3 -I viz/deliverables/build_deck_pdf.py \\
+          --deck DIR --assets MAP [--twin OUT_DIR [--twin-charts DIR] | --pseudo OUT_DIR] [--require-swaps STEM,...]
+          [--tmp DIR]
 """
 import argparse
 import hashlib
@@ -168,6 +172,25 @@ def load_assets(path):
     return {blob: (path.parent / f).resolve() for blob, f in raw.items()}
 
 
+def customer_charts(stems):
+    """The slide charts among stems whose script declares REAL_PNG: they draw customers."""
+    out = []
+    for stem in stems:
+        script = names.ROOT / 'viz' / 'slides' / f'{stem}.py'
+        if script.is_file() and re.search(r"^REAL_PNG = '", script.read_text(encoding='utf-8'), re.M):
+            out.append(stem)
+    return sorted(out)
+
+
+def draw_twin_charts(stems, twin_names, folder):
+    """Each customer chart drawn with twin names by its script's plot_named(), into folder/<stem>_TWIN.png."""
+    sys.path.insert(0, str(names.ROOT / 'viz' / 'slides'))
+    import importlib
+    folder.mkdir(parents=True, exist_ok=True)
+    for stem in stems:
+        importlib.import_module(stem).plot_named(twin_names, folder / f'{stem}{CHART_SUFFIX["twin"]}.png')
+
+
 def choose_files(assets, used, mode, twin_charts):
     """The file each image prints: a slide chart's real-name (or twin) variant when it exists, else its own file.
 
@@ -243,7 +266,7 @@ def found(text, name_map):
     return names.names_found(bare(text), {k: b for k, v in name_map.items() if (b := bare(str(v)))})
 
 
-def build(mode, deck_dir, assets_path, out_dir=None, twin_charts=None, require=(), tmp_parent=None):
+def build(mode, deck_dir, assets_path, out_dir=None, twin_charts=None, require=None, tmp_parent=None):
     deck_dir = Path(deck_dir)
     try:
         deck = json.loads((deck_dir / 'deck.json').read_text(encoding='utf-8'))
@@ -281,21 +304,25 @@ def build(mode, deck_dir, assets_path, out_dir=None, twin_charts=None, require=(
     print(f'IPA deck PDF ({LABEL[mode]}): {len(order)} slides from {deck_dir}')
 
     # 1. Charts
+    deck_charts = sorted({assets[b].stem for b in used if assets[b].parent == SLIDE_CHARTS
+                          and assets[b].suffix == '.png'})
+    named = customer_charts(deck_charts)
+    if require is None:
+        require = named if mode != 'pseudo' else []
+    if mode == 'twin' and not twin_charts:
+        twin_charts = Path(out_dir) / 'twin_charts'
+        draw_twin_charts(named, twin_names, twin_charts)
     files, swaps, charts = choose_files(assets, used, mode, Path(twin_charts or out_dir or '.'))
     unknown = sorted(set(require) - set(charts))
     if unknown:
-        fail(f'--require-swaps: {", ".join(unknown)} not among the deck\'s slide charts')
+        fail(f'required swap(s) {", ".join(unknown)} not among the deck\'s slide charts (a chart image must map to '
+             f'viz/figures/slides/<stem>.png)')
     same = [stem for stem, (own, variant) in swaps.items() if sha256(own) == sha256(variant)]
     if same:
         fail(f'{", ".join(same)}: the {CHART_SUFFIX[mode][1:]} file is the pseudonymous chart byte for byte')
     if mode != 'pseudo':
         print(f'  step 1: {len(files)} image files; {len(swaps)} slide chart(s) -> their {CHART_SUFFIX[mode][1:]} '
               f'variant: {", ".join(swaps) or "none"}')
-    if mode == 'twin':
-        real_only = [s for s in charts if (REAL_CHARTS / f'{s}_REALNAMES.png').is_file() and s not in swaps]
-        if real_only:
-            print(f'    note: {len(real_only)} chart(s) with a real-name variant but no twin chart, shown '
-                  f'pseudonymous in the twin deck: {", ".join(real_only)}')
 
     # 2. Names
     printed, expected, titles = {}, {}, {}
@@ -405,11 +432,12 @@ def main():
                        f'OUT_DIR/{OUT_NAME["pseudo"]} instead of the real deck')
     parser.add_argument('--twin-charts', metavar='DIR', help='folder of the twin slide charts <stem>_TWIN.png '
                         '(default: the --twin OUT_DIR)')
-    parser.add_argument('--require-swaps', metavar='STEMS', default='',
-                        help='comma-separated slide-chart stems that must print their real-name (or twin) variant')
+    parser.add_argument('--require-swaps', metavar='STEMS', default=None,
+                        help='comma-separated slide-chart stems that must print their real-name (or twin) variant '
+                        "(default: the deck's charts whose script declares REAL_PNG; '' for none)")
     parser.add_argument('--tmp', metavar='DIR', help='folder for the temporary build folder (default: deliverables/)')
     args = parser.parse_args()
-    require = [s.strip() for s in args.require_swaps.split(',') if s.strip()]
+    require = None if args.require_swaps is None else [s.strip() for s in args.require_swaps.split(',') if s.strip()]
     if args.twin_charts and not args.twin:
         parser.error('--twin-charts goes with --twin')
     if require and args.pseudo:
@@ -420,6 +448,10 @@ def main():
               require=require, tmp_parent=args.tmp)
     except BuildError as err:
         print(f'FAILED: {err}')
+        sys.exit(1)
+    except Exception as err:  # noqa: BLE001  e.g. node or poppler missing: a message with any name redacted
+        real = names.real_names() or {}
+        print(f'FAILED: unexpected {type(err).__name__}: {redactor(real, names.twin(real))(str(err))[:500]}')
         sys.exit(1)
 
 
