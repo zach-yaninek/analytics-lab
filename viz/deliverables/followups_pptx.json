@@ -1,0 +1,182 @@
+{
+ "file_title": "IPA follow-ups on slides 4 and 5",
+ "cover": {
+  "title": "Maximizing Uptime - How can telemetry guide preventative service, future engineering, and product development?",
+  "subtitle": "Presentation for  –  IPA follow-ups on slides 4 and 5",
+  "date": "30 October 2026",
+  "collaborators": "Alula Eshete, Lenette Adams-Wallace, Cathleen Croll, Michelle Clark, and Joe Lanza.",
+  "authors": "Zachary Baylis, Zachary Yaninek, Varun Ram Narayanan, and Nathanael Muller",
+  "supervisors": "Dan Kaskinen",
+  "notes": "IPA's two follow-up questions on the update deck: do the first three bars of slide 4 (machines under 4 years) have different kinds of tickets, and what are the repeat contacts of slide 5? Slides 4.1-4.4 answer the first, 5.1-5.4 the second. Every chart prints its definitions under it; details are in docs/10. Customer names do not appear in this deck.",
+  "photo_alt": "MIT Sloan School of Management building with flowers in front"
+ },
+ "sections": [
+  {
+   "key": "A",
+   "label": "Young Machines · Follow-up to Slide 4",
+   "agenda": "Young Machines: Different Problems or More of the Same?",
+   "slides": [
+    {
+     "label": "4.1",
+     "title": "Within model, young machines' tickets lean towards Electronics, mostly Touchscreen, and away from Mechanical",
+     "takeaway": "The mix shifts modestly within model: Touchscreen is the clearest gain on young machines, Packer the clearest drop.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Share of each type within model, under 4 vs 4+",
+       "png": "sl_19_age_mix_adjusted.png",
+       "alt": "Share ratios within model with 95% intervals: Electronics 1.31 and Mechanical 0.70 differ after Benjamini-Hochberg (q < 0.05); Door 1.06, No Trouble Found 1.07 and Monitoring 1.66 do not"
+      },
+      {
+       "kind": "chart",
+       "header": "Which Categories differ, within model",
+       "png": "sl_20_age_categories.png",
+       "alt": "Share ratios within model for the 12 most frequent Categories: Touchscreen 1.85 and Deposit Door 1.31 higher on young machines; Packer 0.51, SAM 0.78 and Curtain 0.78 lower"
+      }
+     ],
+     "notes": "Under 4 = the first three bars of slide 4 of the update deck (<1, 1-2 and 2-4 years); young machines also have more tickets of nearly every type (8.0 against 4.8 per 100 machine-months). Left: share ratios within model, over the 15 models with 100+ machine-months in each age group (99% of under-4 and 69% of 4+ tickets). The mix differs overall (permutation p < 0.001); Electronics 1.31 (1.09-1.62) and Mechanical 0.70 (0.59-0.84) pass the gate. Allowing for site practice (permuting within model and account) the mix still differs (p = 0.025), but no single group passes; under 6 vs 6+ years there is no clear difference (p = 0.06). Right: within model, young machines' tickets are more often Touchscreen (1.85; 1.39-2.53) and less often Packer (0.51; 0.35-0.76), SAM and Curtain (0.78 each); SAM and Curtain pass the permutation gate but their account-bootstrap intervals include 1, so they are borderline. All four Categories that pass were among those looked at while the protocol was planned, so their tests are descriptive; the group-level test is the result. Door as a group does not differ (1.06), so its Categories were not tested: Deposit Door is a larger share on young machines (1.31; 1.11-1.57), User Door and Service Door smaller. Of the extra tickets within model, Touchscreen accounts for 281 of Electronics' +472. The protocol was frozen before any result (docs/09), but Category shares by age had been previewed while it was planned, so Part A is not blind; three independent clean-room builds matched (docs/10)."
+    },
+    {
+     "label": "4.2",
+     "title": "The shift is clearest on two 2.0 models: LVRR-WP-2.0's young machines log more Door tickets, LVD-Remote-2.0's more Electronics",
+     "takeaway": "Young machines' ticket rates run 1.4 to 2.4 times older ones' of the same model, except alEx LC-D; scrubex-7's difference is LVRR-WP's.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Request mix by model and telemetry type, under 4 vs 4+ years",
+       "png": "sl_22_age_by_model.png",
+       "alt": "Heat table of request-type shares by model and age group, with tickets, rates per 100 machine-months and the within-model mix test, plus three telemetry types that cut across models (no rates); the mix differs on LVD-Remote-2.0, LVRR-WP-2.0 and LVRR-WP, and on telemetry type scrubex-7 (its under-4 machines are all LVRR-WP)"
+      }
+     ],
+     "notes": "Models with 30+ tickets in each age group. Rate, under 4 vs 4+: LVD-Remote-2.0 1.43 times (1.18-1.75), LVRR-WP-2.0 2.12 (1.63-2.82), MV-2.0 1.94, SV-48-2.0 1.74, LVRR-WP 2.44, alEx LC-D 0.77 (0.47-1.31). The mix differs by age within LVD-Remote-2.0 and LVRR-WP-2.0 (q = 0.0015) and LVRR-WP (q = 0.022), not within MV-2.0, SV-48-2.0 or alEx LC-D. LVRR-WP-2.0's young machines: Door 60% of tickets vs 47%, Mechanical 5% vs 14%; LVD-Remote-2.0's: Electronics 31% vs 22%, Mechanical 18% vs 28%. Telemetry type mostly re-labels model (scrubex2.0-2, -3, -4 and -5 are LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0 and SV-48-2.0); the rows shown are the types that cut across models (alex2.0-1 and alex2.0-3 each span four alEx models; scrubex-7 spans LVRR-WP and LVRR-WP-2.0, and its mix differs by age, q = 0.0023, but its under-4 tickets are 57 of LVRR-WP's 63, so it largely restates LVRR-WP's result). Rates on installed months by telemetry type need the database extract."
+    },
+    {
+     "label": "4.3",
+     "title": "Touchscreen tickets cluster on machines installed in 2022-23; newer machines have fewer Touchscreen tickets but more Deposit Door tickets",
+     "takeaway": "A Touchscreen fix in 2024 production or a failure peak at 2-4 years would fit; ask IPA what changed, and why Deposit Door tickets are higher on the newest machines.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Tickets per 100 machine-months by install year, 15 models with 100+ machine-months in each age group",
+       "png": "sl_31_install_years.png",
+       "alt": "Four panels of unplanned tickets per 100 machine-months by install year, 2016 to 2026, on the 15 models with 100+ machine-months in each age group: all tickets rise from 4.8 for 2019-21 installs to 7.8 and 8.3 for 2022-23 and 2024-26 installs; Touchscreen peaks at 1.54 for 2022-23 installs against 0.27 and 0.39 (3.9 times the 2024-26 rate); Deposit Door rises with each newer cohort to 2.13; Computer Board shows no 2022-23 peak"
+      }
+     ],
+     "notes": "Same 15 models (100+ machine-months in each age group) as slides 4.1 and 4.4; slide 4.2 shows the six of them with 30+ tickets in each age group. Rate = unplanned tickets per 100 installed machine-months, Aug 2025 to Aug 2026, by the machine's install year, with account-bootstrap intervals. Touchscreen: 0.27 for 2019-21 installs, 1.54 for 2022-23, 0.39 for 2024-26; 2022-23 runs 3.9 times 2024-26 (2.9-5.4). The same within each big 2.0 model, 2022-23 vs 2024-26 installs: LVD-Remote-2.0 2.66 vs 0.59, MV-2.0 2.57 vs 0.58, LVRR-WP-2.0 1.15 vs 0.37. Deposit Door rises with each newer cohort: 0.62, 1.35, 2.13 (LVRR-WP-2.0: 1.50, 3.76, 6.70). Computer Board has no 2022-23 peak. All tickets: the newest machines are as high as the 2022-23 ones (8.3 vs 7.8 per 100). Reading: in one year of data, install year and age move together, so the Touchscreen peak fits a problem in 2022-23 production that later machines do not have, or a failure peak at 2-4 years; a year or two of earlier tickets, or IPA's change dates, would tell which. The cohorts were grouped after the review saw the peak, so the ratios are descriptive (docs/09 section 12)."
+    },
+    {
+     "label": "4.4",
+     "title": "Within the year, Touchscreen's gap to older machines widened and Computer Board's closed; IPA's change dates would turn this and slide 4.3 into a test",
+     "takeaway": "With fix dates the halves become a test: a fix should narrow the gap after its date, on the machines it reached.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Young machines' excess within model, first half vs second",
+       "png": "sl_23_age_halves.png",
+       "alt": "Within-model extra tickets per 100 under-4 machine-months: Deposit Door 1.05 then 1.11, Touchscreen 0.42 then 0.83, Computer Board 0.41 then 0.02"
+      },
+      {
+       "kind": "text",
+       "header": "To test a fix, we need from IPA",
+       "items": [
+        [
+         "What changed",
+         "The design, part or firmware changes behind Touchscreen, Deposit Door and Computer Board tickets; first, what changed in touchscreens between 2022-23 and 2024 production"
+        ],
+        [
+         "When",
+         "The date each change reached production or the field"
+        ],
+        [
+         "Where",
+         "The models, install dates or firmware versions each change reached"
+        ],
+        [
+         "Earlier tickets",
+         "A year or two of history, to tell a 2022-23 production problem from a failure peak at 2-4 years"
+        ]
+       ]
+      }
+     ],
+     "notes": "A rule fixed in advance picked the three Categories with the largest within-model excess over the year: Deposit Door (+481 tickets), Touchscreen (+281) and Computer Board (+91). Gap = extra tickets per 100 under-4 machine-months against the same models' 4+ rate in the same half, so older machines are the calendar control. Change, second half minus first: Deposit Door +0.07 (-0.35 to 0.47), Touchscreen +0.41 (0.15 to 0.66), Computer Board -0.39 (-0.69 to -0.12). Touchscreen: young machines rose from 0.78 to 1.06 per 100 machine-months while older machines of the same models fell from 0.36 to 0.23 (perhaps the 2022-23 machines ageing, slide 4.3; the halves are not split by install year). Computer Board: about two-fifths of the closing is older machines' rate rising (0.29 to 0.46), not young machines' falling (0.70 to 0.48). A narrowing gap fits a fix but does not prove one: a change in Category habits or a retrofit to older machines moves it too. A change confined to new production would show in install years rather than halves (ag_install_year.csv)."
+    }
+   ]
+  },
+  {
+   "key": "B",
+   "label": "Repeat Contacts · Follow-up to Slide 5",
+   "agenda": "Repeat Contacts: What Comes Back, and Where",
+   "slides": [
+    {
+     "label": "5.1",
+     "title": "Two in five repeats come back in the same request group; over a quarter involve monitoring, No Trouble Found or a blank Category",
+     "takeaway": "Treat repeats as a mix: the same problem returning, a new problem, and help-desk or no-fault tickets.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "What follows what within 7 days",
+       "png": "sl_24_repeat_pairings_7d.png",
+       "alt": "Row-normalised matrix of the index ticket's request group against the next ticket's group for the 631 repeats within 7 days"
+      },
+      {
+       "kind": "chart",
+       "header": "What follows what within 30 days",
+       "png": "sl_25_repeat_pairings_30d.png",
+       "alt": "Row-normalised matrix for the 1,574 repeats within 30 days: Mechanical to Mechanical 57%, Door to Door 49%, Electronics to Electronics 46%"
+      }
+     ],
+     "notes": "Repeat = Zac's definition (slide 5 of the update deck). Of the 1,574 repeats, 31% (490) are the same Category and 10% the same group with another Category; 32% are a different group. Slide 5's 515 same-Category repeats (33%) also count 25 that involve No Trouble Found (23) or monitoring (2), which the classes put first. 11% involve a Monitoring - Daily/Poll ticket, mostly as the follow-up (128 times, 125 of them after another kind of ticket; the index only 45 times); 13% involve No Trouble Found (96 as the index only, 82 as the follow-up only, 23 both); 4% a blank Category: 28% in all. Within 7 days: same Category 33%, monitoring 17%. Software, Operator error and Other are shown together as Other+; every group and Category is in rp_matrix.csv."
+    },
+    {
+     "label": "5.2",
+     "title": "Quick follow-ups are more often the same problem: 46% of ticket pairs a day or less apart share a Category, 27% beyond six months",
+     "takeaway": "Tickets close together share a Category more often than the usual 29%; quick repeats tend to be the machine's current problem coming back.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Same Category, by days between two tickets",
+       "png": "sl_26_same_problem_by_gap.png",
+       "alt": "Share of same-machine ticket pairs with the same Category: 46% within a day, 44% at 1 to 7 days, 36% at 7 to 30 days, falling to 27% beyond 180 days; the usual mix is 29%"
+      },
+      {
+       "kind": "chart",
+       "header": "What the repeats are, by days to the follow-up",
+       "png": "sl_27_repeat_classes.png",
+       "alt": "Pairing classes by days to the follow-up: same Category 32%, 33% and 30% of repeats within 1 day, 1 to 7 and 7 to 30 days; monitoring, No Trouble Found or blank 40%, 33% and 24%; without that class, same Category is 53%, 49% and 39%"
+      }
+     ],
+     "notes": "Left: every pair of unplanned tickets on one machine, consecutive or not, each with a recorded Category (No Trouble Found counts, monitoring does not): 6,980 pairs. Per machine, pairs within 30 days share a Category 13 points more often than pairs 90+ days apart (95% 9-18). Of the 833 repeats with a recorded Category on both tickets (monitoring excluded) on the 299 machines with two or more such repeats, 39% share it, against 33% if each machine's Categories came in random order (p < 0.001); over all 1,336 such repeats it is 38%. The left chart counts every pair of tickets on a machine, the right one only repeats with the process classes first, so their one-day shares differ (46% vs 32%); without the process classes the right chart gives 53%, 49% and 39%. Pairs a day or less apart may include duplicate tickets for one call: 12 of the 81 one-day repeats are under an hour apart. But a follow-up does not clearly match its own index more than the machine's other repeats (non-overlapping pairs: 38% vs 37%, p = 0.16). The protocol's first shuffle test paired tickets with themselves and was replaced before the write-up (docs/09 section 12)."
+    },
+    {
+     "label": "5.3",
+     "title": "No large model or telemetry type clearly stands out once volume and timing are allowed for; the busiest models simply have the most repeats",
+     "takeaway": "Repeat rates follow tickets per machine: fewer tickets per machine would mean fewer repeats.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "Repeat rate by model and by telemetry type, observed vs random timing",
+       "png": "sl_28_repeat_offenders.png",
+       "alt": "Two panels of 30-day repeat rates with 95% intervals against random timing, by model and by telemetry type: LVD-Remote-2.0 23% vs 15% (19% of repeats, ratio 1.02), LVRR-WP-2.0 24% vs 17% (17%, 0.91), MV-2.0 22% vs 13% (12%, 1.08); ratios run from 0.73 (LC-30) to 1.16 (LVD-Remote) by model and from 0.83 (mlc-1) to 1.20 (scrubex-2) by telemetry type; none differs from the fleet after Benjamini-Hochberg"
+      }
+     ],
+     "notes": "Random timing: each machine's tickets placed at random over its own months in the period (computed exactly and checked with 1,000 simulations) would give 15.4% repeats within 30 days, against 23.6% observed (1.53 times). Ratio = observed / random-timing repeats relative to the fleet's 1.53: from 0.73 (LC-30; 0.50-0.97) to 1.16 (LVD-Remote; 1.00-1.35); by telemetry type from 0.83 (mlc-1) to 1.20 (scrubex-2); none differs after Benjamini-Hochberg (smallest q 0.17 by model, 0.12 by type). The 19 models and 12 telemetry types with under 100 eligible tickets are pooled and not tested. Every model repeats more than random timing gives (1.11 to 1.78 times), clearly so for all but LC-30 (1.11; 0.76-1.49). By volume, LVD-Remote-2.0 holds 19% of repeats, LVRR-WP-2.0 17% and MV-2.0 12%. Raw repeat rates (14.8% to 36.9%) track tickets per machine. No device match (machines with no matched telemetry device) and Unknown (a blank device type) are not telemetry types and are not tested."
+    },
+    {
+     "label": "5.4",
+     "title": "Repeats after a model's main problem often stay with it: Door after Door on LVRR-WP-2.0 (61%), Mechanical after Mechanical on alEx LC-D (68%)",
+     "takeaway": "Pairings differ by model: where one problem dominates (LVRR-WP-2.0, alEx LC-D), most repeats after it stay with it, so look at repeats model by model.",
+     "cards": [
+      {
+       "kind": "chart",
+       "header": "What follows what within 30 days, the four models with the most repeats",
+       "png": "sl_30_model_matrices.png",
+       "alt": "Pairing matrices for LVD-Remote-2.0, LVRR-WP-2.0, MV-2.0 and alEx LC-D: Door to Door 61% on LVRR-WP-2.0, Mechanical to Mechanical 68% on alEx LC-D, Electronics to Electronics 57% on MV-2.0"
+      }
+     ],
+     "notes": "Row = the index ticket's group; cell = share of that row's repeats whose next ticket is in the column's group; n = the row's repeats. LVD-Remote-2.0 (299 repeats): Mechanical 55%, Door and Electronics 45% stay in group. LVRR-WP-2.0 (265; Door is 58% of its eligible tickets): Door 61%. MV-2.0 (183): Electronics 57%, Door 46%, Mechanical 59%. alEx LC-D (160; Mechanical is 55% of its eligible tickets): Mechanical 68%. As a share of all the model's repeats, Door to Door is 35% on LVRR-WP-2.0 and Mechanical to Mechanical 39% on alEx LC-D. Italic text = cells with fewer than 5 pairs. Every model's and telemetry type's matrices are in rp_model_matrices.csv."
+    }
+   ]
+  }
+ ],
+ "agenda_notes": "Two parts, one per IPA question: 4.1-4.4 on machines under 4 years (the first three bars of slide 4 of the update deck), 5.1-5.4 on the repeat contacts of slide 5."
+}

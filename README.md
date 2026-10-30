@@ -46,6 +46,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     Word memo from `docs/executive_summary.md`, laid out by `memo_docx.js`), `build_deck_pdf.py` (a PDF of the deck
     with real names, printed by `deck_pdf.js`) and `names.py` (the private name table, and same-length placeholder
     names for checking layouts without looking at real ones). The code is committed; its outputs never are.
+    `followups_pptx.js` builds the follow-up PowerPoint (slides 4.1-5.4, text in `followups_pptx.json`; no customer
+    names) into the same folder.
   - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
@@ -81,6 +83,7 @@ python3 -I viz/slides/run_all.py                          # redraw the slide cha
 python3 -I viz/deliverables/build_memo.py                 # local only: deliverables/IPA_Executive_Summary.docx
 python3 -I viz/deliverables/build_deck_pdf.py --deck DECK_DIR --assets ASSET_MAP.json \
     --require-swaps sl_06_busiest_customers,sl_07_customer_funnel   # local only: the deck PDF with real names
+NODE_PATH=PPTXGENJS_NODE_MODULES node viz/deliverables/followups_pptx.js --assets DECK_IMAGES  # follow-up PowerPoint
 python3 -I viz/high_ticket/htm_03_observed_vs_expected.py # redraw one chart (any viz/*/htm_NN_*.py, zac_NN_*.py or fx_NN_*.py)
 ```
 
@@ -89,6 +92,6 @@ missing).
 
 The real-name deliverables also need `data/private/fx_private_customer_names.csv` (written by `fleet_exposure.py`),
 the real-name charts (drawn by `viz/run_all.py` and `viz/slides/run_all.py`), pandoc 3, and Node with the `docx` and
-`playwright` packages. The deck PDF reads the deck's own files (`deck.json` and `slides/*.html`, from the Slides
+`playwright` packages (and `pptxgenjs` for the follow-up PowerPoint). The deck PDF reads the deck's own files (`deck.json` and `slides/*.html`, from the Slides
 artifact) and a JSON map from each of its image asset ids to a local copy of that image. Both builders print counts
 and pseudonyms only, never a name; `--twin OUT_DIR` builds a copy with placeholder names for checking the layout.
