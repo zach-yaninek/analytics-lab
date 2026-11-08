@@ -135,6 +135,7 @@ number on the chart equals that number in the data" assertions.
 | `deliverables/build_deck_pdf.py` | The deck as a PDF with real names (Chromium via `deliverables/deck_pdf.js`), from the deck's own files and a map of its image assets; counts-only checks of the result |
 | `deliverables/followups_pptx.js` | The follow-up PowerPoint in the update deck's style: sl_19, sl_20, sl_22, sl_31, sl_23 (slides 4.1-4.4) and sl_24-sl_28, sl_30 (5.1-5.4), with the fact-checked titles, takeaways and notes in `deliverables/followups_pptx.json` (pptxgenjs) |
 | `deliverables/build_followups_pptx.py` | The follow-up PowerPoint's real-name version: real names in every title, takeaway, note and alt text, the real-name sl_06/sl_07, the update deck's customer slides 6 and 7 added, takeaways fitted to two lines; counts-only checks of the result |
+| `deliverables/build_electronics_cases.py` | IPA's Electronics case list (Excel, real case and serial numbers): every unplanned Electronics ticket behind slides 4a-4e, one row per case, with the 2022-23 Touchscreen cluster, one row per machine and the slides' numbers recomputed from the list; counts-only checks against the committed follow-up results; `--pseudo OUT_DIR` writes a pseudonymous copy for checking the layout |
 
 High-ticket charts 9 (raw ticket counts by model and telemetry type) and 10 (rates per 100 machine-months by telemetry
 type) were retired in favour of `fx_01`, `fx_02` and `fx_05`, which use IPA's installed-base list.

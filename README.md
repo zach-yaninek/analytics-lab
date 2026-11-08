@@ -81,6 +81,7 @@ python3 -I verification/tests/test_followups_units.py  # ~20 s; unit tests for f
 python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
 python3 -I viz/run_all.py                                 # redraw the page charts and run their checks
 python3 -I viz/slides/run_all.py                          # redraw the slide charts (incl. follow-ups sl_18-sl_31)
+python3 -I viz/deliverables/build_electronics_cases.py    # local only: deliverables/IPA_Electronics_Cases.xlsx
 export NODE_PATH="$(npm root -g)"                         # the Node packages of the four builders below
 python3 -I viz/deliverables/build_memo.py                 # local only: deliverables/IPA_Executive_Summary.docx
 python3 -I viz/deliverables/build_deck_pdf.py --deck DECK_DIR --assets ASSET_MAP.json  # local only: the deck PDF
