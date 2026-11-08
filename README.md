@@ -44,7 +44,9 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     also draw a real-name variant into `deliverables/slides/`.
   - `viz/deliverables/`: builds the real-name deliverables into the gitignored `deliverables/`: `build_memo.py` (the
     Word memo from `docs/executive_summary.md`, laid out by `memo_docx.js`), `build_deck_pdf.py` (a PDF of the deck
-    with real names, printed by `deck_pdf.js`) and `names.py` (the private name table, and same-length placeholder
+    with real names, printed by `deck_pdf.js`), `build_electronics_cases.py` (IPA's Electronics case list: an Excel
+    workbook of the cases behind slides 4a-4e, with real case numbers and IPA's case notes; `--pseudo OUT_DIR` writes
+    a pseudonymous copy for checking the layout) and `names.py` (the private name table, and same-length placeholder
     names for checking layouts without looking at real ones). The code is committed; its outputs never are.
     `followups_pptx.js` builds the follow-up PowerPoint (slides 4.1-5.4, text in `followups_pptx.json`; no customer
     names) into the same folder; `build_followups_pptx.py` builds its real-name version, which adds the update deck's

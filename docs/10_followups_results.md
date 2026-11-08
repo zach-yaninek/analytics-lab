@@ -405,6 +405,44 @@
 - **Monitoring.** How "Monitoring – Daily/Poll" tickets are raised. They are the follow-up in 128 repeats.
 - **The database extract** for telemetry-type rates on installed months.
 
+## 6. After the meeting: young machines' Electronics tickets (8 November 2026)
+IPA was surprised that Electronics tickets are more common on machines under 4 years (slides 4b and 4c) and asked
+which cases they are. This section is descriptive and comes after the protocol's results (it is not part of docs/09).
+Its numbers are in Part A's tables or are computed, with checks against those tables, by
+`viz/deliverables/build_electronics_cases.py`. That script writes IPA's case list,
+`deliverables/IPA_Electronics_Cases.xlsx`, which is gitignored: it holds IPA's case numbers, serial numbers, account
+names and case notes, for the project team and IPA only.
+- **Electronics as a whole rises like everything else.** Per installed machine-month, young machines have 1.66 times
+  the unplanned tickets of 4+ machines (1.49–1.87) and 1.71 times the Electronics tickets (1.43–2.10), so Electronics'
+  share is about the same at both ages (24.1% and 23.4%; `ag_type_rates.csv`).
+- **One Category stands out: Touchscreen.** 411 tickets on young machines against 139 on 4+ (0.91 vs 0.22 per 100;
+  4.23 times, 3.23–5.59). Within model it is +281 of Electronics' +472 extra tickets (`ag_decomposition.csv`). The
+  other Electronics Categories with 30+ tickets in each age group run 0.97 to 1.75 times. Without Touchscreen,
+  Electronics rises less than all tickets on the crude view (1.12 times) and about in line within model (1.69 against
+  1.59).
+- **Within Touchscreen, the connector.** 344 of the 411 are Sub Category 'Connector Reseat/Replace' (84%), against 84
+  of the 139 (60%). At the same models' 4+ rates about 85 of the 344 would be expected anyway (+259 extra).
+- **Where.** 402 of the 411 are on LVD-Remote-2.0, MV-2.0, LVRR-WP-2.0 and SV-48-2.0, and 315 on machines installed
+  in 2022–23. On the comparison models, Touchscreen runs 1.54 per 100 machine-months on 2022–23 installs against 0.27
+  on 2019–21 and 0.39 on 2024–26 installs (slide 4d; `ag_install_pooled.csv`).
+- **A step at install date.** On the comparison models, machines installed January–April 2022 had 11 Touchscreen
+  tickets over 3,018 machine-months (0.36 per 100), and machines installed May–August 2022 had 53 over 3,292 (1.61).
+  Machines installed a few months apart are nearly the same age, so the step points to a change in production, parts
+  or installation around then, not to ageing. The edge was found by looking at the data.
+- **Slide 4e shows how the gap moved during the year, not why it exists** (`ag_halves.csv`). Touchscreen's gap
+  widened from 0.42 to 0.83 per 100 under-4 machine-months: young machines' rate rose (0.78 to 1.06) while older
+  machines' fell (0.36 to 0.23). Computer Board's gap closed from 0.41 to 0.02. A cluster of 45 young-machine Computer
+  Board tickets in October 2025 explains part of that; older machines of the same models also logged more Computer
+  Board tickets in the second half (0.29 to 0.46 per 100).
+- **The case list** opens with 'Start here': the 411 young-machine Touchscreen tickets, with each machine's Touchscreen
+  history, a 'Core subset' flag and empty columns for IPA's engineers. The core subset is the 268 'Connector
+  Reseat/Replace' tickets on 2022–23 installs of the four models, at 202 machines and 112 accounts. The list also has
+  the 139 Touchscreen tickets on 4+ machines for comparison, all 1,605 Electronics tickets with flags, and one row per
+  machine.
+- **What would settle it:** IPA's dates of touchscreen, connector, cable or harness revisions, supplier or
+  installation-kit changes and firmware changes, by model, lined up against the list's install-quarter table (Summary
+  table 6); and earlier tickets.
+
 ## Figures (slide charts, `viz/figures/slides/`)
 **Slide 4 follow-up.**
 

@@ -21,14 +21,18 @@ ILLEGAL_CHARACTERS_RE) and cut at TEXT_CAP characters; Administrative Notes and 
 only and never written. No message prints a note.
 
 Sheets (values, not formulas; Arial; bold filled headers, frozen panes and filters on the list sheets):
-  Read me          privacy notice; what this is; what the list shows; where to start; what would settle it; how the
-                   counts tie to slides 4a-4e, with the filters; definitions; columns. Every number is the builder's
+  Read me          privacy notice; what this is; what the list shows (rates per installed machine-month by request
+                   type; FOCUS and CORE_SUB; the rest of GROUP against all tickets, crude and within model; FOCUS
+                   tickets on the comparison models' machines installed in the two EDGE windows); where to start
+                   (with the SPIKE lead, and how much of slide 4e's SPIKE gap it explains); what would settle it; how
+                   the counts tie to slides 4a-4e, with the filters; definitions; columns. Every number is the builder's
   Summary          1 machines, machine-months and tickets by age group; 2 GROUP tickets by Category with rates,
                    ratios and extra tickets (4a, 4b); 3 FOCUS tickets by install cohort, comparison models pooled and
                    each big 2.0 model (4d); 4 the halves (4e); 5 Category x Sub Category, with each row's tickets
                    expected at the same models' 4+ rates and the extra (slide 4b's method); 6 FOCUS and CORE_SUB
                    tickets by install quarter on the four 2.0 models, pooled and each, to line up with IPA's change
-                   dates; 7 subset sizes (tickets, machines, accounts) and where each sits in the workbook
+                   dates; 7 subset sizes (tickets, machines, accounts) and where each sits in the workbook; 8 CORE_SUB
+                   tickets within model on each comparison model: expected at the model's own 4+ rate, and the extra
   Start here       the FOCUS tickets on machines under 4 (411), by model, install date, serial number and opening:
                    the machine's FOCUS history in the year, the Core subset flag, the case notes, and four empty
                    'IPA:' columns for IPA's engineers
@@ -41,12 +45,15 @@ it was):
   - data: Part A's 6,750 tickets; the comparison models = ag_support.csv's; machines and machine-months by age group
     = ag_band_rates.csv and ag_type_rates.csv; tickets and crude ratios by request type = ag_type_rates.csv; GROUP
     tickets by Category x age group = ag_type_rates.csv; extra tickets, crude and within model, = ag_decomposition.csv
-    (Categories, the group and all tickets); FOCUS by install cohort = ag_install_pooled.csv and on each big model =
-    ag_install_year.csv; under-4 tickets, machine-months and gaps by half = ag_halves.csv; GROUP tickets by model and
-    age group = ag_by_model.csv; table 5's rows add up to their Categories, whose extra tickets within model =
-    ag_decomposition.csv; table 6's install quarters add up, per model and year, to ag_install_year.csv's FOCUS
-    machines, machine-months and tickets; the subsets of table 7 nest as stated, and FOCUS on FOCUS_COHORT installs
-    of the comparison models = ag_install_pooled.csv;
+    (Categories, the group and all tickets); the within-model rate ratios of GROUP and FOCUS (Mantel-Haenszel over the
+    comparison models, followups.mh_rate, as the Read me gives them) = ag_type_adjusted.csv; FOCUS by install cohort =
+    ag_install_pooled.csv and on each big model = ag_install_year.csv; under-4 tickets, machine-months and gaps by
+    half = ag_halves.csv; GROUP tickets by model and age group = ag_by_model.csv; table 5's rows add up to their
+    Categories, whose extra tickets within model = ag_decomposition.csv; table 6's install quarters add up, per model
+    and year, to ag_install_year.csv's FOCUS machines, machine-months and tickets; the subsets of table 7 nest as
+    stated, and FOCUS on FOCUS_COHORT installs of the comparison models = ag_install_pooled.csv; table 8's models add
+    up to table 5's CORE_SUB row; FOCUS by install month on the comparison models (the Read me's EDGE windows) adds
+    up, per install year, to ag_install_pooled.csv, and the later window's rate is the higher;
   - identifiers: the case map inverts one to one; the listed case numbers are unique and each is in the case export
     exactly once; the export's Status and opening and closing times, by case number, = the case table's; every
     machine has a serial number and an account on IPA's list, and real and pseudonymous identifiers pair up; every
@@ -83,6 +90,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import textwrap
 import traceback
 import zipfile
 from collections import defaultdict
@@ -100,6 +108,7 @@ from openpyxl import Workbook, load_workbook  # noqa: E402
 from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE  # noqa: E402
 from openpyxl.styles import Alignment, Font, PatternFill  # noqa: E402
 from openpyxl.utils import get_column_letter  # noqa: E402
+XML_INVALID = re.compile('[\ufffe\uffff\ud800-\udfff]')  # also not XML; openpyxl's pattern lets them through
 
 import common  # noqa: E402
 import fleet_exposure as FX  # noqa: E402
@@ -118,6 +127,10 @@ SPIKE = ('Computer Board', '2025-10')   # ... and the under-4 tickets of this Ca
 QUARTERS = [f'{y} Q{q}' for y in range(2021, 2025) for q in range(1, 5)]   # Summary table 6's install quarters
 REPEAT_DAYS = (30, 90)         # 'Another within N days'
 MANY = 3                       # the Read me points to machines with this many FOCUS tickets or more
+# The Read me's two install windows (first and last install month) either side of the step in FOCUS tickets on the
+# comparison models' machines: descriptive, the edge was found by looking at the data.
+EDGE = (('2022-01', '2022-04'), ('2022-05', '2022-08'))
+ALIKE = 0.1                    # two ratios within 10% of each other read 'about in line' ('about as much as')
 PART_A_TICKETS = 6750          # slide 4's population (followups.py pins it)
 RESULTS = common.OUTPUTS / 'followups'
 OUT_REAL = names.DELIVERABLES / f'IPA_{GROUP}_Cases.xlsx'
@@ -145,6 +158,7 @@ POOLED = f'All {V2}'
 SPIKE_MONTH = pd.Period(SPIKE[1], 'M')
 SPIKE_MON, SPIKE_MONTH_NAME = SPIKE_MONTH.strftime('%b %Y'), SPIKE_MONTH.strftime('%B %Y')   # 'Oct 2025', ...
 SPIKE_LABEL = f'{SPIKE_MON} {SPIKE[0]}'
+EDGE_MONTHS = [(pd.Period(a, 'M'), pd.Period(b, 'M')) for a, b in EDGE]
 README, SUMMARY, START, MACHINES = 'Read me', 'Summary', 'Start here', 'Machines'
 OLDER, CASES = f'{FOCUS} {O4}', f'All {GROUP}'
 LIST_SHEETS = (START, OLDER, CASES, MACHINES)
@@ -161,7 +175,8 @@ IPA_COLUMNS = (('IPA: root cause', None, 24, None), ('IPA: part or revision', No
                ('IPA: fix or field campaign', None, 24, None), ('IPA: fix date', None, 12, DATE))
 IPA_HEADS = tuple(c[0] for c in IPA_COLUMNS)
 CENTERED = {'Install quarter', 'Install cohort', 'Age group', 'Age band (years)', 'Half', 'Comparison model',
-            'Core subset', '2.0 model', SPIKE_LABEL, 'Core machine', *(f'Another within {d} days' for d in REPEAT_DAYS)}
+            'Core subset', 'Core 2.0 model', SPIKE_LABEL, 'Core machine',
+            *(f'Another within {d} days' for d in REPEAT_DAYS)}
 COLUMN = {c[0]: c for c in (
     ('Case Number', ('case_number', 'case_id'), 11, '@'),
     ('Opened', 'ts', 17, DATETIME),
@@ -172,7 +187,7 @@ COLUMN = {c[0]: c for c in (
     ('Field-service vendor', 'service_plan', 15, None),
     ('Serial Number', ('serial', 'serial_id'), 10, '@'),
     ('Model', 'model', 15, None),
-    ('2.0 model', 'v2', 7, None),
+    ('Core 2.0 model', 'v2', 7, None),
     ('Install date', 'install_date', 12, DATE),
     ('Install quarter', 'quarter', 9, None),
     ('Install year', 'install_year', 8, '0'),
@@ -206,7 +221,7 @@ START_COLUMNS = tuple(COLUMN[h] for h in (
 OLDER_COLUMNS = tuple(c for c in START_COLUMNS if c[0] not in ('Core subset', *IPA_HEADS))
 CASE_COLUMNS = tuple(COLUMN[h] for h in (
     'Case Number', 'Opened', 'Closed', 'Status', 'Dispatch #', 'Account', 'Field-service vendor', 'Serial Number',
-    'Model', '2.0 model', 'Install date', 'Install quarter', 'Install year', 'Install cohort', 'Age group',
+    'Model', 'Core 2.0 model', 'Install date', 'Install quarter', 'Install year', 'Install cohort', 'Age group',
     'Age band (years)', 'Age at ticket (years)', 'Trouble Code', 'Category', 'Sub Category', 'Half',
     'Comparison model', 'Core subset', SPIKE_LABEL, f"Machine's {GROUP} tickets", f"Machine's {FOCUS} tickets",
     *NOTES))
@@ -247,7 +262,9 @@ HEAD_RIGHT = Alignment(wrap_text=True, vertical='bottom', horizontal='right')
 HEAD_ALIGN = Alignment(wrap_text=True, vertical='bottom')
 HEAD_CENTER = Alignment(wrap_text=True, vertical='bottom', horizontal='center')
 CENTER = Alignment(horizontal='center')
-PAD = Alignment(horizontal='left', indent=1)
+PAD = Alignment(horizontal='left', indent=2)
+SUMMARY_WIDTHS = [44] + [12] * 10   # the Summary's column widths (its widest table has 11 columns)
+NOTE_CHARS = 1.2               # characters of a Summary note per unit of column width (notes wrap to their table)
 LIST_SCALE = 70                # the list sheets' print scale, %
 AFTER_IGNORED = ('<smartTags', '<drawing', '<legacyDrawing', '<picture', '<oleObjects', '<controls',
                  '<webPublishItems', '<tableParts', '<extLst', '</worksheet>')  # elements ignoredErrors precedes
@@ -304,6 +321,27 @@ def and_join(items):
     return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
 
 
+def months_label(first, last):
+    """'January to April 2022' (or 'November 2021 to February 2022') for two monthly Periods."""
+    return (f"{first.strftime('%B')} to {last.strftime('%B %Y')}" if first.year == last.year
+            else f"{first.strftime('%B %Y')} to {last.strftime('%B %Y')}")
+
+
+def wrap_even(text, width):
+    """text in lines of at most width characters: as few lines as textwrap gives, as even in length as they allow."""
+    lines = textwrap.wrap(text, width)
+    for w in range(-(-len(text) // max(len(lines), 1)), width):
+        even = textwrap.wrap(text, w)
+        if len(even) == len(lines):
+            return even
+    return lines
+
+
+def against(x, ref, alike='about in line with'):
+    """How ratio x reads against ratio ref: alike when within ALIKE of it, else 'more than' or 'less than'."""
+    return alike if abs(x / ref - 1) <= ALIKE else ('more than' if x > ref else 'less than')
+
+
 def timestamp(value):
     """A case-export date-time as the case table reads it (to the second); NaT when blank."""
     if value is None or (not isinstance(value, str) and pd.isna(value)):
@@ -321,7 +359,8 @@ def note_text(value):
     v = common.clean(value)
     if v is None:
         return None
-    v = ILLEGAL_CHARACTERS_RE.sub('', v.replace('\r\n', '\n').replace('\r', '\n'))[:TEXT_CAP]
+    v = ILLEGAL_CHARACTERS_RE.sub('', v.replace('\r\n', '\n').replace('\r', '\n'))
+    v = XML_INVALID.sub('', v)[:TEXT_CAP]
     return v or None
 
 
@@ -455,9 +494,9 @@ def by_machine(frame, real):
     """FOCUS tickets in the order of 'Start here': model (ignoring case, as Excel sorts), install date, serial number,
     opening (the copy's own identifiers, so that each copy reads sorted)."""
     serial, case = ('serial', 'case_number') if real else ('serial_id', 'case_id')
-    return frame.assign(_m=frame.model.str.casefold()).sort_values(['_m', 'install_date', serial, 'ts', case],
-                                                                    kind='mergesort') \
-        .drop(columns='_m').reset_index(drop=True)
+    keys = ['_m', 'install_date', serial, 'ts', case]
+    return (frame.assign(_m=frame.model.str.casefold()).sort_values(keys, kind='mergesort').drop(columns='_m')
+            .reset_index(drop=True))
 
 
 def machines_frame(e, tp):
@@ -500,10 +539,19 @@ def within_model(frame, models, M, sup):
     return n, expected, n - expected
 
 
+def mh_ratio(frame, models, M, sup):
+    """The follow-up's within-model rate ratio ('times the same models' 4+ rates'; followups.mh_rate with the
+    comparison models as strata): each model's young machines' rate against its own 4+ machines' rate, pooled."""
+    T = by_model_age(frame, models)
+    return float(F.mh_rate(T.loc[sup, [U4]].to_numpy(), T.loc[sup, [O4]].to_numpy(), M.loc[sup, U4].to_numpy(),
+                           M.loc[sup, O4].to_numpy())[0])
+
+
 def summary(mx, tp, e, support, cat_order, check):
-    """The Summary's seven tables as DataFrames, and the Read me's other numbers, each checked against
+    """The Summary's eight tables as DataFrames, and the Read me's other numbers, each checked against
     verification/outputs/followups/ where the follow-up has them."""
     rates = pd.read_csv(RESULTS / 'ag_type_rates.csv')
+    adjusted = pd.read_csv(RESULTS / 'ag_type_adjusted.csv')
     decomp = pd.read_csv(RESULTS / 'ag_decomposition.csv')
     pooled = pd.read_csv(RESULTS / 'ag_install_pooled.csv')
     years = pd.read_csv(RESULTS / 'ag_install_year.csv')
@@ -556,6 +604,19 @@ def summary(mx, tp, e, support, cat_order, check):
           f'{all_ratio:.2f} times, within model {all_within[0]:,.0f} against {all_within[1]:,.1f} expected')
     out['types'], out['all_ratio'], out['all_within'] = types.drop(columns='want'), all_ratio, all_within
 
+    # The within-model rate ratios the Read me gives (all tickets, GROUP, FOCUS and the rest of GROUP).
+    foc = e.ctype.eq(FOCUS)
+    mh = {'all': mh_ratio(tp, models, M, sup), 'group': mh_ratio(e, models, M, sup),
+          'focus': mh_ratio(e[foc], models, M, sup), 'rest': mh_ratio(e[~foc], models, M, sup)}
+    adj = adjusted[adjusted.variant == 'primary']
+    want = [adj[(adj.level == 'group') & (adj.type == GROUP)].rate_ratio_mh,
+            adj[(adj.level == 'category') & (adj.group == GROUP) & (adj.type == FOCUS)].rate_ratio_mh]
+    check(f'within-model rate ratios of {GROUP} and {FOCUS} (Mantel-Haenszel) = ag_type_adjusted.csv',
+          all(len(w) == 1 for w in want) and close([mh['group'], mh['focus']], [w.iloc[0] for w in want]),
+          f"{GROUP} {mh['group']:.2f}, {FOCUS} {mh['focus']:.2f}; all tickets {mh['all']:.2f}, {GROUP} without "
+          f"{FOCUS} {mh['rest']:.2f}")
+    out['mh'] = mh
+
     # Table 2: GROUP tickets by Category and age group.
     rows = []
     for label, sel in [(GROUP, e.index == e.index)] + [(c, e.ctype == c) for c in cat_order] \
@@ -572,23 +633,21 @@ def summary(mx, tp, e, support, cat_order, check):
                      'lo': csv.rate_ratio_lo.iloc[0] if len(csv) else np.nan,
                      'hi': csv.rate_ratio_hi.iloc[0] if len(csv) else np.nan,
                      'expected': my * to / mo, 'extra': ty - my * to / mo,
-                     'within': within if len(dec) else np.nan,
+                     'within': within,
                      'csv_row': csv, 'dec_row': dec, 'within_all': within})
     cat = pd.DataFrame(rows)
     shown = cat[cat.csv_row.map(len) > 0]
+    same = all(close([r.u4, r.o4, r.ratio], r.csv_row[['under4_tickets', 'plus4_tickets', 'rate_ratio']].iloc[0])
+               for r in shown.itertuples())
     check(f'{GROUP} tickets by Category x age group = ag_type_rates.csv',
-          len(shown) == len(cat) - 1 and all(close([r.u4, r.o4], [r.csv_row.under4_tickets.iloc[0],
-                                                                   r.csv_row.plus4_tickets.iloc[0]])
-                                             and close(r.ratio, r.csv_row.rate_ratio.iloc[0])
-                                             for r in shown.itertuples())
+          len(shown) == len(cat) - 1 and same
           and cat.u4.iloc[0] == cat.u4.iloc[1:].sum() and cat.o4.iloc[0] == cat.o4.iloc[1:].sum(),
           f'{len(shown) - 1} Categories and the group row ({cat.u4.iloc[0]:,.0f} and {cat.o4.iloc[0]:,.0f}; '
           f'{cat.u4.iloc[-1]:,.0f} and {cat.o4.iloc[-1]:,.0f} with no Category)')
     dec_rows = cat[cat.dec_row.map(len) > 0]
-    check('extra tickets, crude and within model = ag_decomposition.csv',
-          len(dec_rows) > 0 and all(close([r.extra, r.within_all], [r.dec_row.extra_tickets.iloc[0],
-                                                                      r.dec_row.within_model_age_tickets.iloc[0]])
-                                    for r in dec_rows.itertuples()),
+    same = all(close([r.extra, r.within_all], r.dec_row[['extra_tickets', 'within_model_age_tickets']].iloc[0])
+               for r in dec_rows.itertuples())
+    check('extra tickets, crude and within model = ag_decomposition.csv', len(dec_rows) > 0 and same,
           ', '.join(f'{r.Category} {r.extra:+,.0f} / {r.within_all:+,.0f}' for r in dec_rows.itertuples()))
     out['categories'] = cat.drop(columns=['csv_row', 'dec_row', 'within_all'])
 
@@ -610,7 +669,7 @@ def summary(mx, tp, e, support, cat_order, check):
           close(coh[['machines', 'months', 'tickets', 'rate', 'u4_share', 'ratio']].to_numpy(),
                 csv[['machines', 'months', 'tickets', 'rate_per_100', 'under4_share_of_machines',
                      'ratio_to_newest_cohort']].to_numpy()),
-          ', '.join(f'{r.cohort} {r.tickets}' for r in coh.itertuples()) + f' tickets')
+          ', '.join(f'{r.cohort} {r.tickets}' for r in coh.itertuples()) + ' tickets')
     out['cohorts'] = coh
     out['cluster_csv'] = int(csv.at[FOCUS_COHORT, 'tickets'])      # slide 4d's cluster, as the follow-up has it
     rows = []
@@ -688,6 +747,10 @@ def summary(mx, tp, e, support, cat_order, check):
                                                         f'{conn.n_sup.iloc[0]:,.0f} under-4 tickets on the comparison '
                                                         f'models, {conn.expected.iloc[0]:,.1f} expected at the same '
                                                         f"models' 4+ rates, {conn.extra.iloc[0]:+,.1f}"))
+    within2 = cat.set_index('Category').within_all
+    check("table 5's Category rows = table 2's extra within model",
+          bool(tops.index.isin(within2.index).all()) and close(tops.extra, within2.reindex(tops.index)),
+          f'{len(tops)} Categories')
     out['subcategories'] = t5
     out['connector'] = conn.iloc[0] if len(conn) == 1 else None
 
@@ -703,7 +766,9 @@ def summary(mx, tp, e, support, cat_order, check):
 
     out['quarters'] = quarter_table(mx, e, years, support, check)
     out['subsets'] = subset_table(e, out['cluster_csv'], check)
-    out['facts'] = facts(mx, e, out, models, M, sup)
+    out['connector_models'] = connector_table(e, models, M, sup, out['connector'], check)
+    out['edge'] = edge_table(mx, e, pooled, check)
+    out['facts'] = facts(e, out, M)
     return out
 
 
@@ -767,8 +832,8 @@ def subset_table(e, cluster_csv, check):
     nests = [('core', 'u4_conn'), ('u4_conn', 'u4_focus'), ('u4_focus', 'u4'), ('core', 'u4_coh'),
              ('u4_coh', 'u4_focus'), ('u4_coh', 'cluster'), ('spike', 'u4_rest'), ('u4_rest', 'u4')]
     nested = sum(not (masks[a] & ~masks[b]).any() for a, b in nests)
-    parts = (masks['u4_focus'] | masks['u4_rest']).equals(masks['u4']) and not (masks['u4_focus']
-                                                                                   & masks['u4_rest']).any()
+    overlap = (masks['u4_focus'] & masks['u4_rest']).any()
+    parts = (masks['u4_focus'] | masks['u4_rest']).equals(masks['u4']) and not overlap
     by_model = sum(t7.at[f'core:{m}', 'tickets'] for m in CORE_MODELS) == t7.at['core', 'tickets']
     check('subsets nest as stated; slide 4d\'s cluster = ag_install_pooled.csv',
           nested == len(nests) and parts and by_model and names_ok and t7.at['cluster', 'tickets'] == cluster_csv,
@@ -779,7 +844,60 @@ def subset_table(e, cluster_csv, check):
     return t7
 
 
-def facts(mx, e, s, models, M, sup):
+def connector_table(e, models, M, sup, conn, check):
+    """Table 8: CORE_SUB tickets within model on each comparison model (slide 4b's method): under-4 and 4+ tickets and
+    machine-months, the model's 4+ rate, the under-4 tickets expected at it and the extra; most extra first, under a
+    first row for the comparison models together, which is table 5's CORE_SUB row."""
+    T = by_model_age(e[e.ctype.eq(FOCUS) & e.subcategory.eq(CORE_SUB)], models).loc[sup]
+    Ms = M.loc[sup]
+    t8 = pd.DataFrame({'model': T.index, 'u4': T[U4].to_numpy(), 'm_u4': Ms[U4].to_numpy(), 'o4': T[O4].to_numpy(),
+                       'm_o4': Ms[O4].to_numpy()})
+    t8['r_o4'] = 100 * t8.o4 / t8.m_o4
+    t8['expected'] = t8.m_u4 * t8.o4 / t8.m_o4
+    t8['extra'] = t8.u4 - t8.expected
+    t8 = t8.sort_values(['extra', 'model'], ascending=[False, True], kind='mergesort')
+    total = t8[['u4', 'm_u4', 'o4', 'm_o4', 'expected', 'extra']].sum()
+    v2 = t8[t8.model.isin(CORE_MODELS)]
+    check(f"table 8: {CORE_SUB} within model, model by model, adds up to table 5's row",
+          conn is not None and close(total[['u4', 'expected', 'extra']], [conn.n_sup, conn.expected, conn.extra]),
+          f"{len(t8)} comparison models: {total.u4:,.0f} under-4 tickets, {total.expected:,.1f} expected at the "
+          f"models' own 4+ rates, {total.extra:+,.1f}; on the {V2} {v2.extra.sum():+,.1f}")
+    first = pd.DataFrame([{'model': f'All {len(t8)} comparison models', **total.to_dict(), 'r_o4': np.nan}])
+    return pd.concat([first, t8], ignore_index=True)
+
+
+def edge_table(mx, e, pooled, check):
+    """The Read me's step: FOCUS tickets (any age) on the comparison models' machines installed in each EDGE window,
+    with the machines (and how many are under 4) and their machine-months; checked through the install months of the
+    windows' years, which add up to ag_install_pooled.csv's install-year rows."""
+    sm, fe = mx[mx.in_support], e[e.ctype.eq(FOCUS) & e.in_support]
+    sm_month, fe_month = sm.install_date.dt.to_period('M'), fe.install_date.dt.to_period('M')
+
+    def tally(first, last):
+        ms = sm[(sm_month >= first) & (sm_month <= last)]
+        return {'machines': len(ms), 'under4': int(ms.age_group.eq(U4).sum()), 'months': float(ms.months.sum()),
+                'tickets': int(((fe_month >= first) & (fe_month <= last)).sum())}
+
+    w = pd.DataFrame([{'label': months_label(a, b), **tally(a, b)} for a, b in EDGE_MONTHS])
+    w['rate'] = 100 * w.tickets / w.months
+    ref = pooled[(pooled.category == FOCUS) & (pooled.unit == 'year')].set_index('install')
+    years = sorted({p.year for pair in EDGE_MONTHS for p in pair})
+    cols = ['machines', 'months', 'tickets']
+    got = [pd.DataFrame([tally(p, p) for p in pd.period_range(f'{y}-01', f'{y}-12', freq='M')])[cols].sum()
+           for y in years]
+    want = [ref.loc[str(y), cols] if str(y) in ref.index else pd.Series(np.nan, index=cols) for y in years]
+    apart = all(b < c for (_, b), (c, _) in zip(EDGE_MONTHS, EDGE_MONTHS[1:]))
+    check(f'{FOCUS} by install month, comparison models: each year = ag_install_pooled.csv; a step between the windows',
+          close([g.to_numpy(float) for g in got], [x.to_numpy(float) for x in want]) and apart
+          and w.rate.iloc[-1] > w.rate.iloc[0],
+          '; '.join(f'{y}: {g.machines:,.0f} machines, {g.months:,.1f} machine-months, {g.tickets:,.0f} tickets'
+                    for y, g in zip(years, got)) + ' by month; '
+          + '; '.join(f'{r.label}: {r.tickets} tickets over {r.months:,.1f} machine-months ({r.rate:.2f} per 100; '
+                      f'{r.machines} machines, {r.under4} under 4)' for r in w.itertuples()))
+    return w
+
+
+def facts(e, s, M):
     """The Read me's numbers beyond the Summary's tables."""
     foc, young = e.ctype.eq(FOCUS), e.age_group.eq(U4)
     start = e[foc & young]
@@ -795,7 +913,6 @@ def facts(mx, e, s, models, M, sup):
         **{f'within_{d}': int(start[f'within_{d}'].eq('Yes').sum()) for d in REPEAT_DAYS},
         'rest_young': rest_young, 'rest_old': rest_old,
         'rest_crude': (rest_young / my) / (rest_old / mo),
-        'rest_within': within_model(e[~foc], models, M, sup), 'focus_within': within_model(e[foc], models, M, sup),
         'spike_max': int(spike_months.get(SPIKE_MONTH, 0)) == int(spike_months.max()),
         'spike_average': len(e[e.ctype.eq(SPIKE[0]) & young]) / period_months,
         'spike_support': int((e.spike & e.in_support).sum()),
@@ -897,26 +1014,23 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
 
     # What the list shows.
     big = types.assign(n=types.u4 + types.o4).sort_values('n', ascending=False, kind='mergesort').head(4)
-    clear = int((types.lo > 1).sum())
-    every = 'every' if (types.ratio > 1).all() else 'most'
-    rel = g.ratio / s['all_ratio']
-    alike = 'about as much as' if abs(rel - 1) <= 0.1 else ('more than' if rel > 1 else 'less than')
+    n_types, above, clear = len(types), int((types.ratio > 1).sum()), int((types.lo > 1).sum())
+    every = ('every' if clear == n_types else 'nearly every' if above >= n_types - 1
+             else 'most' if above > n_types / 2 else 'only some')
+    higher = f'all {n_types}' if above == n_types else f'{above} of the {n_types}'
     shown = [c for c in cat_order if c != FOCUS and cat.at[c, 'u4'] >= F.MIN_SHOWN_TICKETS
              and cat.at[c, 'o4'] >= F.MIN_SHOWN_TICKETS]
-    rest_within = k['rest_within'][0] / k['rest_within'][1]
-    all_within = s['all_within'][0] / s['all_within'][1]
-    focus_within = k['focus_within'][0] / k['focus_within'][1]
-    nearer = (abs(k['rest_crude'] - s['all_ratio']) < abs(k['rest_crude'] - fc.ratio)
-              and abs(rest_within - all_within) < abs(rest_within - focus_within))
+    mh, w0, w1 = s['mh'], s['edge'].iloc[0], s['edge'].iloc[-1]
     core = t7.loc['core']
     scope = '' if conn.n_sup == conn[U4] else ' on the comparison models'
+    later = f'all {w1.machines:,}' if w1.under4 == w1.machines else f'{w1.under4:,} of the {w1.machines:,}'
     shows = [
-        f'{young_words.capitalize()} have more tickets of {every} request type than {old_words} ({clear} of the '
-        f'{len(types)} types clearly so: {CI} interval above 1). Per machine-month, the '
+        f'Per installed machine-month, {young_words} have more tickets of {every} request type than {old_words}: the '
+        f'rate is higher for {higher} types, and clearly so ({CI} interval above 1) for {clear}. The '
         f'{NUMBER_WORDS[len(big)]} types with the most tickets ({and_join(big.type)}) run {big.ratio.min():.2f} to '
-        f'{big.ratio.max():.2f} times the older '
-        f"machines' rate, and all unplanned tickets {s['all_ratio']:.2f} times. {GROUP}, at {g.ratio:.2f} times "
-        f'({g.r_u4:.2f} against {g.r_o4:.2f} per 100 machine-months), rises {alike} all tickets.',
+        f"{big.ratio.max():.2f} times the older machines' rate, and all unplanned tickets {s['all_ratio']:.2f} times. "
+        f'{GROUP}, at {g.ratio:.2f} times ({g.r_u4:.2f} against {g.r_o4:.2f} per 100 machine-months), rises '
+        f"{against(g.ratio, s['all_ratio'], 'about as much as')} all tickets.",
         f'{FOCUS} is the Category that stands out: {fc.u4:,.0f} tickets on {young_words} against {fc.o4:,.0f} on '
         f'{old_words}, {fc.r_u4:.2f} against {fc.r_o4:.2f} per 100 machine-months ({fc.ratio:.2f} times; {CI} interval '
         f'{fc.lo:.2f} to {fc.hi:.2f}). The other {GROUP} Categories with {F.MIN_SHOWN_TICKETS} or more tickets in '
@@ -925,23 +1039,37 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
         f'{conn[O4]:,} of the {fc.o4:,.0f} ({conn[O4] / fc.o4:.0%}) on {old_words}.',
         f"{k['u4_v2']:,} of the {fc.u4:,.0f} are on the {V2} ({and_join(CORE_MODELS)}) and "
         f"{t7.at['u4_coh', 'tickets']:,} on machines installed in {years}. {core.tickets:,} are {CORE_SUB} tickets on "
-        f'a 2.0 machine installed in {years}: the core subset, on {core.machines:,} machines at {core.accounts:,} '
-        'accounts.',
-        (f'The rest of {GROUP} rises roughly as all tickets do, far less than {FOCUS}' if nearer
-         else f'The rest of {GROUP}')
-        + f": without {FOCUS}, {k['rest_young']:,} tickets on {young_words} and {k['rest_old']:,} on {old_words}, "
-        f"{k['rest_crude']:.2f} times the older machines' rate (all unplanned tickets {s['all_ratio']:.2f}, {FOCUS} "
-        f"{fc.ratio:.2f}) and {rest_within:.2f} times the same models' 4+ rates ({all_within:.2f} and "
-        f'{focus_within:.2f}).',
+        f'machines of the {V2} installed in {years}: the core subset, on {core.machines:,} machines at '
+        f'{core.accounts:,} accounts.',
+        f'On the {len(support)} comparison models, machines installed {w0.label} had {w0.tickets:,} {FOCUS} tickets '
+        f'over {w0.months:,.0f} machine-months ({w0.rate:.2f} per 100) and those installed {w1.label} had '
+        f'{w1.tickets:,} over {w1.months:,.0f} ({w1.rate:.2f} per 100): machines installed a few months apart are '
+        f'nearly the same age ({U4.lower()}: {w0.under4:,} of the {w0.machines:,} earlier machines and {later} later '
+        'ones), so a step between them points to a change in production, parts or installation around then rather '
+        'than to ageing (descriptive: the edge was found by looking at the data).',
+        f"The rest of {GROUP}, without {FOCUS} ({k['rest_young']:,} tickets on {young_words} and {k['rest_old']:,} on "
+        f"{old_words}), rises {against(k['rest_crude'], s['all_ratio'])} all tickets on the crude view "
+        f"({k['rest_crude']:.2f} times the older machines' rate, against all tickets' {s['all_ratio']:.2f}) and "
+        f"{against(mh['rest'], mh['all'])} them within model ({mh['rest']:.2f} times the same models' 4+ rates, "
+        f"against all tickets' {mh['all']:.2f}); {FOCUS} runs {fc.ratio:.2f} and {mh['focus']:.2f} times.",
         "Single tickets cannot be labelled 'extra': the excess is a difference between rates, not a set of cases. At "
         f"the same models' 4+ rates about {conn.expected:,.0f} of the {conn.n_sup:,.0f} {CORE_SUB} tickets on "
-        f'{young_words}{scope} would be expected anyway, so about {conn.extra:,.0f} are extra; but each is a real '
-        f'case, and any of them could be among the {conn.expected:,.0f}. So the list shows every case, on young and '
-        'older machines alike.',
+        f'{young_words}{scope} would be expected anyway, so about {conn.extra:,.0f} are extra (Summary table 8 gives '
+        f'them model by model); but each is a real case, and any of them could be among the {conn.expected:,.0f}. '
+        'So the list shows every case, on young and older machines alike.',
     ]
     by_model = ', '.join(f"{m} {t7.at[f'core:{m}', 'tickets']}" for m in CORE_MODELS)
     month = SPIKE_MONTH_NAME
     spike = t7.at['spike', 'tickets']
+    sh = h.get(SPIKE[0])                       # slide 4e's halves for SPIKE's Category (ag_halves.csv's numbers)
+    closed = (sh is not None and k['spike_in_h1'] and sh.at['H2', 'gap'] < sh.at['H1', 'gap']
+              and sh.at['H2', 'same'] > sh.at['H1', 'same'])
+    them = 'them' if k['spike_support'] == spike else f"those {k['spike_support']}"
+    part = (f", which closed from {sh.at['H1', 'gap']:.2f} to {sh.at['H2', 'gap']:.2f} per 100 machine-months. The "
+            f"cluster explains only part of that: without {them} the first half's gap would have been "
+            f"{sh.at['H1', 'gap'] - 100 * k['spike_support'] / sh.at['H1', 'months']:.2f}, and the gap also closed "
+            f'because older machines of the same models logged more {SPIKE[0]} tickets in the second half (their '
+            f"rate went from {sh.at['H1', 'same']:.2f} to {sh.at['H2', 'same']:.2f} per 100)" if closed else '')
     rows = [
         ('notice', None, NOTICE_REAL if real else NOTICE_PSEUDO),
         ('title', None, f'IPA {GROUP} service cases, {day(PERIOD_START)} to {day(LAST_DAY)}'),
@@ -972,10 +1100,11 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
                                       f'{core.accounts:,} accounts): {by_model}.'),
         ('item', 'Trouble Resolution', 'Read it for which connector or cable it was, whether it was reseated or '
                                        'replaced, and the part used; Trouble Reported has what was reported.'),
-        ('item', 'Repeats', f"{k['many_machines']:,} machines had {MANY} or more {FOCUS} tickets in the year "
-                            f"({k['many_tickets']:,} tickets; filter Machine's {FOCUS} tickets). "
-                            + ' and '.join(f"{k[f'within_{d}']:,} tickets were followed by another on the same "
-                                           f'machine within {d} days' if i == 0 else f"{k[f'within_{d}']:,} within {d}"
+        ('item', 'Repeats', f"In '{START}', {k['many_machines']:,} {young_words} had {MANY} or more {FOCUS} tickets "
+                            f"in the year ({k['many_tickets']:,} tickets; filter Machine's {FOCUS} tickets). Of its "
+                            f'{fc.u4:,.0f} tickets, '
+                            + ' and '.join(f"{k[f'within_{d}']:,} were followed by another on the same machine "
+                                           f'within {d} days' if i == 0 else f"{k[f'within_{d}']:,} within {d}"
                                            for i, d in enumerate(REPEAT_DAYS))
                             + f" (Another within {' / '.join(map(str, REPEAT_DAYS))} days = Yes)."),
         ('item', OLDER, f"The {t7.at['o4_focus', 'tickets']:,} {FOCUS} tickets on {old_words}, in the same layout, to "
@@ -986,7 +1115,7 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
                               f'opened in {month}' + (', the most of any month' if k['spike_max'] else '')
                               + f" (the year's monthly average is {k['spike_average']:.0f})"
                               + (f"; {'all' if k['spike_support'] == spike else k['spike_support']} of them are among "
-                                 f"the {k['spike_h1']:.0f} first-half tickets behind slide 4e's {SPIKE[0]} gap"
+                                 f"the {k['spike_h1']:.0f} first-half tickets behind slide 4e's {SPIKE[0]} gap{part}"
                                  if k['spike_in_h1'] else '')
                               + f". In '{CASES}', filter {SPIKE_LABEL} = Yes."),
         ('blank', None, None),
@@ -997,7 +1126,8 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
                        f'{QUARTERS[0]} to {QUARTERS[-1]}, on the {V2}, to line up against those dates.'),
         ('item', None, "Within the year's data a machine's install date and its age move together (slide 4d), so the "
                        'rates alone cannot tell a change in production or installation from a failure that comes '
-                       'with age; the dates of the changes can.'),
+                       f'with age (the step between machines installed {w0.label} and {w1.label}, above, only '
+                       'points to when to look); the dates of the changes can.'),
         ('item', None, f"The {NUMBER_WORDS[len(IPA_HEADS)]} columns headed 'IPA:' at the right of '{START}' are "
                        "for IPA's engineers to record, case by case, the root cause, the part or revision, the fix or "
                        'field campaign and the fix date.'),
@@ -1012,7 +1142,7 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
                              f"'{CASES}', Age group = {U4} or {O4}; Summary tables 1 and 2."),
         ('item', 'Slide 4b', f"Against the same models' 4+ rates, {young_words} have {g.within:+,.0f} {GROUP} "
                              f'tickets; {FOCUS} {fc.within:+,.0f}, of which {CORE_SUB} {conn.extra:+,.0f}. '
-                             f"'{START}' holds the {FOCUS} tickets; Summary tables 2 and 5."),
+                             f"'{START}' holds the {FOCUS} tickets; Summary tables 2, 5 and 8."),
         ('item', 'Slide 4c', f"On {MIX_MODEL}, {GROUP} is {mix['u4'] / mix['all_u4']:.0%} of young machines' tickets "
                              f"({mix['u4']:,.0f} of {mix['all_u4']:,.0f}) against {mix['o4'] / mix['all_o4']:.0%} on "
                              f"older ones ({mix['o4']:,.0f} of {mix['all_o4']:,.0f}). '{CASES}', Model = {MIX_MODEL}."),
@@ -1050,8 +1180,10 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
                                      f'4a right, 4b and 4e) and slide 4d use: {", ".join(support)}.'),
         ('item', "Same models' 4+ rates", "Within model (slide 4b): young machines' tickets on the comparison models "
                                           "against those each model's own 4+ machines' rate would give over the young "
-                                          "machines' machine-months; the difference is the extra tickets, their ratio "
-                                          "the 'times the same models' 4+ rates'."),
+                                          "machines' machine-months; the difference is the extra tickets. 'Times the "
+                                          "same models' 4+ rates' is the follow-up's within-model rate ratio: each "
+                                          "model's young machines' rate against its own 4+ machines' rate, pooled over "
+                                          'the comparison models (Mantel-Haenszel).'),
         ('item', 'Install cohort, quarter', f"By install date on IPA's list: cohorts {', '.join(COHORTS)} (earlier "
                                             f"installs '{BEFORE}'); quarters as '{QUARTERS[0]}'."),
         ('item', 'Half', f'H1 = opened {day(PERIOD_START)} to {day(H1_END)}; H2 = opened {day(F.SPLIT)} to '
@@ -1079,16 +1211,17 @@ def readme_rows(mx, tp, e, support, cat_order, info, s, real):
          f"{day(LAST_DAY)} count, so for a ticket opened in the year's last days a No may change later."),
         ('item', 'Core subset', f'Yes for the {FOCUS} tickets of Sub Category {CORE_SUB} on {young_words} of the '
                                 f'{V2} installed in {years}.'),
-        ('item', '2.0 model', f'Yes for {and_join(CORE_MODELS)}.'),
+        ('item', 'Core 2.0 model', f'Yes for {and_join(CORE_MODELS)} (not alEx SD 2.0, though its name has 2.0).'),
         ('item', SPIKE_LABEL, f'Yes for the {SPIKE[0]} tickets on {young_words} opened in {month}.'),
         ('item', 'Age at ticket (years)', "Years from the install date to the case's opening"
                                           + (f"; negative for {k['negative_age']} case"
                                              f"{'s' if k['negative_age'] != 1 else ''} opened before the install "
                                              "date on IPA's list." if k['negative_age'] else '.')),
         ('item', "Machine's tickets, Machines", f"The machine's unplanned {GROUP} (or {FOCUS}) tickets in the year. In "
-                                               f"'{MACHINES}': Core machine = Yes if any of its tickets is in the core "
-                                               f'subset; its {CORE_SUB} tickets; the opening dates of its first and '
-                                               f'last {FOCUS} tickets; All unplanned tickets = every request type.'),
+                                                f"'{MACHINES}': Core machine = Yes if any of its tickets is in the "
+                                                f'core subset; its {CORE_SUB} tickets; the opening dates of its first '
+                                                f'and last {FOCUS} tickets; All unplanned tickets = every request '
+                                                'type.'),
         ('item', ', '.join(IPA_HEADS), "Empty, for IPA's engineers. Sorting or filtering the sheet keeps each entry "
                                        'on its case\'s row.'),
     ]
@@ -1118,18 +1251,25 @@ def write_readme(ws, rows):
 
 
 def write_block(ws, row, title, header, rows, formats, notes=(), styles=None, pad=()):
-    """One Summary table: title, notes, header row, data rows ('bold' or 'indent' per row in styles; the columns in
-    pad set off from their left neighbour). Returns the next free row (after a blank one)."""
+    """One Summary table: title, notes (wrapped to the table's width, a line per row, so that none runs past the
+    sheet's last column), header row, data rows ('bold' or 'indent' per row in styles). The columns in pad are set
+    off from their left neighbour and their text runs on to the right, so the table then spans the sheet's columns:
+    their header stays on one line, on a header band to the last column. Returns the next free row (after a blank
+    one)."""
     ws.cell(row, 1, title).font = HEADING
-    for note in notes:
+    span = len(SUMMARY_WIDTHS) if pad else len(header)
+    width = sum(SUMMARY_WIDTHS[:span])
+    for line in (line for note in notes for line in wrap_even(note, int(NOTE_CHARS * width))):
         row += 1
-        ws.cell(row, 1, note).font = NOTE
+        ws.cell(row, 1, line).font = NOTE
     row += 1
     for j, (h, fmt) in enumerate(zip(header, formats), 1):
         cell = ws.cell(row, j, h)
         cell.font, cell.fill, cell.alignment = BOLD, HEAD_FILL, HEAD_RIGHT if fmt else HEAD_ALIGN
         if j in pad:
-            cell.alignment = Alignment(wrap_text=True, vertical='bottom', indent=1)
+            cell.alignment = Alignment(horizontal='left', vertical='bottom', indent=PAD.indent)
+    for j in range(len(header) + 1, span + 1):
+        ws.cell(row, j).fill = HEAD_FILL
     for i, values in enumerate(rows):
         row += 1
         style = styles[i] if styles else None
@@ -1147,7 +1287,7 @@ def write_block(ws, row, title, header, rows, formats, notes=(), styles=None, pa
 
 def write_summary(ws, s, support):
     ws.sheet_view.showGridLines = False
-    for j, width in enumerate([44] + [12] * 10, 1):
+    for j, width in enumerate(SUMMARY_WIDTHS, 1):
         ws.column_dimensions[get_column_letter(j)].width = width
     ws.cell(1, 1, "Summary: the slides' numbers, recomputed from this list").font = TITLE
     ws.cell(2, 1, f"Rates are tickets per 100 machine-months. {CI} intervals: the follow-up analysis's account "
@@ -1172,8 +1312,8 @@ def write_summary(ws, s, support):
         .to_numpy().tolist(),
         [None, COUNT, COUNT, RATE, RATE, RATE, RATE, RATE, COUNT, SIGNED, SIGNED],
         notes=[f'Expected = under-4 machine-months x the 4+ machines\' rate; extra = tickets - expected. Extra within '
-               f"model: against each model's own 4+ rate, over the {len(support)} comparison models (slide 4b); shown "
-               'where the follow-up reports it.',
+               f"model: against each model's own 4+ rate, over the {len(support)} comparison models (slide 4b's "
+               'method).',
                'An interval end is blank where the follow-up has none (too few tickets, or no Category row).'])
     coh = s['cohorts']
     row = write_block(
@@ -1209,10 +1349,7 @@ def write_summary(ws, s, support):
         [None, COUNT, COUNT, '0.000', '0.000', COUNT, MONTHS, '+#,##0.0;-#,##0.0;0.0'],
         notes=[f"Expected: the tickets the young machines' machine-months on the {len(support)} comparison models "
                "would give at each model's own 4+ rate; extra = their tickets - expected (slide 4b's method; a "
-               "Category's extra is table 2's 'Extra within model').",
-               f'A single ticket cannot be called extra: of the {s["connector"].n_sup:,.0f} young machines\' '
-               f'{CORE_SUB} tickets, about {s["connector"].expected:,.0f} would be expected at the same models\' 4+ '
-               'rates, but any of them could be among those.'],
+               f"Category's extra is table 2's 'Extra within model'). Table 8 gives {CORE_SUB} model by model."],
         styles=['bold' if v == 'category' else 'indent' for v in t5.level])
     t6 = s['quarters']
     row = write_block(
@@ -1239,6 +1376,21 @@ def write_summary(ws, s, support):
                f'({and_join(CORE_MODELS)}) installed in {FOCUS_COHORT}. Indented rows lie within the bold row above '
                "them; accounts as on IPA's list."],
         styles=t7['style'].tolist(), pad=(5,))
+    t8, conn = s['connector_models'], s['connector']
+    row = write_block(
+        ws, row, f'8. {CORE_SUB} tickets within model, on each of the {len(support)} comparison models (slide 4b)',
+        ['Model', f'Tickets, {U4.lower()}', f'Machine-months, {U4.lower()}', f'Tickets, {O4}', f'Machine-months, {O4}',
+         f'{O4} per 100 machine-months', f"Expected {U4.lower()}, at the model's {O4} rate",
+         'Extra within model (slide 4b)'],
+        t8[['model', 'u4', 'm_u4', 'o4', 'm_o4', 'r_o4', 'expected', 'extra']].to_numpy().tolist(),
+        [None, COUNT, MONTHS, COUNT, MONTHS, '0.000', MONTHS, '+#,##0.0;-#,##0.0;0.0'],
+        notes=[f"{FOCUS} tickets of Sub Category {CORE_SUB}. Expected = the young machines' machine-months x the "
+               "model's own 4+ rate; extra = tickets - expected (slide 4b's method). Most extra first; the first row "
+               f"is table 5's {CORE_SUB} row.",
+               f"A single ticket cannot be called extra: of the {conn.n_sup:,.0f} young machines' {CORE_SUB} tickets, "
+               f"about {conn.expected:,.0f} would be expected at the same models' 4+ rates, but any of them could be "
+               'among those.'],
+        styles=['bold'] + [None] * (len(t8) - 1))
     print_setup(ws)
     return row - 2
 
@@ -1300,10 +1452,10 @@ def history_mismatches(rows):
         gaps = [(b - a).total_seconds() / 86400 for a, b in zip(opened, opened[1:])]
         for i, (r, prev, nxt) in enumerate(zip(rs, [None] + gaps, gaps + [None]), 1):
             to_next = r[f'Days to next {FOCUS} ticket']
+            flags = all(r[f'Another within {d} days'] == ('Yes' if to_next is not None and to_next <= d else 'No')
+                        for d in REPEAT_DAYS)
             bad += not (r[f"Machine's {FOCUS} tickets"] == len(rs) and r['Ticket # on machine'] == i
-                        and near(r[f'Days since previous {FOCUS} ticket'], prev) and near(to_next, nxt)
-                        and all(r[f'Another within {d} days'] == ('Yes' if to_next is not None and to_next <= d
-                                                                   else 'No') for d in REPEAT_DAYS))
+                        and near(r[f'Days since previous {FOCUS} ticket'], prev) and near(to_next, nxt) and flags)
     return bad, len(machines)
 
 
