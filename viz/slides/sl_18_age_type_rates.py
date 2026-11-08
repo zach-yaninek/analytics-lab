@@ -30,7 +30,7 @@ PNG = 'sl_18_age_type_rates.png'
 TERMS = ['rate_ratio_crude', 'interval', 'crude', 'rate', 'under4', 'request_group']
 ALL = 'All unplanned tickets'
 GAP = 0.5                  # extra space between the All row and the groups (rows)
-X_LO, X_HI = 0.42, 15      # x limits (log scale); the value columns sit right of every bar
+X_LO, X_HI = 0.42, 18      # x limits (log scale); the value columns sit right of every bar
 RATES_AT = -48             # right edge of the Per 100 column, in points from the axes' right edge (Ratio: the edge)
 TICKS = [0.5, 1, 2, 4]
 PIN_U4 = 'A1: under-4 rate per 100 (slide 4: 3,629 / 45,103.38)'
@@ -47,7 +47,10 @@ def plot(out_dir=S.FIG_DIR):
     d = t[t.level == 'group'].sort_values(['rate_ratio', 'type'], ascending=[True, False]).reset_index(drop=True)
     a = t[t.level == 'all'].iloc[0]
     s = T.summary()
-    pins = {c['check']: c['actual'] for c in s['checks']['list']}
+    pins = {c['check']: c['expected'] for c in s['checks']['list']}
+    used = (PIN_U4, PIN_P4, 'pin fx_summary tickets', 'pin fx_summary machines_exposed')
+    S.check('sl_18 the pins it reads passed in followups.py', len(used),
+            sum(c['status'] == 'PASS' for c in s['checks']['list'] if c['check'] in used))
     S.check('sl_18 ten request groups', 10, len(d))
     S.check('sl_18 the groups are the summary\'s ten', 1, int(sorted(d.type) == sorted(s['definitions']['groups'])))
     S.check('sl_18 one all row', 1, int((t.level == 'all').sum() == 1 and a.type == ALL))
@@ -100,10 +103,10 @@ def plot(out_dir=S.FIG_DIR):
                 gid=r.type)
         ax.scatter(ratio, y, s=90, color=colour, zorder=3, edgecolor=S.WHITE, linewidth=1.5, gid=r.type)
         label = f'{ratio:.2f}'
-        rates = f'{u:.2f} / {p:.2f}'
+        rates = f'{u:.3f} / {p:.3f}'             # 3 decimals: the small types' rates then give their ratios
         S.check(f'sl_18 {r.type} label {label}', ratio, float(label), 0.005)
-        S.check(f'sl_18 {r.type} label {rates}: under 4', u, float(rates.split(' / ')[0]), 0.005)
-        S.check(f'sl_18 {r.type} label {rates}: 4+', p, float(rates.split(' / ')[1]), 0.005)
+        S.check(f'sl_18 {r.type} label {rates}: under 4', u, float(rates.split(' / ')[0]), 0.0005)
+        S.check(f'sl_18 {r.type} label {rates}: 4+', p, float(rates.split(' / ')[1]), 0.0005)
         values.append((r.type, [
             ax.text(1, y, label, transform=yax, va='center', ha='right', fontsize=S.SMALL,
                     color=S.INK if sig else S.INK2, weight='bold' if sig else 'normal'),
@@ -156,12 +159,23 @@ def plot(out_dir=S.FIG_DIR):
     lab_all = ax.get_yticklabels()[-1]
     lab_all.set_fontweight('bold')
     lab_all.set_color(S.INK)
-    ax.set_ylim(-1.3, y_all + 1.35)
+    # Each row's label and numbers belong to the bar in its row, with the CSV's values.
+    ylab = {round(float(tk), 6): lab.get_text() for tk, lab in zip(ax.get_yticks(), ax.get_yticklabels())}
+    S.check('sl_18 drawn: each row label names the bar in its row', 1,
+            int(sorted(ylab.values()) == sorted(csv)
+                and all(ylab.get(round(float(y), 6)) == k for k, (y, r) in csv.items())))
+    S.check("sl_18 drawn: each row's numbers in its row, = its CSV values", 1, int(all(
+        np.isclose(ts[0].get_position()[1], csv[k][0]) and np.isclose(ts[1].get_position()[1], csv[k][0])
+        and abs(float(ts[0].get_text()) - csv[k][1].rate_ratio) <= 0.005
+        and abs(float(ts[1].get_text().split(' / ')[0]) - csv[k][1].under4_rate_per_100) <= 0.0005
+        and abs(float(ts[1].get_text().split(' / ')[1]) - csv[k][1].plus4_rate_per_100) <= 0.0005
+        for k, ts in values)))
+    ax.set_ylim(-1.5, y_all + 1.35)
     S.style_axes(ax, grid='x', baseline=None)
     ax.set_xlabel('Rate ratio, under 4 vs 4+ years (log scale)')
-    notes = [ax.text(0.95, -1.05, '← higher on 4+', ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
+    notes = [ax.text(0.95, -1.1, '← higher on 4+', ha='right', va='center', fontsize=S.SMALL, color=S.INK2,
                      bbox=mask),
-             ax.text(1.05, -1.05, 'higher under 4 →', ha='left', va='center', fontsize=S.SMALL, color=S.INK2,
+             ax.text(1.05, -1.1, 'higher under 4 →', ha='left', va='center', fontsize=S.SMALL, color=S.INK2,
                      bbox=mask)]
     S.definitions(fig, T.items(TERMS))
     layout_checks(fig, ax, bars, dots, values, head, notes)
@@ -195,6 +209,9 @@ def layout_checks(fig, ax, bars, dots, values, head, notes):
     boxes = [Text.get_window_extent(x, r) for x in texts]
     S.check('sl_18 layout: texts touching', 0,
             sum(boxes[i].overlaps(boxes[j]) for i in range(len(boxes)) for j in range(i + 1, len(boxes))))
+    ticks = [Text.get_window_extent(x, r) for x in ax.get_xticklabels() if x.get_text()]
+    S.check('sl_18 layout: the direction note clear of the tick labels (2 pt or more)', 1,
+            int(min(Text.get_window_extent(x, r).y0 for x in notes) - max(b.y1 for b in ticks) >= 2 * px))
     every = [x for x in fig.findobj(Text) if x.get_visible() and x.get_text()]
     S.check('sl_18 layout: texts outside the image', 0,
             sum(not (b.x0 >= 0 and b.y0 >= 0 and b.x1 <= fig.bbox.x1 and b.y1 <= fig.bbox.y1)

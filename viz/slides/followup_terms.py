@@ -3,8 +3,8 @@ verification/outputs/followups/ (followups_summary.json and the ag_*/rp_* tables
 same and the numbers are the computed ones.
 
 Each chart declares TERMS (keys below) and calls deck_style.definitions(fig, items(TERMS)); viz/slides/run_all.py
-checks that every declared definition is printed. The unplanned-ticket and repeat wording follows
-viz/zac_notebook/zac_data.py (UNPLANNED_DEFINITION, REPEAT_DEFINITION), shortened for a slide card.
+checks that every declared definition is printed. The repeat wording follows viz/zac_notebook/zac_data.py
+(REPEAT_DEFINITION), shortened for a slide card; 'unplanned' is defined on slide 4 and in docs/09 §3.1.
 """
 import json
 from functools import lru_cache
