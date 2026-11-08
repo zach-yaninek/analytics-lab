@@ -114,12 +114,13 @@ def terms():
     return {
         'under4': ('Under 4 / 4+', "the machine's age at the midpoint of its months on IPA's list (Aug 2025 to Aug "
                    '2026); under 4 = the first three bars of slide 4 (<1, 1-2 and 2-4 years)'),
-        'rate': ('Rate', 'unplanned tickets (all but planned work, cancelled requests and duplicates; No Trouble Found '
-                 'stays in) per 100 installed machine-months: 6,750 tickets on 8,946 listed machines'),
-        'request_group': ('Request type', "the ticket's Category grouped by IPA's Trouble Code; Monitoring = the "
-                          "help desk's “Monitoring – Daily/Poll” tickets; Not categorised = no Category (under the "
-                          'Electronics, Network, Software and Operator Error codes a blank Category keeps that group)'),
+        'rate': ('Rate', 'unplanned tickets per 100 installed machine-months: 6,750 tickets on 8,946 listed machines'),
+        'request_group': ('Request type', "Category grouped by IPA's Trouble Code; Monitoring = “Monitoring – "
+                          'Daily/Poll” tickets; Not categorised = no Category (not under Electronics, Network, '
+                          'Software or Operator Error)'),
         'crude': ('Not adjusted for model', 'most under-4 machines are 2.0 models, so this mixes age with design'),
+        'rate_ratio_crude': ('Ratio', "a type's under-4 rate ÷ its 4+ rate, all models pooled; blue = the interval "
+                             'excludes 1'),
         'share_ratio': ('Share ratio', "a type's share of under-4 machines' tickets ÷ its share of 4+ machines' "
                         f"tickets of the same model, pooled over the {len(sup['support_models'])} models with 100+ "
                         f"machine-months in each age group ({100 * sup['under4_share_support']:.0f}% of under-4 and "

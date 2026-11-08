@@ -410,7 +410,7 @@
 
 | Chart | Shows |
 |---|---|
-| sl_18 | Rates by request type, under 4 vs 4+ |
+| sl_18 | Crude rate ratios by group, under 4 vs 4+ (all models pooled), with the two rates per 100 |
 | sl_19 | Same-model share ratios by group |
 | sl_20 | The same by Category |
 | sl_21 | Where the extra tickets come from |
