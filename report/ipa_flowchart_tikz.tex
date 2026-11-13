@@ -1,0 +1,195 @@
+% IPA analysis flowchart, drawn in TikZ: paste this where the figure belongs. There is no file to upload.
+% 1. Add to the preamble:
+%      \usepackage{tikz}
+%      \usetikzlibrary{arrows.meta}
+%      \usepackage{pdflscape}  % turns the page sideways in the PDF viewer as well as in print
+% 2. The landscape environment starts a new page and ends it. If LaTeX warns "Float too large", lower 0.84
+%    a little: a longer caption needs more room.
+% 3. With margins wider than about 1in (the article class's defaults, for example), the figure prints small and may
+%    not fit: uncomment the \newgeometry and \restoregeometry lines, and add \usepackage{geometry} to the preamble.
+
+% \newgeometry{margin=1in}
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\definecolor{ipacobalt}{HTML}{164BAE}\definecolor{ipateal}{HTML}{177F90}%
+\definecolor{ipagrey}{HTML}{8A8A8A}\definecolor{ipagrid}{HTML}{DEDEDE}\definecolor{ipakey}{HTML}{BDBDBD}%
+\resizebox{!}{0.84\textheight}{%
+\begin{tikzpicture}[x=0.75pt, y=-0.75pt, line join=round,
+  every node/.style={inner sep=0pt, outer sep=0pt},
+  grid/.style={draw=ipagrid, line width=0.75pt},
+  shp/.style={fill=white, draw=black, line width=0.825pt},
+  analysis/.style={shp, line width=1.05pt},
+  focus/.style={shp, draw=ipacobalt, line width=1.65pt},
+  client/.style={shp, draw=ipateal, line width=1.2pt},
+  flow/.style={draw=ipagrey, line width=0.9pt, -{Triangle[length=5.25pt, width=4.2pt]}},
+  spine/.style={draw=ipacobalt, line width=1.275pt, -{Triangle[length=5.25pt, width=4.2pt]}},
+  feedback/.style={draw=ipateal, line width=1.05pt, dash pattern=on 5.25pt off 3pt, -{Triangle[length=5.25pt, width=4.2pt]}},
+  nlabel/.style={anchor=base, font=\fontsize{10.95}{13}\selectfont},
+  nhead/.style={anchor=base, font=\fontsize{10}{12}\selectfont\itshape},
+  ndate/.style={anchor=base, font=\fontsize{9}{11}\selectfont},
+  phase/.style={font=\fontsize{12}{14}\selectfont\bfseries},
+  pdate/.style={font=\fontsize{10}{12}\selectfont},
+  lane/.style={font=\fontsize{9}{11}\selectfont\itshape},
+  keyframe/.style={draw=ipakey, fill=white, line width=0.75pt},
+  keytitle/.style={font=\fontsize{10.95}{13}\selectfont\bfseries},
+  keylabel/.style={font=\fontsize{10.95}{13}\selectfont},
+  keytip/.style={-{Triangle[length=6.75pt, width=6pt]}},
+  keyshp/.style={shp, line width=0.62pt},
+  keyanalysis/.style={shp, line width=0.79pt},
+  keyfocus/.style={shp, draw=ipacobalt, line width=1.24pt},
+  keyclient/.style={shp, draw=ipateal, line width=0.9pt}]
+\useasboundingbox (0,0) rectangle (1408,996);
+% grid: phase columns and rows
+\draw[grid] (112,0) -- (112,996);
+\draw[grid] (370,0) -- (370,996);
+\draw[grid] (628,0) -- (628,996);
+\draw[grid] (886,0) -- (886,996);
+\draw[grid] (1144,0) -- (1144,996);
+\draw[grid] (1402,0) -- (1402,996);
+\draw[grid] (0,82) -- (1408,82);
+\draw[grid] (0,350) -- (1408,350);
+\draw[grid] (0,618) -- (1408,618);
+\draw[grid] (0,804) -- (1408,804);
+\draw[grid] (0,990) -- (1408,990);
+% row labels and phase headers
+\node[phase, anchor=base west] at (124,24) {1};
+\node[phase, anchor=base west] at (142,24) {First findings};
+\node[pdate, anchor=base west] at (142,46) {Oct 12th--14th, 2026};
+\node[phase, anchor=base west] at (382,24) {2};
+\node[phase, anchor=base west] at (400,24) {Installed-base rates};
+\node[pdate, anchor=base west] at (400,46) {Oct 19th--21st, 2026};
+\node[phase, anchor=base west] at (640,24) {3};
+\node[phase, anchor=base west] at (658,24) {Codes before tickets};
+\node[pdate, anchor=base west] at (658,46) {Oct 22nd, 2026};
+\node[phase, anchor=base west] at (898,24) {4};
+\node[phase, anchor=base west] at (916,24) {Follow-up questions};
+\node[pdate, anchor=base west] at (916,46) {Oct 28th--29th, 2026};
+\node[phase, anchor=base west] at (1156,24) {5};
+\node[phase, anchor=base west] at (1174,24) {Electronics cases};
+\node[pdate, anchor=base west] at (1174,46) {Oct 30th -- Nov 8th, 2026};
+\node[lane, anchor=base west] at (4,212.5) {IPA meetings and};
+\node[lane, anchor=base west] at (4,229.5) {data};
+\node[lane, anchor=base west] at (4,480.5) {Fleet and};
+\node[lane, anchor=base west] at (4,497.5) {machine analyses};
+\node[lane, anchor=base west] at (4,707.5) {Ticket--telemetry};
+\node[lane, anchor=base west] at (4,724.5) {link};
+\node[lane, anchor=base west] at (4,893.5) {IPA's follow-up};
+\node[lane, anchor=base west] at (4,910.5) {questions};
+% arrows
+\draw[flow] (350,125.7) -- (365,125.7) .. controls (368.3,125.7) and (370,127.4) .. (370,130.7) -- (370,384.5) .. controls (370,387.8) and (368.3,389.5) .. (365,389.5) -- (352,389.5); % ipa_case_export -> fl_ownership
+\draw[flow] (350,142.3) -- (361,142.3) .. controls (364.3,142.3) and (366,144) .. (366,147.3) -- (366,656.7) .. controls (366,660) and (364.3,661.7) .. (361,661.7) -- (352,661.7); % ipa_case_export -> ln_clocks
+\draw[flow] (350,207.7) -- (369,207.7) .. controls (372.3,207.7) and (374,209.4) .. (374,212.7) -- (374,397) .. controls (374,400.3) and (372.3,402) .. (369,402) -- (352,402); % ipa_telemetry -> fl_ownership
+\draw[flow] (350,224.3) -- (357,224.3) .. controls (360.3,224.3) and (362,226) .. (362,229.3) -- (362,732) .. controls (362,735.3) and (360.3,737) .. (357,737) -- (352,737); % ipa_telemetry -> ln_first_look
+\draw[feedback] (350,298) -- (373,298) .. controls (376.3,298) and (378,299.7) .. (378,303) -- (378,742) .. controls (378,745.3) and (376.3,747) .. (373,747) -- (352,747); % ipa_meeting_oct13 -> ln_first_look
+\draw[flow] (608,216) -- (623,216) .. controls (626.3,216) and (628,217.7) .. (628,221) -- (628,384.5) .. controls (628,387.8) and (626.3,389.5) .. (623,389.5) -- (610,389.5); % ipa_installed_base -> fl_fleet_rates
+\draw[spine] (350,414.5) -- (365,414.5) .. controls (368.3,414.5) and (370,416.2) .. (370,419.5) -- (370,479) .. controls (370,482.3) and (371.7,484) .. (375,484) -- (388,484); % fl_ownership -> fl_customer_rates
+\draw[spine] (608,402) -- (623,402) .. controls (626.3,402) and (628,403.7) .. (628,407) -- (628,470.7) .. controls (628,474) and (626.3,475.7) .. (623,475.7) -- (610,475.7); % fl_fleet_rates -> fl_customer_rates
+\draw[spine] (608,492.3) -- (623,492.3) .. controls (626.3,492.3) and (628,494) .. (628,497.3) -- (628,561) .. controls (628,564.3) and (626.3,566) .. (623,566) -- (610,566); % fl_customer_rates -> fl_outliers
+\draw[spine] (350,484) -- (369,484) .. controls (372.3,484) and (374,485.7) .. (374,489) -- (374,561) .. controls (374,564.3) and (375.7,566) .. (379,566) -- (388,566); % fl_high_ticket -> fl_outliers
+\draw[flow] (350,678.3) -- (361,678.3) .. controls (364.3,678.3) and (366,680) .. (366,683.3) -- (366,752) .. controls (366,755.3) and (364.3,757) .. (361,757) -- (352,757); % ln_clocks -> ln_first_look
+\draw[flow] (350,767) -- (361,767) .. controls (364.3,767) and (366,768.7) .. (366,772) -- (366,799) .. controls (366,802.3) and (367.7,804) .. (371,804) -- (623,804) .. controls (626.3,804) and (628,802.3) .. (628,799) -- (628,716) .. controls (628,712.7) and (629.7,711) .. (633,711) -- (646,711); % ln_first_look -> ln_results
+\draw[flow] (608,414.5) -- (619,414.5) .. controls (622.3,414.5) and (624,416.2) .. (624,419.5) -- (624,803) .. controls (624,806.3) and (625.7,808) .. (629,808) -- (881,808) .. controls (884.3,808) and (886,809.7) .. (886,813) -- (886,851) .. controls (886,854.3) and (887.7,856) .. (891,856) -- (904,856); % fl_fleet_rates -> fu_types
+\draw[flow] (350,566) -- (365,566) .. controls (368.3,566) and (370,567.7) .. (370,571) -- (370,795) .. controls (370,798.3) and (371.7,800) .. (375,800) -- (877,800) .. controls (880.3,800) and (882,801.7) .. (882,805) -- (882,933) .. controls (882,936.3) and (883.7,938) .. (887,938) -- (904,938); % fl_repeats -> fu_repeats
+\draw[feedback] (1124,207.7) -- (1139,207.7) .. controls (1142.3,207.7) and (1144,209.4) .. (1144,212.7) -- (1144,838.5) .. controls (1144,841.8) and (1142.3,843.5) .. (1139,843.5) -- (1126,843.5); % ipa_questions -> fu_types
+\draw[feedback] (1124,224.3) -- (1143,224.3) .. controls (1146.3,224.3) and (1148,226) .. (1148,229.3) -- (1148,924.7) .. controls (1148,928) and (1146.3,929.7) .. (1143,929.7) -- (1126,929.7); % ipa_questions -> fu_repeats
+\draw[flow] (1124,856) -- (1135,856) .. controls (1138.3,856) and (1140,854.3) .. (1140,851) -- (1140,212.7) .. controls (1140,209.4) and (1141.7,207.7) .. (1145,207.7) -- (1162,207.7); % fu_types -> ipa_meeting_oct30
+\draw[flow] (1124,946.3) -- (1131,946.3) .. controls (1134.3,946.3) and (1136,944.6) .. (1136,941.3) -- (1136,229.3) .. controls (1136,226) and (1137.7,224.3) .. (1141,224.3) -- (1162,224.3); % fu_repeats -> ipa_meeting_oct30
+\draw[flow] (1124,868.5) -- (1139,868.5) .. controls (1142.3,868.5) and (1144,870.2) .. (1144,873.5) -- (1144,892) .. controls (1144,895.3) and (1145.7,897) .. (1149,897) -- (1162,897); % fu_types -> fu_electronics
+\draw[feedback] (1382,216) -- (1397,216) .. controls (1400.3,216) and (1402,217.7) .. (1402,221) -- (1402,892) .. controls (1402,895.3) and (1400.3,897) .. (1397,897) -- (1384,897); % ipa_meeting_oct30 -> fu_electronics
+% steps
+\draw[shp] (142,100) -- (350,100) -- (340,168) -- (132,168) -- cycle; % ipa_case_export
+\node[nlabel] at (241,122.5) {Service case export};
+\node[nhead] at (241,138.5) {7,471 tickets};
+\node[ndate] at (241,160) {Aug 2025 -- Aug 2026};
+\draw[shp] (142,182) -- (350,182) -- (340,250) -- (132,250) -- cycle; % ipa_telemetry
+\node[nlabel] at (241,204.5) {Telemetry database};
+\node[nhead] at (241,220.5) {118 million transactions};
+\node[ndate] at (241,242) {Aug 2025 -- Aug 2026};
+\draw[client] (241,298) ellipse [x radius=109, y radius=34]; % ipa_meeting_oct13
+\node[nlabel] at (241,286.5) {IPA meeting, Oct 13th};
+\node[nhead] at (241,302.5) {Clock and field answers};
+\node[ndate] at (241,324) {Oct 13th};
+\draw[shp] (400,182) -- (608,182) -- (598,250) -- (390,250) -- cycle; % ipa_installed_base
+\node[nlabel] at (499,204.5) {Installed-base list};
+\node[nhead] at (499,220.5) {9,294 active machines};
+\node[ndate] at (499,242) {Oct 19th};
+\draw[client] (1015,216) ellipse [x radius=109, y radius=34]; % ipa_questions
+\node[nlabel] at (1015,204.5) {Questions on slides 4--5};
+\node[nhead] at (1015,220.5) {Two questions};
+\node[ndate] at (1015,242) {By Oct 28th};
+\draw[client] (1273,216) ellipse [x radius=109, y radius=34]; % ipa_meeting_oct30
+\node[nlabel] at (1273,204.5) {IPA meeting, Oct 30th};
+\node[nhead] at (1273,220.5) {Which Electronics cases?};
+\node[ndate] at (1273,242) {Oct 30th};
+\draw[focus] (132,368) rectangle (350,436); % fl_ownership
+\node[nlabel] at (241,390.5) {Customer fleet ownership};
+\node[nhead] at (241,406.5) {Tickets can't define fleets};
+\node[ndate] at (241,428) {Oct 12th};
+\draw[focus] (132,450) rectangle (350,518); % fl_high_ticket
+\node[nlabel] at (241,472.5) {High-ticket machines};
+\node[nhead] at (241,488.5) {113 chronic outliers};
+\node[ndate] at (241,510) {Oct 14th};
+\draw[focus] (132,532) rectangle (350,600); % fl_repeats
+\node[nlabel] at (241,554.5) {Repeat tickets};
+\node[nhead] at (241,570.5) {23.6\% in 30 days, 9.5\% in a week};
+\node[ndate] at (241,592) {Oct 12th};
+\draw[focus] (390,368) rectangle (608,436); % fl_fleet_rates
+\node[nlabel] at (499,390.5) {Rates by model and age};
+\node[nhead] at (499,406.5) {Fleet: 6.2 per 100};
+\node[ndate] at (499,428) {Oct 21st};
+\draw[focus] (390,450) rectangle (608,518); % fl_customer_rates
+\node[nlabel] at (499,472.5) {Customers vs their fleets};
+\node[nhead] at (499,488.5) {63 above their fleets};
+\node[ndate] at (499,510) {Oct 21st};
+\draw[focus] (390,532) rectangle (608,600); % fl_outliers
+\node[nlabel] at (499,554.5) {Persistence and outliers};
+\node[nhead] at (499,570.5) {18 consistent outliers};
+\node[ndate] at (499,592) {Oct 21st};
+\draw[analysis] (132,636) rectangle (350,704); % ln_clocks
+\node[nlabel] at (241,658.5) {Ticket clock and fields};
+\node[nhead] at (241,674.5) {One US Eastern clock};
+\node[ndate] at (241,696) {Oct 12th};
+\draw[analysis] (132,718) rectangle (350,786); % ln_first_look
+\node[nlabel] at (241,740.5) {First look at codes};
+\node[nhead] at (241,756.5) {Door codes 68\% vs 61\%};
+\node[ndate] at (241,778) {Oct 14th};
+\draw[analysis] (648,677) rectangle (866,745); % ln_results
+\node[nlabel] at (757,699.5) {Association results};
+\node[nhead] at (757,715.5) {Own codes at 3.2$\times$ the odds};
+\node[ndate] at (757,737) {Oct 22nd};
+\draw[analysis] (906,822) rectangle (1124,890); % fu_types
+\node[nlabel] at (1015,844.5) {Request types by age};
+\node[nhead] at (1015,860.5) {Mostly the same problems};
+\node[ndate] at (1015,882) {Oct 29th};
+\draw[analysis] (906,904) rectangle (1124,972); % fu_repeats
+\node[nlabel] at (1015,926.5) {Repeat-contact pairings};
+\node[nhead] at (1015,942.5) {31\% same Category};
+\node[ndate] at (1015,964) {Oct 29th};
+\draw[analysis] (1164,863) rectangle (1382,931); % fu_electronics
+\node[nlabel] at (1273,885.5) {Electronics cases};
+\node[nhead] at (1273,901.5) {Touchscreen connectors};
+\node[ndate] at (1273,923) {Nov 8th};
+% key
+\draw[keyframe] (736,378) rectangle (1028.2,590.7);
+\node[keytitle, anchor=base west] at (753,400.6) {Key};
+\draw[keyshp] (770,415.1) -- (789.5,415.1) -- (782,428.6) -- (762.5,428.6) -- cycle;
+\node[keylabel, anchor=base west] at (808,426.1) {IPA's data};
+\draw[keyfocus] (762.5,441.1) rectangle (789.5,454.6);
+\node[keylabel, anchor=base west] at (808,452.1) {fleet and machine analysis};
+\draw[keyanalysis] (762.5,467.1) rectangle (789.5,480.6);
+\node[keylabel, anchor=base west] at (808,478.1) {other analysis};
+\draw[keyclient] (776,499.9) ellipse [x radius=13.5, y radius=6.75];
+\node[keylabel, anchor=base west] at (808,504.1) {IPA meeting or question};
+\draw[spine, keytip] (754,524.4) -- (798,524.4);
+\node[keylabel, anchor=base west] at (808,528.5) {fleet step feeds the next};
+\draw[flow, keytip] (754,547.3) -- (798,547.3);
+\node[keylabel, anchor=base west] at (808,551.4) {feeds};
+\draw[feedback, keytip] (754,570.2) -- (798,570.2);
+\node[keylabel, anchor=base west] at (808,574.4) {IPA question or answer drives};
+\end{tikzpicture}}
+\caption{How the IPA analysis fits together, October 12th to November 8th, 2026. Rows are kinds of work and columns are phases in time order; each arrow shows what a step took from an earlier one. Cobalt marks the fleet and machine analyses and the arrows between them, grey arrows feed a step, and dashed teal arrows carry an IPA question or answer. To keep the chart readable, each of IPA's data sources has arrows only to the steps that use it most directly.}
+\label{fig:ipa-flowchart}
+\end{figure}
+\end{landscape}
+% \restoregeometry

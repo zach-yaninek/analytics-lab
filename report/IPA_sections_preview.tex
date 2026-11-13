@@ -1,0 +1,12 @@
+% Compiles the report's Methods, Results, flowchart figure, and Definitions together, as a length and layout check.
+% Build: pdflatex IPA_sections_preview.tex (twice, for the figure reference). 11 pt, US letter, 1-inch margins.
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{pdflscape}
+\begin{document}
+\input{ipa_methods_results.tex}
+\input{ipa_flowchart_tikz.tex}
+\input{ipa_definitions_short.tex}
+\end{document}

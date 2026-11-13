@@ -1,0 +1,91 @@
+% Definitions for the IPA report: replaces the whole earlier Definitions block (environment, heading, and list).
+% No extra packages. The text refers to the flowchart as Figure~\ref{fig:ipa-flowchart}.
+
+% A glossary list: each term starts its paragraph in bold, with a hanging indent so long terms wrap normally.
+% It is set in \small to save about half a page; delete \small below for full-size text.
+\newenvironment{ipadefs}{\small\begin{list}{}{\setlength{\leftmargin}{1.5em}\setlength{\itemindent}{-1.5em}%
+  \setlength{\labelwidth}{0pt}\setlength{\itemsep}{0.4ex plus 0.3ex}%
+  \setlength{\parsep}{0.4ex plus 0.2ex}\setlength{\emergencystretch}{1.5em}}}{\end{list}}
+
+\section*{Definitions}
+We define the terms used in the Methods and Results, grouped by the rows of Figure~\ref{fig:ipa-flowchart}. Statistical methods are named in brackets.
+
+\subsection*{IPA meetings and data}
+\begin{ipadefs}
+\item \textbf{Service case (ticket):} One row of IPA's case export, one Case Number: 7,471 cases opened Aug 1st, 2025, to Aug 31st, 2026.
+\item \textbf{Unplanned ticket:} Every case except three kinds, leaving 7,186:
+\begin{itemize}
+\item Planned work: Trouble Code Preventative Maintenance or Installation, or Case Record Type Install Case (23)
+\item Canceled requests: Category Cancelled Request (247)
+\item Duplicates: Category Duplicate Case (15)
+\end{itemize}
+\par No Trouble Found, blank-Trouble-Code, and monitoring tickets are considered.
+\item \textbf{Trouble Code, Category,} and \textbf{Sub Category:} The export's three issue fields. It only holds each field's final value.
+\begin{itemize}
+\item \textbf{Trouble Code} is the top level (10 values, such as Electro/Mechanical, Electronics, and Network). IPA said it is entered at intake and may change by close.
+\item \textbf{Category} (41 values, such as Deposit Door, SAM, and Touchscreen) is set near close.
+\item \textbf{Sub Category} is also set near close and mostly records the repair action.
+\end{itemize}
+\item \textbf{Account, Machine,} and \textbf{Model:}
+\begin{itemize}
+\item \textbf{Account} is the case's Account Name (845, each with one City, State, and ZIP address).
+\item \textbf{Machine} is a serial number. It is the Serial \# on the Salesforce case history, the Serial Number on the fleet list, and the device ID in telemetry. We matched them as exact text after trimming spaces. 3,773 serials have tickets.
+\item \textbf{Model} is the case's Model \# (31 models) or the list's Model (34). They agree on all 7,018 matched tickets.
+\end{itemize}
+\item \textbf{The install-base list, matched:} IPA's active equipment list as of Oct 19th, 2026: 9,294 machines at 1,066 accounts, with 34 models.
+\begin{itemize}
+\item It holds only machines active on that date, so machines removed during the period are missing (433 unplanned tickets on 226 serials).
+\item A ticket is matched when its serial is on the list: 7,018 of 7,471 (93.9\%).
+\end{itemize}
+\item \textbf{The telemetry database, device, codes,} and \textbf{telemetry type:} clearView's transaction log: 118,047,569 transactions from Aug 1st, 2025, to Aug 28th, 2026, each with a time and one of 49 codes.
+\begin{itemize}
+\item \textbf{Device} is a row of the device table (7,183); 6,951 logged a transaction.
+\item \textbf{Codes:} 00 is OK. Any other code is \textbf{non-success} (6.7\% of transactions, mostly stock-outs and door events), so non-success doesn't mean a fault.
+\item \textbf{Telemetry type} is the device's clearView machine type (blank = Unknown).
+\end{itemize}
+\item \textbf{Midterm analysis:} The SQL notebook of Oct 10th, 2026, on the case export and the full clearView database. Our work began by reproducing it.
+\end{ipadefs}
+
+\subsection*{Fleet and machine analyses}
+\begin{ipadefs}
+\item \textbf{The fleet} and \textbf{a customer's fleet:} The fleet is every machine on IPA's list with installed time in the period, except the 239 on the third-party Vogeltronix plan, whose service rarely reaches this export, and the 109 installed after the period: 8,946 machines and 109,621 installed machine-months. A customer's fleet is its machines in the fleet. In the repeat comparisons, the fleet is all 6,665 eligible tickets.
+\item \textbf{Accounts are individual facilities:} The 845 accounts sit at 725 distinct City, State, and 5-digit ZIP combinations, or 837 distinct addresses. Parent health systems are not in the data.
+\item \textbf{Top 5\% by unplanned tickets:} Rank the 3,685 machines with an unplanned ticket in the export. The cut is the 185th machine's count, 5 tickets, ties included: 247 machines.
+\item \textbf{Rate outlier:} A device with improbably many unplanned tickets (Aug 1st, 2025--Jul 31st, 2026) for its type's rate $\times$ its months active [one-sided exact Poisson test; Benjamini--Hochberg q $<$ 0.05]. Months active are the calendar months from its first to its last transaction in that window. Devices on IPA's shared internal host or with no host are removed, leaving 6,621.
+\item \textbf{Chronic outlier:} In the top 5\% and a rate outlier: 113 machines at 82 customers. We use it as a screening flag.
+\item \textbf{Rise in non-success codes:} Take non-success codes per 1,000 transactions in the 30 days before each unplanned ticket that has a clean comparison window. The rise is the median of those windows minus the median of the comparison windows: +20.3 for chronic outliers, +21.6 for other top-5\% machines, and +21.5 for all other machines.
+\item \textbf{Installed machine-month:} For a fleet machine: time from the later of Aug 1st, 2025, and its install date to Sep 1st, 2026, in months of 30.4375 days. Partial months count.
+\item \textbf{Raw} and \textbf{age for age:} A model's raw ratio is its rate $\div$ the fleet's. Age for age divides its tickets by those its machines would have at the fleet's age-band rates [indirect standardization; Poisson main-effects model].
+\item \textbf{Machine age} and \textbf{under 4 years:} Age is the years from install to the midpoint of its installed time in the period, or of each half for the two halves. Under 4 years (young) means installed after about Feb 15th, 2022.
+\item \textbf{Customer} and \textbf{expected tickets:} A customer is the machine's account on IPA's list (for chronic outliers, the account named most often on its tickets). A machine's expected tickets are its machine-months $\times$ the fleet's base rate $\times$ a model factor $\times$ an age-band factor [Poisson main-effects model], and a customer's are the sum over its machines.
+\item \textbf{Beyond chance} and \textbf{normal spread:} Beyond chance means at least 5 tickets and a count improbably high for the expected tickets [one-sided exact Poisson test; Benjamini--Hochberg q $<$ 0.05], and we use it as a screening flag. Outside the normal spread means above the 99.8\% limit of a funnel plot widened by the spread between customers [overdispersion-adjusted funnel plot].
+\item \textbf{The two halves:} Aug 1st, 2025, to Feb 14th, 2026, and Feb 15th to Aug 31st, 2026. The rank correlation covers the 311 customers expected to have at least 3 tickets in each.
+\item \textbf{Consistent outlier:} Flagged beyond chance under at least 10 of 12 variations of the method and above expected in each half [one-sided Poisson test, p $<$ 0.05]. The variations cross three choices of expected tickets, tickets or 7-day episodes (runs with no gap over 7 days), and all tickets or tickets without monitoring and No Trouble Found.
+\item \textbf{Eligible ticket} and \textbf{repeat:} An eligible ticket is an unplanned ticket opened before Aug 2nd, 2026, so it has 30 days of the export after it. It is a repeat when the machine's next unplanned ticket opens within 30 days. A repeat contact is not necessarily a failed repair.
+\item \textbf{Monitoring ticket:} A Monitoring -- Daily/Poll template ticket, found from its Trouble Reported text (138 tickets of any kind). The 22.0\% removes them from each machine's sequence.
+\item \textbf{Random timing:} Each machine's unplanned tickets spread uniformly at random over its own time in the period [exact calculation; Monte Carlo check].
+\end{ipadefs}
+
+\subsection*{Ticket--telemetry link}
+\begin{ipadefs}
+\item \textbf{Case clock} and \textbf{telemetry clock:} Case times are US Eastern with daylight saving, as IPA confirmed on Oct 13th, and telemetry times are UTC. We convert ticket times to UTC before measuring any window.
+\item \textbf{Last 10 codes} and \textbf{comparison window:} The last 10 codes are the 10 most recent distinct non-success codes in the 30 days before the ticket. The comparison window is the same machine's 30 days ending 35 days before the ticket. It is clean when the machine has no other ticket 5 to 67 days before the ticket.
+\item \textbf{Paired tickets} and \textbf{main group:} Paired tickets are the 3,259 device-matched unplanned tickets with a clean comparison window, both windows inside the telemetry period, and neither before the machine's first transaction. The association study's main group drops the 309 with another ticket in the 5 days before or a window outside the machine's telemetry, leaving 2,950.
+\item \textbf{Door} and \textbf{electronics codes:} The midterm's provisional groups: door codes 15, 20, 26, 27, 30, 41--48, 56--59, 79, 80, and 81, and electronics codes 05, 13, and 25. Door-named codes 02, 11, 19, 31, 60, 61, and 78 are in other groups.
+\item \textbf{Code set, own codes,} and \textbf{crosswalk:} A code set is the clearView codes the crosswalk assigns to a Category, and a ticket's own codes are its Category's set. Three independent drafters (separate AI agents) wrote the crosswalk without seeing any ticket-to-code data, and we froze it on Oct 22nd. It stays provisional until IPA confirms the code meanings.
+\item \textbf{Other faults' tickets:} Tickets whose own set shares no code with the set tested, on types that log it.
+\item \textbf{3.2 times the odds:} Only main-group pairs on types that log the set, with the set in the final 7 days of exactly one window, count. The ratio is pooled over the five sets that could be tested (SAM, User Door, Deposit Door, Main Door, and Computer Board), whose own tickets have at least 10 such pairs and both parts of the ratio non-zero [Mantel--Haenszel; one-sided permutation test, p = 0.0005; cluster bootstrap]. Each set's ratio is descriptive; Main Door's interval starts at 1.01, and Computer Board's includes 1.
+\item \textbf{Sensitivity checks:} Planned re-runs with other populations and windows. The pooled 7-day ratio stays between 2.33 and 3.55, with its interval above 1, in every check run so far that gives one.
+\item \textbf{Scrubex machines:} Machines on clearView telemetry types named scrubex, which carry 1,402 of the 1,439 tickets whose Category has a code set their type logs (97\%).
+\end{ipadefs}
+
+\subsection*{IPA's follow-up questions}
+\begin{ipadefs}
+\item \textbf{Request group:} One of ten groups fixed in advance: Monitoring for any monitoring ticket, and otherwise a group set from Trouble Code and Category by a lookup table (Electronics, Network, Software, Operator error, Door, Mechanical, Other, No Trouble Found, or Not categorized).
+\item \textbf{Within model} and \textbf{share ratio:} Within-model comparisons use the 15 models with at least 100 installed machine-months in each age group. A group's share ratio is its share of a model's young-machine tickets $\div$ its share of the model's older-machine tickets, pooled over the 15 models [Mantel--Haenszel].
+\item \textbf{Tests} and \textbf{descriptive results:} We tested the within-model mix of request groups first [permutation test], then each group [Benjamini--Hochberg], and Mechanical and Electronics pass. Category-level results, such as Touchscreen's, are descriptive, because a preview of Category shares by age was seen while planning.
+\item \textbf{Extra tickets} and \textbf{the 80\%:} Extra tickets are young machines' tickets minus their machine-months $\times$ the older machines' rate. Young machines running above older ones of the same model give 1,156 of the 1,447 (80\%), and model mix gives most of the rest.
+\item \textbf{Install-year cohorts:} The install years 2016--18, 2019--21, 2022--23, and 2024--26, on the 15 comparison models. We chose them and found the 2022 step after seeing the data, so both are descriptive.
+\item \textbf{Repeat classes:} Each repeat takes the first class that applies: a monitoring ticket involved, No Trouble Found involved, a blank Category, the same Category, the same request group, or a different group.
+\item \textbf{Clearly stands out:} A model's or telemetry type's observed $\div$ random-timing repeats, divided by the fleet's 1.53, has a 95\% interval that excludes 1 [cluster bootstrap] and survives correction for testing 12 models or 11 types [Benjamini--Hochberg q $<$ 0.05].
+\end{ipadefs}

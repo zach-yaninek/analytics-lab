@@ -55,6 +55,10 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
 - `verification/outputs/`: pseudonymous aggregate outputs.
+- `report/`: LaTeX for the written report, ready to paste into Overleaf: `ipa_methods_results.tex` (Methods and
+  Results, one paragraph per flowchart step), `ipa_definitions_short.tex` (the glossary they rely on),
+  `ipa_flowchart_tikz.tex` (the analysis flowchart as a landscape TikZ figure, `fig:ipa-flowchart`), and
+  `IPA_sections_preview.tex`, which compiles the three together into `IPA_sections_preview.pdf` (11 pt, letter).
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
   machine.
 

@@ -13,3 +13,7 @@ deliverables/
 *.zip
 *.sqlite
 __pycache__/
+# LaTeX build files
+report/*.aux
+report/*.log
+report/*.out
