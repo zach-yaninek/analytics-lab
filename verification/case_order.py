@@ -11,9 +11,10 @@ consecutive case numbers:
 It uses two maps from hospital location to time zone: timestamp_semantics.py's (the state, with 3-digit ZIP rules for
 the states that span two zones; verification/zones.py) and the state alone.
 
-docs/04 §2.1 reports 1,205-1,312 backward steps on hospital-local clocks. The first map gives 1,312. The 1,205 came
+docs/04 §2.1 reports 1,205-1,312 backward steps on hospital-local clocks, simulated as each time shown locally. Shown
+locally, the first map gives 1,312 and the state alone 1,295; read as local, they give 1,220 and 1,210. The 1,205 came
 from a second-wave reviewer's own zone map, which is recorded only in data/derived/workflowB_result.json (not in the
-repository). The maps here give 1,210-1,312.
+repository).
 
 Checks: 7,471 tickets with unique, all-digit case numbers; every hospital located on both maps; tickets by state and
 zone = ts_zone_mapping.csv (timestamp_semantics.py's); the case pseudonyms T##### run in case-number order.

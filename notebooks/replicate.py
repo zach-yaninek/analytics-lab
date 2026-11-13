@@ -47,6 +47,9 @@ SUMMARY = re.compile(r'checks? pass|^PASS\b|^Done\b', re.IGNORECASE)
 _started = {}
 _private = {}
 
+# Show table cells in full, so the comparison table names every column or key that differs
+pd.set_option('display.max_colwidth', None)
+
 
 def raw_inputs_present():
     """True when IPA's case export and installed-base list are in data/raw/."""
@@ -120,9 +123,8 @@ def _flatten(obj, prefix=''):
 
 
 def _named(kind, names):
-    names = sorted(names)
-    shown = ', '.join(names[:3]) + (f' and {len(names) - 3} more' if len(names) > 3 else '')
-    return f'DIFFERENT ({kind} {shown})'
+    """'DIFFERENT (columns a, b, c)': every column or key that differs."""
+    return f"DIFFERENT ({kind} {', '.join(sorted(names))})"
 
 
 def _same_values(fresh, committed):
