@@ -92,8 +92,8 @@ the clearView host in the telemetry `devices` table supply that ownership?
 ## 3. What we verified from the case export
 
 ### 3.1 `Account Name` is a facility, not a customer system
-**[data]** All 845 accounts have exactly one address string ("City,State ZIP+4" or a Canadian postal code; there
-is no street line). That alone does not prove facility granularity: the address is probably an Account-record
+**[data]** All 845 accounts have exactly one address string ("City,State" and a ZIP code, with or without the +4,
+or a Canadian postal code; there is no street line). That alone does not prove facility granularity: the address is probably an Account-record
 field copied onto every case. The facility reading rests on two other facts. Account names read as individual
 hospitals or campuses, and there are almost as many distinct sites as accounts (837 address strings and 725
 City+State+ZIP5 for 845 accounts). No two labels look like spelling variants of one site: they never collide after

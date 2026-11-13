@@ -29,7 +29,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   corrected clock; also needs the DB), and `high_ticket_machines.py` (local only, reads the committed
   `fu_*`/`db_*` outputs), `fleet_exposure.py` (rates on IPA's installed-base list; local only) and
   `fleet_db_extract.py` (joins telemetry devices to the installed-base list; needs the DB), `association.py` (the
-  association study of docs/07 and docs/08; committed outputs only) with its crosswalk in `verification/reference/`,
+  association study of docs/07 and docs/08; committed outputs only, plus the case export for its privacy scan when it
+  is present) with its crosswalk in `verification/reference/`,
   and `flags.py --write` (per-ticket text flags for the association sensitivities; needs the case export), and
   `followups.py` (IPA's follow-ups of docs/09 and docs/10; local only, with its request-type groups in
   `verification/reference/request_types_v0.csv`).
@@ -47,8 +48,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     Word memo from `docs/executive_summary.md`, laid out by `memo_docx.js`), `build_deck_pdf.py` (a PDF of the deck
     with real names, printed by `deck_pdf.js`), `build_electronics_cases.py` (IPA's Electronics case list: an Excel
     workbook of the cases behind slides 4a-4e, with real case numbers and IPA's case notes; `--pseudo OUT_DIR` writes
-    a pseudonymous copy for checking the layout, and `--tables` writes only the counts the report quotes, as
-    aggregate tables in `verification/outputs/electronics/`) and `names.py` (the private name table, and same-length placeholder
+    a pseudonymous copy for checking the layout, and `--tables` writes only the aggregate tables the replication
+    notebooks read, labels and counts with no workbook, to `verification/outputs/electronics/`) and `names.py` (the private name table, and same-length placeholder
     names for checking layouts without looking at real ones). The code is committed; its outputs never are.
     `followups_pptx.js` builds the follow-up PowerPoint (slides 4.1-5.4, text in `followups_pptx.json`; no customer
     names) into the same folder; `build_followups_pptx.py` builds its real-name version, which adds the update deck's
@@ -58,14 +59,17 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
 - `verification/outputs/`: pseudonymous aggregate outputs.
 - `report/`: LaTeX for the written report, ready to paste into Overleaf: `ipa_methods_results.tex` (Methods and
-  Results, one paragraph per flowchart step), `ipa_definitions_short.tex` (the glossary they rely on),
-  `ipa_flowchart_tikz.tex` (the analysis flowchart as a landscape TikZ figure, `fig:ipa-flowchart`), and
-  `IPA_sections_preview.tex`, which compiles the three together into `IPA_sections_preview.pdf` (11 pt, letter).
-  `notebooks.bib` holds the Results' citations of the replication notebooks.
+  Results, one paragraph per flowchart step plus Verification), `ipa_definitions_short.tex` (the glossary they rely
+  on), `ipa_flowchart_tikz.tex` (the analysis flowchart as a landscape TikZ figure, `fig:ipa-flowchart`),
+  `notebooks.bib` (the Results' citations of the replication notebooks), and `IPA_sections_preview.tex`, which
+  compiles them together into `IPA_sections_preview.pdf` (11 pt, letter; pdflatex, bibtex, then pdflatex twice).
 - `notebooks/`: the replication notebooks the report's Results cites, one per group of findings
   (`01_customer_fleet_ownership.ipynb` … `08_verification.ipynb`), with their helpers in `replicate.py`. Each
   re-runs the scripts behind its paragraphs on IPA's files, compares every re-created output with the committed one,
-  recomputes each number the report states from the outputs, and checks it against the report's text. The committed
+  recomputes from the outputs each number it can, quotes the committed record where the evidence is a past check
+  (notebook 08) or an answer from IPA (notebook 05), and checks them against the report's text. A number the outputs
+  do not reproduce is shown in a table of its own with the reason: so far only the lower end of the report's
+  1,205–1,312 (notebook 05), which came from a reviewer's zone map that is not in the repository. The committed
   notebooks hold the outputs of a run on IPA's files.
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
   machine.
@@ -87,11 +91,12 @@ python3 -I verification/flags.py
 python3 -I verification/tests/run_fixture_tests.py # self-test of the DB script (~70 s)
 python3 -I verification/verify_with_db.py --db data/raw/ipa_transaction_events_202508_202608.db \
     --xlsx "data/raw/IPA_CaseHistory_Aug 2025-Aug2026.xlsx" --out verification/outputs/db --private data/private/db
-python3 -I verification/high_ticket_machines.py   # ~20 s, no DB; ends by drawing the htm_* figures
-python3 -I verification/fleet_exposure.py         # ~30 s, no DB; installed-base rates and consistent outliers
+python3 -I verification/high_ticket_machines.py   # ~15 s, no DB; ends by drawing the htm_* figures
+python3 -I verification/fleet_exposure.py         # ~35 s, no DB; installed-base rates and consistent outliers
 python3 -I verification/fleet_db_extract.py --db data/raw/ipa_transaction_events_202508_202608.db  # optional
-python3 -I verification/association.py            # ~2 min, no raw data, no DB; association study (docs/07, docs/08)
-python3 -I verification/followups.py              # ~15 s, no DB; IPA follow-ups (docs/09, docs/10)
+python3 -I verification/association.py            # ~70 s, no DB; association study (docs/07, docs/08); reads the
+                                                  # case export only to scan its outputs for real identifiers
+python3 -I verification/followups.py              # ~20 s, no DB; IPA follow-ups (docs/09, docs/10)
 python3 -I verification/tests/test_followups_units.py  # ~20 s; unit tests for followups.py
 python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
 python3 -I viz/run_all.py                                 # redraw the page charts and run their checks
@@ -114,16 +119,19 @@ Open a notebook in Jupyter and run all its cells, or run all eight from the comm
 
 ```bash
 pip install nbconvert ipykernel
-jupyter nbconvert --to notebook --execute --inplace notebooks/0*.ipynb   # about 5 minutes
+jupyter nbconvert --to notebook --execute --inplace notebooks/0*.ipynb   # about 10 minutes
 ```
 
 With `RERUN = True` (the default, in the first code cell), a notebook needs IPA's files in `data/raw/`. It copies
 `verification/outputs/` and `data/private/` to scratch folders and re-runs its scripts there, through the
 `IPA_OUTPUTS`, `IPA_PRIVATE` and `IPA_SKIP_FIGURES` variables that `verification/common.py` and
-`high_ticket_machines.py` read, so nothing in the repository or in `data/` changes. With `RERUN = False`, it
-recomputes the numbers from the committed outputs, without the raw files. The telemetry-database outputs (`db/`,
-`fu/`) are inputs that no notebook re-creates, and notebook 08 reads two commit messages with `git`, so it needs a
-clone with history. A notebook stops with an error if any number differs from the report.
+`high_ticket_machines.py` read, so no committed output, figure, or file in `data/` changes. (With `--inplace`,
+nbconvert saves the new outputs into the notebooks themselves; use `--output-dir` to keep the committed ones.) With
+`RERUN = False`, it recomputes the numbers from the committed outputs, without the raw files, in under a minute for
+all eight. The telemetry-database outputs (`db/`, `fu/`) and `audit_case_logic.py`'s `audit_case_*.csv` (that script
+also needs a file in `data/derived/`) are inputs that no notebook re-creates. Notebook 08 reads two commit messages
+and the association tables at commit 472f27b with `git`, so it needs a clone with history. A notebook stops with an
+error if any number in its check table differs from the report.
 
 The real-name deliverables also need `data/private/fx_private_customer_names.csv` (written by `fleet_exposure.py`),
 the real-name charts (drawn by `viz/run_all.py` and `viz/slides/run_all.py`), pandoc 3, and Node with the `docx`,

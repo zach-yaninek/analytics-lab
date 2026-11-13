@@ -8,12 +8,15 @@ Each notebook replicates one group of findings in the report's Results section:
    scratch copy of data/private/ (IPA_PRIVATE), and high_ticket_machines.py skips its figures (IPA_SKIP_FIGURES), so
    nothing in the repository or in data/ changes. The scratch folders are deleted when the notebook's kernel exits.
 2. It lists every file the re-run wrote and whether it matches the committed file of the same name.
-3. It recomputes each number the report states from those tables and checks it against the report's text.
+3. It recomputes from those tables each number it can, quotes the committed record where the evidence is a past check
+   or an answer from IPA, and checks them against the report's text in a final table (check), which stops the
+   notebook if any value in it differs. A number that the outputs do not reproduce is shown in a table of its own,
+   with the reason, and left out of the check.
 
 With RERUN = False, a notebook skips steps 1 and 2 and recomputes the numbers from the committed outputs.
 
-The notebooks read only pseudonymous, aggregate tables. The raw files are read by the scripts, in a separate process,
-so real names never enter the notebook.
+The notebooks read only pseudonymous tables (some with one row per ticket or device), committed documents, and git
+history. The raw files are read by the scripts, in a separate process, so real names never enter the notebook.
 """
 import atexit
 import filecmp
@@ -47,8 +50,10 @@ SUMMARY = re.compile(r'checks? pass|^PASS\b|^Done\b', re.IGNORECASE)
 _started = {}
 _private = {}
 
-# Show table cells in full, so the comparison table names every column or key that differs
+# Show table cells in full and tables of up to 100 rows whole, so the comparison table names every file, column, and
+# key that differs
 pd.set_option('display.max_colwidth', None)
+pd.set_option('display.max_rows', 100)
 
 
 def raw_inputs_present():
@@ -94,7 +99,8 @@ def rerun(out, script, *args, timeout=7200):
     start = time.time()
     proc = subprocess.run([sys.executable, '-I', str(path), *args], cwd=ROOT, env=env, capture_output=True, text=True,
                           timeout=timeout)
-    print(f'{script} {" ".join(args)}'.strip() + f': exit status {proc.returncode}, {time.time() - start:.0f} s')
+    shown = ' '.join(str(a).replace(str(out), 'OUT') for a in args)  # the scratch folder's name changes every run
+    print(f'{script} {shown}'.strip() + f': exit status {proc.returncode}, {time.time() - start:.0f} s')
     summary = [line.strip() for line in proc.stdout.splitlines() if SUMMARY.search(line.strip())]
     for line in summary[-1:]:
         print('   ', line)
@@ -177,8 +183,11 @@ def compare(out):
     if table.empty:
         print('The re-run wrote no files.')
         return table
-    counts = table['compared with the committed file'].str.split(' (', n=1, regex=False).str[0].value_counts()
+    status = table['compared with the committed file']
+    counts = status.str.split(' (', n=1, regex=False).str[0].value_counts()
     print(f'{len(table)} files written: ' + ', '.join(f'{n} {s}' for s, n in counts.items()) + '.')
+    for row in table[status != 'identical'].itertuples(index=False):
+        print(f'    {row[0]}: {row[1]}')
     return table
 
 
