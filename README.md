@@ -68,10 +68,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   re-runs the scripts behind its paragraphs on IPA's files, compares every re-created output with the committed one,
   recomputes from the outputs each number it can, quotes the committed record where the evidence is a past check
   (notebook 08) or an answer from IPA (notebook 05), and checks them against the report's text. A number or claim the
-  outputs do not reproduce as worded is shown in a table of its own with the reason, and left out of the check: the
-  lower end of the report's 1,205–1,312 (notebook 05), which came from a reviewer's zone map that is not in the
-  repository; "do not rank the sets" (notebook 06); and Electronics' within-model 1.31, which holds on the script's
-  nine analysis groups but not on the base the Definitions describe (notebook 07). The committed
+  outputs do not reproduce as worded would be shown in a table of its own with the reason and left out of the check;
+  with the report's current wording, there is none. The committed
   notebooks hold the outputs of a run on IPA's files.
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
   machine.

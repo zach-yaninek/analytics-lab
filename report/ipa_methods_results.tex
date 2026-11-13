@@ -1,8 +1,8 @@
 % Methods and Results for the IPA analysis: paste where the sections belong.
 % The text refers to the flowchart as Figure~\ref{fig:ipa-flowchart}.
-% The Results follows the report's wording of Nov 13th, 2026. Each paragraph cites its replication notebook in
-% notebooks/ (entries in notebooks.bib: add \bibliographystyle{plain} and \bibliography{notebooks} before
-% \end{document}, and \usepackage{url} or hyperref for the links).
+% The Results follows the report's wording of Nov 13th, 2026, as revised after the notebooks' review. Each
+% paragraph cites its replication notebook in notebooks/ (entries in notebooks.bib: add \bibliographystyle{plain}
+% and \bibliography{notebooks} before \end{document}, and \usepackage{url} or hyperref for the links).
 
 \section{Methods}
 We summarize each step of Figure~\ref{fig:ipa-flowchart} in the figure's row order, and the Definitions section defines the terms. Ticket counts are unplanned tickets unless stated otherwise. We rebuilt the midterm analysis's case table from IPA's service case export, kept its rule for unplanned tickets, and linked the tickets by exact serial number to the clearView telemetry database and to IPA's installed-base list, which supplies the fleets behind every rate per installed machine-month. IPA's answers on Oct 13th set how we read ticket times and fields. Its two questions on slides 4 and 5 set the follow-ups, and its requests on Oct 30th set the Electronics case list and a redrawn chart for slide 4a.
@@ -66,13 +66,13 @@ The fleet runs at 6.2 unplanned tickets per 100 installed machine-months. The th
 Customers above their fleets in the first half tend to stay above them in the second (rank correlation 0.46 vs. 0.04 when shuffled), and machines with 3 or more first-half tickets had 2.6 times their expected tickets in the second half. 18 customers and 36 machines are consistent outliers. Of the 106 chronic outliers on IPA's list, 93 stay flagged, and no flagged machine stands out as a separate group~\cite{nb04}.
 
 \smallskip\noindent\textbf{Ticket clock and fields:}
-Opening times never step backwards in case-number order (0 of 7,470 steps) but would 1,205--1,312 times on hospital-local clocks, so case times use one U.S. Eastern clock, as IPA confirmed. Trouble Code and Category are filled on 1 of 64 open tickets and on nearly all of the 461 August 2026 tickets of any kind with status Trouble Closed. Category is set near close, and the export holds only each field's final value~\cite{nb05}.
+Opening times never step backwards in case-number order (0 of 7,470 steps) but would 1,295--1,312 times on hospital-local clocks, so case times use one U.S. Eastern clock, as IPA confirmed. Trouble Code and Category are filled on 1 of 64 open tickets and on nearly all of the 461 August 2026 tickets of any kind with status Trouble Closed. Category is set near close, and the export holds only each field's final value~\cite{nb05}.
 
 \smallskip\noindent\textbf{First look at codes:}
 Door codes appear before 68\% of the 3,259 paired tickets vs. 61\% of their comparison windows, and electronics codes before 20\% vs. 13\%~\cite{nb06}.
 
 \smallskip\noindent\textbf{Association results:}
-The odds that a ticket's own codes appear in its final 7 days rather than in its comparison window's final 7 days are 3.2 times those of other faults' tickets (95\% interval 2.3--4.8). By code set, the ratios are rough and do not rank the sets: Main Door is borderline, and Computer Board was not shown to be specific. At 7 days, the pooled result holds in every sensitivity check run so far that gives one, but it rests almost entirely on scrubex machines and is provisional~\cite{nb06}.
+The odds that a ticket's own codes appear in its final 7 days rather than in its comparison window's final 7 days are 3.2 times those of other faults' tickets (95\% interval 2.3--4.8). By code set, the ratios are rough and do not rank the four sets with ratios above 1: Main Door is borderline, and Computer Board was not shown to be specific. At 7 days, the pooled result holds in every sensitivity check run so far that gives one, but it rests almost entirely on scrubex machines and is provisional~\cite{nb06}.
 
 \smallskip\noindent\textbf{Request types by age:}
 Young machines run 8.0 tickets per 100 machine-months vs. 4.8 for older ones (1.66 times), with higher rates in nearly every request group. Within model, Electronics' share is 1.31 times as large on young machines (mostly Touchscreen) and Mechanical's 0.70 times. 80\% of the 1,447 extra tickets come from young machines running above older ones of the same model. Touchscreen tickets cluster on 2022--23 installs (1.54 per 100, 3.9 times the 2024--26 rate)~\cite{nb07}.
@@ -84,4 +84,4 @@ Of the 1,574 repeats, 31\% are the same Category, 10\% the same request group wi
 Per machine-month, Electronics runs 1.71 times as often on young machines, near the 1.66 for all tickets. Touchscreen stands out at 4.2 times: of its 411 tickets on young machines, 344 are connector reseats or replacements, 402 are on the four 2.0 models (LVD-Remote-2.0, MV-2.0, LVRR-WP-2.0, and SV-48-2.0), and 315 are on 2022--23 installs. Its rate steps from 0.36 to 1.61 per 100 between Jan--Apr and May--Aug 2022 installs, which are nearly the same age, so the step points to a production, part, or installation change. The case list has all 1,605 unplanned Electronics cases on the fleet machines behind slide 4~\cite{nb07}.
 
 \smallskip\noindent\textbf{Verification:}
-Every case-export number reproduced exactly, and on the full database 65 of 66 checks passed; the one failure was a sort-order bug in our comparison script. Independent rebuilds matched the 113 chronic outliers, the fleet rates, all 33,515 compared values of the association study, the follow-ups' headline numbers, and every sheet of the case list. Reviews found that the chronic-outlier count runs from 62 to 133 with the statistical cut-off. The association results' 45 review points were all upheld and applied, and no headline result changed~\cite{nb08}.
+Every case-export number reproduced exactly, and on the full database 65 of 66 checks passed; the one failure was a sort-order bug in our comparison script. Independent rebuilds matched the 113 chronic outliers, the fleet rates before a statistical review's six changes, all 33,515 compared values of the association study, the follow-ups' headline numbers, and every sheet of the case list. Reviews found that the chronic-outlier count runs from 62 to 133 with the statistical cut-off. The association results' 45 review points were all upheld and applied, and no headline result changed~\cite{nb08}.
