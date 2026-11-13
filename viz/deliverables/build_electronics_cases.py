@@ -76,7 +76,7 @@ real identifier or note; it must hold no real identifier (followups.real_sets pl
 scanned as followups.py scans its outputs) and no real note, Administrative Notes or Case Owner value.
 
 Aggregate tables (--tables): no workbook. After the data checks, the counts the report quotes go to
-verification/outputs/electronics/ as CSVs of labels and counts, for the replication notebooks:
+verification/outputs/electronics/ as CSVs of labels, counts, machine-months, and rates, for the replication notebooks:
   ec_counts.csv   GROUP tickets on the list, by age group, and FOCUS tickets on machines under 4 on the four 2.0 models
   ec_subsets.csv  Summary table 7: each subset's tickets, machines and accounts
   ec_edge.csv     the Read me's step: FOCUS tickets per 100 machine-months on the comparison models' machines installed
@@ -1663,7 +1663,8 @@ def build(pseudo_dir=None):
 
 
 def tables():
-    """--tables: the counts the report quotes, as CSVs of labels and counts in TABLES; no workbook."""
+    """--tables: the counts the report quotes, as CSVs of labels, counts, machine-months, and rates in TABLES; no
+    workbook."""
     print(f'IPA {GROUP} case list: aggregate tables only (no workbook)')
     try:
         check = Checks()

@@ -49,7 +49,7 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     with real names, printed by `deck_pdf.js`), `build_electronics_cases.py` (IPA's Electronics case list: an Excel
     workbook of the cases behind slides 4a-4e, with real case numbers and IPA's case notes; `--pseudo OUT_DIR` writes
     a pseudonymous copy for checking the layout, and `--tables` writes only the aggregate tables the replication
-    notebooks read, labels and counts with no workbook, to `verification/outputs/electronics/`) and `names.py` (the private name table, and same-length placeholder
+    notebooks read (labels, counts, machine-months, and rates; no workbook) to `verification/outputs/electronics/`) and `names.py` (the private name table, and same-length placeholder
     names for checking layouts without looking at real ones). The code is committed; its outputs never are.
     `followups_pptx.js` builds the follow-up PowerPoint (slides 4.1-5.4, text in `followups_pptx.json`; no customer
     names) into the same folder; `build_followups_pptx.py` builds its real-name version, which adds the update deck's
@@ -67,9 +67,11 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   (`01_customer_fleet_ownership.ipynb` … `08_verification.ipynb`), with their helpers in `replicate.py`. Each
   re-runs the scripts behind its paragraphs on IPA's files, compares every re-created output with the committed one,
   recomputes from the outputs each number it can, quotes the committed record where the evidence is a past check
-  (notebook 08) or an answer from IPA (notebook 05), and checks them against the report's text. A number the outputs
-  do not reproduce is shown in a table of its own with the reason: so far only the lower end of the report's
-  1,205–1,312 (notebook 05), which came from a reviewer's zone map that is not in the repository. The committed
+  (notebook 08) or an answer from IPA (notebook 05), and checks them against the report's text. A number or claim the
+  outputs do not reproduce as worded is shown in a table of its own with the reason, and left out of the check: the
+  lower end of the report's 1,205–1,312 (notebook 05), which came from a reviewer's zone map that is not in the
+  repository; "do not rank the sets" (notebook 06); and Electronics' within-model 1.31, which holds on the script's
+  nine analysis groups but not on the base the Definitions describe (notebook 07). The committed
   notebooks hold the outputs of a run on IPA's files.
 - `data/` and `deliverables/` are gitignored. Raw files, real names and the IPA-facing memo never leave the local
   machine.
@@ -102,7 +104,7 @@ python3 -I verification/flags.py --write          # local only: per-ticket text 
 python3 -I viz/run_all.py                                 # redraw the page charts and run their checks
 python3 -I viz/slides/run_all.py                          # redraw the slide charts (incl. follow-ups sl_18-sl_31)
 python3 -I viz/deliverables/build_electronics_cases.py    # local only: deliverables/IPA_Electronics_Cases.xlsx
-python3 -I viz/deliverables/build_electronics_cases.py --tables  # its counts, as aggregate tables (committed)
+python3 -I viz/deliverables/build_electronics_cases.py --tables  # its aggregate tables (committed)
 export NODE_PATH="$(npm root -g)"                         # the Node packages of the four builders below
 python3 -I viz/deliverables/build_memo.py                 # local only: deliverables/IPA_Executive_Summary.docx
 python3 -I viz/deliverables/build_deck_pdf.py --deck DECK_DIR --assets ASSET_MAP.json  # local only: the deck PDF
@@ -123,7 +125,8 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/0*.ipynb   # about
 ```
 
 With `RERUN = True` (the default, in the first code cell), a notebook needs IPA's files in `data/raw/`. It copies
-`verification/outputs/` and `data/private/` to scratch folders and re-runs its scripts there, through the
+the committed files of `verification/outputs/` (local-only exports are left out) and `data/private/` to scratch
+folders and re-runs its scripts there, through the
 `IPA_OUTPUTS`, `IPA_PRIVATE` and `IPA_SKIP_FIGURES` variables that `verification/common.py` and
 `high_ticket_machines.py` read, so no committed output, figure, or file in `data/` changes. (With `--inplace`,
 nbconvert saves the new outputs into the notebooks themselves; use `--output-dir` to keep the committed ones.) With

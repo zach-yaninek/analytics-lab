@@ -2,8 +2,10 @@
 
 Each notebook replicates one group of findings in the report's Results section:
 
-1. With RERUN = True (the default), it copies the committed outputs (verification/outputs/) to a scratch folder and
-   re-runs the analysis scripts there on IPA's files in data/raw/. Those files are gitignored, so only someone who has
+1. With RERUN = True (the default), it copies the committed outputs (the files of verification/outputs/ that git
+   tracks) to a scratch folder and re-runs the analysis scripts there on IPA's files in data/raw/. Local-only exports
+   in verification/outputs/ (such as flags.py --write's) are left out, so every re-run starts from the committed
+   setup. Those files are gitignored, so only someone who has
    them can re-run. The scripts write into the scratch folder (IPA_OUTPUTS) and their private name tables into a
    scratch copy of data/private/ (IPA_PRIVATE), and high_ticket_machines.py skips its figures (IPA_SKIP_FIGURES), so
    nothing in the repository or in data/ changes. The scratch folders are deleted when the notebook's kernel exits.
@@ -61,6 +63,17 @@ def raw_inputs_present():
     return all((RAW / name).exists() for name in RAW_FILES)
 
 
+def _tracked_outputs():
+    """The committed files under verification/outputs/ (git ls-files), or None when git cannot list them."""
+    try:
+        proc = subprocess.run(['git', '-C', str(ROOT), 'ls-files', '-z', '--', str(COMMITTED.relative_to(ROOT))],
+                              capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    files = [ROOT / name for name in proc.stdout.split('\0') if name]
+    return files if proc.returncode == 0 and files else None
+
+
 def outputs(rerun):
     """The folder the notebook reads its tables from.
 
@@ -73,7 +86,20 @@ def outputs(rerun):
     if not raw_inputs_present():
         raise FileNotFoundError("IPA's files are not in data/raw/. Set RERUN = False to use the committed outputs.")
     scratch = Path(tempfile.mkdtemp(prefix='ipa_outputs_'))
-    shutil.copytree(COMMITTED, scratch, dirs_exist_ok=True)
+    tracked = _tracked_outputs()
+    if tracked is None:
+        shutil.copytree(COMMITTED, scratch, dirs_exist_ok=True)
+        print('git could not list the committed outputs, so the scratch copy holds every file in verification/outputs/.')
+    else:
+        for src in tracked:
+            if src.is_file():
+                dst = scratch / src.relative_to(COMMITTED)
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+        local_only = sum(p.is_file() for p in COMMITTED.rglob('*')) - sum(p.is_file() for p in tracked)
+        if local_only:
+            print(f'{local_only} local files in verification/outputs/ that are not committed are left out of the scratch '
+                  'copy, so the re-run starts from the committed setup.')
     private = Path(tempfile.mkdtemp(prefix='ipa_private_'))
     if PRIVATE.exists():  # some scripts read private inputs (e.g. a hand-made review), so they get a copy
         shutil.copytree(PRIVATE, private, dirs_exist_ok=True)
