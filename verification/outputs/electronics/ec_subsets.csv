@@ -1,0 +1,14 @@
+key,label,tickets,machines,accounts
+u4,"Electronics, under 4",875,640,316
+u4_focus,"Touchscreen, under 4",411,313,184
+u4_conn,of which Connector Reseat/Replace,344,268,163
+u4_coh,of which installed 2022-23,315,232,125
+core,Core subset,268,202,112
+core:LVD-Remote-2.0,LVD-Remote-2.0,121,88,60
+core:MV-2.0,MV-2.0,94,66,49
+core:LVRR-WP-2.0,LVRR-WP-2.0,46,42,33
+core:SV-48-2.0,SV-48-2.0,7,6,6
+cluster,"Touchscreen, installed 2022-23, any age (4d)",320,237,127
+u4_rest,"Electronics other than Touchscreen, under 4",464,373,221
+o4_focus,"Touchscreen, 4+",139,121,96
+spike,"Computer Board, under 4, opened Oct 2025",45,42,31

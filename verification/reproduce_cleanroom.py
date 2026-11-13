@@ -26,9 +26,9 @@ import hashlib
 import numpy as np
 import pandas as pd
 
-from common import XLS, build_maps, clean, load_raw
+from common import OUTPUTS, XLS, build_maps, clean, load_raw
 
-OUT = Path(__file__).resolve().parent / 'outputs'
+OUT = OUTPUTS
 OUT.mkdir(parents=True, exist_ok=True)
 PREFIX = 'repro_clean_'
 

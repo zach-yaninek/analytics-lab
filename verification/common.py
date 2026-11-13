@@ -4,6 +4,7 @@ Everything here is read-only with respect to the source files. Real names and se
 stay in memory; only pseudonymous identifiers are written by the scripts that use this.
 """
 import hashlib
+import os
 import sqlite3
 from pathlib import Path
 
@@ -12,9 +13,11 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / 'data' / 'raw'
-PRIVATE = ROOT / 'data' / 'private'
 DERIVED = ROOT / 'data' / 'derived'
-OUTPUTS = ROOT / 'verification' / 'outputs'
+# IPA_OUTPUTS and IPA_PRIVATE point the scripts at other folders. The replication notebooks (notebooks/) use them to
+# re-run the scripts into scratch copies, so neither the committed outputs nor data/private/ is overwritten.
+PRIVATE = Path(os.environ.get('IPA_PRIVATE') or ROOT / 'data' / 'private')
+OUTPUTS = Path(os.environ.get('IPA_OUTPUTS') or ROOT / 'verification' / 'outputs')
 XLS = RAW / 'IPA_CaseHistory_Aug 2025-Aug2026.xlsx'
 NOTEBOOK = RAW / 'IPA_Service_Ticket_SQL_Analysis.ipynb'
 SHEET = 'ipa_repair cases'

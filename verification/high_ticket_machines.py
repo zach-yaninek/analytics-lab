@@ -83,6 +83,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import json  # noqa: E402
 import math  # noqa: E402
+import os  # noqa: E402
 import re  # noqa: E402
 import time  # noqa: E402
 
@@ -1135,4 +1136,5 @@ def plots():
 
 if __name__ == '__main__':
     status = main()
-    sys.exit(max(status, plots()))
+    # IPA_SKIP_FIGURES=1 (set by the replication notebooks) leaves the committed figures untouched.
+    sys.exit(status if os.environ.get('IPA_SKIP_FIGURES') else max(status, plots()))

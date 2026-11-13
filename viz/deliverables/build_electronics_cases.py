@@ -75,14 +75,22 @@ a placeholder of the same length (every character but whitespace -> 'x'), for ch
 real identifier or note; it must hold no real identifier (followups.real_sets plus the listed dispatch numbers,
 scanned as followups.py scans its outputs) and no real note, Administrative Notes or Case Owner value.
 
+Aggregate tables (--tables): no workbook. After the data checks, the counts the report quotes go to
+verification/outputs/electronics/ as CSVs of labels and counts, for the replication notebooks:
+  ec_counts.csv   GROUP tickets on the list, by age group, and FOCUS tickets on machines under 4 on the four 2.0 models
+  ec_subsets.csv  Summary table 7: each subset's tickets, machines and accounts
+  ec_edge.csv     the Read me's step: FOCUS tickets per 100 machine-months on the comparison models' machines installed
+                  in each EDGE window
+
 Inputs:  data/raw/ (the case export and IPA's installed-base list, through verification/common.py);
          verification/outputs/fu/ (the telemetry map followups.load() reads); verification/outputs/followups/ag_*.csv
          (the committed results: the checks, and the 95% intervals the Summary shows)
-Output:  deliverables/IPA_Electronics_Cases.xlsx (never commit), or OUT_DIR/IPA_Electronics_Cases_PSEUDO.xlsx
+Output:  deliverables/IPA_Electronics_Cases.xlsx (never commit), OUT_DIR/IPA_Electronics_Cases_PSEUDO.xlsx, or (with
+         --tables) verification/outputs/electronics/ec_*.csv
 Requires pandas, numpy and openpyxl, and git for the ignore check. No message prints a real identifier or a note:
 counts, labels and pseudonyms only; an unexpected error is reported by its type and line, without its message.
 
-Run:  cd /home/user/analytics-lab && python3 -I viz/deliverables/build_electronics_cases.py [--pseudo OUT_DIR]
+Run:  cd /home/user/analytics-lab && python3 -I viz/deliverables/build_electronics_cases.py [--pseudo OUT_DIR | --tables]
 """
 import argparse
 import os
@@ -133,6 +141,7 @@ EDGE = (('2022-01', '2022-04'), ('2022-05', '2022-08'))
 ALIKE = 0.1                    # two ratios within 10% of each other read 'about in line' ('about as much as')
 PART_A_TICKETS = 6750          # slide 4's population (followups.py pins it)
 RESULTS = common.OUTPUTS / 'followups'
+TABLES = common.OUTPUTS / 'electronics'   # --tables: the aggregate tables the replication notebooks read
 OUT_REAL = names.DELIVERABLES / f'IPA_{GROUP}_Cases.xlsx'
 PSEUDO_FILE = f'IPA_{GROUP}_Cases_PSEUDO.xlsx'
 NOTES = ('Trouble Reported', 'Trouble Resolution')         # IPA's case notes: written (pseudonymous copy: x's)
@@ -1653,13 +1662,54 @@ def build(pseudo_dir=None):
             tmp.unlink(missing_ok=True)
 
 
+def tables():
+    """--tables: the counts the report quotes, as CSVs of labels and counts in TABLES; no workbook."""
+    print(f'IPA {GROUP} case list: aggregate tables only (no workbook)')
+    try:
+        check = Checks()
+        mx, tp, e, support, cat_order, info, private = load(check)
+        s = summary(mx, tp, e, support, cat_order, check)
+        check.stop_if_failed('data')
+        young = e.age_group.eq(U4)
+        frames = {
+            'ec_counts': pd.DataFrame([
+                ('tickets', f'{GROUP} tickets on the list', len(e)),
+                ('under4', f'{GROUP} tickets, {U4.lower()}', int(young.sum())),
+                ('plus4', f'{GROUP} tickets, {O4}', int((~young).sum())),
+                ('focus_under4_core_models', f'{FOCUS} tickets, {U4.lower()}, on the four 2.0 models ('
+                 f'{", ".join(CORE_MODELS)})', s['facts']['u4_v2']),
+            ], columns=['key', 'label', 'value']),
+            'ec_subsets': s['subsets'].reset_index()[['key', 'label', 'tickets', 'machines', 'accounts']],
+            'ec_edge': s['edge'][['label', 'machines', 'under4', 'months', 'tickets', 'rate']]
+            .rename(columns={'rate': 'rate_per_100'}),
+        }
+        real = F.real_sets(private['maps'], common.EQUIPMENT)
+        text = pd.DataFrame({'text': [str(v) for f in frames.values() for v in f.astype(str).to_numpy().ravel()]})
+        leaks = sum(FX.text_leaks(text, real).values())
+        check('tables hold no real identifier', leaks == 0, f'{len(text):,} cells scanned, {leaks} hits')
+        check.stop_if_failed('privacy')
+        TABLES.mkdir(parents=True, exist_ok=True)
+        for name, frame in frames.items():
+            frame.to_csv(TABLES / f'{name}.csv', index=False)
+            print(f'  wrote {name}.csv ({len(frame)} rows)')
+        print(f'checks pass: {GROUP} tables written to {TABLES.name}/')
+    except BuildError:
+        raise
+    except Exception as err:  # noqa: BLE001  its message could quote an identifier or a note: type and line only
+        frame = traceback.extract_tb(err.__traceback__)[-1]
+        fail(f'unexpected {type(err).__name__} at {Path(frame.filename).name}:{frame.lineno} (message withheld)')
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('--pseudo', metavar='OUT_DIR', help=f'build the pseudonymous copy into OUT_DIR/{PSEUDO_FILE} '
-                    'instead of the real workbook')
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument('--pseudo', metavar='OUT_DIR', help=f'build the pseudonymous copy into OUT_DIR/{PSEUDO_FILE} '
+                      'instead of the real workbook')
+    mode.add_argument('--tables', action='store_true', help='write only the aggregate tables the replication '
+                      'notebooks read, to verification/outputs/electronics/ (no workbook)')
     a = ap.parse_args()
     try:
-        build(a.pseudo)
+        tables() if a.tables else build(a.pseudo)
     except BuildError as err:
         print(f'FAILED: {err}')
         sys.exit(1)
