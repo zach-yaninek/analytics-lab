@@ -344,11 +344,13 @@ def plot(out_dir=S.FIG_DIR):
         cx.barh(-i, total - part, left=part, height=0.36, color=S.GREY_FILL, zorder=3)
         S.label(cx, 0, -i + 0.25, text, ha='left', va='bottom', bbox=BLANK)
         S.label(cx, total + 3, -i, S.num(total), ha='left', va='center')
-    # under the flagged machines, the negative binomial's answer behind the caption's "no separate group" (the
-    # report's words for it, as in figure 2: allowing for spread between machines, none still stands out)
-    nb_text = ('None stands out' if n_nb == 0 else f'{S.num(n_nb)} stand out') + '\nallowing for spread'
+    # under the flagged machines, the negative binomial's answer behind the caption's "no separate group", in the
+    # paragraph's words. Not 'none stands out': figure 2 rings 2 of these machines as still standing out allowing for
+    # spread, against its own expected tickets (telemetry type's rate x months active); this test uses the fleet's
+    # model and age-band fit, under which no flagged machine has q < 0.05.
+    nb_text = ('No separate group' if n_nb == 0 else f'{S.num(n_nb)} stand out') + '\nallowing for spread'
     S.check(f'fig06 (c) note {nb_text.splitlines()[0]!r}: flagged machines at q < 0.05 under the negative binomial',
-            n_nb, 0 if nb_text.startswith('None') else int(nb_text.split()[0]))
+            n_nb, 0 if nb_text.startswith('No ') else int(nb_text.split()[0]))
     S.report_check('fig06 (c) docstring: the smallest negative-binomial q among the flagged machines', '0.10',
                    S.num(float(machines.q_nb[flagged].min()), 2))
     S.label(cx, 0, -1.25, nb_text, ha='left', va='top', linespacing=1.0, bbox=BLANK)

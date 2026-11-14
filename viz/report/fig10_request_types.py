@@ -12,8 +12,9 @@ on 2022-23 installs (1.54 per 100, 3.9 times the 2024-26 rate).
     those two come last, apart, with grey young-machine marks and a direct label; the rest run in order of young
     machines' rate.
 (b) Each request group's within-model share ratio, pooled over the 15 comparison models, with its 95% bootstrap
-    interval over accounts, in the rows of (a). Not categorized has none (the share ratio's base leaves it out). The
-    two groups that pass the planned test, Electronics and Mechanical, are cobalt and labelled.
+    interval over accounts, in the rows of (a). Not categorized has none (the share ratio's base leaves it out), so
+    its row says 'excluded'. The two groups that pass the planned test, Electronics and Mechanical, are cobalt and
+    labelled.
 (c) The 1,447 extra tickets on young machines in one bar, with the 1,156 of them (80%) from young machines running
     above older ones of the same model (the within-model part) in cobalt.
 (d) Touchscreen tickets per 100 installed machine-months on the comparison models' machines, by install cohort, with
@@ -384,7 +385,9 @@ def plot(out_dir=S.FIG_DIR):
 
     # (b) within-model share ratio of each group, in the rows of (a); the two that pass the test in cobalt
     for g in order:
-        if g not in adj.index:
+        if g not in adj.index:      # outside the share ratio's base: say so rather than leave the row empty
+            S.check(f'fig10 (b) the row without a share ratio is Not categorized ({g})', 'Not categorised', g)
+            S.label(bx, 1, ys[g], 'excluded', ha='center', bbox=backing, zorder=2.5)
             continue
         r, y = adj.loc[g], ys[g]
         focal = g in passing

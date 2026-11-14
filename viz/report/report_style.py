@@ -17,6 +17,7 @@ Rules: numbers come from the committed outputs in verification/outputs/ and are 
 import dataclasses
 import hashlib
 import json
+import logging
 import math
 import os
 from pathlib import Path
@@ -130,6 +131,9 @@ def _register_fonts():
 
 
 _register_fonts()
+# matplotlib's own cmb10.ttf (the bold panel letters) carries a creation date that fontTools reads as too early and
+# warns about each time it subsets the font for a PDF; the date plays no part in the figure.
+logging.getLogger('fontTools.ttLib.tables._h_e_a_d').setLevel(logging.ERROR)
 plt.rcParams.update({
     'font.family': STYLE['font'], 'font.size': FONT, 'mathtext.fontset': STYLE['math_font'],
     'axes.titlesize': FONT, 'axes.labelsize': FONT, 'xtick.labelsize': TICK, 'ytick.labelsize': TICK,
@@ -141,6 +145,7 @@ plt.rcParams.update({
     'axes.spines.top': False, 'axes.spines.right': False, 'axes.grid': False, 'axes.axisbelow': True,
     'lines.linewidth': 1.5, 'lines.markersize': 4, 'legend.frameon': False,
     'pdf.fonttype': 42, 'ps.fonttype': 42, 'svg.fonttype': 'path', 'savefig.dpi': DPI,
+    'svg.hashsalt': 'ipa-report',                # fixed element ids, so an unchanged figure redraws to the same SVG
     'figure.constrained_layout.h_pad': 0.04, 'figure.constrained_layout.w_pad': 0.06,
 })
 

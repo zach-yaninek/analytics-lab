@@ -9,8 +9,9 @@ headline result changed.
     tables, and checks) of each of the three reproductions of the midterm's numbers, its SQL run verbatim
     (reproduce_sql.py), a clean-room rebuild from its method text (reproduce_cleanroom.py), and a re-derivation
     section by section in its notebook's order (01_excel_reproducibility.py), leaving out the workbook's checksum and
-    the rows that need the telemetry database or whose value the midterm did not print, as notebook 08 does; then the
-    checks with an expected value in the record of the full-database run (db/db_summary.json), by status. The one
+    the rows that need the telemetry database or whose value the midterm did not print, as notebook 08 does; then,
+    under a heading of their own (the Methods keep the two apart), the checks of the midterm's telemetry results that
+    have an expected value in the record of the full-database run (db/db_summary.json), by status. The one
     failed check is red. Sorting the run's table as the midterm did reproduces all 15 printed rows, none of which the
     saved order reproduces, so the failure is the sort-order bug in our comparison script that docs/02 records, and
     the note says so in docs/02's words. Hatched bars are records: counts that a committed document gives for a check
@@ -359,24 +360,27 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig13 the failure\'s cause, in the paragraph\'s words (docs/02 record)',
                    'a sort-order bug in our comparison script', record_cause)
 
-    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1.75, 1])   # (a) wide enough for the review's line
+    fig, (ax, bx) = S.figure(2.3, ncols=2, width_ratios=[1.75, 1])   # (a) wide enough for the review's line
 
-    # (a) share matched: recounted (solid) and recorded (hatched) bars in two groups, each headed above its first bar,
-    # each count beside its bar. Rows one unit apart (about 0.135 in); the database row stands apart from the
-    # case-export group, with the note on its failure just below it (one line, from the bar's start, low enough to
-    # clear the bold count above its end); then the recorded group under its heading; last, apart, the association
-    # review as one line of text where a bar would be: its points are problems the reviewers raised, not values that
-    # matched, so they get no bar and no share.
+    # (a) share matched: recounted (solid) and recorded (hatched) bars in three groups, each headed above its first
+    # bar, each count beside its bar. Rows one unit apart (about 0.135 in); a line of text is about 0.82 rows tall and
+    # a bar 0.56. The case-export group; the full-database group, with the note on its failure just below its bar
+    # (one line, from the bar's start, low enough to clear the bold count above its end); the recorded group; last,
+    # further apart, the association review as one line of text where a bar would be: its points are problems the
+    # reviewers raised, not values that matched, so they get no bar and no share.
     head = 0.96                               # from a group's heading down to its first bar
-    y_db = 3.15
+    half_text, half_bar = 0.41, 0.28
+    gap = 0.5                                 # white space between a group's last bar or note and the next heading
+    y_db = 2 + half_bar + gap + half_text + head
     y_note = y_db + 1.04
-    y_rec = y_note + 1.37 + head
-    y_rev = y_rec + 1 + 1.26
+    y_rec = y_note + half_text + gap + half_text + head
+    y_rev = y_rec + 1 + half_bar + 0.9 + half_text
     rows = [(name, m, n, 'recount', y) for (name, m, n), y in zip(reproductions, (0, 1, 2))]
-    rows += [('Full-database checks', n_pass, n_checks, 'recount', y_db)]
+    rows += [('Checks', n_pass, n_checks, 'recount', y_db)]
     rows += [('Chronic outliers', n_rebuild, n_rebuild, 'record', y_rec),
              ('Association study', cells_matched, n_cells, 'record', y_rec + 1)]
     S.label(ax, 0, -head, 'Midterm case-export numbers, three ways', va='center')
+    S.label(ax, 0, y_db - head, 'Midterm telemetry results, full database', va='center')
     S.label(ax, 0, y_rec - head, 'Rebuilds whose records give a count', va='center')
     for name, m, n, kind, y in rows:
         share = m / n
@@ -384,7 +388,7 @@ def plot(out_dir=S.FIG_DIR):
             ax.barh(y, share, height=0.56, color=S.COBALT, zorder=3)
         else:
             ax.barh(y, share, height=0.56, color=S.WHITE, edgecolor=S.COBALT, hatch=HATCH, lw=0.8, zorder=3)
-        key = name == 'Full-database checks'          # the one green readout: 65 of 66 on the full database
+        key = y == y_db                               # the one green readout: 65 of 66 on the full database
         text = f'{S.num(m)} of {S.num(n)}'
         drawn = [int(v.replace(',', '')) for v in text.split()[0:3:2]]      # 'm of n' -> [m, n]
         S.check(f'fig13 (a) label {name!r}: matched', m, drawn[0])

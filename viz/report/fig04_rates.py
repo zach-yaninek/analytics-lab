@@ -19,7 +19,8 @@ Serviceable.
     as a dashed line. Each bar is labelled with its band (0–1, 1–2, 2–4, 4–6, 6–8, 8–10, and 10+ years): the bands
     are 1, 1, 2, 2, 2, and 2 years wide and the last is open, so the bars are categories, not a linear age axis.
     The three bands under 4 years and the 10+ band are cobalt; the bracket gives the rate of the bands under 4 years
-    together, and the note gives the 10+ band's machines with a ticket that are Not Serviceable.
+    together, and the note gives the paragraph's caveat: the 10+ rate overstates the drop, since 83 of the band's 164
+    machines with a ticket are Not Serviceable.
 
 Inputs: verification/outputs/fleet/fx_customer_rates.csv (one row per customer, read without its customer column:
 the fleet's tickets and installed months), fx_machine_flags.csv (one row per fleet machine with a ticket, read without
@@ -306,8 +307,8 @@ def plot(out_dir=S.FIG_DIR):
     S.label(cx, xo, float(ages.ci_hi[oldest]) + 0.2, text_old, ha='center', va='bottom')
     # the note, naming its band, in the empty space above the older bands (a leader would read as an interval), flush
     # with the panel's right edge so its white box takes the gridline through to the end
-    S.label(cx, n - 0.5, 11.95, f'At {oldest} years, {S.num(n_old_ns)} of\nthe {S.num(n_old)} machines\n'
-            f'with a ticket are\n{NOT_SERVICEABLE}', ha='right', va='top', linespacing=1.0, bbox=blank)
+    S.label(cx, n - 0.5, 11.95, f'The {oldest} rate overstates\nthe drop: {S.num(n_old_ns)} of its {S.num(n_old)}\n'
+            f'machines with a ticket\nare {NOT_SERVICEABLE}', ha='right', va='top', linespacing=1.0, bbox=blank)
     text_fleet = f'Fleet {S.num(fleet_rate, 1)}'
     S.label(cx, 3.17, fleet_rate + 0.2, text_fleet, ha='center', va='bottom')   # between the 2-4 bar and 6-8 interval
     # each bar named by its band: the bands differ in width, so evenly spaced edge ticks would read as a linear axis

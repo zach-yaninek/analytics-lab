@@ -14,8 +14,9 @@ no model or telemetry type with 100 or more eligible tickets clearly stands out 
     telemetry types with 100 or more eligible tickets, with 95% bootstrap intervals over accounts. Points are
     anonymous: models are circles, telemetry types squares, each group in rising order. None clearly stands out, so
     all are grey context, as fig04 (b) draws every unit but the one that stands out. Five intervals exclude 1 (three
-    of them by under 0.02, too little to see at this size), and the note says why they do not count: none survives
-    the Benjamini-Hochberg correction within its family (q < 0.05, the Definitions' test); the smallest q is 0.12.
+    of them by under 0.02, and two of those end on the dashed line at this size, so the note gives no count). The
+    note says why they do not count: none survives the Benjamini-Hochberg correction within its family (q < 0.05,
+    the Definitions' test); the smallest q is 0.12.
 Labels that cross a grid line have a white backing, so the grid stops behind them.
 
 Inputs: verification/outputs/followups/rp_pairs.csv (one row per eligible ticket, with its machine's next ticket; read
@@ -289,14 +290,15 @@ def plot(out_dir=S.FIG_DIR):
     x_end = len(models) - 1 + gap + len(types) - 1
     cx.axhline(1, color=S.GREY_DARK, lw=0.8, ls=(0, (4, 2.5)), zorder=2)   # the fleet
     excludes_1 = (units.lo > 1) | (units.hi < 1)
-    note = (f'{S.num(int(excludes_1.sum()))} intervals exclude 1, but none\n'
+    # The note gives no count of those intervals: two of the five end on the dashed line at print size.
+    note = (f'No interval that excludes 1\n'
             f'has q < {S.num(alpha, 2)} (smallest q = {S.num(q_min, 2)})')
-    drawn = [float(v) for v in re.findall(r'\d+(?:\.\d+)?', note)]     # [5, 1, 0.05, 0.12]
-    S.check('fig11 (c) note: intervals that exclude 1 (rp_by_model.csv, rp_by_type.csv)', int(excludes_1.sum()),
-            drawn[0])
-    S.check('fig11 (c) note: the fleet\'s ratio is 1', 1, drawn[1])
-    S.check('fig11 (c) note: the cut-off = the protocol\'s alpha (Definitions: q < 0.05)', alpha, drawn[2])
-    S.check('fig11 (c) note: smallest q', round(q_min, 2), drawn[3])
+    drawn = [float(v) for v in re.findall(r'\d+(?:\.\d+)?', note)]     # [1, 0.05, 0.12]
+    S.check('fig11 (c) note: intervals that exclude 1 (rp_by_model.csv, rp_by_type.csv), as the docstring says', 5,
+            int(excludes_1.sum()))
+    S.check('fig11 (c) note: the fleet\'s ratio is 1', 1, drawn[0])
+    S.check('fig11 (c) note: the cut-off = the protocol\'s alpha (Definitions: q < 0.05)', alpha, drawn[1])
+    S.check('fig11 (c) note: smallest q', round(q_min, 2), drawn[2])
     S.check('fig11 (c) note: none of the units has q under the cut-off', 0, int((units.q < alpha).sum()))
     S.check('fig11 (c) note: so none of the intervals that exclude 1 stands out', 0,
             int(units.stands_out[excludes_1].sum()))

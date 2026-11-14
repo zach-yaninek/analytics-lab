@@ -8,9 +8,10 @@ outliers' tickets no more than on other machines.
     (the median of the analysis's 1,000 Poisson simulations, replayed with its seed), with the top 5% marked.
 (b) Each device's tickets in the rate test's window (Aug 2025-Jul 2026, as the y-axis says) against its expected
     tickets (log axes; devices without a ticket on the row marked 0), for the 6,423 devices with months active. The
-    118 rate outliers are blue: the 113 chronic outliers as dots, and the 5 outside the top 5% as open circles, since
-    the top 5% counts each machine's tickets over the whole export (so 2 chronic outliers sit at 4 tickets here, with
-    5 or more in the export). The 2 rate outliers that keep q < 0.05 under the negative binomial (both chronic
+    118 rate outliers are cobalt: the 113 chronic outliers as dots, and the 5 others as open circles labelled '5 other
+    outliers'. They are outside the Definitions' top 5%, which counts each machine's tickets over the whole export
+    (so 2 chronic outliers sit at 4 tickets here, with 5 or more in the export). The label avoids 'top 5%' because
+    panel (a)'s top 5% counts this window's tickets, and 3 of the 5 are inside that one. The 2 rate outliers that keep q < 0.05 under the negative binomial (both chronic
     outliers) are ringed. Points are anonymous, and the grey context points are rasterized at 300 dpi inside the
     vector PDF.
 (c) Median non-success codes per 1,000 transactions in the comparison windows and in the 30 days before the 3,259
@@ -279,7 +280,8 @@ def plot(out_dir=S.FIG_DIR):
 
     # (b) tickets against expected tickets, log axes; devices without a ticket on the row marked 0. Both axes count
     # the rate test's window, while the top 5% counts the whole export: so 2 chronic outliers sit at 4 tickets here,
-    # and the rate outliers outside the top 5% (the leftmost marks on the 3- and 4-ticket rows) are drawn open.
+    # and the rate outliers outside the top 5% (the leftmost marks on the 3- and 4-ticket rows) are drawn open and
+    # labelled as the other outliers, since (a)'s top 5% (this window's tickets) holds 3 of them.
     xs, ys = expected[tested], dev.tickets_obs[tested].astype(float)
     ys = ys.where(ys > 0, ZERO_Y)
     on, kept, out = chronic[tested], nb_kept[tested], outside[tested]
@@ -301,7 +303,7 @@ def plot(out_dir=S.FIG_DIR):
     # and above the open marks, left of the cobalt column's lowest rows
     S.label(bx, 1.25, 21, f'{S.num(n_chronic)} chronic\noutliers', ha='left', va='center', linespacing=1.1)
     S.label(bx, 0.125, 22.5, f'{S.num(n_nb_kept)} still\nstand out', ha='center', va='center', linespacing=1.1)
-    S.label(bx, 0.0175, 4.75, f'{S.num(n_outside)} outside\ntop 5%', ha='left', va='bottom', linespacing=1.1)
+    S.label(bx, 0.0175, 4.75, f'{S.num(n_outside)} other\noutliers', ha='left', va='bottom', linespacing=1.1)
     bx.set_xscale('log')
     bx.set_yscale('log')
     bx.set_xlim(0.015, 16)
@@ -363,7 +365,7 @@ def plot(out_dir=S.FIG_DIR):
             f'{S.pct(top_share, 1).replace("%", pc)} of their tickets vs. {S.pct(chance_median, 1).replace("%", pc)} '
             f'by chance. Allowing for spread between machines, only {S.num(n_nb_kept)} rate outliers still stand out, '
             f'so high-ticket machines form a continuum. '
-            f'(a)~Concentration; (b)~rate outliers in blue, {S.num(n_nb_kept)} ringed; (c)~codes rise alike.')
+            f'(a)~Concentration; (b)~{S.num(n_chronic)} chronic outliers, {S.num(n_nb_kept)} ringed; (c)~codes rise alike.')
 
 
 if __name__ == '__main__':

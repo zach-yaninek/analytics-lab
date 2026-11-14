@@ -2,7 +2,8 @@
 % captions in viz/report/figNN_*.py and re-run it. Each figure supports one Results paragraph, which ends with
 % (Figure~\ref{...}). Needs \usepackage{graphicx} in the preamble; the PDFs are in figures/ beside this file.
 % The float settings below let up to three figures share a page; they apply from here to the end of the document.
-% Figures go here or at the top of a page ([!htp]), so a part-filled last page keeps its figures together at the top.
+% Figures go here or at the top of a page ([!htp]). A page of figures alone stacks them from the top with a fixed
+% gap, so a part-filled last page keeps its figures together instead of spreading them down the page.
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\bottomfraction}{0.95}
 \renewcommand{\textfraction}{0.05}
@@ -10,6 +11,11 @@
 \setcounter{topnumber}{3}
 \setcounter{bottomnumber}{3}
 \setcounter{totalnumber}{4}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{8pt plus 2pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
 
 \section{Figures}
 
@@ -23,7 +29,7 @@
 \begin{figure}[!htp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig02_high_ticket.pdf}
-  \caption[High-ticket machines]{The top 5\% of the 6,621 telemetry devices hold 32.9\% of their tickets vs.~22.2\% by chance. Allowing for spread between machines, only 2 rate outliers still stand out, so high-ticket machines form a continuum. (a)~Concentration; (b)~rate outliers in blue, 2 ringed; (c)~codes rise alike.}
+  \caption[High-ticket machines]{The top 5\% of the 6,621 telemetry devices hold 32.9\% of their tickets vs.~22.2\% by chance. Allowing for spread between machines, only 2 rate outliers still stand out, so high-ticket machines form a continuum. (a)~Concentration; (b)~113 chronic outliers, 2 ringed; (c)~codes rise alike.}
   \label{fig:high-ticket}
 \end{figure}
 
