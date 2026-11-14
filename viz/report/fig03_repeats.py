@@ -150,7 +150,8 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig03 7-day ratio to random timing', '2.30', S.num(ratio_7, 2))
     S.report_check('fig03 30-day share without monitoring tickets', '22.0%', S.pct(share_nm, 1))
 
-    fig, (ax, bx) = S.figure(2.2, ncols=2, width_ratios=[1, 1.12])
+    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1, 1.12])
+    blank = dict(fc=S.WHITE, ec='none', pad=0.8)   # keeps the light grid out of a label
 
     # (a) bars: observed and random timing, 7 and 30 days, and the 30-day share without monitoring tickets
     rows = [(f'Within {WEEK} days', share_7, 'obs', 0.0), ('Random timing', chance_7, 'null', 1.0),
@@ -167,7 +168,7 @@ def plot(out_dir=S.FIG_DIR):
         text = S.pct(value, 1)
         S.check(f'fig03 (a) label {name} {text}', round(100 * value, 1), float(text.rstrip('%')))
         S.label(ax, value + 0.006, y, text, size=S.FONT if key else S.TICK, weight='bold' if key else 'normal',
-                color=S.GREEN if key else S.TEXT)
+                color=S.GREEN if key else S.TEXT, bbox=blank)
     ax.set_yticks([r[3] for r in rows], [r[0] for r in rows], linespacing=1.0)
     ax.set_ylim(5.6, -0.6)
     ax.set_xlim(0, 0.32)
@@ -192,10 +193,10 @@ def plot(out_dir=S.FIG_DIR):
         if d == WEEK:
             span = (days >= d) & (days <= d + 5)
             y = (obs[span].min() + rnd[span].max()) / 2
-            S.label(bx, d + 0.6, y, text, ha='left')
+            S.label(bx, d + 0.8, y, text, ha='left', bbox=blank)
         else:
-            S.label(bx, d - 0.6, (o + r) / 2, text, ha='right')
-    S.label(bx, 12.4, obs[12] + 0.022, 'Observed', ha='right')        # just above the curve
+            S.label(bx, d - 0.6, (o + r) / 2, text, ha='right', bbox=blank)
+    S.label(bx, 12.4, obs[12] + 0.022, 'Observed', ha='right', bbox=blank)        # just above the curve
     S.label(bx, 18, rnd[18] - 0.016, 'Random timing', ha='left')      # just below the dashed line
     bx.set_xlim(0, WINDOW + 0.5)
     bx.set_xticks([0, 7, 14, 21, 30])
@@ -216,9 +217,7 @@ def plot(out_dir=S.FIG_DIR):
     return (f'Of {S.num(n_eligible)} eligible tickets, {pc(share_30)} repeat within {WINDOW} days and {pc(share_7)} '
             f'within {WEEK} days, {S.num(ratio_30, 2)} and {S.num(ratio_7, 2)} times random timing\'s shares, and '
             f'without monitoring tickets the {WINDOW}-day share is {pc(share_nm)}. '
-            f'(a)~Bars show the {WEEK}- and {WINDOW}-day shares, observed and under random timing. '
-            f'(b)~Lines show the share that repeats within each number of days up to {WINDOW}. '
-            f'The eligible tickets are on {S.num(n_machines)} machines.')
+            f'(a)~Shares at {WEEK} and {WINDOW} days; (b)~shares within each number of days up to {WINDOW}.')
 
 
 if __name__ == '__main__':

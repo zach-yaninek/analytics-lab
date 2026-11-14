@@ -109,8 +109,9 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig08 electronics codes before paired tickets', '20%', S.pct(elec['ticket']))
     S.report_check('fig08 electronics codes in their comparison windows', '13%', S.pct(elec['comparison']))
 
-    fig, (ax, bx) = S.figure(2.0, ncols=2, width_ratios=[1.25, 1])
+    fig, (ax, bx) = S.figure(1.8, ncols=2, width_ratios=[1.25, 1])
     ys = [d['y'] for d in data.values()]
+    backing = dict(facecolor=S.WHITE, edgecolor='none', pad=0.8)   # the light grid stops behind the value labels
 
     # (a) the two shares per code group: ticket window filled, comparison window open
     for name, d in data.items():
@@ -125,7 +126,7 @@ def plot(out_dir=S.FIG_DIR):
             S.check(f'fig08 (a) {name} {which} label {text}', round(100 * value), float(text.rstrip('%')))
             bold = key and which == 'ticket'
             S.label(ax, x, y, text, ha=ha, size=S.FONT if bold else S.TICK, weight='bold' if bold else 'normal',
-                    color=S.GREEN if bold else S.TEXT)
+                    color=S.GREEN if bold else S.TEXT, bbox=backing, zorder=2.5)
     S.label(ax, door['comparison'] + 0.004, -0.62, 'Comparison window', ha='right', va='bottom')
     S.label(ax, door['ticket'] - 0.004, -0.62, 'Ticket window', ha='left', va='bottom')
     ax.set_yticks(ys, list(data))
@@ -146,7 +147,7 @@ def plot(out_dir=S.FIG_DIR):
         for value, x, ha in ((right, right + 12, 'left'), (left, -left - 12, 'right')):
             text = S.num(value)
             S.check(f'fig08 (b) {name} label {text}', value, int(text.replace(',', '')))
-            S.label(bx, x, y, text, ha=ha)
+            S.label(bx, x, y, text, ha=ha, bbox=backing, zorder=2.5)
     bx.axvline(0, color=S.GREY_DARK, lw=0.6, zorder=4)
     S.label(bx, -14, -0.62, 'Comparison only', ha='right', va='bottom')
     S.label(bx, 14, -0.62, 'Ticket only', ha='left', va='bottom')
@@ -170,9 +171,8 @@ def plot(out_dir=S.FIG_DIR):
     return (f'Door codes appear before {pc(door["ticket"])} of the {S.num(n_paired)} paired tickets vs. '
             f'{pc(door["comparison"])} of their comparison windows, and electronics codes before {pc(elec["ticket"])} '
             f'vs. {pc(elec["comparison"])}. '
-            f'(a)~Dots show the share of paired tickets with a code of each group among the last 10 codes of the '
-            f'ticket window (filled) and the comparison window (open). '
-            f'(b)~Bars show the paired tickets with the group in one window only.')
+            f'(a)~Share with a code of the group among each window\'s last 10 codes; '
+            f'(b)~tickets with the group in one window only.')
 
 
 if __name__ == '__main__':

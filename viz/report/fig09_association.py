@@ -436,7 +436,7 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig09 share on scrubex machines (Definitions)', '97%', S.pct(r['n_scrubex'] / r['n_h1']))
     S.check('fig09 every check\'s interval lies above 1', 1, int((checks.low > 1).all()))
 
-    fig, (ax, bx) = S.figure(2.3, ncols=2, width_ratios=[1.3, 1])
+    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1.3, 1])
     dashed = dict(color=S.GREY_DARK, lw=0.8, ls=(0, (4, 2.5)), zorder=2)
 
     # (a) the pooled ratio and each code set's ratio, with 95% intervals, on a log axis
@@ -481,7 +481,7 @@ def plot(out_dir=S.FIG_DIR):
     bx.yaxis.set_minor_locator(NullLocator())
     bx.set_xlim(-0.8, n_checks - 0.2)
     bx.set_xticks([xs.mean()], ['Checks, in order of ratio'])   # at tick level, as fig11's groups
-    bx.set_ylabel('Pooled odds ratio (log scale)')
+    bx.set_ylabel('Pooled odds ratio\n(log scale)', linespacing=1.1)   # two lines: shorter than the axis
     S.clean(bx, grid='y', bottom=False)
     S.panel(bx, 'b', 'Sensitivity checks')
 
@@ -496,11 +496,9 @@ def plot(out_dir=S.FIG_DIR):
     pc = lambda share: S.pct(share).replace('%', chr(92) + '%')  # noqa: E731
     return (f'The odds that a ticket\'s own codes appear in its final {S.num(r["k7"] / 24)} days rather than in its '
             f'comparison window\'s are {S.num(r["pooled"], 1)} times those of other faults\' tickets '
-            f'({pc(r["level"])} interval {S.span(r["lo"], r["hi"], 1).replace("–", "--")}). '
-            f'(a)~Points show the pooled ratio and each code set\'s ratio. '
-            f'(b)~Points show the pooled ratio under each sensitivity check that gives one. '
-            f'It rests almost entirely on scrubex machines and is provisional. '
-            f'Lines show {pc(r["level"])} cluster bootstrap intervals.')
+            f'({pc(r["level"])} interval {S.span(r["lo"], r["hi"], 1).replace("–", "--")}), a {status} result '
+            f'resting almost entirely on scrubex machines. '
+            f'(a)~By code set; (b)~by check; lines are {pc(r["level"])} intervals.')
 
 
 if __name__ == '__main__':

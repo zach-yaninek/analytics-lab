@@ -224,11 +224,11 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig02 rate outliers that still stand out', '2', S.num(n_nb_kept))
     S.report_check('fig02 paired tickets (Definitions)', '3,259', S.num(n_paired))
 
-    fig, (ax, bx, cx) = S.figure(2.45, ncols=3, width_ratios=[1.0, 1.04, 0.74])
+    fig, (ax, bx, cx) = S.figure(2.2, ncols=3, width_ratios=[1.0, 1.04, 0.74])
 
     # (a) concentration curves, the top 5% marked by a guide line that runs up to the observed share's readout
     x5 = top_k / n_devices
-    y_read = top_share + 0.12
+    y_read = top_share + 0.14
     blank = dict(fc=S.WHITE, ec='none', pad=0.8)   # keeps the light grid out of a label
     ax.plot(share_x, chance_curve, color=S.GREY_DARK, lw=1.2, ls=(0, (4, 2.5)), zorder=3)
     ax.plot(share_x, obs_curve, color=S.COBALT, lw=1.5, zorder=4)
@@ -239,7 +239,7 @@ def plot(out_dir=S.FIG_DIR):
     ax.plot(x5, chance_median, 'o', mfc=S.WHITE, mec=S.GREY_DARK, mew=1.0, ms=4, zorder=5)
     S.label(ax, x5 - 0.004, y_read, S.pct(top_share, 1), ha='center', va='bottom', size=S.FONT, weight='bold',
             color=S.GREEN, zorder=6)
-    S.label(ax, x5 + 0.007, chance_median - 0.035, S.pct(chance_median, 1), ha='left', bbox=blank, zorder=6)
+    S.label(ax, x5 + 0.010, chance_median - 0.042, S.pct(chance_median, 1), ha='left', bbox=blank, zorder=6)
     S.label(ax, x5 + 0.006, 0.02, 'Top 5%', ha='left', va='bottom')
     xo, xc = 0.165, 0.15
     S.label(ax, xo - 0.004, np.interp(xo, share_x, obs_curve) + 0.035, 'Observed', ha='right', va='bottom',
@@ -268,8 +268,9 @@ def plot(out_dir=S.FIG_DIR):
             int((dev.tickets_obs[chronic] > expected[chronic]).sum()))
     S.check('fig02 every device inside the x-axis', 1, int(xs.min() > 0.035 and xs.max() < 16))
     S.check('fig02 every device inside the y-axis', 1, int(ys.max() < 34))
-    S.label(bx, 1.25, 17, f'{S.num(n_chronic)} chronic\noutliers', ha='left', va='center', linespacing=1.1)
-    S.label(bx, 0.15, 21, f'{S.num(n_nb_kept)} still\nstand out', ha='center', va='center', linespacing=1.1)
+    # both labels in the empty band above the points: right of the cobalt column, and above the two rings
+    S.label(bx, 1.25, 21, f'{S.num(n_chronic)} chronic\noutliers', ha='left', va='center', linespacing=1.1)
+    S.label(bx, 0.15, 22.5, f'{S.num(n_nb_kept)} still\nstand out', ha='center', va='center', linespacing=1.1)
     bx.set_xscale('log')
     bx.set_yscale('log')
     bx.set_xlim(0.035, 16)
@@ -296,15 +297,21 @@ def plot(out_dir=S.FIG_DIR):
         cx.plot([0, 1], [r['comparison'], r['ticket']], color=st['color'], lw=st['lw'], ls=st['ls'],
                 marker=st['marker'], ms=4.2, mec=S.WHITE, mew=0.6, zorder=st['z'], clip_on=False)
     order = sorted(rows, key=lambda k: rows[k]['ticket'], reverse=True)
-    label_y = {}
-    for i, key in enumerate(order):  # keep the end labels at least 7.5 units apart
-        yv = rows[key]['ticket']
-        label_y[key] = min(yv, label_y[order[i - 1]] - 7.5) if i else yv
+    label_y = {key: rows[key]['ticket'] for key in order}
+    for _ in range(100):  # keep the end labels at least 8.5 units apart, each as near its line's end as that allows
+        for upper, lower in zip(order, order[1:]):
+            short = 8.5 - (label_y[upper] - label_y[lower])
+            if short > 0:
+                label_y[upper] += short / 2
+                label_y[lower] -= short / 2
+    S.check('fig02 (c) end labels stay in their lines\' order, within 3 units of their ends', 1,
+            int(all(abs(label_y[k] - rows[k]['ticket']) <= 3 for k in order)
+                and all(label_y[a] > label_y[b] for a, b in zip(order, order[1:]))))
     for key in order:
         r = rows[key]
         text = f"{r['rise']:+.1f}"
         S.check(f'fig02 (c) label {r["name"]} {text}', round(r['rise'], 1), float(text))
-        S.label(cx, 1.1, label_y[key], f"{r['name']}  {text}", ha='left', va='center', clip_on=False)
+        S.label(cx, 1.13, label_y[key], f"{r['name']}  {text}", ha='left', va='center', clip_on=False)
     cx.set_xlim(-0.15, 1.1)
     cx.set_ylim(0, 90)
     cx.set_xticks([0, 1], ['Comparison\nwindow', '30 days\nbefore ticket'])
@@ -317,13 +324,11 @@ def plot(out_dir=S.FIG_DIR):
     S.export(fig, NAME, out_dir)
     pc = chr(92) + '%'  # LaTeX: an escaped percent sign
     return (f'High-ticket machines form a continuum: the top {S.pct(top_k / n_devices).replace("%", pc)} of the '
-            f'{S.num(n_devices)} telemetry devices hold {S.pct(top_share, 1).replace("%", pc)} of their tickets vs. '
+            f'{S.num(n_devices)} telemetry devices hold {S.pct(top_share, 1).replace("%", pc)} of tickets vs. '
             f'{S.pct(chance_median, 1).replace("%", pc)} by chance, and allowing for spread between machines, only '
             f'{S.num(n_nb_kept)} rate outliers still stand out. '
-            f'(a)~Share of tickets held by the top devices. '
-            f'(b)~Tickets vs. expected tickets for the {S.num(n_tested)} devices with months active, with the '
-            f'{S.num(n_chronic)} chronic outliers at {S.num(n_chronic_customers)} customers. '
-            f'(c)~Non-success codes before the {S.num(n_paired)} paired tickets, rising alike in each group.')
+            f'(a)~Concentration; (b)~{S.num(n_chronic)} chronic outliers at {S.num(n_chronic_customers)} customers; '
+            f'(c)~codes rise alike.')
 
 
 if __name__ == '__main__':

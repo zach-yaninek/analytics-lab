@@ -151,13 +151,13 @@ def plot(out_dir=S.FIG_DIR):
                  & (weak.age_std_hi >= byar_hi / weak.expected_age_only - 1e-12)).all()))
     own = own.sort_values(['ratio', 'months'], kind='mergesort')
     S.check('fig04 (b) scrubBank 480 runs highest of the models with their own rate', 1, int(own.index[-1] == SB))
-    S.check('fig04 caption: models drawn = models with 100 or more installed months', int((models.months >= 100).sum()),
+    S.check('fig04 (b) models drawn = models with 100 or more installed months', int((models.months >= 100).sum()),
             len(own))
-    S.check('fig04 caption: 100 installed months for a rate of its own (fx_summary.json)', 100, defs['min_type_months'])
-    S.check('fig04 caption: 10 accounts for a bootstrap interval alone (fx_summary.json)', 10, defs['min_clusters'])
+    S.check('fig04 (b) 100 installed months for a rate of its own (fx_summary.json)', 100, defs['min_type_months'])
+    S.check('fig04 (b) 10 accounts for a bootstrap interval alone (fx_summary.json)', 10, defs['min_clusters'])
     level = re.search(r'\*\*Intervals:\*\* (\d+)%, from a cluster bootstrap that resamples accounts', DOC.read_text())
     S.check('fig04 caption: 95% intervals (docs/06)', 95, int(level.group(1)))
-    S.check('fig04 caption: weak groups get the wider of the bootstrap and the exact Poisson interval (docs/06)', 1,
+    S.check('fig04 (b) weak groups get the wider of the bootstrap and the exact Poisson interval (docs/06)', 1,
             int('fewer than 10 accounts' in DOC.read_text()
                 and 'the wider of the bootstrap and the exact Poisson (Byar) interval' in DOC.read_text()))
 
@@ -214,7 +214,8 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig04 10+ machines with a ticket that are Not Serviceable', '83', S.num(n_old_ns))
     S.report_check('fig04 10+ machines with a ticket', '164', S.num(n_old))
 
-    fig, (ax, bx, cx) = S.figure(2.6, ncols=3, width_ratios=[0.92, 0.88, 1.2])
+    fig, (ax, bx, cx) = S.figure(2.2, ncols=3, width_ratios=[0.92, 0.88, 1.2])
+    blank = dict(fc=S.WHITE, ec='none', pad=0.6)   # keeps the light grid out of a label
 
     # (a) the three busiest models' shares, each labelled above its bar; the one green readout is their ticket share
     rows = [('Installed machine-months', share_months, S.GREY_FILL, 0.0),
@@ -222,7 +223,7 @@ def plot(out_dir=S.FIG_DIR):
             ('Unplanned tickets', share_tickets, S.COBALT, 2.7)]
     for name, value, colour, y in rows:
         ax.barh(y, value, height=0.36, color=colour, zorder=3)
-        S.label(ax, 0.004, y - 0.26, name, va='bottom', linespacing=1.0)
+        S.label(ax, 0.004, y - 0.26, name, va='bottom', linespacing=1.0, bbox=blank)
         text = S.pct(value)
         S.check(f'fig04 (a) label {name!r} {text}', round(100 * value), float(text.rstrip('%')))
         key = colour == S.COBALT
@@ -248,13 +249,16 @@ def plot(out_dir=S.FIG_DIR):
     sb = own.loc[SB]
     text = f'{S.num(sb.ratio, 1)}×'
     S.check(f'fig04 (b) label {text}', round(sb.ratio, 1), float(text.rstrip('×')))
-    S.label(bx, xs[focal][0] - 0.9, (sb.ratio + sb.age_std_hi) / 2, f'{SB}\n{text}', ha='right', va='center',
-            linespacing=1.15)   # beside the upper half of its interval, clear of the next models' intervals
+    # beside the upper half of its interval, clear of the next models' intervals, between two gridlines
+    y_sb = math.floor((sb.ratio + sb.age_std_hi) / 2) + 0.5
+    S.check('fig04 (b) the scrubBank 480 label sits beside the upper half of its interval', 1,
+            int(sb.ratio < y_sb < sb.age_std_hi))
+    S.label(bx, xs[focal][0] - 0.9, y_sb, f'{SB}\n{text}', ha='right', va='center', linespacing=1.15)
     bx.set_xlim(-1, len(own))
     bx.set_xticks([])
     bx.set_ylim(0, 4.1)
     bx.set_yticks([0, 1, 2, 3, 4])
-    bx.set_ylabel('Ratio to the fleet, age for age')
+    bx.set_ylabel('Ratio to the fleet,\nage for age')
     bx.set_xlabel(f'{S.num(len(own))} models, sorted by ratio')
     S.clean(bx, grid='y', bottom=False)
     S.panel(bx, 'b', 'Models vs. the fleet')
@@ -282,16 +286,16 @@ def plot(out_dir=S.FIG_DIR):
     S.check(f'fig04 (c) label 10+ {text_old}', round(rate_old, 1), float(text_old))
     S.label(cx, xo, float(ages.ci_hi[oldest]) + 0.2, text_old, ha='center', va='bottom')
     # the note, naming its band, in the empty space above the older bands (a leader would read as an interval)
-    S.label(cx, xo + 0.38, 10.75, f'At {oldest} years,\n{S.num(n_old_ns)} of the {S.num(n_old)} machines\n'
-            f'with a ticket are\n{NOT_SERVICEABLE}', ha='right', va='top', linespacing=1.1)
+    S.label(cx, xo + 0.38, 11.45, f'At {oldest} years, {S.num(n_old_ns)} of\nthe {S.num(n_old)} machines\n'
+            f'with a ticket are\n{NOT_SERVICEABLE}', ha='right', va='top', linespacing=1.0, bbox=blank)
     text_fleet = f'Fleet {S.num(fleet_rate, 1)}'
     S.label(cx, 3.17, fleet_rate + 0.2, text_fleet, ha='center', va='bottom')   # between the 2-4 bar and 6-8 interval
     cx.set_xticks(np.arange(n + 1)[:-1] - 0.5, [S.num(e) for e in edges])   # between the bars: the bands' edges
     cx.set_xlim(-0.5, n - 0.5)
-    cx.set_ylim(0, 11)
+    cx.set_ylim(0, 11.5)
     cx.set_yticks([0, 2.5, 5, 7.5, 10], ['0', '2.5', '5', '7.5', '10'])
     cx.set_xlabel('Machine age (years)')
-    cx.set_ylabel('Tickets per 100 installed\nmachine-months')
+    cx.set_ylabel('Tickets per 100\nmachine-months')
     S.clean(cx, grid='y', left=False)
     S.panel(cx, 'c', 'Rates by machine age')
 
@@ -303,14 +307,9 @@ def plot(out_dir=S.FIG_DIR):
     S.export(fig, NAME, out_dir)
     pc = lambda share: S.pct(share).replace('%', chr(92) + '%')  # noqa: E731
     return (f'The three busiest models hold {pc(share_months)} of machine-months and {pc(share_tickets)} of tickets, '
-            f'{youth}; {SB} runs {S.num(sb_ratio, 1)} times the fleet age for age; and machines under {YOUNG} years '
+            f'{youth}; {SB} runs {S.num(sb_ratio, 1)} times the fleet age for age; machines under {YOUNG} years '
             f'run about {S.num(rate_young)} per 100 vs. {S.num(rate_old, 1)} at {OLD} years or more. '
-            f'(a)~Bars show the busiest models\' shares. '
-            f'(b)~Points show the {S.num(len(own))} models with {S.num(defs["min_type_months"])} or more '
-            f'machine-months. '
-            f'(c)~Bars show rates by age, with the fleet\'s {S.num(fleet_rate, 1)} dashed. '
-            f'Lines show {S.num(int(level.group(1)))}\\% bootstrap intervals over accounts, widened to exact Poisson '
-            f'ones for {S.num(len(weak))} models in under {S.num(defs["min_clusters"])} accounts.')
+            f'(a)~Shares; (b)~models; (c)~ages; {S.num(int(level.group(1)))}\\% intervals.')
 
 
 if __name__ == '__main__':

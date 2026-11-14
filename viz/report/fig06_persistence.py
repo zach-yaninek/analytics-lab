@@ -43,8 +43,9 @@ SHORT = 'Persistence and outliers'
 MIN_E_HALF = 3      # the rank correlation's customers: at least 3 expected tickets in each half
 CUT = 3             # the report's machines: 3 or more first-half tickets
 P_HALF = 0.05       # consistent outliers: one-sided Poisson p below this in each half
+LEVEL = 95          # panel (b): the bootstrap intervals' level, in percent (the script's 2.5th to 97.5th percentiles)
 ZERO = 0.05         # panel (a): a ratio of 0 is drawn here, below the log range, and marked 0
-LOG_LO, LOG_HI = 0.085, 30
+LOG_LO, LOG_HI = 0.085, 40
 RATIO_TICKS = [0.25, 0.5, 1, 2, 4, 8]
 
 
@@ -196,7 +197,7 @@ def plot(out_dir=S.FIG_DIR):
         np.add.at(o, cluster_of[sel], o2[sel])
         np.add.at(e, cluster_of[sel], e2[sel])
         with np.errstate(invalid='ignore', divide='ignore'):
-            return np.nanpercentile((weights @ o) / (weights @ e), [2.5, 97.5])
+            return np.nanpercentile((weights @ o) / (weights @ e), [(100 - LEVEL) / 2, (100 + LEVEL) / 2])
 
     for name in ('1', '2', '3', '4+'):
         sel = (h1 >= 4) if name == '4+' else (h1 == int(name))
@@ -258,7 +259,7 @@ def plot(out_dir=S.FIG_DIR):
                    'no' if n_nb == 0 else S.num(n_nb))
     S.report_check('fig06 customers in the rank correlation (Definitions)', '311', S.num(len(both_halves)))
 
-    fig, (ax, bx, cx) = S.figure(2.6, ncols=3, width_ratios=[1.32, 1.08, 0.82])
+    fig, (ax, bx, cx) = S.figure(2.2, ncols=3, width_ratios=[1.74, 0.93, 0.82])
 
     # (a) customers by half, log axes with the zero row and column
     xs = np.where(str_h1 > 0, str_h1, ZERO)
@@ -275,12 +276,13 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig06 every customer inside the spines', 1,
             int(max(cx_all.max(), xs.max()) < RATIO_TICKS[-1] and max(cy_all.max(), ys.max()) < 5.5))
     ax.scatter(cx_all, cy_all, s=12, color=S.COBALT, linewidths=0, zorder=4)
-    S.label(ax, 10.5, 8.5, f'{S.num(n_consistent_c)} consistent\noutliers', ha='right', va='center',
-            linespacing=1.1)
-    t1 = S.label(ax, 0.045, 29, 'Rank correlation ', ha='left', va='top', size=S.FONT)
+    # the readout top left and the cluster's label top right, both above the spines; the label's first line is level
+    # with the readout's second, well to its right
+    S.label(ax, 10.5, 21, f'{S.num(n_consistent_c)} consistent\noutliers', ha='right', va='top', linespacing=1.0)
+    t1 = S.label(ax, 0.045, 39, 'Rank correlation ', ha='left', va='top', size=S.FONT)
     ax.annotate(S.num(rho, 2), xy=(1, 1), xycoords=t1, ha='left', va='top', fontsize=S.FONT,
                 fontweight='bold', color=S.GREEN)
-    S.label(ax, 0.045, 17, f'{S.num(rho_null, 2)} when shuffled', ha='left', va='top')
+    S.label(ax, 0.045, 21, f'{S.num(rho_null, 2)} when shuffled', ha='left', va='top')
     ax.set_xscale('log')
     ax.set_yscale('log')
     for axis in (ax.xaxis, ax.yaxis):
@@ -308,12 +310,12 @@ def plot(out_dir=S.FIG_DIR):
             S.check(f'fig06 (b) label {b["name"]} {text}', round(script_ratio[b['name']], 1), float(text))
             S.label(bx, i, b['hi'] + 0.07, text, ha='center', va='bottom', size=S.FONT, weight='bold')
     bx.axhline(1, color=S.GREY_DARK, lw=0.8, ls=(0, (4, 2.5)), zorder=2)
-    bx.set_xticks(np.arange(len(bars)), [b['name'] for b in bars])
+    bx.set_xticks(np.arange(len(bars)), [f'{CUT}+' if b['name'] == f'{CUT} or more' else b['name'] for b in bars])
     bx.set_xlim(-0.55, len(bars) - 0.45)
     bx.set_ylim(0, 3.45)
     bx.set_yticks([0, 1, 2, 3])
     bx.set_xlabel('First-half tickets')
-    bx.set_ylabel('Second-half tickets ÷ expected')
+    bx.set_ylabel('Second-half tickets\n÷ expected')
     S.clean(bx, grid='y')
     S.panel(bx, 'b', 'Machines by first-half tickets')
 
@@ -335,13 +337,11 @@ def plot(out_dir=S.FIG_DIR):
 
     S.export(fig, NAME, out_dir)
     pc = chr(92) + '%'  # LaTeX: an escaped percent sign
+    group = 'no separate group' if n_nb == 0 else 'a separate group'
     return (f'Customers above their fleets in the first half tend to stay above them in the second (rank correlation '
             f'{S.num(rho, 2)} vs. {S.num(rho_null, 2)} when shuffled), and machines with {CUT} or more first-half '
-            f'tickets had {S.num(ratio_3, 1)} times their expected tickets in the second half. '
-            f'(a)~The {S.num(len(both_halves))} customers in the correlation and {S.num(n_other_consistent)} other '
-            f'consistent outliers. '
-            f'(b)~Machines by first-half tickets, with 95{pc} bootstrap intervals over customers. '
-            f'(c)~Chronic outliers and flagged machines, none standing out as a separate group.')
+            f'tickets had {S.num(ratio_3, 1)} times their expected second-half tickets. '
+            f'(a)~Customers; (b)~{S.num(LEVEL)}{pc} intervals; (c)~{group}.')
 
 
 if __name__ == '__main__':

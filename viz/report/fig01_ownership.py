@@ -63,7 +63,7 @@ def plot(out_dir=S.FIG_DIR):
             ('City, State, ZIP5', zip5, S.GREY_FILL)]
     for i, (name, value, colour) in enumerate(rows):
         bx.barh(-i, value, height=0.55, color=colour, zorder=3)
-        S.label(bx, value + 12, -i, S.num(value))
+        S.label(bx, value + 12, -i, S.num(value), bbox=dict(fc=S.WHITE, ec='none', pad=0.8))  # grid kept out
     bx.set_yticks([-i for i in range(len(rows))], [r[0] for r in rows])
     bx.set_xlim(0, 980)
     bx.set_xticks([0, 250, 500, 750])
@@ -72,11 +72,11 @@ def plot(out_dir=S.FIG_DIR):
     S.panel(bx, 'b', 'Accounts and sites')
 
     S.export(fig, NAME, out_dir)
-    return (f'Ticket serials reach {S.num(n_reached)} of the {S.num(n_devices)} telemetry devices '
-            f'({S.pct(n_reached / n_devices).replace("%", chr(92) + "%")}), and accounts are individual facilities. '
-            f'(a)~Devices in the telemetry device table, by whether a ticket serial reaches them. '
-            f'(b)~The {S.num(accounts)} accounts against the sites they occupy, counted as distinct address strings '
-            f'({S.num(strings)}) and as distinct City, State, and ZIP5 combinations ({S.num(zip5)}).')
+    return (f'Ticket serials reach {S.num(n_reached)} of {S.num(n_devices)} devices '
+            f'({S.pct(n_reached / n_devices).replace("%", chr(92) + "%")}), and accounts are individual facilities '
+            f'({S.num(accounts)} accounts at {S.span(zip5, strings).replace("–", "--")} sites), so fleets come from '
+            f'the installed-base list. (a)~Devices in the telemetry device table; (b)~sites counted as distinct '
+            f'address strings or as City, State, and ZIP5.')
 
 
 if __name__ == '__main__':

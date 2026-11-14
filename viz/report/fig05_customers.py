@@ -174,7 +174,7 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig05 customers with expected tickets = fx_summary.json', cs['customers_with_E'], n)
     S.check('fig05 the customers with installed months are those with expected tickets', 1,
             int(((customers.months > 0) == (customers.expected > 0)).all()))
-    S.check('fig05 caption: they are the customers with machines in the fleet', 1,
+    S.check('fig05 (a) the customers drawn are those with machines in the fleet', 1,
             int(((customers.machines > 0) == (customers.expected > 0)).all()
                 and customers.machines.sum() == summary['fleet']['machines_exposed']))
     O, E = c.tickets.to_numpy(float), c.expected.to_numpy(float)
@@ -254,7 +254,7 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig05 their share of tickets', '47%', S.pct(top_obs))
     S.report_check('fig05 the same share from their fleets plus chance', '39%', S.pct(chance_share))
 
-    fig, (ax, bx) = S.figure(2.4, ncols=2, width_ratios=[1.4, 1])
+    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1.4, 1])
 
     # (a) the funnel: log axes, the customers with no ticket on the 0 row
     ys = np.where(O > 0, ratio, ZERO_Y)
@@ -273,15 +273,14 @@ def plot(out_dir=S.FIG_DIR):
     (i_out,) = np.flatnonzero(beyond)
     ax.scatter(E[i_out], ys[i_out], s=70, facecolors='none', edgecolors=S.TEXT, linewidths=0.8, zorder=5)
     # the ringed customer, labelled above it in the empty space over the normal-spread limit
-    ax.annotate('Outside the\nnormal spread', xy=(E[i_out], ys[i_out]), xytext=(2.5, 11.5), textcoords='data',
+    ax.annotate('Outside the\nnormal spread', xy=(E[i_out], ys[i_out]), xytext=(2.1, 13), textcoords='data',
                 ha='center', va='bottom', fontsize=S.TICK, linespacing=1.0,
                 arrowprops=dict(arrowstyle='-', color=S.TEXT, lw=0.5, shrinkA=1, shrinkB=4.5))
-    # the one green readout, top right above the limits: the customers beyond chance and their tickets vs. expected
+    # the one green readout, top right above the limits: the customers beyond chance (their tickets vs. expected are
+    # in the caption)
     t1 = S.label(ax, 235, Y_TOP * 0.93, ' beyond chance', ha='right', va='top', size=S.FONT)
     ax.annotate(S.num(n_flagged), xy=(0, 1), xycoords=t1, ha='right', va='top', fontsize=S.FONT, fontweight='bold',
                 color=S.GREEN)
-    S.label(ax, 235, 25, f'{S.num(flagged_tickets)} tickets vs.\n{S.num(flagged_expected)} expected', ha='right',
-            va='top', linespacing=1.1)
     # the limits, each labelled just above its right end
     S.label(ax, 235, 1.36, 'Chance', ha='right', va='bottom')
     S.label(ax, 235, 4.0, 'Normal spread', ha='right', va='bottom')
@@ -295,7 +294,7 @@ def plot(out_dir=S.FIG_DIR):
     zero_log_axis(ax.yaxis, ZERO_Y, RATIO_TICKS)
     ax.spines['left'].set_bounds(LOG_LO, LOG_HI)
     ax.set_xlabel('Expected tickets (log scale)')
-    ax.set_ylabel('Tickets ÷ expected (log scale)')
+    ax.set_ylabel('Tickets ÷ expected\n(log scale)')
     S.clean(ax)
     S.panel(ax, 'a', 'Customers vs. their fleets')
 
@@ -318,7 +317,7 @@ def plot(out_dir=S.FIG_DIR):
     S.label(bx, TOP - 0.01, top_obs + 0.025, obs_text, ha='right', va='bottom', bbox=blank, zorder=6)
     S.label(bx, TOP + 0.01, chance_share - 0.03, chance_text, ha='left', va='top', bbox=blank, zorder=6)
     S.label(bx, TOP + 0.007, 0.02, f'Top {S.pct(TOP)}', ha='left', va='bottom')
-    xo, xc = 0.215, 0.21
+    xo, xc = 0.19, 0.21   # each label between two gridlines
     S.label(bx, xo - 0.006, float(top_share(O, xo)) + 0.035, 'Observed', ha='right', va='bottom', bbox=blank,
             zorder=6)
     S.label(bx, xc + 0.006, float(np.interp(xc, grid, lorenz.ticket_share_null_p2_5)) - 0.035, 'Fleets plus chance',
@@ -345,10 +344,7 @@ def plot(out_dir=S.FIG_DIR):
             f'{S.num(flagged_expected)} expected), and {S.num(n_beyond)} lies outside the normal spread; the top '
             f'{pc(TOP)} of customers hold {pc(top_obs)} of tickets vs. {pc(chance_share)} from their fleets plus '
             f'chance. '
-            f'(a)~Points show the {S.num(n)} customers with machines in the fleet, with the limits for beyond chance '
-            f'and for the normal spread. '
-            f'(b)~Lines show the share of tickets held by the top customers, observed and from fleets plus chance, '
-            f'with the middle 95\\% of {S.num(summary["n_null"])} draws shaded.')
+            f'(a)~{S.num(n)} customers; (b)~band, the middle 95\\% of {S.num(summary["n_null"])} chance draws.')
 
 
 if __name__ == '__main__':

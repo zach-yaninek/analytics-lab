@@ -169,7 +169,7 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig07 August 2026 tickets with status Trouble Closed', '461', S.num(n_closed))
     S.report_check('fig07 of the 461, with both fields', 'nearly all', how_many(both_closed, n_closed))
 
-    fig, (ax, bx) = S.figure(2.0, ncols=2, width_ratios=[1.05, 1])
+    fig, (ax, bx) = S.figure(1.8, ncols=2, width_ratios=[1.05, 1])
 
     # (a) each clock's steps: cobalt those that go backwards, grey the rest; each count just right of its segment
     rows = [('Export clock', export.backward), ('Hospital-local,\nstate and ZIP3', zip3.backward),
@@ -185,7 +185,7 @@ def plot(out_dir=S.FIG_DIR):
     ax.set_yticks(range(len(rows)), [r[0] for r in rows], linespacing=1.0)
     ax.set_ylim(len(rows) - 0.45, -0.55)
     ax.set_xlim(0, n_steps)
-    ax.set_xticks([0, 2000, 4000, 6000, n_steps])
+    ax.set_xticks([0, 2500, 5000, n_steps])       # even steps that leave the total's tick clear
     S.thousands_axis(ax.xaxis)
     ax.set_xlabel('Steps between consecutive tickets')
     S.clean(ax, left=False)
@@ -196,7 +196,7 @@ def plot(out_dir=S.FIG_DIR):
                 (f'{S.num(n_closed)} Trouble Closed tickets', n_closed, closed_field, 2.75)]
     ticks, names = [], []
     for heading, n, field, y0 in groups_b:
-        S.label(bx, 0, y0 - 0.62, heading, va='center')
+        S.label(bx, 0, y0 - 0.68, heading, va='center')
         for j, name in enumerate(FIELDS):
             y, share = y0 + j, field[name] / n
             bx.barh(y, share, height=0.56, color=S.COBALT, zorder=3)
@@ -221,9 +221,8 @@ def plot(out_dir=S.FIG_DIR):
     return (f'Opening times never step backwards in case-number order ({S.num(export.backward)} of {S.num(n_steps)} '
             f'steps) but would {S.num(lo)}--{S.num(hi)} times on hospital-local clocks, and Trouble Code and Category '
             f'are filled on {S.num(both_open)} of {S.num(n_open)} open tickets '
-            f'vs.~{how_many(both_closed, n_closed)} of the {S.num(n_closed)} {month_label} Trouble Closed tickets. '
-            f'(a)~Bars show each clock\'s steps; zones follow state and ZIP3, or state alone. '
-            f'(b)~Bars show the share with each field filled.')
+            f'vs. {how_many(both_closed, n_closed)} of the {S.num(n_closed)} {month_label} Trouble Closed tickets. '
+            f'(a)~Two zone maps.')
 
 
 if __name__ == '__main__':
