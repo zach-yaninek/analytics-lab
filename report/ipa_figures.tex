@@ -1,0 +1,106 @@
+% The report's Figures section, written by viz/report/run_all.py from each figure script's caption; edit the
+% captions in viz/report/figNN_*.py and re-run it. Each figure supports one Results paragraph, which ends with
+% (Figure~\ref{...}). Needs \usepackage{graphicx} in the preamble; the PDFs are in figures/ beside this file.
+% The float settings below let up to three figures share a page; they apply from here to the end of the document.
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{3}
+\setcounter{totalnumber}{4}
+
+\section{Figures}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig01_ownership.pdf}
+  \caption[Ticket serials and accounts]{Ticket serials reach 3,041 of the 7,183 telemetry devices (42\%), and accounts are individual facilities. (a)~Devices in the telemetry device table, by whether a ticket serial reaches them. (b)~The 845 accounts against the sites they occupy, counted as distinct address strings (837) and as distinct City, State, and ZIP5 combinations (725).}
+  \label{fig:ownership}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig02_high_ticket.pdf}
+  \caption[High-ticket machines]{High-ticket machines form a continuum: the top 5\% of the 6,621 telemetry devices hold 32.9\% of their tickets vs.~22.2\% by chance, and allowing for spread between machines, only 2 rate outliers still stand out. (a)~Share of tickets held by the top devices. (b)~Tickets vs.~expected tickets for the 6,423 devices with months active, with the 113 chronic outliers at 82 customers. (c)~Non-success codes before the 3,259 paired tickets, rising alike in each group.}
+  \label{fig:high-ticket}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig03_repeats.pdf}
+  \caption[Repeat tickets vs. random timing]{Of 6,665 eligible tickets, 23.6\% repeat within 30 days and 9.5\% within 7 days, 1.53 and 2.30 times random timing's shares, and without monitoring tickets the 30-day share is 22.0\%. (a)~Bars show the 7- and 30-day shares, observed and under random timing. (b)~Lines show the share that repeats within each number of days up to 30. The eligible tickets are on 3,495 machines.}
+  \label{fig:repeats}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig04_rates.pdf}
+  \caption[Rates by model and age]{The three busiest models hold 42\% of machine-months and 51\% of tickets, partly because they are younger; scrubBank 480 runs 2.6 times the fleet age for age; and machines under 4 years run about 8 per 100 vs.~2.5 at 10 years or more. (a)~Bars show the busiest models' shares. (b)~Points show the 27 models with 100 or more machine-months. (c)~Bars show rates by age, with the fleet's 6.2 dashed. Lines show 95\% bootstrap intervals over accounts, widened to exact Poisson ones for 2 models in under 10 accounts.}
+  \label{fig:rates}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig05_customers.pdf}
+  \caption[Customers vs. their fleets]{63 customers exceed their fleets beyond chance (1,732 tickets vs.~747 expected), and 1 lies outside the normal spread; the top 10\% of customers hold 47\% of tickets vs.~39\% from their fleets plus chance. (a)~Points show the 1,056 customers with machines in the fleet, with the limits for beyond chance and for the normal spread. (b)~Lines show the share of tickets held by the top customers, observed and from fleets plus chance, with the middle 95\% of 1,000 draws shaded.}
+  \label{fig:customers}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig06_persistence.pdf}
+  \caption[Persistence and outliers]{Customers above their fleets in the first half tend to stay above them in the second (rank correlation 0.46 vs.~0.04 when shuffled), and machines with 3 or more first-half tickets had 2.6 times their expected tickets in the second half. (a)~The 311 customers in the correlation and 8 other consistent outliers. (b)~Machines by first-half tickets, with 95\% bootstrap intervals over customers. (c)~Chronic outliers and flagged machines, none standing out as a separate group.}
+  \label{fig:persistence}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig07_clock.pdf}
+  \caption[Ticket clock and issue fields]{Opening times never step backwards in case-number order (0 of 7,470 steps) but would 1,295--1,312 times on hospital-local clocks, and Trouble Code and Category are filled on 1 of 64 open tickets vs.~nearly all of the 461 August 2026 Trouble Closed tickets. (a)~Bars show each clock's steps; zones follow state and ZIP3, or state alone. (b)~Bars show the share with each field filled.}
+  \label{fig:clock}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig08_first_look.pdf}
+  \caption[First look at codes]{Door codes appear before 68\% of the 3,259 paired tickets vs.~61\% of their comparison windows, and electronics codes before 20\% vs.~13\%. (a)~Dots show the share of paired tickets with a code of each group among the last 10 codes of the ticket window (filled) and the comparison window (open). (b)~Bars show the paired tickets with the group in one window only.}
+  \label{fig:first-look}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig09_association.pdf}
+  \caption[Association results]{The odds that a ticket's own codes appear in its final 7 days rather than in its comparison window's are 3.2 times those of other faults' tickets (95\% interval 2.3--4.8). (a)~Points show the pooled ratio and each code set's ratio. (b)~Points show the pooled ratio under each sensitivity check that gives one. It rests almost entirely on scrubex machines and is provisional. Lines show 95\% cluster bootstrap intervals.}
+  \label{fig:association}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig10_request_types.pdf}
+  \caption[Request types by age]{Young machines run 8.0 tickets per 100 machine-months vs.~4.8 for older ones (1.66 times), with higher rates in nearly every request group. (a)~Points show rates by request group. (b)~Points show share ratios within model. (c)~Bars show the 1,447 extra tickets and their within-model part (80\%). (d)~Bars show Touchscreen rates by install cohort on the 15 comparison models. Lines in (b) and (d) show 95\% bootstrap intervals over accounts.}
+  \label{fig:request-types}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig11_pairings.pdf}
+  \caption[Repeat-contact pairings]{Of the 1,574 repeats, 31\% are the same Category, and 46\% of pairs of a machine's tickets a day or less apart share a Category vs.~27\% over six months apart. (a)~Bars show repeats by class. (b)~Bars show 6,980 pairs by gap. (c)~No model or telemetry type with 100 or more eligible tickets clearly stands out (smallest q, 0.12). Lines show 95\% bootstrap intervals over accounts.}
+  \label{fig:pairings}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig12_electronics.pdf}
+  \caption[Electronics cases]{Per machine-month, Electronics runs 1.71 times as often on young machines, near the 1.66 for all tickets, and Touchscreen stands out at 4.2 times. (a)~Points show rate ratios, with each Electronics Category that has 30 or more tickets in each age group. (b)~Bars show subsets of Touchscreen's 411 tickets on young machines. (c)~Bars show Touchscreen rates on the comparison models by 2022 install months (11 and 53 tickets). Lines show 95\% bootstrap intervals over accounts.}
+  \label{fig:electronics}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering\small
+  \includegraphics[width=\linewidth]{figures/fig13_verification.pdf}
+  \caption[Verification]{Every case-export number reproduced exactly, 65 of 66 checks passed on the full database, and the chronic-outlier count runs from 62 to 133 with the statistical cut-off. (a)~Bars show the share that matched, recounted from the committed tables (solid) or as recorded (hatched). (b)~Bars show the chronic outliers among the 6,621 telemetry devices, recounted from each device's q-value.}
+  \label{fig:verification}
+\end{figure}
+
+\clearpage

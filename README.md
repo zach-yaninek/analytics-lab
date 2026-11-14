@@ -54,6 +54,11 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     `followups_pptx.js` builds the follow-up PowerPoint (slides 4.1-5.4, text in `followups_pptx.json`; no customer
     names) into the same folder; `build_followups_pptx.py` builds its real-name version, which adds the update deck's
     customer slides 6 and 7 with real names.
+  - `viz/report/`: the written report's 13 figures, one per Results paragraph, in the Clear Visuals style
+    (Computer Modern type, cobalt accent, grey context; tokens and fonts copied into `viz/report/clear_visuals/` from
+    `zacbaylis/clear-visuals`). `report_style.py` holds the style, each `figNN_*.py` draws one figure from the
+    committed outputs and checks every number it shows against the outputs and the report's text, and `run_all.py`
+    draws them all, scans their text for identifiers, and writes `report/ipa_figures.tex`.
   - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
@@ -63,6 +68,8 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
   on), `ipa_flowchart_tikz.tex` (the analysis flowchart as a landscape TikZ figure, `fig:ipa-flowchart`),
   `notebooks.bib` (the Results' citations of the replication notebooks), and `IPA_sections_preview.tex`, which
   compiles them together into `IPA_sections_preview.pdf` (11 pt, letter; pdflatex, bibtex, then pdflatex twice).
+  `ipa_figures.tex` is the Figures section (written by `viz/report/run_all.py`), with the figures' PDFs in
+  `figures/`; each Results paragraph ends with a reference to its figure.
 - `notebooks/`: the replication notebooks the report's Results cites, one per group of findings
   (`01_customer_fleet_ownership.ipynb` … `08_verification.ipynb`), with their helpers in `replicate.py`. Each
   re-runs the scripts behind its paragraphs on IPA's files, compares every re-created output with the committed one,
@@ -101,6 +108,7 @@ python3 -I verification/tests/test_followups_units.py  # ~20 s; unit tests for f
 python3 -I verification/flags.py --write          # local only: per-ticket text flags for association S2/S10
 python3 -I viz/run_all.py                                 # redraw the page charts and run their checks
 python3 -I viz/slides/run_all.py                          # redraw the slide charts (incl. follow-ups sl_18-sl_31)
+python3 -I viz/report/run_all.py                          # the report's 13 figures, their checks, ipa_figures.tex
 python3 -I viz/deliverables/build_electronics_cases.py    # local only: deliverables/IPA_Electronics_Cases.xlsx
 python3 -I viz/deliverables/build_electronics_cases.py --tables  # its aggregate tables (committed)
 export NODE_PATH="$(npm root -g)"                         # the Node packages of the four builders below

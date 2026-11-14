@@ -1,0 +1,47 @@
+{
+  "version": "1.5.1",
+  "font": "CMU Serif",
+  "math_font": "cm",
+  "themes": {
+    "light": {
+      "background": "#FFFFFF",
+      "surface": "#F3F5F8",
+      "text": "#000000",
+      "muted": "#000000",
+      "grid": "#DEDEDE",
+      "primary": "#164BAE",
+      "secondary": "#666666",
+      "accent": "#164BAE",
+      "negative": "#A73D42",
+      "data": "#8A8A8A",
+      "highlight": "#408440"
+    },
+    "dark": {
+      "background": "#000000",
+      "surface": "#111111",
+      "text": "#FFFFFF",
+      "muted": "#FFFFFF",
+      "grid": "#424242",
+      "primary": "#2A65CC",
+      "secondary": "#A0A0A0",
+      "accent": "#2A65CC",
+      "negative": "#EF9797",
+      "data": "#C2C2C2",
+      "highlight": "#5EAB5E"
+    }
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "safe_margin_fraction": 0.05
+  },
+  "figure": {
+    "single_column_inches": 3.4,
+    "double_column_inches": 6.8,
+    "body_points": 9,
+    "line_width_points": 1.5,
+    "dpi": 300
+  },
+  "highlight_reference": "#5EAB5E"
+}

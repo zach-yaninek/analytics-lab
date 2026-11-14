@@ -14,6 +14,8 @@ viz/
   fleet_exposure/       fleet-exposure charts (docs/06); fleet.py = their data and term definitions
   association/          association charts (docs/08); assoc.py = their data and term definitions
   slides/               card-sized charts for the IPA deck (sl_NN_*.py); deck_style.py = their style
+  report/               the written report's figures (figNN_*.py), in the Clear Visuals style (report_style.py);
+                        they draw into report/figures/ and run_all.py writes report/ipa_figures.tex
   deliverables/         builds the real-name memo and deck PDF into the gitignored deliverables/
   figures/              rendered PNGs (pseudonymous)
   run_all.py            redraw everything and run the checks
