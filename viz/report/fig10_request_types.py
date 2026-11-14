@@ -11,8 +11,8 @@ on 2022-23 installs (1.54 per 100, 3.9 times the 2024-26 rate).
 (b) Each request group's within-model share ratio, pooled over the 15 comparison models, with its 95% bootstrap
     interval over accounts, in the rows of (a). Not categorized has none (the share ratio's base leaves it out). The
     two groups that pass the planned test, Electronics and Mechanical, are cobalt and labelled.
-(c) The 1,447 extra tickets on young machines and the 1,156 of them (80%) from young machines running above older
-    ones of the same model (the within-model part).
+(c) The 1,447 extra tickets on young machines in one bar, with the 1,156 of them (80%) from young machines running
+    above older ones of the same model (the within-model part) in cobalt.
 (d) Touchscreen tickets per 100 installed machine-months on the comparison models' machines, by install cohort, with
     95% bootstrap intervals over accounts. The connector gives the 2022-23 rate as a multiple of the 2024-26 rate.
 
@@ -282,6 +282,17 @@ def part_a(tag):
         newest=newest, interval_level=int(level.group(1)))
 
 
+def centre_under_panel(fig, ax):
+    """Centre the x-axis label under the whole panel, tick labels included, so a one-line label wider than the
+    axis takes no room beside it (two passes, as the layout settles)."""
+    for _ in range(2):
+        fig.draw_without_rendering()
+        renderer = fig.canvas.get_renderer()
+        box = ax.get_window_extent(renderer)
+        left = min(t.get_window_extent(renderer).x0 for t in ax.get_yticklabels() if t.get_text())
+        ax.xaxis.label.set_x(((left + box.x1) / 2 - box.x0) / box.width)
+
+
 # ----------------------------------------------------------------------------------------------------------------
 # The figure
 # ----------------------------------------------------------------------------------------------------------------
@@ -316,15 +327,15 @@ def plot(out_dir=S.FIG_DIR):
                                                                                              'Mechanical']))
     S.check('fig10 intervals: 95% (docs/09 §6)', 95, p.interval_level)
 
-    fig, ax0 = S.figure(2.8)
+    fig, ax0 = S.figure(2.2)
     ax0.remove()
-    axes = fig.subplot_mosaic([['a', 'b', 'c'], ['a', 'b', 'd']], width_ratios=[0.98, 0.74, 1.34],
-                              height_ratios=[0.34, 0.66])
+    axes = fig.subplot_mosaic([['a', 'b', 'c'], ['a', 'b', 'd']], width_ratios=[1.3, 0.95, 1.75],
+                              height_ratios=[0.26, 0.74])
     ax, bx, cx, dx = (axes[k] for k in 'abcd')
 
     # (a) rates by request group, young vs. older: all tickets on top, then the groups by young machines' rate
     order = crude.loc[p.groups].sort_values('young_rate', ascending=False, kind='mergesort').index.tolist()
-    ys = {ALL: 0.0} | {g: 1.6 + i for i, g in enumerate(order)}
+    ys = {ALL: 0.0} | {g: 1.25 + i for i, g in enumerate(order)}
     for g, y in ys.items():
         r = crude.loc[g]
         ax.plot([r.older_rate, r.young_rate], [y, y], color=S.GREY, lw=1.0, zorder=2)
@@ -338,7 +349,7 @@ def plot(out_dir=S.FIG_DIR):
         S.label(ax, x, 0, text, ha=ha)
     text = f'{S.num(p.ratio_all, 2)}×'
     S.check(f'fig10 (a) label {text}', round(p.ratio_all, 2), float(text.rstrip('×')))
-    S.label(ax, np.sqrt(a.older_rate * a.young_rate), -0.78, text, ha='center', size=S.FONT, weight='bold',
+    S.label(ax, np.sqrt(a.older_rate * a.young_rate), -0.9, text, ha='center', size=S.FONT, weight='bold',
             color=S.GREEN)
     top = crude.loc[order[0]]                 # the first group's marks carry the direct labels
     S.label(ax, top.older_rate / 1.3, ys[order[0]], 'Older', ha='right')
@@ -348,10 +359,10 @@ def plot(out_dir=S.FIG_DIR):
     ax.set_xticks([0.1, 0.3, 1, 3, 10], ['0.1', '0.3', '1', '3', '10'])
     ax.xaxis.set_minor_locator(NullLocator())
     ax.set_yticks(list(ys.values()), [SHOWN.get(g, g) for g in ys])
-    ax.set_ylim(max(ys.values()) + 0.7, -1.25)
-    ax.set_xlabel('Tickets per 100\nmachine-months (log scale)')
+    ax.set_ylim(max(ys.values()) + 0.55, -1.35)
+    ax.set_xlabel('Per 100 machine-months (log scale)')
     S.clean(ax, grid='x', left=False)
-    S.panel(ax, 'a', 'Rates by request group')
+    S.panel(ax, 'a', 'Ticket rates')
 
     # (b) within-model share ratio of each group, in the rows of (a); the two that pass the test in cobalt
     for g in order:
@@ -376,24 +387,23 @@ def plot(out_dir=S.FIG_DIR):
     bx.set_xlim(0.25, 4.6)
     bx.set_xticks([0.5, 1, 2, 4], ['0.5', '1', '2', '4'])
     bx.xaxis.set_minor_locator(NullLocator())
-    bx.set_xlabel('Share ratio\n(log scale)')
+    bx.set_xlabel('Share ratio (log scale)')
     S.clean(bx, grid='x', left=False)
-    S.panel(bx, 'b', 'Share within model')
+    S.panel(bx, 'b', 'Within model')
 
-    # (c) the extra tickets on young machines and the within-model part
-    rows = [('All', p.extra, S.GREY_FILL, 0.0), ('Within model', p.within, S.COBALT, 1.15)]
-    for name, value, colour, y in rows:
-        cx.barh(y, value, height=0.36, color=colour, zorder=3)
-        S.label(cx, 8, y - 0.25, name, va='bottom')
-    for text, value, y in ((S.num(p.extra), p.extra, 0.0),
-                           (f'{S.num(p.within)} ({S.pct(share_within)})', p.within, 1.15)):
+    # (c) the extra tickets on young machines in one bar, the within-model part in cobalt
+    S.check('fig10 (c) the within-model part lies inside the extra tickets', 1, int(0 < p.within < p.extra))
+    cx.barh(0, p.within, height=0.6, color=S.COBALT, zorder=3)
+    cx.barh(0, p.extra - p.within, left=p.within, height=0.6, color=S.GREY_FILL, zorder=3)
+    for text, value in ((S.num(p.extra), p.extra), (f'{S.num(p.within)} ({S.pct(share_within)})', p.within)):
         S.check(f'fig10 (c) label {text}', round(value), float(text.split(' ')[0].replace(',', '')))
-        S.label(cx, value + 25, y, text)
     S.check(f'fig10 (c) label ({S.pct(share_within)})', round(100 * share_within),
             float(S.pct(share_within).rstrip('%')))
-    cx.set_ylim(1.5, -0.8)
+    S.label(cx, p.extra + 25, 0, S.num(p.extra))
+    S.label(cx, 8, -0.42, f'Within model {S.num(p.within)} ({S.pct(share_within)})', va='bottom')
+    cx.set_ylim(0.45, -1.3)
     cx.set_yticks([])
-    cx.set_xlim(0, 2050)
+    cx.set_xlim(0, 1850)
     cx.set_xticks([0, 500, 1000, 1500])
     S.thousands_axis(cx.xaxis)
     S.clean(cx, grid='x', left=False)
@@ -420,8 +430,8 @@ def plot(out_dir=S.FIG_DIR):
     dx.set_xticks(range(len(names)), [dashed(c) for c in names])
     dx.tick_params(axis='x', length=0)
     dx.set_xlim(-0.55, len(names) - 0.45)
-    dx.set_ylim(0, 2.25)
-    dx.set_yticks([0, 0.5, 1.0, 1.5, 2.0], ['0', '0.5', '1.0', '1.5', '2.0'])
+    dx.set_ylim(0, 2.3)
+    dx.set_yticks([0, 1.0, 2.0], ['0', '1.0', '2.0'])
     dx.set_xlabel('Install years')
     dx.set_ylabel('Tickets per 100\nmachine-months')
     S.clean(dx, grid='y', left=False)
@@ -435,15 +445,13 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig10 (c) bars inside the axis', 1, int(p.extra < cx.get_xlim()[1]))
     S.check('fig10 (d) intervals inside the axis', 1, int(p.cohorts.hi.max() + 0.3 < dx.get_ylim()[1]))
 
+    centre_under_panel(fig, ax)
     S.export(fig, NAME, out_dir)
     pc = lambda share: S.pct(share).replace('%', chr(92) + '%')  # noqa: E731
-    return (f'Young machines run {S.num(p.rate_young, 1)} tickets per 100 machine-months vs.~{S.num(p.rate_old, 1)} '
+    return (f'Young machines run {S.num(p.rate_young, 1)} tickets per 100 machine-months vs. {S.num(p.rate_old, 1)} '
             f'for older ones ({S.num(p.ratio_all, 2)} times), with higher rates in {p.groups_word} request group. '
-            f'(a)~Points show rates by request group. '
-            f'(b)~Points show share ratios within model. '
-            f'(c)~Bars show the {S.num(p.extra)} extra tickets and their within-model part ({pc(share_within)}). '
-            f'(d)~Bars show {FOCUS} rates by install cohort on the {S.num(len(p.comparison))} comparison models. '
-            f'Lines in (b) and (d) show {p.interval_level}\\% bootstrap intervals over accounts.')
+            f'(a)~By request group; (b)~share ratios, {p.interval_level}\\% intervals; (c)~{S.num(p.extra)} extra '
+            f'tickets, {pc(share_within)} within model; (d)~{FOCUS} by cohort, {p.interval_level}\\% intervals.')
 
 
 if __name__ == '__main__':

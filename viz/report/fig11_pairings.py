@@ -138,7 +138,7 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig11 intervals: the protocol\'s draws = the summary\'s', summary['n_boot'],
             int(level.group(2).replace(',', '')))
     recorded = re.search(r'\(([\d,]+) pairs;', RESULTS.read_text())
-    S.check('fig11 caption: pairs = docs/10 (Same Category by gap)', int(recorded.group(1).replace(',', '')), n_pairs)
+    S.check('fig11 (b) pairs = docs/10 (Same Category by gap)', int(recorded.group(1).replace(',', '')), n_pairs)
 
     # (c) models and telemetry types with 100 or more eligible tickets, relative to the fleet
     min_eligible, alpha = defs['min_eligible'], defs['alpha']
@@ -154,8 +154,8 @@ def plot(out_dir=S.FIG_DIR):
             sum(len(summary['facts']['part_b'][k]) for k in ('models_above', 'models_below', 'types_above',
                                                               'types_below')))
     script_q = pd.concat([pd.read_csv(S.OUT / 'followups' / f).srr_q for f in ('rp_by_model.csv', 'rp_by_type.csv')])
-    S.check('fig11 caption: smallest q = the script\'s', round(float(script_q.min()), 2), float(S.num(q_min, 2)))
-    S.check('fig11 caption: smallest q is not under alpha', 1, int(q_min >= alpha))
+    S.check('fig11 (c) smallest q = the script\'s', round(float(script_q.min()), 2), float(S.num(q_min, 2)))
+    S.check('fig11 (c) smallest q is not under alpha', 1, int(q_min >= alpha))
 
     S.report_check('fig11 repeats', '1,574', S.num(n_repeats))
     S.report_check('fig11 same Category', '31%', S.pct(share['Same Category']))
@@ -172,13 +172,13 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig11 models tested (Definitions, Clearly stands out)', '12', S.num(len(models)))
     S.report_check('fig11 telemetry types tested (Definitions, Clearly stands out)', '11', S.num(len(types)))
 
-    fig, (ax, bx, cx) = S.figure(2.7, ncols=3, width_ratios=[0.8, 1.12, 1.08])
+    fig, (ax, bx, cx) = S.figure(2.2, ncols=3, width_ratios=[1.12, 1.0, 1.0])
 
     # (a) the repeats by class, each labelled above its bar (the process classes last, after a wider gap)
     rows = [('Same Category', share['Same Category'], S.COBALT, 0.0),
-            ('Same request group,\nother Category', share['Same group, other Category'], S.GREY_FILL, 1.25),
-            ('Different request group', share['Different group'], S.GREY_FILL, 2.35),
-            ('Monitoring, No Trouble Found,\nor blank Category', share_process, S.GREY_FILL, 3.75)]
+            ('Same request group, other Category', share['Same group, other Category'], S.GREY_FILL, 1.0),
+            ('Different group', share['Different group'], S.GREY_FILL, 2.0),
+            ('Monitoring, No Trouble Found,\nor blank Category', share_process, S.GREY_FILL, 3.45)]
     for name, value, colour, y in rows:
         ax.barh(y, value, height=0.34, color=colour, zorder=3)
         S.label(ax, 0.003, y - 0.24, name, va='bottom', linespacing=1.0)
@@ -187,12 +187,14 @@ def plot(out_dir=S.FIG_DIR):
         key = colour == S.COBALT                  # the one green readout: the same-Category share
         S.label(ax, value + 0.008, y, text, size=S.FONT if key else S.TICK, weight='bold' if key else 'normal',
                 color=S.GREEN if key else S.TEXT)
-    ax.set_ylim(4.05, -0.75)
+    ax.set_ylim(3.75, -0.65)
     ax.set_yticks([])
     ax.set_xlim(0, 0.37)
     ax.set_xticks([0, 0.1, 0.2, 0.3])
     S.pct_axis(ax.xaxis)
-    ax.set_xlabel('Share of repeats')
+    text = S.num(n_repeats)
+    S.check(f'fig11 (a) label {text} repeats', n_repeats, float(text.replace(',', '')))
+    ax.set_xlabel(f'Share of the {text} repeats')
     S.clean(ax, grid='x', left=False)
     S.panel(ax, 'a', 'What the repeats are')
 
@@ -249,11 +251,8 @@ def plot(out_dir=S.FIG_DIR):
     return (f'Of the {S.num(n_repeats)} repeats, {pc(share["Same Category"])} are the same Category, and '
             f'{pc(nearest.share)} of pairs of a machine\'s tickets {in_words(nearest_days)} or less apart share a '
             f'Category vs. {pc(farthest.share)} over {in_words(farthest_days)} apart. '
-            f'(a)~Bars show repeats by class. '
-            f'(b)~Bars show {S.num(n_pairs)} pairs by gap. '
-            f'(c)~No model or telemetry type with {S.num(min_eligible)} or more eligible tickets clearly stands out '
-            f'(smallest q, {S.num(q_min, 2)}). '
-            f'Lines show {S.num(int(level.group(1)))}\\% bootstrap intervals over accounts.')
+            f'(a)~By class; (b)~by gap; (c)~no model or telemetry type with {S.num(min_eligible)} or more eligible '
+            f'tickets clearly stands out; {S.num(int(level.group(1)))}\\% intervals.')
 
 
 if __name__ == '__main__':

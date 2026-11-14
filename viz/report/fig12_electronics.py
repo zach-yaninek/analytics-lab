@@ -176,7 +176,7 @@ def plot(out_dir=S.FIG_DIR):
         S.check(f'fig12 caption: {label} tickets give its rate', round(r.rate, 2), round(100 * r.tickets / r.months, 2))
     S.check('fig12 intervals: 95% (docs/09 §6)', 95, p.interval_level)
 
-    fig, (ax, bx, cx) = S.figure(2.35, ncols=3, width_ratios=[1.0, 1.1, 0.74])
+    fig, (ax, bx, cx) = S.figure(2.1, ncols=3, width_ratios=[0.98, 1.1, 0.78])
 
     # (a) rate ratios: all tickets and Electronics on top, then the Categories, highest first
     ref = [(ALL, p.ratio_all, crude.at[ALL, 'lo'], crude.at[ALL, 'hi']),
@@ -203,7 +203,7 @@ def plot(out_dir=S.FIG_DIR):
     ax.xaxis.set_minor_locator(NullLocator())
     ax.set_yticks(ys, [F10.SHOWN.get(r[0], r[0]) for r in ref + cat_rows])
     ax.set_ylim(ys[-1] + 0.7, -0.7)
-    ax.set_xlabel('Rate ratio, young vs. older\n(log scale)')
+    ax.set_xlabel('Rate ratio, young vs. older (log scale)')
     S.clean(ax, grid='x', left=False)
     S.panel(ax, 'a', 'Electronics by Category')
 
@@ -235,7 +235,7 @@ def plot(out_dir=S.FIG_DIR):
         S.label(cx, i, rate + 0.04, text, ha='center', va='bottom')
     cx.set_xticks([0, 1], [early, late])
     cx.tick_params(axis='x', length=0)
-    cx.set_xlim(-0.6, 1.6)
+    cx.set_xlim(-0.55, 1.55)
     cx.set_ylim(0, 1.9)
     cx.set_yticks([0, 0.5, 1.0, 1.5], ['0', '0.5', '1.0', '1.5'])
     cx.set_xlabel('Install months')
@@ -250,16 +250,14 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig12 (b) bars inside the axis', 1, int(ts_young < bx.get_xlim()[1]))
     S.check('fig12 (c) bars inside the axis', 1, int(max(rate_early, rate_late) + 0.2 < cx.get_ylim()[1]))
 
+    F10.centre_under_panel(fig, ax)
     S.export(fig, NAME, out_dir)
     pc = chr(92) + '%'  # LaTeX: an escaped percent sign
     return (f'Per machine-month, Electronics runs {S.num(ratio_el, 2)} times as often on young machines, near the '
             f'{S.num(p.ratio_all, 2)} for all tickets, and {FOCUS} stands out at {S.num(ratio_ts, 1)} times. '
-            f'(a)~Points show rate ratios, with each Electronics Category that has {S.num(min_tickets)} or more '
-            f'tickets in each age group. '
-            f'(b)~Bars show subsets of {FOCUS}\'s {S.num(ts_young)} tickets on young machines. '
-            f'(c)~Bars show {FOCUS} rates on the comparison models by {y0} install months '
-            f'({S.num(edge.tickets.iloc[0])} and {S.num(edge.tickets.iloc[1])} tickets). '
-            f'Lines show {p.interval_level}{pc} bootstrap intervals over accounts.')
+            f'(a)~Categories with {S.num(min_tickets)} or more tickets in each age group, {p.interval_level}{pc} '
+            f'intervals; (b)~its {S.num(ts_young)} young-machine tickets; (c)~from {S.num(edge.tickets.iloc[0])} and '
+            f'{S.num(edge.tickets.iloc[1])} tickets.')
 
 
 if __name__ == '__main__':

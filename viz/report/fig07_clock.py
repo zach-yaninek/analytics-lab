@@ -218,11 +218,12 @@ def plot(out_dir=S.FIG_DIR):
     S.panel(bx, 'b', f'Fields filled on {month_label} tickets')
 
     S.export(fig, NAME, out_dir)
+    # 'of any kind', as the report says: the 461 are not limited to unplanned tickets, the report's default
     return (f'Opening times never step backwards in case-number order ({S.num(export.backward)} of {S.num(n_steps)} '
-            f'steps) but would {S.num(lo)}--{S.num(hi)} times on hospital-local clocks, and Trouble Code and Category '
+            f'steps) but would {S.num(lo)}--{S.num(hi)} times on hospital-local clocks; Trouble Code and Category '
             f'are filled on {S.num(both_open)} of {S.num(n_open)} open tickets '
-            f'vs. {how_many(both_closed, n_closed)} of the {S.num(n_closed)} {month_label} Trouble Closed tickets. '
-            f'(a)~Two zone maps.')
+            f'vs. {how_many(both_closed, n_closed)} of {S.num(n_closed)} {month_label} Trouble Closed tickets of any '
+            f'kind. (a)~Two zone maps.')
 
 
 if __name__ == '__main__':

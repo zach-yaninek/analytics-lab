@@ -267,18 +267,19 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig13 review points upheld and applied (docs/08 record)', 'all',
                    'all' if points_all else f'{review.group(1)} refuted')
 
-    fig, (ax, bx) = S.figure(2.4, ncols=2, width_ratios=[1.62, 1])
+    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1.62, 1])
 
     # (a) share matched: recounted (solid) and recorded (hatched), in two groups, each headed above its first bar;
-    # each count beside its bar
-    y_db, y_rec = 3.15, 5.5
+    # each count beside its bar. Rows one unit apart; the database row stands apart from the case-export group, with
+    # the note on its failure just below it, then the recorded group under its heading.
+    y_db, y_rec, head = 3.2, 5.95, 0.85       # head: from a group's heading down to its first bar
     rows = [(name, m, n, 'recount', y) for (name, m, n), y in zip(reproductions, (0, 1, 2))]
     rows += [('Full-database checks', n_pass, n_checks, 'recount', y_db)]
     rows += [('Chronic outliers', n_rebuild, n_rebuild, 'record', y_rec),
              ('Association study', cells_matched, n_cells, 'record', y_rec + 1),
              ('Association review', points_upheld, n_points, 'record', y_rec + 2)]
-    S.label(ax, 0, -0.72, 'Case-export numbers, three ways', va='center')
-    S.label(ax, 0, y_rec - 0.72, 'Recorded by the rebuilds and the review', va='center')
+    S.label(ax, 0, -head, 'Case-export numbers, three ways', va='center')
+    S.label(ax, 0, y_rec - head, 'Recorded by the rebuilds and the review', va='center')
     for name, m, n, kind, y in rows:
         share = m / n
         if kind == 'recount':
@@ -295,12 +296,12 @@ def plot(out_dir=S.FIG_DIR):
     # The one failed check: red, at the end of the database bar, with its cause below it
     ax.barh(y_db, n_fail / n_checks, left=n_pass / n_checks, height=0.56, color=S.RED, edgecolor=S.WHITE, lw=0.6,
             zorder=4)
-    note = f'{S.num(n_fail)} failure: a sort-order bug in our comparison script'
+    note = f'{S.num(n_fail)} failure: a sort-order bug in our script'     # short enough to end under its bar
     S.check('fig13 (a) failures in the note = the failed checks', n_fail, int(note.split()[0]))
     S.check('fig13 (a) the note\'s cause = the recounted cause', 1, int(cause in note))
-    S.label(ax, 1.0, y_db + 0.7, note, ha='right', va='center')
+    note_text = S.label(ax, 1.0, y_db + 0.8, note, ha='right', va='center')
     ax.set_yticks([r[4] for r in rows], [r[0] for r in rows])
-    ax.set_ylim(y_rec + 2.5, -1.2)
+    ax.set_ylim(y_rec + 2.45, -head - 0.55)
     ax.set_xlim(0, 1.36)
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
     ax.spines['bottom'].set_bounds(0, 1)
@@ -325,15 +326,16 @@ def plot(out_dir=S.FIG_DIR):
     S.panel(bx, 'b', 'Chronic outliers by cut-off')
 
     S.check('fig13 (b) bars inside the axis', 1, int(max(by_cut.values()) + 12 < bx.get_ylim()[1]))
+    fig.canvas.draw()      # the final layout, to place the note
+    S.check('fig13 (a) the note starts within its bar\'s span (clear of the row labels)', 1,
+            int(note_text.get_window_extent().x0 >= ax.transData.transform((0, y_db))[0]))
+    S.report_check('fig13 telemetry devices (Results, high-ticket machines)', '6,621', S.num(n_devices))
 
     S.export(fig, NAME, out_dir)
-    return (f'Every case-export number reproduced exactly, {S.num(n_pass)} of {S.num(n_checks)} checks passed on the '
-            f'full database, and the chronic-outlier count runs from {S.num(by_cut[0.01])} to {S.num(by_cut[0.10])} '
-            f'with the statistical cut-off. '
-            f'(a)~Bars show the share that matched, recounted from the committed tables (solid) or as recorded '
-            f'(hatched). '
-            f'(b)~Bars show the chronic outliers among the {S.num(n_devices)} telemetry devices, recounted from each '
-            f'device\'s q-value.')
+    return (f'Every case-export number reproduced exactly, and on the full database {S.num(n_pass)} of '
+            f'{S.num(n_checks)} checks passed; the chronic-outlier count runs from {S.num(by_cut[0.01])} to '
+            f'{S.num(by_cut[0.10])} with the statistical cut-off. '
+            f'(a)~Recounted (solid) or as recorded (hatched); (b)~among the {S.num(n_devices)} telemetry devices.')
 
 
 if __name__ == '__main__':

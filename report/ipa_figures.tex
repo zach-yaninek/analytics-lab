@@ -36,7 +36,7 @@
 \begin{figure}[!htbp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig04_rates.pdf}
-  \caption[Rates by model and age]{The three busiest models hold 42\% of machine-months and 51\% of tickets, partly because they are younger; scrubBank 480 runs 2.6 times the fleet age for age; machines under 4 years run about 8 per 100 vs.~2.5 at 10 years or more. (a)~Shares; (b)~models; (c)~ages; 95\% intervals.}
+  \caption[Rates by model and age]{The three busiest models hold 42\% of machine-months and 51\% of tickets, partly because they are younger; scrubBank 480 runs 2.6 times the fleet age for age; machines under 4 years run about 8 per 100 vs.~2.5 at 10 years or more. (a)~Shares; (b)~by model; (c)~by age; 95\% intervals.}
   \label{fig:rates}
 \end{figure}
 
@@ -57,7 +57,7 @@
 \begin{figure}[!htbp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig07_clock.pdf}
-  \caption[Ticket clock and issue fields]{Opening times never step backwards in case-number order (0 of 7,470 steps) but would 1,295--1,312 times on hospital-local clocks, and Trouble Code and Category are filled on 1 of 64 open tickets vs.~nearly all of the 461 August 2026 Trouble Closed tickets. (a)~Two zone maps.}
+  \caption[Ticket clock and issue fields]{Opening times never step backwards in case-number order (0 of 7,470 steps) but would 1,295--1,312 times on hospital-local clocks; Trouble Code and Category are filled on 1 of 64 open tickets vs.~nearly all of 461 August 2026 Trouble Closed tickets of any kind. (a)~Two zone maps.}
   \label{fig:clock}
 \end{figure}
 
@@ -78,28 +78,28 @@
 \begin{figure}[!htbp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig10_request_types.pdf}
-  \caption[Request types by age]{Young machines run 8.0 tickets per 100 machine-months vs.~4.8 for older ones (1.66 times), with higher rates in nearly every request group. (a)~Points show rates by request group. (b)~Points show share ratios within model. (c)~Bars show the 1,447 extra tickets and their within-model part (80\%). (d)~Bars show Touchscreen rates by install cohort on the 15 comparison models. Lines in (b) and (d) show 95\% bootstrap intervals over accounts.}
+  \caption[Request types by age]{Young machines run 8.0 tickets per 100 machine-months vs.~4.8 for older ones (1.66 times), with higher rates in nearly every request group. (a)~By request group; (b)~share ratios, 95\% intervals; (c)~1,447 extra tickets, 80\% within model; (d)~Touchscreen by cohort, 95\% intervals.}
   \label{fig:request-types}
 \end{figure}
 
 \begin{figure}[!htbp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig11_pairings.pdf}
-  \caption[Repeat-contact pairings]{Of the 1,574 repeats, 31\% are the same Category, and 46\% of pairs of a machine's tickets a day or less apart share a Category vs.~27\% over six months apart. (a)~Bars show repeats by class. (b)~Bars show 6,980 pairs by gap. (c)~No model or telemetry type with 100 or more eligible tickets clearly stands out (smallest q, 0.12). Lines show 95\% bootstrap intervals over accounts.}
+  \caption[Repeat-contact pairings]{Of the 1,574 repeats, 31\% are the same Category, and 46\% of pairs of a machine's tickets a day or less apart share a Category vs.~27\% over six months apart. (a)~By class; (b)~by gap; (c)~no model or telemetry type with 100 or more eligible tickets clearly stands out; 95\% intervals.}
   \label{fig:pairings}
 \end{figure}
 
 \begin{figure}[!htbp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig12_electronics.pdf}
-  \caption[Electronics cases]{Per machine-month, Electronics runs 1.71 times as often on young machines, near the 1.66 for all tickets, and Touchscreen stands out at 4.2 times. (a)~Points show rate ratios, with each Electronics Category that has 30 or more tickets in each age group. (b)~Bars show subsets of Touchscreen's 411 tickets on young machines. (c)~Bars show Touchscreen rates on the comparison models by 2022 install months (11 and 53 tickets). Lines show 95\% bootstrap intervals over accounts.}
+  \caption[Electronics cases]{Per machine-month, Electronics runs 1.71 times as often on young machines, near the 1.66 for all tickets, and Touchscreen stands out at 4.2 times. (a)~Categories with 30 or more tickets in each age group, 95\% intervals; (b)~its 411 young-machine tickets; (c)~from 11 and 53 tickets.}
   \label{fig:electronics}
 \end{figure}
 
 \begin{figure}[!htbp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/fig13_verification.pdf}
-  \caption[Verification]{Every case-export number reproduced exactly, 65 of 66 checks passed on the full database, and the chronic-outlier count runs from 62 to 133 with the statistical cut-off. (a)~Bars show the share that matched, recounted from the committed tables (solid) or as recorded (hatched). (b)~Bars show the chronic outliers among the 6,621 telemetry devices, recounted from each device's q-value.}
+  \caption[Verification]{Every case-export number reproduced exactly, and on the full database 65 of 66 checks passed; the chronic-outlier count runs from 62 to 133 with the statistical cut-off. (a)~Recounted (solid) or as recorded (hatched); (b)~among the 6,621 telemetry devices.}
   \label{fig:verification}
 \end{figure}
 

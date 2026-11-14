@@ -281,9 +281,9 @@ def plot(out_dir=S.FIG_DIR):
     t1 = S.label(ax, 235, Y_TOP * 0.93, ' beyond chance', ha='right', va='top', size=S.FONT)
     ax.annotate(S.num(n_flagged), xy=(0, 1), xycoords=t1, ha='right', va='top', fontsize=S.FONT, fontweight='bold',
                 color=S.GREEN)
-    # the limits, each labelled just above its right end
-    S.label(ax, 235, 1.36, 'Chance', ha='right', va='bottom')
-    S.label(ax, 235, 4.0, 'Normal spread', ha='right', va='bottom')
+    # the limits, each labelled just above its right end (the descender of 'p' clear of the solid line)
+    S.label(ax, 235, 1.42, 'Chance', ha='right', va='bottom')
+    S.label(ax, 235, 4.4, 'Normal spread', ha='right', va='bottom')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlim(x_lo, x_hi)

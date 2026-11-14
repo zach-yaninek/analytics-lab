@@ -273,26 +273,31 @@ def plot(out_dir=S.FIG_DIR):
         line, = cx.plot([xi, xi], [ages.ci_lo[band], ages.ci_hi[band]], color=S.GREY_DARK, lw=1.0,
                         solid_capstyle='butt', zorder=4)
         line.set_path_effects(CASING)
-    # the bands under 4 years together: a bracket over their intervals
-    top = float(ages.ci_hi[young_bands].max()) + 0.35
+    # the bands under 4 years together: a bracket over their intervals, clear above the gridline over them (a bracket
+    # just under a gridline reads as a doubled line)
+    grid_over = S.ceil_to(float(ages.ci_hi[young_bands].max()), 2.5)
+    top = grid_over + 0.6
     i0, i1 = x[0] - 0.32, x[len(young_bands) - 1] + 0.32
     cx.plot([i0, i0, i1, i1], [top - 0.25, top, top, top - 0.25], color=S.TEXT, lw=0.6, zorder=5)
+    S.check('fig04 (c) the bracket clears the gridline over the young bands\' intervals', 1,
+            int(float(ages.ci_hi[young_bands].max()) < grid_over < top - 0.25))
     text_young = S.num(rate_young, 1)
     S.check(f'fig04 (c) label under {YOUNG} years {text_young}', round(rate_young, 1), float(text_young))
-    S.label(cx, (i0 + i1) / 2, top + 0.15, text_young, ha='center', va='bottom')
+    S.label(cx, (i0 + i1) / 2, top + 0.12, text_young, ha='center', va='bottom')
     # the 10+ band's rate and note
     xo = x[-1]
     text_old = S.num(rate_old, 1)
     S.check(f'fig04 (c) label 10+ {text_old}', round(rate_old, 1), float(text_old))
     S.label(cx, xo, float(ages.ci_hi[oldest]) + 0.2, text_old, ha='center', va='bottom')
-    # the note, naming its band, in the empty space above the older bands (a leader would read as an interval)
-    S.label(cx, xo + 0.38, 11.45, f'At {oldest} years, {S.num(n_old_ns)} of\nthe {S.num(n_old)} machines\n'
+    # the note, naming its band, in the empty space above the older bands (a leader would read as an interval), flush
+    # with the panel's right edge so its white box takes the gridline through to the end
+    S.label(cx, n - 0.5, 11.95, f'At {oldest} years, {S.num(n_old_ns)} of\nthe {S.num(n_old)} machines\n'
             f'with a ticket are\n{NOT_SERVICEABLE}', ha='right', va='top', linespacing=1.0, bbox=blank)
     text_fleet = f'Fleet {S.num(fleet_rate, 1)}'
     S.label(cx, 3.17, fleet_rate + 0.2, text_fleet, ha='center', va='bottom')   # between the 2-4 bar and 6-8 interval
     cx.set_xticks(np.arange(n + 1)[:-1] - 0.5, [S.num(e) for e in edges])   # between the bars: the bands' edges
     cx.set_xlim(-0.5, n - 0.5)
-    cx.set_ylim(0, 11.5)
+    cx.set_ylim(0, 12)
     cx.set_yticks([0, 2.5, 5, 7.5, 10], ['0', '2.5', '5', '7.5', '10'])
     cx.set_xlabel('Machine age (years)')
     cx.set_ylabel('Tickets per 100\nmachine-months')
@@ -309,7 +314,7 @@ def plot(out_dir=S.FIG_DIR):
     return (f'The three busiest models hold {pc(share_months)} of machine-months and {pc(share_tickets)} of tickets, '
             f'{youth}; {SB} runs {S.num(sb_ratio, 1)} times the fleet age for age; machines under {YOUNG} years '
             f'run about {S.num(rate_young)} per 100 vs. {S.num(rate_old, 1)} at {OLD} years or more. '
-            f'(a)~Shares; (b)~models; (c)~ages; {S.num(int(level.group(1)))}\\% intervals.')
+            f'(a)~Shares; (b)~by model; (c)~by age; {S.num(int(level.group(1)))}\\% intervals.')
 
 
 if __name__ == '__main__':
