@@ -4,8 +4,9 @@ their comparison windows, and electronics codes before 20% vs. 13%.
 
 (a) For each code group, the share of the 3,259 paired tickets whose last 10 codes include a code of the group, in the
     ticket window (filled) and in the comparison window (open). Door and electronics codes, the report's two groups,
-    are cobalt; mechanical codes, stock-out codes, and any non-success code, the other rows of the script's first look,
-    are grey context.
+    are cobalt; any non-success code (the Definitions' term) is grey context. The script's first look also has
+    mechanical-fault (02, 11, 14, 16-18, 31-35, 66 and 67) and stock-out (03 and 77) groups, which the report never
+    defines, so they are left out.
 (b) The same rows, split by pair: the paired tickets that show the group in the ticket window only (right) and in the
     comparison window only (left). The difference of the two bars over 3,259 is the gap between the two dots in (a).
 
@@ -34,13 +35,15 @@ TICKET, COMPARISON = 'corrected_guard0', 'control_minus35d'   # the 30 days befo
 NOT_UNPLANNED = ['Planned work', 'Cancelled request', 'Duplicate case']
 WINDOW_COLS = ['case_id', 'window', 'service_group', 'lookback_truncated', 'after_telemetry_end', 'control_clean',
                'distinct_codes', 'last10_distinct']
-GRID_TOP = -0.5               # the light grid stops above the top row, below the column headers
-# (row label, team bucket in db_codes_buckets.csv or None for any non-success code, focal, y position)
+TOP, HEAD, GRID_TOP = -0.85, -0.42, -0.32   # axis top, column headers' baseline, and where the light grid starts:
+                                            # above the top row's labels, below the column headers
+BAR = 0.36                    # bar height in (b), in rows
+# (row label, team bucket in db_codes_buckets.csv or None for any non-success code, focal, y position). Only the
+# groups the Definitions define: door and electronics codes, and any non-success code as context. The script's
+# first look also has mechanical and stock-out groups, which the report never defines, so they are left out.
 ROWS = [('Door codes', 'Door issue', True, 0.0),
         ('Electronics codes', 'Electronics/software/comms', True, 1.0),
-        ('Mechanical codes', 'Mechanical fault', False, 2.35),
-        ('Stock-out codes', 'Stock-out', False, 3.35),
-        ('Any non-success code', None, False, 4.35)]
+        ('Any non-success code', None, False, 2.3)]
 
 
 def paired_windows():
@@ -127,11 +130,11 @@ def plot(out_dir=S.FIG_DIR):
             bold = key and which == 'ticket'
             S.label(ax, x, y, text, ha=ha, size=S.FONT if bold else S.TICK, weight='bold' if bold else 'normal',
                     color=S.GREEN if bold else S.TEXT, bbox=backing, zorder=2.5)
-    S.label(ax, door['comparison'] + 0.004, -0.62, 'Comparison window', ha='right', va='bottom')
-    S.label(ax, door['ticket'] - 0.004, -0.62, 'Ticket window', ha='left', va='bottom')
+    S.label(ax, door['comparison'] + 0.004, HEAD, 'Comparison window', ha='right', va='bottom')
+    S.label(ax, door['ticket'] - 0.004, HEAD, 'Ticket window', ha='left', va='bottom')
     ax.set_yticks(ys, list(data))
-    ax.set_ylim(4.85, -1.15)
-    ax.set_xlim(0, 1.03)
+    ax.set_ylim(ys[-1] + 0.5, TOP)
+    ax.set_xlim(0, 1.06)                          # the 100% grid line falls wholly behind the 90% label
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
     ax.vlines(ax.get_xticks(), GRID_TOP, ax.get_ylim()[0], color=S.GRID, lw=0.6, zorder=0)
     S.pct_axis(ax.xaxis)
@@ -140,22 +143,26 @@ def plot(out_dir=S.FIG_DIR):
     S.panel(ax, 'a', 'Ticket vs. comparison window')
 
     # (b) the paired tickets with the group in one window only: ticket window to the right, comparison to the left
+    grid_b = [-200, 200, 400]
     for name, d in data.items():
         y, right, left = d['y'], d['ticket_only'], d['comparison_only']
-        bx.barh(y, right, height=0.5, color=S.COBALT if d['focal'] else S.GREY, zorder=3)
-        bx.barh(y, -left, height=0.5, color=S.GREY_FILL, zorder=3)
+        bx.barh(y, right, height=BAR, color=S.COBALT if d['focal'] else S.GREY, zorder=3)
+        bx.barh(y, -left, height=BAR, color=S.GREY_FILL, zorder=3)
         for value, x, ha in ((right, right + 12, 'left'), (left, -left - 12, 'right')):
             text = S.num(value)
             S.check(f'fig08 (b) {name} label {text}', value, int(text.replace(',', '')))
+            # a label whose backing would end on a grid line moves just clear of it (392, beside the 400 line)
+            side = 1 if ha == 'left' else -1
+            x = next((g + side * 8 for g in grid_b if 0 <= side * (x - g) < 8), x)
             S.label(bx, x, y, text, ha=ha, bbox=backing, zorder=2.5)
     bx.axvline(0, color=S.GREY_DARK, lw=0.6, zorder=4)
-    S.label(bx, -14, -0.62, 'Comparison only', ha='right', va='bottom')
-    S.label(bx, 14, -0.62, 'Ticket only', ha='left', va='bottom')
-    bx.set_ylim(4.85, -1.15)
+    S.label(bx, -14, HEAD, 'Comparison only', ha='right', va='bottom')
+    S.label(bx, 14, HEAD, 'Ticket only', ha='left', va='bottom')
+    bx.set_ylim(ys[-1] + 0.5, TOP)
     bx.set_yticks([])
     bx.set_xlim(-350, 560)
     bx.set_xticks([-200, 0, 200, 400], ['200', '0', '200', '400'])
-    bx.vlines([-200, 200, 400], GRID_TOP, bx.get_ylim()[0], color=S.GRID, lw=0.6, zorder=0)
+    bx.vlines(grid_b, GRID_TOP, bx.get_ylim()[0], color=S.GRID, lw=0.6, zorder=0)
     bx.set_xlabel('Paired tickets')
     S.clean(bx, left=False)
     S.panel(bx, 'b', 'Codes in one window only')

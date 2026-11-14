@@ -10,7 +10,8 @@ and its rate steps from 0.36 to 1.61 per 100 between Jan-Apr and May-Aug 2022 in
 (b) Touchscreen's 411 tickets on young machines and the three subsets the report names, each drawn against the 411.
 (c) Touchscreen tickets per 100 installed machine-months on the comparison models' machines installed January to
     April and May to August 2022 (counted by the case-list builder from IPA's installed-base list; the outputs give
-    no interval for these two windows, so none is drawn).
+    no interval for these two windows, so none is drawn). The axis label is the one fig10 (d) uses for the same rate.
+Labels that cross a grid line have a white backing, so the grid stops behind them.
 
 Inputs: the tables of fig10_request_types.part_a() (notebook 07's recomputation of Part A), and
 verification/outputs/electronics/ec_counts.csv, ec_subsets.csv, ec_edge.csv (the case-list builder's aggregate
@@ -23,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+from matplotlib.text import Text  # noqa: E402
 from matplotlib.ticker import NullLocator  # noqa: E402
 
 import fig10_request_types as F10  # noqa: E402  (notebook 07's recomputation, shared with figure 10)
@@ -35,6 +37,38 @@ SHORT = 'Electronics cases'
 EC = S.OUT / 'electronics'
 AGES, ALL, FOCUS = F10.AGES, F10.ALL, F10.FOCUS
 WORDS = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine'}
+BACKING = dict(facecolor=S.WHITE, edgecolor='none', pad=0.8)          # the light grid stops behind a label
+RATE_LABEL = f'{FOCUS} tickets per 100 machine-months'               # the same rate's label in fig10 (d)
+
+
+def extents(fig, artists):
+    """Each artist's drawn extent in display units, at the final layout."""
+    renderer = fig.canvas.get_renderer()
+    return [a.get_window_extent(renderer) for a in artists]
+
+
+def unbacked_crossings(fig, ax):
+    """The labels in ax that a drawn grid line passes through without a white backing to stop it."""
+    box = extents(fig, [ax])[0]
+    lines = [line for line in ax.xaxis.get_gridlines() + ax.yaxis.get_gridlines() if line.get_visible()]
+    grid = [e for e in extents(fig, lines)        # the lines inside the panel (ticks beyond its limits are not drawn)
+            if box.x0 - 1 <= e.x0 and e.x1 <= box.x1 + 1 and box.y0 - 1 <= e.y0 and e.y1 <= box.y1 + 1]
+    out = []
+    for text, e in zip(ax.texts, extents(fig, ax.texts)):
+        patch = text.get_bbox_patch()
+        backed = (patch is not None and tuple(patch.get_facecolor()[:3]) == (1.0, 1.0, 1.0)
+                  and text.get_zorder() > ax.xaxis.get_zorder())        # drawn over the grid, which the axis draws
+        if not backed and any(g.overlaps(e) for g in grid):
+            out.append(text.get_text())
+    return out
+
+
+def overlapping_texts(fig):
+    """Pairs of drawn texts (labels, ticks, titles) whose extents overlap."""
+    texts = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip() and t.figure is fig]
+    boxes = extents(fig, texts)
+    return [(texts[i].get_text(), texts[j].get_text()) for i in range(len(texts)) for j in range(i + 1, len(texts))
+            if boxes[i].overlaps(boxes[j])]
 
 
 def and_join(names):
@@ -215,10 +249,10 @@ def plot(out_dir=S.FIG_DIR):
         bx.barh(y, value, height=0.36, color=S.COBALT, zorder=3)
         if value < ts_young:
             bx.barh(y, ts_young - value, left=value, height=0.36, color=S.GREY_FILL, zorder=3)
-        S.label(bx, 2, y - 0.25, name, va='bottom')
+        S.label(bx, 2, y - 0.25, name, va='bottom', bbox=BACKING, zorder=2.5)
         text = S.num(value)
         S.check(f'fig12 (b) label {name} {text}', value, float(text.replace(',', '')))
-        S.label(bx, ts_young + 8, y, text)
+        S.label(bx, ts_young + 8, y, text, bbox=BACKING, zorder=2.5)
     bx.set_ylim(1.15 * (len(rows_b) - 1) + 0.5, -0.8)
     bx.set_yticks([])
     bx.set_xlim(0, 470)
@@ -232,14 +266,16 @@ def plot(out_dir=S.FIG_DIR):
         cx.bar(i, rate, width=0.56, color=S.COBALT if rate == max(rate_early, rate_late) else S.GREY_FILL, zorder=3)
         text = S.num(rate, 2)
         S.check(f'fig12 (c) label {label} {text}', round(rate, 2), float(text))
-        S.label(cx, i, rate + 0.04, text, ha='center', va='bottom')
+        S.label(cx, i, rate + 0.04, text, ha='center', va='bottom', bbox=BACKING, zorder=2.5)
     cx.set_xticks([0, 1], [early, late])
     cx.tick_params(axis='x', length=0)
     cx.set_xlim(-0.55, 1.55)
     cx.set_ylim(0, 1.9)
     cx.set_yticks([0, 0.5, 1.0, 1.5], ['0', '0.5', '1.0', '1.5'])
     cx.set_xlabel('Install months')
-    cx.set_ylabel(f'{FOCUS} tickets\nper 100 machine-months')
+    cx.set_ylabel(RATE_LABEL.replace(' per ', '\nper ', 1))      # on two lines to fit
+    S.check('fig12 (c) the rate\'s axis label, as in fig10 (d)', 'Touchscreen tickets per 100 machine-months',
+            ' '.join(cx.get_ylabel().split()))
     S.clean(cx, grid='y', left=False)
     S.panel(cx, 'c', f'{y0} installs')
 
@@ -251,6 +287,12 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig12 (c) bars inside the axis', 1, int(max(rate_early, rate_late) + 0.2 < cx.get_ylim()[1]))
 
     F10.centre_under_panel(fig, ax)
+    # At the final layout: no label crosses a grid line unbacked, and no two texts touch
+    fig.canvas.draw()
+    for letter, a in zip('abc', (ax, bx, cx)):
+        S.check(f'fig12 ({letter}) labels that cross a grid line have a white backing', '[]',
+                str(unbacked_crossings(fig, a)))
+    S.check('fig12 no two texts overlap', '[]', str(overlapping_texts(fig)))
     S.export(fig, NAME, out_dir)
     pc = chr(92) + '%'  # LaTeX: an escaped percent sign
     return (f'Per machine-month, Electronics runs {S.num(ratio_el, 2)} times as often on young machines, near the '

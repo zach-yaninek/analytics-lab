@@ -1,36 +1,46 @@
 #!/usr/bin/env python3
 """Report figure 13 (Results, Verification): every case-export number reproduced exactly, on the full database 65 of
 66 checks passed (the one failure was a sort-order bug in our comparison script), independent rebuilds matched the 113
-chronic outliers and all 33,515 compared values of the association study, the association results' 45 review points
-were all upheld, and the chronic-outlier count runs from 62 to 133 with the statistical cut-off.
+chronic outliers and all 33,515 compared values of the association study, the chronic-outlier count runs from 62 to
+133 with the statistical cut-off, and the association results' 45 review points were all upheld and applied, with no
+headline result changed.
 
-(a) The share that matched (or, for the review, was upheld). Solid bars are recounted from the committed tables: the
-    case-export rows (values, printed tables, and checks) of each of the three reproductions, the midterm's SQL run
-    verbatim (reproduce_sql.py), a clean-room rebuild from its method text (reproduce_cleanroom.py), and its
-    notebook's sections (01_excel_reproducibility.py), leaving out the workbook's checksum and the rows that need the
-    telemetry database or whose value the midterm did not print, as notebook 08 does; then the checks with an expected
-    value in the record of the full-database run (db/db_summary.json), by status. The one failed check is red. Sorting
-    the run's table as the midterm did reproduces all 15 printed rows, none of which the saved order reproduces, so the
-    failure is the sort-order bug that docs/02 records. Hatched bars are records: counts that a committed document
-    gives for a check whose code is not in the repository (docs/05: the rebuild reproduced the same 113 IDs; docs/07:
-    each of two builds matched all 33,515 compared cells; docs/08: none of the 45 findings was refuted and all are
-    applied, as the subject of commit eeee532 also counts). They are drawn hatched so that no record reads as a recount.
+(a) The share that matched. Solid bars are recounted from the committed tables: the case-export rows (values, printed
+    tables, and checks) of each of the three reproductions of the midterm's numbers, its SQL run verbatim
+    (reproduce_sql.py), a clean-room rebuild from its method text (reproduce_cleanroom.py), and a re-derivation
+    section by section in its notebook's order (01_excel_reproducibility.py), leaving out the workbook's checksum and
+    the rows that need the telemetry database or whose value the midterm did not print, as notebook 08 does; then the
+    checks with an expected value in the record of the full-database run (db/db_summary.json), by status. The one
+    failed check is red. Sorting the run's table as the midterm did reproduces all 15 printed rows, none of which the
+    saved order reproduces, so the failure is the sort-order bug in our comparison script that docs/02 records, and
+    the note says so in docs/02's words. Hatched bars are records: counts that a committed document gives for a check
+    whose code is not in the repository (docs/05: the rebuild reproduced the same 113 IDs; docs/07: each of two builds
+    matched all 33,515 compared cells). They are drawn hatched so that no record reads as a recount, under a heading
+    that says only the rebuilds whose records give a count are drawn. The association review is a line of text in
+    the paragraph's words, not a bar: its 45 points are problems the reviewers raised, not values that matched, so
+    they have no place on the share-matched scale. docs/08 records that none of the 45 was refuted and all are applied
+    (the subject of commit eeee532, which applied them, counts the same 45), and the headline results are recounted:
+    the pooled specificity ratio and H1 at 7 and 30 days in the committed tables equal the values pinned before the
+    review (assoc/as_summary.json) and the tables of commit 472f27b, which set the pins, as notebook 08 compares them;
+    commit eeee532 records the same.
 (b) Chronic outliers (top 5% by unplanned tickets and a rate outlier) at q < 0.01, 0.05, and 0.10, recounted from each
     device's tickets and months active with the top-5% cut held fixed (notebook 08). The counts equal the review's in
-    docs/05 at q < 0.01 and 0.10 and the rebuild's at q < 0.05, the cut-off used throughout (cobalt).
+    docs/05 at q < 0.01 and 0.10 and the rebuild's at q < 0.05, the cut-off used throughout (cobalt). As in the set's
+    other categorical bar panels, no left spine and no tick marks under the bars.
 
 Not drawn: the rebuilds whose records give no count (the fleet rates before a statistical review's six changes, the
-follow-ups' headline numbers, and every sheet of the case list) and the headline results' pins, which the paragraph
-states in words.
+follow-ups' headline numbers, and every sheet of the case list).
 
 Inputs: verification/outputs/repro_sql_claims.csv, repro_clean_claims.csv, 01_excel_reproducibility.csv (one row per
 compared claim), db/db_summary.json, db/db_pilot_last_codes_head_vs_expected.csv and db_pilot_last_distinct_codes.csv
 (the failed comparison), htm_device_exposure.csv (one row per telemetry device; read without its customer and host
 columns), htm_machine_counts.csv (one row per machine with an unplanned ticket) and htm_summary.json (the cut-offs and
-the device population), assoc/as_pairs.csv and as_item2_breakdowns.csv (row counts the docs/07 record names); the
-records in docs/02, docs/05, docs/07, docs/08, and the message of commit eeee532, read with git. Notebook 08 checks the
-same numbers.
+the device population), assoc/as_pairs.csv and as_item2_breakdowns.csv (row counts the docs/07 record names),
+assoc/as_summary.json, as_h2a.csv, and as_h1.csv (the pinned headline results, also read as committed in 472f27b); the
+records in docs/02, docs/05, docs/07, docs/08, and the messages of commits eeee532 and 472f27b, read with git.
+Notebook 08 checks the same numbers.
 """
+import io
 import json
 import math
 import re
@@ -41,6 +51,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+from matplotlib.text import Text  # noqa: E402
 
 import report_style as S  # noqa: E402
 
@@ -51,13 +62,19 @@ SHORT = 'Verification'
 CUTS = [0.01, 0.05, 0.10]     # Benjamini-Hochberg cut-offs: the review's two and the one used throughout
 USED = 0.05
 TOP_SHARE = 0.05              # top 5% of machines by unplanned tickets, ties included
-# The three case-export reproductions: (row name, table, column renames); a row's status says whether it matches
+# The three case-export reproductions of the midterm's numbers, under a heading that names the midterm: (row name,
+# table, column renames); a row's status says whether it matches
 REPRODUCTIONS = [
-    ('Midterm SQL', 'repro_sql_claims.csv', {'claim_id': 'item', 'zac_value': 'printed', 'our_value': 'recomputed'}),
-    ('Clean room', 'repro_clean_claims.csv', {'claim_id': 'item', 'zac_value': 'printed', 'our_value': 'recomputed'}),
-    ('Notebook sections', '01_excel_reproducibility.csv', {'metric': 'item', 'zac_printed': 'printed'}),
+    ('Its SQL, verbatim', 'repro_sql_claims.csv',
+     {'claim_id': 'item', 'zac_value': 'printed', 'our_value': 'recomputed'}),
+    ('Clean-room rebuild', 'repro_clean_claims.csv',
+     {'claim_id': 'item', 'zac_value': 'printed', 'our_value': 'recomputed'}),
+    ('Section by section', '01_excel_reproducibility.csv', {'metric': 'item', 'zac_printed': 'printed'}),
 ]
 HATCH = '//////'
+PINNED = '472f27b'            # the commit that unblinded the association outputs and pinned the headline results
+REVIEWED = 'eeee532'          # the commit that applied the review's findings
+NUMBER_WORD = {0: 'no', 1: 'one', 2: 'two', 3: 'three'}
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -76,13 +93,80 @@ def quote(doc, pattern):
     return m
 
 
+def git(*args):
+    """Output of a git command in the repository, whose history holds the commit records."""
+    return subprocess.run(['git', '-C', str(S.ROOT), *args], capture_output=True, text=True, check=True).stdout
+
+
 def commit_quote(sha, pattern):
     """The text of a commit message that matches the pattern."""
-    message = subprocess.run(['git', '-C', str(S.ROOT), 'log', '-1', '--format=%B', sha], capture_output=True,
-                             text=True, check=True).stdout
-    m = re.search(pattern, flat(message))
+    m = re.search(pattern, flat(git('log', '-1', '--format=%B', sha)))
     S.check(f'fig13 record found: commit {sha}', 1, int(m is not None))
     return m
+
+
+def at_commit(sha, name):
+    """A table of verification/outputs/ as committed at an earlier commit, read from the repository's history."""
+    return pd.read_csv(io.StringIO(git('show', f'{sha}:verification/outputs/{name}')))
+
+
+def headline_changes():
+    """The association study's headline results that changed after its review: the pooled specificity ratio (H2a)
+    and H1 at 7 and 30 days, with their intervals and p-values or counts, in the committed tables against the values
+    association.py pins (assoc/as_summary.json) and the tables of the commit that set the pins (notebook 08)."""
+    def headline(h2a, h1):
+        rows = {}
+        for k in (168, 720):
+            r = h2a[(h2a.k == k) & (h2a.set == 'POOLED')].iloc[0]
+            rows[f'pinned pooled H2a at k={k} (estimate, interval, permutation p)'] = [r.estimate, r.ci_lo, r.ci_hi,
+                                                                                      r.perm_p]
+            r = h1[h1.k == k].iloc[0]
+            rows[f'pinned H1 at k={k} (estimate, interval, b, c)'] = [r.estimate, r.ci_lo, r.ci_hi, r.sum_b, r.sum_c]
+        return rows
+
+    summary = json.loads((S.OUT / 'assoc' / 'as_summary.json').read_text())
+    pins = {c['check']: c['expected'] for c in summary['check_list'] if c['check'].startswith('pinned ')}
+    now = headline(pd.read_csv(S.OUT / 'assoc' / 'as_h2a.csv'), pd.read_csv(S.OUT / 'assoc' / 'as_h1.csv'))
+    before = headline(at_commit(PINNED, 'assoc/as_h2a.csv'), at_commit(PINNED, 'assoc/as_h1.csv'))
+    S.check('fig13 the pinned headline results = the headline rows, now and at the pinning commit', 1,
+            int(len(pins) == 4 and set(pins) == set(now) == set(before)))
+    S.check(f'fig13 the pins were set ({PINNED}) before the review was applied ({REVIEWED})', 0,
+            subprocess.run(['git', '-C', str(S.ROOT), 'merge-base', '--is-ancestor', PINNED, REVIEWED]).returncode)
+    commit_quote(PINNED, r'headline results pinned as checks')
+    return sum(not (np.allclose(now[n], pins[n], rtol=0, atol=1e-6) and np.allclose(now[n], before[n])) for n in pins)
+
+
+# ----------------------------------------------------------------------------------------------------------------
+# Layout checks, at the final layout
+# ----------------------------------------------------------------------------------------------------------------
+def extents(fig, artists):
+    """Each artist's drawn extent in display units."""
+    renderer = fig.canvas.get_renderer()
+    return [a.get_window_extent(renderer) for a in artists]
+
+
+def unbacked_crossings(fig, ax):
+    """The labels in ax that a drawn grid line passes through without a white backing to stop it."""
+    box = extents(fig, [ax])[0]
+    lines = [line for line in ax.xaxis.get_gridlines() + ax.yaxis.get_gridlines() if line.get_visible()]
+    grid = [e for e in extents(fig, lines)        # the lines inside the panel (ticks beyond its limits are not drawn)
+            if box.x0 - 1 <= e.x0 and e.x1 <= box.x1 + 1 and box.y0 - 1 <= e.y0 and e.y1 <= box.y1 + 1]
+    out = []
+    for text, e in zip(ax.texts, extents(fig, ax.texts)):
+        patch = text.get_bbox_patch()
+        backed = (patch is not None and tuple(patch.get_facecolor()[:3]) == (1.0, 1.0, 1.0)
+                  and text.get_zorder() > ax.xaxis.get_zorder())        # drawn over the grid, which the axis draws
+        if not backed and any(g.overlaps(e) for g in grid):
+            out.append(text.get_text())
+    return out
+
+
+def overlapping_texts(fig):
+    """Pairs of drawn texts (labels, notes, ticks, titles) whose extents overlap."""
+    texts = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip() and t.figure is fig]
+    boxes = extents(fig, texts)
+    return [(texts[i].get_text(), texts[j].get_text()) for i in range(len(texts)) for j in range(i + 1, len(texts))
+            if boxes[i].overlaps(boxes[j])]
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -146,12 +230,12 @@ def database():
             int(failed == ['pilot_last_codes_head: printed rows reproduced']))
     S.check('fig13 the record\'s result = the saved order\'s', 1,
             int(row.loc['pilot_last_codes_head: printed rows reproduced', 'actual'] == f'{as_saved}/{len(recorded)}'))
-    fix = quote('docs/02_verification_report.md', r'The one FAIL \(`pilot_last_codes_head`\) was a sort-order bug in '
-                r'our comparison script, fixed in commit (\w+); re-sorted, all (\d+) rows match\.')
-    S.check('fig13 re-sorted, all printed rows match (docs/02)', int(fix.group(2)), resorted)
+    fix = quote('docs/02_verification_report.md', r'The one FAIL \(`pilot_last_codes_head`\) was (a [\w -]+? in our '
+                r'[\w ]+?), fixed in commit (\w+); re-sorted, all (\d+) rows match\.')
+    S.check('fig13 re-sorted, all printed rows match (docs/02)', int(fix.group(3)), resorted)
     cause = ('sort-order bug' if int(recorded.match.eq('True').sum()) == as_saved == 0 and resorted == len(recorded)
              else 'not explained by the order')
-    return n_pass, n_pass + n_fail, n_fail, full, cause
+    return n_pass, n_pass + n_fail, n_fail, full, cause, fix.group(1)    # the cause in docs/02's words
 
 
 def poisson_sf(k, mu):
@@ -217,8 +301,9 @@ def chronic_by_cut():
 
 def plot(out_dir=S.FIG_DIR):
     reproductions = case_export()
-    n_pass, n_checks, n_fail, full, cause = database()
+    n_pass, n_checks, n_fail, full, cause, record_cause = database()
     by_cut, n_devices = chronic_by_cut()
+    n_changed = headline_changes()
 
     # The records: the rebuilds' and the review's counts, read from the documents' text
     rebuild = quote('docs/05_high_ticket_machines.md', r'An independent clean-room build reproduced the populations, '
@@ -230,16 +315,19 @@ def plot(out_dir=S.FIG_DIR):
                   r'([\d,]+) cells: the pairs \(([\d,]+) tickets × (\d+) fields\);[^.]* (\d+) breakdown rows;[^.]*\.')
     review = quote('docs/08_association_results.md', r'A second reviewer then tried to refute each major finding; '
                    r'(\w+) of the (\d+) findings (?:was|were) refuted\. (\w+) are applied here:')
-    review_commit = commit_quote('eeee532', r'Apply the item 8 skeptic review \((\d+) findings\) to the association '
+    review_commit = commit_quote(REVIEWED, r'Apply the item 8 skeptic review \((\d+) findings\) to the association '
                                  r'study')
+    unchanged = commit_quote(REVIEWED, r'(\d+) checks pass; no headline result changed\.')
     n_rebuild = int(rebuild.group(1))
     n_cells = int(blind.group(3).replace(',', ''))
     cells_all = blind.group(1) == 'every compared cell' and blind.group(2) == 'all'
     n_points = int(review.group(2))
     points_all = review.group(1) == 'none' and review.group(3) == 'All'
     # Drawn as all matched only when the record says so (otherwise 0, and the report checks below fail)
-    cells_matched, points_upheld = (n_cells if cells_all else 0), (n_points if points_all else 0)
+    cells_matched = n_cells if cells_all else 0
     S.check('fig13 the review commit counts the same findings', n_points, int(review_commit.group(1)))
+    S.check('fig13 the review commit records no headline change, as the recount finds', 1,
+            int(unchanged is not None and n_changed == 0))
     pairs = pd.read_csv(S.OUT / 'assoc' / 'as_pairs.csv', usecols=[0])
     breakdowns = pd.read_csv(S.OUT / 'assoc' / 'as_item2_breakdowns.csv', usecols=[0])
     S.check('fig13 the record\'s paired tickets = as_pairs.csv', int(blind.group(4).replace(',', '')), len(pairs))
@@ -266,20 +354,30 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig13 association review points (docs/08 record)', '45', S.num(n_points))
     S.report_check('fig13 review points upheld and applied (docs/08 record)', 'all',
                    'all' if points_all else f'{review.group(1)} refuted')
+    S.report_check('fig13 headline results that changed after the review (recounted from the pins)', 'no',
+                   NUMBER_WORD.get(n_changed, S.num(n_changed)))
+    S.report_check('fig13 the failure\'s cause, in the paragraph\'s words (docs/02 record)',
+                   'a sort-order bug in our comparison script', record_cause)
 
-    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1.62, 1])
+    fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1.75, 1])   # (a) wide enough for the review's line
 
-    # (a) share matched: recounted (solid) and recorded (hatched), in two groups, each headed above its first bar;
-    # each count beside its bar. Rows one unit apart; the database row stands apart from the case-export group, with
-    # the note on its failure just below it, then the recorded group under its heading.
-    y_db, y_rec, head = 3.2, 5.95, 0.85       # head: from a group's heading down to its first bar
+    # (a) share matched: recounted (solid) and recorded (hatched) bars in two groups, each headed above its first bar,
+    # each count beside its bar. Rows one unit apart (about 0.135 in); the database row stands apart from the
+    # case-export group, with the note on its failure just below it (one line, from the bar's start, low enough to
+    # clear the bold count above its end); then the recorded group under its heading; last, apart, the association
+    # review as one line of text where a bar would be: its points are problems the reviewers raised, not values that
+    # matched, so they get no bar and no share.
+    head = 0.96                               # from a group's heading down to its first bar
+    y_db = 3.15
+    y_note = y_db + 1.04
+    y_rec = y_note + 1.37 + head
+    y_rev = y_rec + 1 + 1.26
     rows = [(name, m, n, 'recount', y) for (name, m, n), y in zip(reproductions, (0, 1, 2))]
     rows += [('Full-database checks', n_pass, n_checks, 'recount', y_db)]
     rows += [('Chronic outliers', n_rebuild, n_rebuild, 'record', y_rec),
-             ('Association study', cells_matched, n_cells, 'record', y_rec + 1),
-             ('Association review', points_upheld, n_points, 'record', y_rec + 2)]
-    S.label(ax, 0, -head, 'Case-export numbers, three ways', va='center')
-    S.label(ax, 0, y_rec - head, 'Recorded by the rebuilds and the review', va='center')
+             ('Association study', cells_matched, n_cells, 'record', y_rec + 1)]
+    S.label(ax, 0, -head, 'Midterm case-export numbers, three ways', va='center')
+    S.label(ax, 0, y_rec - head, 'Rebuilds whose records give a count', va='center')
     for name, m, n, kind, y in rows:
         share = m / n
         if kind == 'recount':
@@ -287,21 +385,31 @@ def plot(out_dir=S.FIG_DIR):
         else:
             ax.barh(y, share, height=0.56, color=S.WHITE, edgecolor=S.COBALT, hatch=HATCH, lw=0.8, zorder=3)
         key = name == 'Full-database checks'          # the one green readout: 65 of 66 on the full database
-        text = f'{S.num(m)} of {S.num(n)}' + (' upheld' if name == 'Association review' else '')
+        text = f'{S.num(m)} of {S.num(n)}'
         drawn = [int(v.replace(',', '')) for v in text.split()[0:3:2]]      # 'm of n' -> [m, n]
         S.check(f'fig13 (a) label {name!r}: matched', m, drawn[0])
         S.check(f'fig13 (a) label {name!r}: compared', n, drawn[1])
         S.label(ax, 1.025, y, text, size=S.FONT if key else S.TICK, weight='bold' if key else 'normal',
                 color=S.GREEN if key else S.TEXT)
-    # The one failed check: red, at the end of the database bar, with its cause below it
+    # The one failed check: red, at the end of the database bar, with its cause below it in docs/02's words
     ax.barh(y_db, n_fail / n_checks, left=n_pass / n_checks, height=0.56, color=S.RED, edgecolor=S.WHITE, lw=0.6,
             zorder=4)
-    note = f'{S.num(n_fail)} failure: a sort-order bug in our script'     # short enough to end under its bar
+    note = f'{S.num(n_fail)} failure: {record_cause}'
     S.check('fig13 (a) failures in the note = the failed checks', n_fail, int(note.split()[0]))
     S.check('fig13 (a) the note\'s cause = the recounted cause', 1, int(cause in note))
-    note_text = S.label(ax, 1.0, y_db + 0.8, note, ha='right', va='center')
-    ax.set_yticks([r[4] for r in rows], [r[0] for r in rows])
-    ax.set_ylim(y_rec + 2.45, -head - 0.55)
+    note_text = S.label(ax, 0, y_note, note, ha='left', va='center')
+    # The association review, in the paragraph's words: its points and what became of them, with no bar and no share
+    upheld = 'all upheld and applied' if points_all else f'{review.group(1)} refuted, {review.group(3).lower()} applied'
+    changed = f'{NUMBER_WORD.get(n_changed, S.num(n_changed))} headline result changed'
+    review_line = f'{S.num(n_points)} points, {upheld}; {changed}'
+    S.check('fig13 (a) review: points (docs/08 record; commit eeee532)', n_points, int(review_line.split()[0]))
+    S.check('fig13 (a) review: all upheld and applied (docs/08 record)', 1,
+            int(points_all and 'all upheld and applied' in review_line))
+    S.check('fig13 (a) review: headline results changed, as drawn = as recounted from the pins', n_changed,
+            {word: n for n, word in NUMBER_WORD.items()}.get(changed.split()[0], -1))
+    review_text = S.label(ax, 0, y_rev, review_line)
+    ax.set_yticks([r[4] for r in rows] + [y_rev], [r[0] for r in rows] + ['Association review'])
+    ax.set_ylim(y_rev + 0.62, -head - 0.45)
     ax.set_xlim(0, 1.36)
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
     ax.spines['bottom'].set_bounds(0, 1)
@@ -322,13 +430,28 @@ def plot(out_dir=S.FIG_DIR):
     bx.set_yticks([0, 50, 100, 150])
     bx.set_ylabel('Chronic outliers')
     bx.set_xlabel('Statistical cut-off')
-    S.clean(bx, grid='y')
+    S.clean(bx, grid='y', left=False)          # as the set's other categorical bar panels: no left spine,
+    bx.tick_params(axis='x', length=0)         # and no tick marks under the bars
     S.panel(bx, 'b', 'Chronic outliers by cut-off')
 
     S.check('fig13 (b) bars inside the axis', 1, int(max(by_cut.values()) + 12 < bx.get_ylim()[1]))
-    fig.canvas.draw()      # the final layout, to place the note
-    S.check('fig13 (a) the note starts within its bar\'s span (clear of the row labels)', 1,
-            int(note_text.get_window_extent().x0 >= ax.transData.transform((0, y_db))[0]))
+    # At the final layout: the note under the database bar starts at the bar's start and ends inside the panel; the
+    # review's line sits in the panel, between the last hatched bar and the axis; no label crosses a grid line
+    # unbacked; no two texts touch
+    fig.canvas.draw()
+    box, note_box, review_box = extents(fig, [ax, note_text, review_text])
+    bar_start = ax.transData.transform((0, y_db))[0]
+    S.check('fig13 (a) the note starts at the database bar\'s start (clear of the row labels)', 1,
+            int(abs(note_box.x0 - bar_start) < 0.02 * fig.dpi))
+    S.check('fig13 (a) the note ends inside the panel', 1, int(note_box.x1 <= box.x1))
+    S.check('fig13 (a) the review line sits inside the panel, at least 0.02 in above its axis', 1,
+            int(box.x0 <= review_box.x0 and review_box.x1 <= box.x1 and box.y0 + 0.02 * fig.dpi <= review_box.y0))
+    S.check('fig13 (a) the review line sits below the last hatched bar', 1,
+            int(review_box.y1 < ax.transData.transform((0, y_rec + 1 + 0.28))[1]))
+    for letter, a in zip('ab', (ax, bx)):
+        S.check(f'fig13 ({letter}) labels that cross a grid line have a white backing', '[]',
+                str(unbacked_crossings(fig, a)))
+    S.check('fig13 no two texts overlap', '[]', str(overlapping_texts(fig)))
     S.report_check('fig13 telemetry devices (Results, high-ticket machines)', '6,621', S.num(n_devices))
 
     S.export(fig, NAME, out_dir)

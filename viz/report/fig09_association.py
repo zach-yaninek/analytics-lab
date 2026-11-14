@@ -10,6 +10,7 @@ far that gives one, but it rests almost entirely on scrubex machines and is prov
     Definitions' number, labelled), and Computer Board's crosses the line.
 (b) The pooled 7-day ratio under each sensitivity check that gives one (13 rows of as_sensitivities.csv), as anonymous
     points in rising order with their 95% intervals (machine clusters for one check), all above the line at 1. The
+    points are the checks' variants (8 numbered checks: S3, S5 and S7 give more than one), so the axis says so. The
     lowest and highest ratios, 2.33 and 3.55, are the Definitions' range.
 The caption states that the pooled result rests almost entirely on scrubex machines (checked against the Definitions:
 1,402 of the 1,439 tickets whose code set their type logs, 97%) and is provisional (crosswalk v1, check S12, pending).
@@ -447,7 +448,7 @@ def plot(out_dir=S.FIG_DIR):
     for y, (name, row) in zip(ys[1:], by_set.iterrows()):
         ax.hlines(y, row.low, row.high, color=S.GREY, lw=0.9, zorder=3)
         ax.plot(row.ratio, y, 'o', color=S.GREY, ms=3.6, zorder=4)
-    backing = dict(facecolor=S.WHITE, edgecolor='none', pad=1.0)   # the light grid stops behind the readout
+    backing = dict(facecolor=S.WHITE, edgecolor='none', pad=0.8)   # the light grid stops behind the readout
     readout = S.label(ax, r['hi'] * 1.18, ys[0], S.num(r['pooled'], 1), size=S.FONT, weight='bold', color=S.GREEN,
                       bbox=backing)
     ax.annotate(f'({S.span(r["lo"], r["hi"], 1)})', xy=(1, 0.5), xycoords=readout, xytext=(3, 0),
@@ -480,7 +481,12 @@ def plot(out_dir=S.FIG_DIR):
     bx.set_yticks([1, 2, 4], ['1', '2', '4'])
     bx.yaxis.set_minor_locator(NullLocator())
     bx.set_xlim(-0.8, n_checks - 0.2)
-    bx.set_xticks([xs.mean()], ['Checks, in order of ratio'])   # at tick level, as fig11's groups
+    # at tick level, as fig11's groups. The points are variants, not checks: S3 gives four (two guard bands, each as a
+    # lower and an upper bound), S5 two (its rule and its secondary check) and S7 two (counted absent or present)
+    bx.set_xticks([xs.mean()], ['Check variants, in order of ratio'])
+    numbered = checks.index.str.extract(r'^(S\d+)', expand=False)
+    S.check('fig09 (b) every point is a variant of a numbered check, and some checks give more than one', 1,
+            int(numbered.notna().all() and numbered.nunique() < n_checks))
     bx.set_ylabel('Pooled odds ratio\n(log scale)', linespacing=1.1)   # two lines: shorter than the axis
     S.clean(bx, grid='y', bottom=False)
     S.panel(bx, 'b', 'Sensitivity checks')
@@ -498,7 +504,7 @@ def plot(out_dir=S.FIG_DIR):
             f'comparison window\'s are {S.num(r["pooled"], 1)} times those of other faults\' tickets '
             f'({pc(r["level"])} interval {S.span(r["lo"], r["hi"], 1).replace("–", "--")}), a {status} result '
             f'resting almost entirely on scrubex machines. '
-            f'(a)~By code set; (b)~by check; lines are {pc(r["level"])} intervals.')
+            f'(a)~By code set; (b)~by check variant; {pc(r["level"])} intervals.')
 
 
 if __name__ == '__main__':

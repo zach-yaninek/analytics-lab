@@ -2,8 +2,9 @@
 """Report figure 3 (Results, Repeat tickets): of 6,665 eligible tickets, 23.6% repeat within 30 days and 9.5% within 7
 days, 1.53 and 2.30 times random timing's shares, and without monitoring tickets the 30-day share is 22.0%.
 
-(a) The shares that repeat within 7 and 30 days, observed and under random timing, and the 30-day share without
-    monitoring tickets.
+(a) The shares that repeat within 7 and 30 days, observed (cobalt) and under random timing (grey), and the 30-day
+    share without monitoring tickets (a lighter cobalt, as a variant of the observed share; hatching is kept for
+    fig13's record-only values).
 (b) The share of eligible tickets that repeat within d days, for each whole number of days d from 0 to 30, observed
     and under random timing, with the two ratios at 7 and 30 days. Whole days match the report's 7- and 30-day
     windows and the caption's wording. Between whole days the exact observed curve has a daily ripple, because
@@ -28,6 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+from matplotlib.colors import to_rgb  # noqa: E402
 
 import report_style as S  # noqa: E402
 
@@ -37,6 +39,9 @@ SHORT = 'Repeat tickets vs. random timing'
 
 WINDOW, WEEK = 30, 7          # days, as the report's Definitions state
 CUTOFF = '2026-08-02'         # eligible tickets open before Aug 2nd, 2026
+# The 30-day share without monitoring tickets is a variant of the observed share: cobalt mixed half with white, a
+# lighter tint as GREY_FILL is of the data grey (hatching is kept for fig13's records)
+COBALT_TINT = tuple(0.5 * c + 0.5 for c in to_rgb(S.COBALT))
 PAIR_COLS = ['case_id', 'next_case_id', 'machine_id', 'opened_date', 'gap_days', 'repeat_30', 'repeat_7',
              'index_monitoring', 'next_monitoring', 'null_p30', 'null_p7']
 
@@ -153,17 +158,14 @@ def plot(out_dir=S.FIG_DIR):
     fig, (ax, bx) = S.figure(2.1, ncols=2, width_ratios=[1, 1.12])
     blank = dict(fc=S.WHITE, ec='none', pad=0.8)   # keeps the light grid out of a label
 
-    # (a) bars: observed and random timing, 7 and 30 days, and the 30-day share without monitoring tickets
+    # (a) bars: observed (cobalt) and random timing (grey), 7 and 30 days, and the 30-day share without monitoring
+    # tickets (a lighter cobalt: the observed share once monitoring tickets leave each machine's sequence)
     rows = [(f'Within {WEEK} days', share_7, 'obs', 0.0), ('Random timing', chance_7, 'null', 1.0),
             (f'Within {WINDOW} days', share_30, 'obs', 2.45), ('Random timing', chance_30, 'null', 3.45),
             (f'Within {WINDOW} days, without\nmonitoring tickets', share_nm, 'nm', 5.0)]
+    colour = {'obs': S.COBALT, 'null': S.GREY_FILL, 'nm': COBALT_TINT}
     for name, value, kind, y in rows:
-        if kind == 'obs':
-            ax.barh(y, value, height=0.62, color=S.COBALT, zorder=3)
-        elif kind == 'null':
-            ax.barh(y, value, height=0.62, color=S.GREY_FILL, zorder=3)
-        else:
-            ax.barh(y, value, height=0.62, color=S.WHITE, edgecolor=S.COBALT, hatch='//////', lw=0.8, zorder=3)
+        ax.barh(y, value, height=0.62, color=colour[kind], zorder=3)
         key = name == f'Within {WINDOW} days'      # the one green readout: the 30-day share
         text = S.pct(value, 1)
         S.check(f'fig03 (a) label {name} {text}', round(100 * value, 1), float(text.rstrip('%')))

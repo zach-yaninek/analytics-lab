@@ -5,15 +5,21 @@ their fleets plus chance.
 
 (a) Funnel plot: each of the 1,056 customers with expected tickets, its tickets ÷ expected tickets against its
     expected tickets (log axes; the 251 customers with no ticket sit on the row marked 0, as in figures 2 and 6).
-    The 63 customers beyond chance are cobalt, and the one outside the normal spread is ringed. Two upper limits:
-      dashed: where beyond chance begins. A customer is beyond chance when it has at least 5 tickets and its
-              one-sided exact Poisson p-value passes Benjamini-Hochberg at q < 0.05 over the 1,056 customers. With
-              k = 64 customers at q < 0.05, that is p <= t = k x 0.05 / 1,056, so the limit is the count c(E) at
-              which the Poisson upper tail P(X >= c | E), continued to real c by the regularized incomplete gamma
-              function, equals t, or 5 tickets if that is more. Every cobalt point lies above it and every grey point
-              below it, which the checks confirm;
-      solid:  the 99.8% limit of the funnel widened by the spread between customers, (1 + z sqrt(1/(4E) + tau^2))^2
-              with z = 3.09 and the script's tau^2. Only the ringed customer lies above it.
+    The 63 customers beyond chance are cobalt. The one outside the normal spread is drawn last with a black edge and
+    named from straight above: its three nearest neighbours (18 vs. 3.60, 14 vs. 3.07 and 14 vs. 3.19 expected) sit
+    2.0-2.4 pt from it, to its right and below, and the first of them lies 0.02% under the solid limit, so a ring
+    round it would hold four customers. Two upper limits, each named by what lies above it:
+      dashed, "Beyond chance": where beyond chance begins. A customer is beyond chance when it has at least 5 tickets
+              and its one-sided exact Poisson p-value passes Benjamini-Hochberg at q < 0.05 over the 1,056
+              customers. With k = 64 customers at q < 0.05, that is p <= t = k x 0.05 / 1,056, so the limit is the
+              count c(E) at which the Poisson upper tail P(X >= c | E), continued to real c by the regularized
+              incomplete gamma function, equals t, or 5 tickets if that is more. Every cobalt point lies above it and
+              every grey point below it, which the checks confirm. It is not what chance alone produces (that is the
+              median chance curve in figure 2 and the "Fleets plus chance" curve in (b)). It and the line at 1 end
+              just past the last customer, and its name continues it from there; the x-axis runs on to leave room;
+      solid, "Normal-spread limit": the 99.8% limit of the funnel widened by the spread between customers,
+              (1 + z sqrt(1/(4E) + tau^2))^2 with z = 3.09 and the script's tau^2. Only the black-edged customer lies
+              above it.
     Points are anonymous.
 (b) Concentration: the share of tickets held by the top x% of the 1,056 customers, ranked most first, observed
     (cobalt) and from their fleets plus chance (dashed: the median over the script's 1,000 Poisson draws of every
@@ -53,6 +59,9 @@ LOG_LO = 0.07                 # panel (a): the log part of the y-axis starts her
 LOG_HI = 26                   # panel (a): and ends here, above every customer; the space above holds the readout
 Y_TOP = 52                    # panel (a): the top of the axes, with room for the readout above the spine
 RATIO_TICKS = [0.1, 0.3, 1, 3, 10]
+X_LO, X_HI = 0.018, 500       # panel (a): the x-axis, run on past the last customer to hold the dashed limit's name
+END = 1.06                    # panel (a): the dashed limit and the line at 1 end this factor past the last customer
+OUT_S, OUT_EDGE = 11, 0.8     # panel (a): the customer outside the normal spread, a cobalt dot with a black edge (pt)
 X_MAX = 0.40                  # panel (b): the curves up to the top 40% of customers
 
 
@@ -160,6 +169,17 @@ def zero_log_axis(axis, zero_at, ticks):
     axis.set_minor_locator(NullLocator())
 
 
+def gap_to_points(fig, ax, artist, x, y, sizes):
+    """The smallest gap in points between an artist's box, in the final layout, and markers of the given areas (pt^2)
+    at (x, y) in ax's data coordinates; negative where a marker reaches into the box."""
+    fig.canvas.draw()
+    box = artist.get_window_extent(fig.canvas.get_renderer())
+    pts = ax.transData.transform(np.c_[x, y])
+    dx = np.maximum(np.maximum(box.x0 - pts[:, 0], 0), pts[:, 0] - box.x1)
+    dy = np.maximum(np.maximum(box.y0 - pts[:, 1], 0), pts[:, 1] - box.y1)
+    return float((np.hypot(dx, dy) * 72 / fig.dpi - np.sqrt(sizes) / 2).min())
+
+
 def plot(out_dir=S.FIG_DIR):
     summary = json.loads((FLEET / 'fx_summary.json').read_text())
     defs, cs = summary['definitions'], summary['customers']
@@ -259,31 +279,43 @@ def plot(out_dir=S.FIG_DIR):
     # (a) the funnel: log axes, the customers with no ticket on the 0 row
     ys = np.where(O > 0, ratio, ZERO_Y)
     S.check('fig05 (a) every customer with a ticket above the 0 row', 1, int(ratio[O > 0].min() > LOG_LO))
-    x_lo, x_hi = 0.018, 250
-    es = np.logspace(math.log10(x_lo), math.log10(x_hi), 600)
+    x_lo, x_hi = X_LO, X_HI
+    e_end = END * E.max()     # where the dashed limit and the line at 1 end, just past the last customer
+    es = np.logspace(math.log10(x_lo), math.log10(x_hi), 700)
+    ed = np.logspace(math.log10(x_lo), math.log10(e_end), 600)
     spread_line = (1 + z998 * np.sqrt(1 / (4 * es) + tau2)) ** 2
-    chance_line = np.array([max(chance_count(e, t), min_tickets) / e for e in es])
-    # each limit ends where the y-axis does, below the readout
+    chance_line = np.array([max(chance_count(e, t), min_tickets) / e for e in ed])
+    # each limit ends at the top where the y-axis does, below the readout
     ax.plot(es, np.where(spread_line <= LOG_HI, spread_line, np.nan), color=S.GREY_DARK, lw=1.0, zorder=2)
-    ax.plot(es, np.where(chance_line <= LOG_HI, chance_line, np.nan), color=S.GREY_DARK, lw=1.0, ls=(0, (4, 2.5)),
+    ax.plot(ed, np.where(chance_line <= LOG_HI, chance_line, np.nan), color=S.GREY_DARK, lw=1.0, ls=(0, (4, 2.5)),
             zorder=2)
-    ax.plot([x_lo, x_hi], [1, 1], color=S.GRID, lw=0.8, zorder=1)
+    ax.plot([x_lo, e_end], [1, 1], color=S.GRID, lw=0.8, zorder=1)
     ax.scatter(E[~flagged], ys[~flagged], s=5, color=S.GREY, alpha=0.55, linewidths=0, zorder=3)
-    ax.scatter(E[flagged], ys[flagged], s=11, color=S.COBALT, linewidths=0, zorder=4)
+    # the customer outside the normal spread is drawn last, on its own: a ring round it would hold three more cobalt
+    # customers 2.0-2.4 pt away, to its right and below, one of them on the solid limit
     (i_out,) = np.flatnonzero(beyond)
-    ax.scatter(E[i_out], ys[i_out], s=70, facecolors='none', edgecolors=S.TEXT, linewidths=0.8, zorder=5)
-    # the ringed customer, labelled above it in the empty space over the normal-spread limit
-    ax.annotate('Outside the\nnormal spread', xy=(E[i_out], ys[i_out]), xytext=(2.1, 13), textcoords='data',
+    plain = flagged & ~beyond
+    ax.scatter(E[plain], ys[plain], s=11, color=S.COBALT, linewidths=0, zorder=4)
+    ax.scatter(E[i_out], ys[i_out], s=OUT_S, color=S.COBALT, edgecolors=S.TEXT, linewidths=OUT_EDGE, zorder=6)
+    S.check('fig05 (a) cobalt customers drawn = beyond chance', n_flagged, int(plain.sum()) + 1)
+    # named from straight above, in the empty space over the normal-spread limit: the leader comes down to the edge of
+    # its dot, away from its neighbours
+    ax.annotate('Outside the\nnormal spread', xy=(E[i_out], ys[i_out]), xytext=(E[i_out], 13), textcoords='data',
                 ha='center', va='bottom', fontsize=S.TICK, linespacing=1.0,
-                arrowprops=dict(arrowstyle='-', color=S.TEXT, lw=0.5, shrinkA=1, shrinkB=4.5))
+                arrowprops=dict(arrowstyle='-', color=S.TEXT, lw=0.5, shrinkA=1,
+                                shrinkB=(math.sqrt(OUT_S) + OUT_EDGE) / 2 + 0.6))
     # the one green readout, top right above the limits: the customers beyond chance (their tickets vs. expected are
     # in the caption)
-    t1 = S.label(ax, 235, Y_TOP * 0.93, ' beyond chance', ha='right', va='top', size=S.FONT)
+    x_text = x_hi / 1.06
+    t1 = S.label(ax, x_text, Y_TOP * 0.93, ' beyond chance', ha='right', va='top', size=S.FONT)
     ax.annotate(S.num(n_flagged), xy=(0, 1), xycoords=t1, ha='right', va='top', fontsize=S.FONT, fontweight='bold',
                 color=S.GREEN)
-    # the limits, each labelled just above its right end (the descender of 'p' clear of the solid line)
-    S.label(ax, 235, 1.42, 'Chance', ha='right', va='bottom')
-    S.label(ax, 235, 4.4, 'Normal spread', ha='right', va='bottom')
+    # the limits, each named by what lies above it: the solid one just above its right end (the descender of 'p'
+    # clear of it); the dashed one where it ends, the line running into 'chance', the name's bottom just above the line
+    # at 1 (which it does not name) and its top under the solid limit
+    spread_name = S.label(ax, x_text, 4.6, 'Normal-spread limit', ha='right', va='bottom')
+    y_end = max(chance_count(e_end, t), min_tickets) / e_end
+    beyond_name = S.label(ax, e_end * 1.13, 1.06, 'Beyond\nchance', ha='left', va='bottom', linespacing=1.0)
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlim(x_lo, x_hi)
@@ -337,6 +369,36 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig05 (a) every customer inside the axes', 1,
             int(E.min() > x_lo and E.max() < x_hi and ratio.max() < LOG_HI))
     S.check('fig05 (b) curves inside the axes', 1, int(float(top_share(O, X_MAX)) < 1))
+
+    # Panel (a)'s marks, in the final layout (points at final size)
+    sizes = np.where(flagged, 11.0, 5.0)
+    sizes[i_out] = (math.sqrt(OUT_S) + OUT_EDGE) ** 2
+    others = np.arange(n) != i_out
+    gap = gap_to_points(fig, ax, beyond_name, E, ys, sizes)
+    S.check('fig05 (a) the name "Beyond chance" clears every customer by 1 pt', 1, int(gap > 1))
+    box = beyond_name.get_window_extent(fig.canvas.get_renderer()).transformed(ax.transData.inverted())
+    S.check('fig05 (a) the name "Beyond chance" lies right of the dashed limit\'s end, inside the axes, under the '
+            'solid limit', 1, int(e_end < box.x0 and box.x1 < x_hi and box.y0 < y_end < box.y1
+                                  and box.y1 < spread_line[(es >= box.x0) & (es <= box.x1)].min()))
+    p = ax.transData.transform(np.c_[E, ys]) * 72 / fig.dpi
+    dist = np.hypot(*(p - p[i_out]).T)
+    near = np.argsort(dist)[1:4]
+    S.report_check('fig05 (a) docstring: the three customers nearest the black-edged one',
+                   '18 vs. 3.60, 14 vs. 3.07 and 14 vs. 3.19',
+                   f'{O[near[0]]:.0f} vs. {E[near[0]]:.2f}, {O[near[1]]:.0f} vs. {E[near[1]]:.2f} and '
+                   f'{O[near[2]]:.0f} vs. {E[near[2]]:.2f}')
+    S.report_check('fig05 (a) docstring: they lie 2.0-2.4 pt from it, all below it', '2.0-2.4 pt, all below',
+                   f'{dist[near].min():.1f}-{dist[near].max():.1f} pt, '
+                   + ('all below' if (p[near, 1] < p[i_out, 1]).all() else 'not all below'))
+    S.report_check('fig05 (a) docstring: the nearest lies 0.02% under the solid limit', '0.02% under',
+                   f'{100 * (1 - ratio[near[0]] / spread_at[near[0]]):.2f}% under')
+    box = spread_name.get_window_extent(fig.canvas.get_renderer()).transformed(ax.transData.inverted())
+    S.check('fig05 (a) the name "Normal-spread limit" lies above its line, inside the axes', 1,
+            int(box.y0 > spread_line[(es >= box.x0) & (es <= box.x1)].max() and box.x1 < x_hi))
+    top = ax.transData.transform((E[i_out], 13))[1] * 72 / fig.dpi
+    strip = others & (np.abs(p[:, 0] - p[i_out, 0]) < np.sqrt(sizes) / 2 + 0.5) & (p[:, 1] > p[i_out, 1]) & \
+        (p[:, 1] < top)
+    S.check('fig05 (a) the leader comes straight down to it, clear of every other customer', 0, int(strip.sum()))
 
     S.export(fig, NAME, out_dir)
     pc = lambda share: S.pct(share).replace('%', chr(92) + '%')  # noqa: E731

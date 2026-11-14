@@ -13,12 +13,13 @@ Serviceable.
     ratio to the fleet age for age with its 95% interval (a cluster bootstrap over accounts that re-fits the joint
     model and age fit in every resample; for the 2 models at fewer than 10 accounts, the wider of that and Byar's
     Poisson interval), sorted by ratio. Points are anonymous; scrubBank 480 is cobalt and named, as in the report.
+    The dashed line is the fleet (a ratio of 1), named at its left end as in (c).
 (c) Unplanned tickets per 100 installed machine-months by age band (years from install to the midpoint of the
     machine's installed time in the period), with 95% cluster-bootstrap intervals over accounts and the fleet's rate
-    as a dashed line. The ticks sit between the bars at the bands' edges (0, 1, 2, 4, 6, 8, and 10 years; the last
-    band is open), as in figure 11. The three bands under 4 years and the 10+ band are cobalt; the bracket gives the
-    rate of the bands under 4 years together, and the note gives the 10+ band's machines with a ticket that are Not
-    Serviceable.
+    as a dashed line. Each bar is labelled with its band (0–1, 1–2, 2–4, 4–6, 6–8, 8–10, and 10+ years): the bands
+    are 1, 1, 2, 2, 2, and 2 years wide and the last is open, so the bars are categories, not a linear age axis.
+    The three bands under 4 years and the 10+ band are cobalt; the bracket gives the rate of the bands under 4 years
+    together, and the note gives the 10+ band's machines with a ticket that are Not Serviceable.
 
 Inputs: verification/outputs/fleet/fx_customer_rates.csv (one row per customer, read without its customer column:
 the fleet's tickets and installed months), fx_machine_flags.csv (one row per fleet machine with a ticket, read without
@@ -62,6 +63,18 @@ def band_years(label):
         return float(label[:-1]), math.inf
     lo, hi = label.split('-')
     return float(lo), float(hi)
+
+
+def band_name(label):
+    """A band's tick label from its years: '<1' -> '0–1', '2-4' -> '2–4', '10+' -> '10+'."""
+    lo, hi = band_years(label)
+    return f'{lo:g}+' if math.isinf(hi) else f'{lo:g}–{hi:g}'
+
+
+def data_box(fig, artist, ax):
+    """An artist's box in ax's data coordinates, in the final layout (as fig13 places its note)."""
+    fig.canvas.draw()
+    return artist.get_window_extent(fig.canvas.get_renderer()).transformed(ax.transData.inverted())
 
 
 def band_factors(machines, bands, column, factors):
@@ -215,7 +228,7 @@ def plot(out_dir=S.FIG_DIR):
     S.report_check('fig04 10+ machines with a ticket', '164', S.num(n_old))
 
     fig, (ax, bx, cx) = S.figure(2.2, ncols=3, width_ratios=[0.92, 0.88, 1.2])
-    blank = dict(fc=S.WHITE, ec='none', pad=0.6)   # keeps the light grid out of a label
+    blank = dict(fc=S.WHITE, ec='none', pad=0.8)   # keeps the light grid out of a label
 
     # (a) the three busiest models' shares, each labelled above its bar; the one green readout is their ticket share
     rows = [('Installed machine-months', share_months, S.GREY_FILL, 0.0),
@@ -228,7 +241,7 @@ def plot(out_dir=S.FIG_DIR):
         S.check(f'fig04 (a) label {name!r} {text}', round(100 * value), float(text.rstrip('%')))
         key = colour == S.COBALT
         S.label(ax, value + 0.012, y, text, size=S.FONT if key else S.TICK, weight='bold' if key else 'normal',
-                color=S.GREEN if key else S.TEXT)
+                color=S.GREEN if key else S.TEXT, bbox=blank)   # '51%' crosses the 60% gridline
     ax.set_ylim(3.05, -0.75)
     ax.set_yticks([])
     ax.set_xlim(0, 0.66)
@@ -254,6 +267,8 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig04 (b) the scrubBank 480 label sits beside the upper half of its interval', 1,
             int(sb.ratio < y_sb < sb.age_std_hi))
     S.label(bx, xs[focal][0] - 0.9, y_sb, f'{SB}\n{text}', ha='right', va='center', linespacing=1.15)
+    # the fleet's line, named at its left end as in (c), just above the line and the lowest models' intervals
+    fleet_label = S.label(bx, -0.6, 1.1, 'Fleet', ha='left', va='bottom')
     bx.set_xlim(-1, len(own))
     bx.set_xticks([])
     bx.set_ylim(0, 4.1)
@@ -295,7 +310,16 @@ def plot(out_dir=S.FIG_DIR):
             f'with a ticket are\n{NOT_SERVICEABLE}', ha='right', va='top', linespacing=1.0, bbox=blank)
     text_fleet = f'Fleet {S.num(fleet_rate, 1)}'
     S.label(cx, 3.17, fleet_rate + 0.2, text_fleet, ha='center', va='bottom')   # between the 2-4 bar and 6-8 interval
-    cx.set_xticks(np.arange(n + 1)[:-1] - 0.5, [S.num(e) for e in edges])   # between the bars: the bands' edges
+    # each bar named by its band: the bands differ in width, so evenly spaced edge ticks would read as a linear axis
+    names = [band_name(band) for band in ages.index]
+    S.check('fig04 (c) band labels name each band\'s years', 1,
+            int(all([float(v) for v in re.findall(r'\d+', name)] == [y for y in years[band] if math.isfinite(y)]
+                    for name, band in zip(names, ages.index))))
+    S.check('fig04 (c) docstring: the bands are 1, 1, 2, 2, 2, and 2 years wide, the last open', 1,
+            int([hi - lo for lo, hi in years.values()][:-1] == [1, 1, 2, 2, 2, 2]
+                and math.isinf(years[ages.index[-1]][1])))
+    cx.set_xticks(x, names)
+    cx.tick_params(axis='x', length=0)
     cx.set_xlim(-0.5, n - 0.5)
     cx.set_ylim(0, 12)
     cx.set_yticks([0, 2.5, 5, 7.5, 10], ['0', '2.5', '5', '7.5', '10'])
@@ -308,6 +332,10 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig04 (a) bars inside the axis', 1, int(max(r[1] for r in rows) < ax.get_xlim()[1]))
     S.check('fig04 (b) intervals inside the axis', 1, int(own.age_std_hi.max() < bx.get_ylim()[1]))
     S.check('fig04 (c) intervals inside the axis', 1, int(ages.ci_hi.max() < cx.get_ylim()[1]))
+    box = data_box(fig, fleet_label, bx)
+    under = (xs + 0.5 > box.x0) & (xs - 0.5 < box.x1)
+    S.check('fig04 (b) the Fleet label sits above the line and every interval under it', 1,
+            int(box.y0 > 1 and bool((own.age_std_hi[under] < box.y0).all())))
 
     S.export(fig, NAME, out_dir)
     pc = lambda share: S.pct(share).replace('%', chr(92) + '%')  # noqa: E731

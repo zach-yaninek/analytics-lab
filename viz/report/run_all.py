@@ -28,6 +28,7 @@ HEADER = r"""% The report's Figures section, written by viz/report/run_all.py fr
 % captions in viz/report/figNN_*.py and re-run it. Each figure supports one Results paragraph, which ends with
 % (Figure~\ref{...}). Needs \usepackage{graphicx} in the preamble; the PDFs are in figures/ beside this file.
 % The float settings below let up to three figures share a page; they apply from here to the end of the document.
+% Figures go here or at the top of a page ([!htp]), so a part-filled last page keeps its figures together at the top.
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\bottomfraction}{0.95}
 \renewcommand{\textfraction}{0.05}
@@ -39,7 +40,7 @@ HEADER = r"""% The report's Figures section, written by viz/report/run_all.py fr
 \section{Figures}
 """
 ENTRY = r"""
-\begin{figure}[!htbp]
+\begin{figure}[!htp]
   \centering\small
   \includegraphics[width=\linewidth]{figures/%(name)s.pdf}
   \caption[%(short)s]{%(caption)s}

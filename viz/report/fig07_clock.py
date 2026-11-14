@@ -171,7 +171,9 @@ def plot(out_dir=S.FIG_DIR):
 
     fig, (ax, bx) = S.figure(1.8, ncols=2, width_ratios=[1.05, 1])
 
-    # (a) each clock's steps: cobalt those that go backwards, grey the rest; each count just right of its segment
+    # (a) each clock's steps: cobalt those that go backwards, grey the rest; each count just right of its segment,
+    # except the export clock's: it has no segment, and the one green readout needs white (4.6:1, not 3.0:1 on the
+    # grey fill), so it sits just above the bar's start
     rows = [('Export clock', export.backward), ('Hospital-local,\nstate and ZIP3', zip3.backward),
             ('Hospital-local,\nstate only', state.backward)]
     for y, (name, back) in enumerate(rows):
@@ -180,10 +182,14 @@ def plot(out_dir=S.FIG_DIR):
         key = y == 0                         # the one green readout: no backward step on the export clock
         text = f'{S.num(back)} backward'
         S.check(f'fig07 (a) label {name!r}', back, int(text.split()[0].replace(',', '')))
-        S.label(ax, back + 90, y, text, size=S.FONT if key else S.TICK, weight='bold' if key else 'normal',
-                color=S.GREEN if key else S.TEXT, zorder=4)
+        if key:
+            S.label(ax, 0, y - 0.3, text, va='bottom', size=S.FONT, weight='bold', color=S.GREEN, zorder=4)
+        else:
+            S.label(ax, back + 90, y, text, zorder=4)
+    S.check('fig07 (a) the green readout labels a clock with no backward step (no segment to sit beside)', 0,
+            int(rows[0][1]))
     ax.set_yticks(range(len(rows)), [r[0] for r in rows], linespacing=1.0)
-    ax.set_ylim(len(rows) - 0.45, -0.55)
+    ax.set_ylim(len(rows) - 0.45, -0.72)
     ax.set_xlim(0, n_steps)
     ax.set_xticks([0, 2500, 5000, n_steps])       # even steps that leave the total's tick clear
     S.thousands_axis(ax.xaxis)
@@ -219,11 +225,12 @@ def plot(out_dir=S.FIG_DIR):
 
     S.export(fig, NAME, out_dir)
     # 'of any kind', as the report says: the 461 are not limited to unplanned tickets, the report's default
+    # The fields' result goes in (b)'s entry, so each panel has one and the caption keeps to three lines
     return (f'Opening times never step backwards in case-number order ({S.num(export.backward)} of {S.num(n_steps)} '
-            f'steps) but would {S.num(lo)}--{S.num(hi)} times on hospital-local clocks; Trouble Code and Category '
-            f'are filled on {S.num(both_open)} of {S.num(n_open)} open tickets '
+            f'steps) but would {S.num(lo)}--{S.num(hi)} times on hospital-local clocks. (a)~Two zone maps; '
+            f'(b)~Trouble Code and Category are filled on {S.num(both_open)} of {S.num(n_open)} open tickets '
             f'vs. {how_many(both_closed, n_closed)} of {S.num(n_closed)} {month_label} Trouble Closed tickets of any '
-            f'kind. (a)~Two zone maps.')
+            f'kind.')
 
 
 if __name__ == '__main__':

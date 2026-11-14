@@ -12,7 +12,11 @@ no model or telemetry type with 100 or more eligible tickets clearly stands out 
     the last bin is open), which keeps six range labels from crowding at this width.
 (c) The repeat ratio to the fleet (observed / random-timing repeats, divided by the fleet's) of the 12 models and 11
     telemetry types with 100 or more eligible tickets, with 95% bootstrap intervals over accounts. Points are
-    anonymous: models are circles, telemetry types squares, each group in rising order.
+    anonymous: models are circles, telemetry types squares, each group in rising order. None clearly stands out, so
+    all are grey context, as fig04 (b) draws every unit but the one that stands out. Five intervals exclude 1 (three
+    of them by under 0.02, too little to see at this size), and the note says why they do not count: none survives
+    the Benjamini-Hochberg correction within its family (q < 0.05, the Definitions' test); the smallest q is 0.12.
+Labels that cross a grid line have a white backing, so the grid stops behind them.
 
 Inputs: verification/outputs/followups/rp_pairs.csv (one row per eligible ticket, with its machine's next ticket; read
 without its customer column), rp_classes.csv, rp_same_by_gap.csv (counts of all pairs by gap, with intervals),
@@ -29,6 +33,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from matplotlib import patheffects as pe  # noqa: E402
+from matplotlib.collections import LineCollection  # noqa: E402
+from matplotlib.text import Text  # noqa: E402
+from matplotlib.transforms import Bbox  # noqa: E402
 
 import report_style as S  # noqa: E402
 
@@ -47,6 +54,54 @@ PROTOCOL = S.ROOT / 'docs' / '09_followups_protocol.md'
 RESULTS = S.ROOT / 'docs' / '10_followups_results.md'
 EDGES = [0, 1, 7, 30, 90, 180]   # days: the gap bins' lower edges, then 180, where the open last bin starts
 CASING = [pe.Stroke(linewidth=2.4, foreground=S.WHITE), pe.Normal()]   # so an interval reads on a cobalt bar
+BACKING = dict(facecolor=S.WHITE, edgecolor='none', pad=0.8)          # the light grid stops behind a label
+
+
+def extents(fig, artists):
+    """Each artist's drawn extent in display units, at the final layout."""
+    renderer = fig.canvas.get_renderer()
+    return [a.get_window_extent(renderer) for a in artists]
+
+
+def unbacked_crossings(fig, ax):
+    """The labels in ax that a drawn grid line passes through without a white backing to stop it."""
+    box = extents(fig, [ax])[0]
+    lines = [line for line in ax.xaxis.get_gridlines() + ax.yaxis.get_gridlines() if line.get_visible()]
+    grid = [e for e in extents(fig, lines)        # the lines inside the panel (ticks beyond its limits are not drawn)
+            if box.x0 - 1 <= e.x0 and e.x1 <= box.x1 + 1 and box.y0 - 1 <= e.y0 and e.y1 <= box.y1 + 1]
+    out = []
+    for text, e in zip(ax.texts, extents(fig, ax.texts)):
+        patch = text.get_bbox_patch()
+        backed = (patch is not None and tuple(patch.get_facecolor()[:3]) == (1.0, 1.0, 1.0)
+                  and text.get_zorder() > ax.xaxis.get_zorder())        # drawn over the grid, which the axis draws
+        if not backed and any(g.overlaps(e) for g in grid):
+            out.append(text.get_text())
+    return out
+
+
+def overlapping_texts(fig):
+    """Pairs of drawn texts (labels, notes, ticks, titles) whose extents overlap."""
+    texts = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip() and t.figure is fig]
+    boxes = extents(fig, texts)
+    return [(texts[i].get_text(), texts[j].get_text()) for i in range(len(texts)) for j in range(i + 1, len(texts))
+            if boxes[i].overlaps(boxes[j])]
+
+
+def clear_of(fig, ax, box, marks):
+    """Whether a display-unit box misses every mark: interval lines (a LineCollection) and points (a Line2D's
+    markers, each as a square of its marker size)."""
+    for mark in marks:
+        if isinstance(mark, LineCollection):
+            for seg in mark.get_segments():
+                (x0, y0), (x1, y1) = ax.transData.transform(seg)
+                if Bbox.from_extents(min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)).overlaps(box):
+                    return False
+        else:
+            half = mark.get_markersize() / 2 / 72 * fig.dpi
+            for x, y in ax.transData.transform(np.column_stack(mark.get_data())):
+                if Bbox.from_extents(x - half, y - half, x + half, y + half).overlaps(box):
+                    return False
+    return True
 
 
 def in_words(days):
@@ -181,12 +236,12 @@ def plot(out_dir=S.FIG_DIR):
             ('Monitoring, No Trouble Found,\nor blank Category', share_process, S.GREY_FILL, 3.45)]
     for name, value, colour, y in rows:
         ax.barh(y, value, height=0.34, color=colour, zorder=3)
-        S.label(ax, 0.003, y - 0.24, name, va='bottom', linespacing=1.0)
+        S.label(ax, 0.003, y - 0.24, name, va='bottom', linespacing=1.0, bbox=BACKING, zorder=2.5)
         text = S.pct(value)
         S.check(f'fig11 (a) label {name!r} {text}', round(100 * value), float(text.rstrip('%')))
         key = colour == S.COBALT                  # the one green readout: the same-Category share
         S.label(ax, value + 0.008, y, text, size=S.FONT if key else S.TICK, weight='bold' if key else 'normal',
-                color=S.GREEN if key else S.TEXT)
+                color=S.GREEN if key else S.TEXT, bbox=BACKING, zorder=2.5)
     ax.set_ylim(3.75, -0.65)
     ax.set_yticks([])
     ax.set_xlim(0, 0.37)
@@ -207,7 +262,7 @@ def plot(out_dir=S.FIG_DIR):
         if i in focal:
             text = S.pct(r.share)
             S.check(f'fig11 (b) label {r.gap_bin} {text}', round(100 * r.share), float(text.rstrip('%')))
-            S.label(bx, i, r.share_hi + 0.012, text, ha='center', va='bottom')
+            S.label(bx, i, r.share_hi + 0.012, text, ha='center', va='bottom', bbox=BACKING, zorder=2.5)
     bx.set_xticks(np.arange(len(EDGES)) - 0.5, [S.num(e) for e in EDGES])   # between the bars: the bins' edges
     bx.set_xlim(-0.5, len(by_gap) - 0.5)
     bx.set_ylim(0, 0.68)
@@ -218,23 +273,38 @@ def plot(out_dir=S.FIG_DIR):
     S.clean(bx, grid='y', left=False)
     S.panel(bx, 'b', 'Same Category by days apart')
 
-    # (c) each model and telemetry type: ratio to the fleet with its interval (anonymous points)
+    # (c) each model and telemetry type: ratio to the fleet with its interval (anonymous points), all grey context
+    # because none clearly stands out (cobalt would mark one that does, as in fig04 (b)); the note says why the
+    # intervals that exclude 1 do not count
     gap = 1.6
     groups = [(models, 'o', 0.0, f'{S.num(len(models))} models'),
               (types, 's', len(models) - 1 + gap, f'{S.num(len(types))} telemetry\ntypes')]
-    centres, names = [], []
+    centres, names, marks = [], [], []
     for units_, marker, start, name in groups:
         xs = start + np.arange(len(units_))
-        cx.vlines(xs, units_.lo, units_.hi, color=S.COBALT, lw=0.9, zorder=3)
-        cx.plot(xs, units_.ratio, marker, color=S.COBALT, ms=3.3 if marker == 'o' else 3.0, zorder=4)
+        marks.append(cx.vlines(xs, units_.lo, units_.hi, color=S.GREY, lw=0.9, zorder=3))
+        marks += cx.plot(xs, units_.ratio, marker, color=S.GREY, ms=3.3 if marker == 'o' else 3.0, zorder=4)
         centres.append(xs.mean())
         names.append(name)
     x_end = len(models) - 1 + gap + len(types) - 1
     cx.axhline(1, color=S.GREY_DARK, lw=0.8, ls=(0, (4, 2.5)), zorder=2)   # the fleet
+    excludes_1 = (units.lo > 1) | (units.hi < 1)
+    note = (f'{S.num(int(excludes_1.sum()))} intervals exclude 1, but none\n'
+            f'has q < {S.num(alpha, 2)} (smallest q = {S.num(q_min, 2)})')
+    drawn = [float(v) for v in re.findall(r'\d+(?:\.\d+)?', note)]     # [5, 1, 0.05, 0.12]
+    S.check('fig11 (c) note: intervals that exclude 1 (rp_by_model.csv, rp_by_type.csv)', int(excludes_1.sum()),
+            drawn[0])
+    S.check('fig11 (c) note: the fleet\'s ratio is 1', 1, drawn[1])
+    S.check('fig11 (c) note: the cut-off = the protocol\'s alpha (Definitions: q < 0.05)', alpha, drawn[2])
+    S.check('fig11 (c) note: smallest q', round(q_min, 2), drawn[3])
+    S.check('fig11 (c) note: none of the units has q under the cut-off', 0, int((units.q < alpha).sum()))
+    S.check('fig11 (c) note: so none of the intervals that exclude 1 stands out', 0,
+            int(units.stands_out[excludes_1].sum()))
+    note_text = S.label(cx, 0.03, 0.985, note, va='top', linespacing=1.05, transform=cx.transAxes)
     cx.set_xlim(-0.8, x_end + 0.8)
     cx.set_xticks(centres, names, linespacing=1.0)
     cx.tick_params(axis='x', length=0)
-    cx.set_ylim(0.4, 1.7)
+    cx.set_ylim(0.4, 1.95)
     cx.set_yticks([0.5, 1.0, 1.5], ['0.5', '1.0', '1.5'])
     cx.set_ylabel('Repeat ratio to the fleet')
     S.clean(cx, grid='y', bottom=False)
@@ -245,6 +315,21 @@ def plot(out_dir=S.FIG_DIR):
     S.check('fig11 (b) intervals inside the axis', 1, int(by_gap.share_hi.max() < bx.get_ylim()[1]))
     S.check('fig11 (c) intervals inside the axis', 1,
             int(cx.get_ylim()[0] < units.lo.min() and units.hi.max() < cx.get_ylim()[1]))
+
+    # At the final layout: no label crosses a grid line unbacked, no two texts touch, and the note in (c) sits inside
+    # the panel, clear of every interval and point and above the grid
+    fig.canvas.draw()
+    for letter, a in zip('abc', (ax, bx, cx)):
+        S.check(f'fig11 ({letter}) labels that cross a grid line have a white backing', '[]',
+                str(unbacked_crossings(fig, a)))
+    S.check('fig11 no two texts overlap', '[]', str(overlapping_texts(fig)))
+    box, note_box = extents(fig, [cx, note_text])
+    S.check('fig11 (c) the note sits inside the panel', 1,
+            int(box.x0 <= note_box.x0 and note_box.x1 <= box.x1 and box.y0 <= note_box.y0 and note_box.y1 <= box.y1))
+    S.check('fig11 (c) the note is clear of every interval and point (by 0.03 in)', 1,
+            int(clear_of(fig, cx, note_box.padded(0.03 * fig.dpi), marks)))
+    S.check('fig11 (c) the note is above the top grid line', 1,
+            int(note_box.y0 > cx.transData.transform((0, max(cx.get_yticks())))[1]))
 
     S.export(fig, NAME, out_dir)
     pc = lambda s: S.pct(s).replace('%', chr(92) + '%')  # noqa: E731

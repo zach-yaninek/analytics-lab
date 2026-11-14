@@ -15,8 +15,10 @@ Rules: numbers come from the committed outputs in verification/outputs/ and are 
 (report_check); pseudonyms only, and customer-level charts carry no customer labels at all.
 """
 import dataclasses
+import hashlib
 import json
 import math
+import os
 from pathlib import Path
 
 import matplotlib
@@ -33,6 +35,7 @@ ROOT = HERE.parents[1]
 OUT = ROOT / 'verification' / 'outputs'
 FIG_DIR = ROOT / 'report' / 'figures'
 CV = HERE / 'clear_visuals'
+TTF_CACHE = CV / 'fonts' / 'truetype'   # TrueType conversions of the bundled faces, built on first use (gitignored)
 STYLE = json.loads((CV / 'style.json').read_text())
 P = STYLE['themes']['light']
 
@@ -55,18 +58,71 @@ CHECKS = []                  # (name, ok, detail)
 TEXTS = {}                   # figure stem -> every text string drawn (for the privacy scan)
 
 
+def _truetype(otf):
+    """The bundled face at otf with its outlines converted to TrueType, cached by the face's content hash.
+
+    matplotlib's PDF writer embeds every Type 42 font as a TrueType font (CIDFontType2 with FontFile2). The bundled
+    CMU faces have CFF (PostScript) outlines, so embedding them as they are puts CFF data where the PDF standard
+    requires TrueType data: Poppler warns ('Mismatch between font type and embedded font file'), and stricter readers
+    can refuse the font. Converting the outlines (fontTools' cu2qu, within 1 font unit of 1,000) keeps every glyph,
+    advance width, and name, so the figures look the same and their embedded fonts are valid.
+    """
+    from fontTools.pens.cu2quPen import Cu2QuPen
+    from fontTools.pens.ttGlyphPen import TTGlyphPen
+    from fontTools.ttLib import TTFont, newTable
+
+    data = otf.read_bytes()
+    dst = TTF_CACHE / f'{otf.stem}-{hashlib.sha256(data).hexdigest()[:12]}.ttf'
+    if dst.exists():
+        return dst
+    font = TTFont(otf)
+    order = font.getGlyphOrder()
+    glyph_set = font.getGlyphSet()
+    glyphs = {}
+    for name in order:
+        pen = TTGlyphPen(glyph_set)
+        glyph_set[name].draw(Cu2QuPen(pen, 1.0, reverse_direction=True))
+        glyphs[name] = pen.glyph()
+    font['loca'] = newTable('loca')
+    font['glyf'] = glyf = newTable('glyf')
+    glyf.glyphOrder, glyf.glyphs = order, glyphs
+    for tag in ('CFF ', 'VORG'):
+        if tag in font:
+            del font[tag]
+    glyf.compile(font)
+    hmtx = font['hmtx']
+    for name, glyph in glyphs.items():
+        if hasattr(glyph, 'xMin'):              # the left side bearing follows the new outline's extent
+            hmtx[name] = (hmtx[name][0], glyph.xMin)
+    maxp = font['maxp'] = newTable('maxp')     # version 1.0, recalculated from the outlines on save
+    maxp.tableVersion = 0x00010000
+    maxp.maxZones = 1
+    for field in ('maxTwilightPoints', 'maxStorage', 'maxFunctionDefs', 'maxInstructionDefs', 'maxStackElements',
+                  'maxSizeOfInstructions', 'maxComponentElements'):
+        setattr(maxp, field, 0)
+    post = font['post']
+    post.formatType, post.extraNames, post.mapping, post.glyphOrder = 2.0, [], {}, order
+    font.sfntVersion = '\x00\x01\x00\x00'
+    TTF_CACHE.mkdir(parents=True, exist_ok=True)
+    tmp = dst.with_suffix(f'.{os.getpid()}.tmp')
+    font.save(tmp)
+    tmp.replace(dst)                            # atomic, so parallel runs never read a half-written face
+    return dst
+
+
 def _register_fonts():
     """Use the bundled Computer Modern Unicode faces in place of any installed copies.
 
-    The bold faces (cmunbx, cmunbi) are CMU's 'bold extended' and register with stretch 'expanded', and the regular
-    faces register at weight 500, so matplotlib's font matching would pick the regular face for bold text and warn on
-    every normal-weight request. Registering the regular faces at weight 400 and every face at normal stretch makes
-    'normal' and 'bold' resolve exactly, as they do for the mathtext fonts.
+    Each face is registered as its TrueType conversion (see _truetype). The bold faces (cmunbx, cmunbi) are CMU's
+    'bold extended' and register with stretch 'expanded', and the regular faces register at weight 500, so
+    matplotlib's font matching would pick the regular face for bold text and warn on every normal-weight request.
+    Registering the regular faces at weight 400 and every face at normal stretch makes 'normal' and 'bold' resolve
+    exactly, as they do for the mathtext fonts.
     """
     fm = font_manager.fontManager
     fm.ttflist = [f for f in fm.ttflist if f.name != STYLE['font']]
     for path in sorted((CV / 'fonts').glob('*.otf')):
-        fm.addfont(str(path))
+        fm.addfont(str(_truetype(path)))
     fm.ttflist = [dataclasses.replace(f, stretch='normal', weight=400 if f.weight == 500 else f.weight)
                   if f.name == STYLE['font'] else f for f in fm.ttflist]
     font_manager._get_font.cache_clear()

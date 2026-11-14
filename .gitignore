@@ -19,3 +19,5 @@ report/*.log
 report/*.out
 report/*.bbl
 report/*.blg
+# TrueType conversions of the bundled report fonts, rebuilt on first use by viz/report/report_style.py
+viz/report/clear_visuals/fonts/truetype/

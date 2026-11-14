@@ -7,14 +7,19 @@ on 2022-23 installs (1.54 per 100, 3.9 times the 2024-26 rate).
 
 (a) Unplanned tickets per 100 installed machine-months on young and older machines, all tickets and each of the ten
     request groups, all models together. The axis is logarithmic, so the gap between a row's two marks is its rate
-    ratio and reads the same at every rate.
+    ratio and reads the same at every rate. Every group runs higher on young machines, but the rate ratio's 95%
+    bootstrap interval includes 1 for two of them (Network and Software), which is why the report says "nearly every":
+    those two come last, apart, with grey young-machine marks and a direct label; the rest run in order of young
+    machines' rate.
 (b) Each request group's within-model share ratio, pooled over the 15 comparison models, with its 95% bootstrap
     interval over accounts, in the rows of (a). Not categorized has none (the share ratio's base leaves it out). The
     two groups that pass the planned test, Electronics and Mechanical, are cobalt and labelled.
 (c) The 1,447 extra tickets on young machines in one bar, with the 1,156 of them (80%) from young machines running
     above older ones of the same model (the within-model part) in cobalt.
 (d) Touchscreen tickets per 100 installed machine-months on the comparison models' machines, by install cohort, with
-    95% bootstrap intervals over accounts. The connector gives the 2022-23 rate as a multiple of the 2024-26 rate.
+    95% bootstrap intervals over accounts. The connector gives the 2022-23 rate as a multiple of the 2024-26 rate. The
+    axis label is fig12's, word for word.
+Labels that cross a grid line have a white backing, so the grid stops behind them.
 
 Inputs: verification/outputs/followups/ag_band_rates.csv, ag_type_rates.csv, ag_type_adjusted.csv, ag_support.csv,
 ag_by_model.csv, ag_decomposition.csv, ag_install_year.csv, ag_install_pooled.csv, rp_pairs.csv (read without its
@@ -332,34 +337,47 @@ def plot(out_dir=S.FIG_DIR):
     axes = fig.subplot_mosaic([['a', 'b', 'c'], ['a', 'b', 'd']], width_ratios=[1.3, 0.95, 1.75],
                               height_ratios=[0.26, 0.74])
     ax, bx, cx, dx = (axes[k] for k in 'abcd')
+    backing = dict(facecolor=S.WHITE, edgecolor='none', pad=0.8)   # the light grid stops behind the labels
 
-    # (a) rates by request group, young vs. older: all tickets on top, then the groups by young machines' rate
-    order = crude.loc[p.groups].sort_values('young_rate', ascending=False, kind='mergesort').index.tolist()
-    ys = {ALL: 0.0} | {g: 1.25 + i for i, g in enumerate(order)}
+    # (a) rates by request group, young vs. older: all tickets on top, then the groups by young machines' rate, and
+    # last, apart, the groups whose rate ratio's interval includes 1 (the 'nearly' of 'nearly every'), young in grey
+    clear = crude.lo.loc[p.groups] > 1
+    by_rate = crude.loc[p.groups].sort_values('young_rate', ascending=False, kind='mergesort').index.tolist()
+    order = [g for g in by_rate if clear[g]] + [g for g in by_rate if not clear[g]]
+    unclear = order[int(clear.sum()):]
+    ys = {ALL: 0.0} | {g: 1.25 + i + (0.4 if g in unclear else 0) for i, g in enumerate(order)}
     for g, y in ys.items():
         r = crude.loc[g]
         ax.plot([r.older_rate, r.young_rate], [y, y], color=S.GREY, lw=1.0, zorder=2)
         ax.plot(r.older_rate, y, 'o', mfc=S.WHITE, mec=S.GREY_DARK, mew=1.0, ms=4, zorder=3)
-        ax.plot(r.young_rate, y, 'o', color=S.COBALT, ms=4, zorder=4)
+        ax.plot(r.young_rate, y, 'o', color=S.GREY if g in unclear else S.COBALT, ms=4, zorder=4)
     S.check('fig10 (a) every group runs higher on young machines', 1, int((crude.ratio > 1).all()))
+    S.check('fig10 (a) the grey groups\' rate-ratio intervals include 1, and only theirs', 1,
+            int(all(crude.lo[g] <= 1 <= crude.hi[g] for g in unclear) and (crude.lo.drop(unclear) > 1).all()))
+    S.check('fig10 (a) groups whose interval includes 1: the "nearly" of "nearly every" (at most two)', 1,
+            int(0 < len(unclear) <= 2 and p.groups_word == 'nearly every'))
     a = crude.loc[ALL]
-    for value, x, ha in ((a.older_rate, a.older_rate / 1.3, 'right'), (a.young_rate, a.young_rate * 1.3, 'left')):
+    # the two rates either side of the row, and the ratio above it; the rates' backings over the ratio's, so the grid
+    # line at 3 stops cleanly between them
+    for value, x, ha in ((a.older_rate, a.older_rate / 1.3, 'right'), (a.young_rate, a.young_rate * 1.25, 'left')):
         text = S.num(value, 1)
         S.check(f'fig10 (a) label {text}', round(value, 1), float(text))
-        S.label(ax, x, 0, text, ha=ha)
+        S.label(ax, x, 0, text, ha=ha, bbox=backing, zorder=2.6)
     text = f'{S.num(p.ratio_all, 2)}×'
     S.check(f'fig10 (a) label {text}', round(p.ratio_all, 2), float(text.rstrip('×')))
-    S.label(ax, np.sqrt(a.older_rate * a.young_rate), -0.9, text, ha='center', size=S.FONT, weight='bold',
-            color=S.GREEN)
+    S.label(ax, np.sqrt(a.older_rate * a.young_rate), -1.15, text, ha='center', size=S.FONT, weight='bold',
+            color=S.GREEN, bbox=backing, zorder=2.5)
     top = crude.loc[order[0]]                 # the first group's marks carry the direct labels
-    S.label(ax, top.older_rate / 1.3, ys[order[0]], 'Older', ha='right')
-    S.label(ax, top.young_rate * 1.3, ys[order[0]], 'Young', ha='left')
+    S.label(ax, top.older_rate / 1.3, ys[order[0]], 'Older', ha='right', bbox=backing, zorder=2.5)
+    S.label(ax, top.young_rate * 1.3, ys[order[0]], 'Young', ha='left', bbox=backing, zorder=2.5)
+    S.label(ax, crude.young_rate[unclear].max() * 1.8, np.mean([ys[g] for g in unclear]),
+            'Ratio’s interval\nincludes 1', ha='left', linespacing=1.0, bbox=backing, zorder=2.5)
     ax.set_xscale('log')
     ax.set_xlim(0.04, 22)
     ax.set_xticks([0.1, 0.3, 1, 3, 10], ['0.1', '0.3', '1', '3', '10'])
     ax.xaxis.set_minor_locator(NullLocator())
     ax.set_yticks(list(ys.values()), [SHOWN.get(g, g) for g in ys])
-    ax.set_ylim(max(ys.values()) + 0.55, -1.35)
+    ax.set_ylim(max(ys.values()) + 0.55, -1.75)
     ax.set_xlabel('Per 100 machine-months (log scale)')
     S.clean(ax, grid='x', left=False)
     S.panel(ax, 'a', 'Ticket rates')
@@ -377,9 +395,9 @@ def plot(out_dir=S.FIG_DIR):
             text = S.num(p.share_ratio[g], 2)
             S.check(f'fig10 (b) label {g} {text}', round(r.share_ratio_mh, 2), float(text))
             if r.share_ratio_mh > 1:
-                S.label(bx, r.share_ratio_hi * 1.08, y, text, ha='left')
+                S.label(bx, r.share_ratio_hi * 1.08, y, text, ha='left', bbox=backing, zorder=2.5)
             else:
-                S.label(bx, r.share_ratio_lo / 1.08, y, text, ha='right')
+                S.label(bx, r.share_ratio_lo / 1.08, y, text, ha='right', bbox=backing, zorder=2.5)
     bx.axvline(1, color=S.GREY_DARK, lw=0.8, ls=(0, (4, 2.5)), zorder=2)
     bx.sharey(ax)
     bx.tick_params(axis='y', labelleft=False, length=0)
@@ -399,8 +417,10 @@ def plot(out_dir=S.FIG_DIR):
         S.check(f'fig10 (c) label {text}', round(value), float(text.split(' ')[0].replace(',', '')))
     S.check(f'fig10 (c) label ({S.pct(share_within)})', round(100 * share_within),
             float(S.pct(share_within).rstrip('%')))
-    S.label(cx, p.extra + 25, 0, S.num(p.extra))
-    S.label(cx, 8, -0.42, f'Within model {S.num(p.within)} ({S.pct(share_within)})', va='bottom')
+    S.label(cx, p.extra + 25, 0, S.num(p.extra), bbox=backing, zorder=2.5)
+    # just clear of the grid line at 0, so the backing leaves that line whole
+    S.label(cx, 20, -0.42, f'Within model {S.num(p.within)} ({S.pct(share_within)})', va='bottom', bbox=backing,
+            zorder=2.5)
     cx.set_ylim(0.45, -1.3)
     cx.set_yticks([])
     cx.set_xlim(0, 1850)
@@ -420,20 +440,20 @@ def plot(out_dir=S.FIG_DIR):
     r_c, r_n = p.cohorts.loc[p.cluster], p.cohorts.loc[p.newest]
     text = S.num(r_c.rate, 2)
     S.check(f'fig10 (d) label {text}', round(r_c.rate, 2), float(text))
-    S.label(dx, i_c, r_c.hi + 0.06, text, ha='center', va='bottom')
+    S.label(dx, i_c, r_c.hi + 0.06, text, ha='center', va='bottom', bbox=backing, zorder=2.5)
     xc = (i_c + i_n) / 2                      # the connector, between the two bars
     dx.plot([i_c + 0.31, xc, xc, i_n - 0.31], [r_c.rate, r_c.rate, r_n.rate, r_n.rate], color=S.GREY_DARK, lw=0.6,
             zorder=2)
     text = f'{S.num(ratio_cluster, 1)}×'
     S.check(f'fig10 (d) label {text}', round(ratio_cluster, 1), float(text.rstrip('×')))
-    S.label(dx, xc + 0.08, (r_c.rate + max(r_n.hi, r_n.rate)) / 2, text, ha='left')
+    S.label(dx, xc + 0.08, (r_c.rate + max(r_n.hi, r_n.rate)) / 2, text, ha='left', bbox=backing, zorder=2.5)
     dx.set_xticks(range(len(names)), [dashed(c) for c in names])
     dx.tick_params(axis='x', length=0)
     dx.set_xlim(-0.55, len(names) - 0.45)
     dx.set_ylim(0, 2.3)
     dx.set_yticks([0, 1.0, 2.0], ['0', '1.0', '2.0'])
     dx.set_xlabel('Install years')
-    dx.set_ylabel('Tickets per 100\nmachine-months')
+    dx.set_ylabel(f'{FOCUS}\ntickets per 100\nmachine-months')   # fig12's wording, on three lines to fit
     S.clean(dx, grid='y', left=False)
     S.panel(dx, 'd', f'{FOCUS} by install cohort')
 
@@ -450,8 +470,8 @@ def plot(out_dir=S.FIG_DIR):
     pc = lambda share: S.pct(share).replace('%', chr(92) + '%')  # noqa: E731
     return (f'Young machines run {S.num(p.rate_young, 1)} tickets per 100 machine-months vs. {S.num(p.rate_old, 1)} '
             f'for older ones ({S.num(p.ratio_all, 2)} times), with higher rates in {p.groups_word} request group. '
-            f'(a)~By request group; (b)~share ratios, {p.interval_level}\\% intervals; (c)~{S.num(p.extra)} extra '
-            f'tickets, {pc(share_within)} within model; (d)~{FOCUS} by cohort, {p.interval_level}\\% intervals.')
+            f'(a)~By request group; (b)~share ratios; (c)~{S.num(p.extra)} extra tickets, {pc(share_within)} within '
+            f'model; (d)~{FOCUS} by cohort; {p.interval_level}\\% intervals.')
 
 
 if __name__ == '__main__':

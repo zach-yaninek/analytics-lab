@@ -8,13 +8,17 @@ group.
 (a) Each customer's tickets ÷ expected tickets in the first half against the second (log axes; a customer with no
     tickets in a half sits on the row or column marked 0), for the 311 customers expected to have at least 3 tickets
     in each half (the rank correlation's customers) and the 8 other consistent outliers. The 18 consistent outliers
-    are cobalt. Points are anonymous. The shuffled value replays the script's 1,000 permutations with its seed.
+    are cobalt: the 10 in the correlation filled, the 8 outside it open, so the readout's 0.46 visibly covers only
+    the filled and grey points. Points are anonymous. The shuffled value replays the script's 1,000 permutations with
+    its seed.
 (b) Machines installed in both halves, by first-half tickets (0, 1, 2, 3 or more): second-half tickets ÷ expected,
-    with 95% cluster-bootstrap intervals over customers; only the focal 3-or-more bar is labelled. The 0 row comes
-    from the script's table; the other rows are recounted from the machine table, and the 3-or-more interval replays
-    the script's bootstrap weights, which reproduce the table's 1, 2, 3, and 4+ intervals.
+    with 95% cluster-bootstrap intervals over customers (dark grey, cased in white, as in figures 4, 10 and 11); only
+    the focal 3-or-more bar is labelled, in 8 pt like the other figures' bar labels, so the green 0.46 stays the one
+    emphasis. The 0 row comes from the script's table; the other rows are recounted from the machine table, and the
+    3-or-more interval replays the script's bootstrap weights, which reproduce the table's 1, 2, 3, and 4+ intervals.
 (c) The 106 chronic outliers on IPA's list, 93 of them still flagged, and the 128 flagged machines, 36 of them
-    consistent outliers; none of the flagged machines keeps q < 0.05 under the negative binomial.
+    consistent outliers; the note under the flagged machines gives the negative binomial's answer behind "no separate
+    group": allowing for spread between machines, none of them keeps q < 0.05 (the smallest is 0.10).
 
 Inputs: verification/outputs/fleet/fx_customer_rates.csv (one row per customer), fx_machine_flags.csv (one row per
 fleet machine with a ticket or among the 113), fx_outlier_persistence.csv and fx_outlier_machine_persistence.csv (the
@@ -45,8 +49,11 @@ CUT = 3             # the report's machines: 3 or more first-half tickets
 P_HALF = 0.05       # consistent outliers: one-sided Poisson p below this in each half
 LEVEL = 95          # panel (b): the bootstrap intervals' level, in percent (the script's 2.5th to 97.5th percentiles)
 ZERO = 0.05         # panel (a): a ratio of 0 is drawn here, below the log range, and marked 0
-LOG_LO, LOG_HI = 0.085, 40
+LOG_LO, LOG_HI = 0.085, 46     # the y-axis top leaves three lines of readout clear above the spines, which end at 8
 RATIO_TICKS = [0.25, 0.5, 1, 2, 4, 8]
+OPEN_S, OPEN_EDGE = 10, 0.8   # panel (a): an open point, about as wide overall as a filled one (s 12)
+CASING = [pe.Stroke(linewidth=2.4, foreground=S.WHITE), pe.Normal()]   # so an interval reads on a cobalt bar
+BLANK = dict(fc=S.WHITE, ec='none', pad=0.8)                          # keeps the light grid out of a label
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -269,20 +276,30 @@ def plot(out_dir=S.FIG_DIR):
     ax.plot([LOG_LO, 11], [1, 1], color=S.GRID, lw=0.8, zorder=1)
     ax.scatter(xs[~cons_in], ys[~cons_in], s=6.5, color=S.GREY, alpha=0.6, linewidths=0, zorder=2)
     out = customers[consistent_c & ~in_corr]
-    cx_all = np.concatenate([xs[cons_in], (out.O_h1 / out.E_h1).to_numpy()])
-    cy_all = np.concatenate([ys[cons_in], (out.O_h2 / out.E_h2).to_numpy()])
+    ox, oy = (out.O_h1 / out.E_h1).to_numpy(), (out.O_h2 / out.E_h2).to_numpy()
+    cx_all = np.concatenate([xs[cons_in], ox])
+    cy_all = np.concatenate([ys[cons_in], oy])
     S.check('fig06 consistent outliers drawn', n_consistent_c, len(cx_all))
     S.check('fig06 customers drawn', len(both_halves) + n_other_consistent, len(xs) + len(out))
+    S.check('fig06 (a) open points = the consistent outliers outside the correlation', n_other_consistent,
+            n_consistent_c - int(cons_in.sum()))
+    S.report_check('fig06 (a) docstring: consistent outliers filled (in the correlation) and open', '10 filled, 8 open',
+                   f'{int(cons_in.sum())} filled, {len(out)} open')
     S.check('fig06 every customer inside the spines', 1,
             int(max(cx_all.max(), xs.max()) < RATIO_TICKS[-1] and max(cy_all.max(), ys.max()) < 5.5))
-    ax.scatter(cx_all, cy_all, s=12, color=S.COBALT, linewidths=0, zorder=4)
+    # the consistent outliers in the correlation filled; the others (under 3 expected tickets in a half) open, drawn
+    # over them, so the readout's 0.46 visibly covers only the filled and grey points
+    ax.scatter(xs[cons_in], ys[cons_in], s=12, color=S.COBALT, linewidths=0, zorder=4)
+    ax.scatter(ox, oy, s=OPEN_S, facecolors=S.WHITE, edgecolors=S.COBALT, linewidths=OPEN_EDGE, zorder=5)
     # the readout top left and the cluster's label top right, both above the spines; the label's first line is level
-    # with the readout's second, well to its right
-    S.label(ax, 10.5, 21, f'{S.num(n_consistent_c)} consistent\noutliers', ha='right', va='top', linespacing=1.0)
-    t1 = S.label(ax, 0.045, 39, 'Rank correlation ', ha='left', va='top', size=S.FONT)
+    # with the readout's second, well to its right; the readout's last line says what it leaves out
+    S.label(ax, 10.5, 0.525 * LOG_HI, f'{S.num(n_consistent_c)} consistent\noutliers', ha='right', va='top',
+            linespacing=1.0)
+    t1 = S.label(ax, 0.045, 0.975 * LOG_HI, 'Rank correlation ', ha='left', va='top', size=S.FONT)
     ax.annotate(S.num(rho, 2), xy=(1, 1), xycoords=t1, ha='left', va='top', fontsize=S.FONT,
                 fontweight='bold', color=S.GREEN)
-    S.label(ax, 0.045, 21, f'{S.num(rho_null, 2)} when shuffled', ha='left', va='top')
+    S.label(ax, 0.045, 0.525 * LOG_HI, f'{S.num(rho_null, 2)} when shuffled\nopen points not included', ha='left',
+            va='top', linespacing=1.0)
     ax.set_xscale('log')
     ax.set_yscale('log')
     for axis in (ax.xaxis, ax.yaxis):
@@ -297,18 +314,17 @@ def plot(out_dir=S.FIG_DIR):
     S.panel(ax, 'a', 'Customers: tickets ÷ expected')
 
     # (b) machines' second-half tickets ÷ expected by first-half tickets, bars from zero with bootstrap intervals
-    # (black, cased in white so they read on cobalt, as in figure 11)
-    casing = [pe.Stroke(linewidth=2.0, foreground=S.WHITE), pe.Normal()]
+    # (dark grey, cased in white so they read on cobalt, as in figures 4, 10 and 11)
     for i, b in enumerate(bars):
         hot = b['name'] == f'{CUT} or more'   # the focal bar, the only one labelled (as in figure 11)
         bx.bar(i, b['ratio'], width=0.62, color=S.COBALT if hot else S.GREY_FILL, zorder=3)
-        line, = bx.plot([i, i], [b['lo'], b['hi']], color=S.TEXT, lw=0.8, solid_capstyle='butt', zorder=4)
-        line.set_path_effects(casing)
+        line, = bx.plot([i, i], [b['lo'], b['hi']], color=S.GREY_DARK, lw=1.0, solid_capstyle='butt', zorder=4)
+        line.set_path_effects(CASING)
         S.check(f'fig06 (b) bar {b["name"]} = the script\'s ratio', script_ratio[b['name']], b['ratio'], 1e-9)
-        if hot:
+        if hot:   # labelled in 8 pt regular like the other figures' bars: the green 0.46 is the one emphasis
             text = S.num(b['ratio'], 1)
             S.check(f'fig06 (b) label {b["name"]} {text}', round(script_ratio[b['name']], 1), float(text))
-            S.label(bx, i, b['hi'] + 0.07, text, ha='center', va='bottom', size=S.FONT, weight='bold')
+            S.label(bx, i, b['hi'] + 0.07, text, ha='center', va='bottom')
     bx.axhline(1, color=S.GREY_DARK, lw=0.8, ls=(0, (4, 2.5)), zorder=2)
     bx.set_xticks(np.arange(len(bars)), [f'{CUT}+' if b['name'] == f'{CUT} or more' else b['name'] for b in bars])
     bx.set_xlim(-0.55, len(bars) - 0.45)
@@ -316,7 +332,8 @@ def plot(out_dir=S.FIG_DIR):
     bx.set_yticks([0, 1, 2, 3])
     bx.set_xlabel('First-half tickets')
     bx.set_ylabel('Second-half tickets\n÷ expected')
-    S.clean(bx, grid='y')
+    S.clean(bx, grid='y', left=False)          # a categorical bar panel, as in figures 4, 10 and 11
+    bx.tick_params(axis='x', length=0)
     S.panel(bx, 'b', 'Machines by first-half tickets')
 
     # (c) flagged machines: chronic outliers on IPA's list still flagged; flagged machines that are consistent
@@ -325,10 +342,18 @@ def plot(out_dir=S.FIG_DIR):
     for i, (name, total, part, text) in enumerate(rows):
         cx.barh(-i, part, height=0.36, color=S.COBALT, zorder=3)
         cx.barh(-i, total - part, left=part, height=0.36, color=S.GREY_FILL, zorder=3)
-        S.label(cx, 0, -i + 0.25, text, ha='left', va='bottom', bbox=dict(fc=S.WHITE, ec='none', pad=0.6))
+        S.label(cx, 0, -i + 0.25, text, ha='left', va='bottom', bbox=BLANK)
         S.label(cx, total + 3, -i, S.num(total), ha='left', va='center')
+    # under the flagged machines, the negative binomial's answer behind the caption's "no separate group" (the
+    # report's words for it, as in figure 2: allowing for spread between machines, none still stands out)
+    nb_text = ('None stands out' if n_nb == 0 else f'{S.num(n_nb)} stand out') + '\nallowing for spread'
+    S.check(f'fig06 (c) note {nb_text.splitlines()[0]!r}: flagged machines at q < 0.05 under the negative binomial',
+            n_nb, 0 if nb_text.startswith('None') else int(nb_text.split()[0]))
+    S.report_check('fig06 (c) docstring: the smallest negative-binomial q among the flagged machines', '0.10',
+                   S.num(float(machines.q_nb[flagged].min()), 2))
+    S.label(cx, 0, -1.25, nb_text, ha='left', va='top', linespacing=1.0, bbox=BLANK)
     cx.set_yticks([-i for i in range(len(rows))], [r[0] for r in rows])
-    cx.set_ylim(-1.5, 0.85)
+    cx.set_ylim(-1.8, 0.85)
     cx.set_xlim(0, 150)
     cx.set_xticks([0, 50, 100])
     cx.set_xlabel('Machines')
