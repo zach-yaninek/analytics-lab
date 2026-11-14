@@ -58,7 +58,9 @@ Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
     (Computer Modern type, cobalt accent, grey context; tokens and fonts copied into `viz/report/clear_visuals/` from
     `zacbaylis/clear-visuals`). `report_style.py` holds the style, each `figNN_*.py` draws one figure from the
     committed outputs and checks every number it shows against the outputs and the report's text, and `run_all.py`
-    draws them all, scans their text for identifiers, and writes `report/ipa_figures.tex`.
+    draws them all, scans their text for identifiers, and writes `report/ipa_figures.tex`. On first use,
+    `report_style.py` converts the fonts' outlines to TrueType into the gitignored
+    `viz/report/clear_visuals/fonts/truetype/`, because matplotlib embeds every PDF font as TrueType.
   - `viz/figures/`: the rendered PNGs.
 - `verification/tests/`: synthetic-fixture self-test for `verify_with_db.py` and the other scripts that read raw
   files, and `test_followups_units.py` (fast unit tests for `followups.py`).
