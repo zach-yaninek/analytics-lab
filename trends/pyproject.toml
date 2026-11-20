@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ipa-trends"
+version = "1.0.0"
+description = "IPA service-ticket trends: unplanned tickets per 100 installed machine-months by issue, for any rerun frequency"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["pandas>=2.2", "numpy>=1.26", "openpyxl>=3.1", "pyyaml>=6"]
+
+[project.optional-dependencies]
+charts = ["matplotlib>=3.8"]
+notebook = ["matplotlib>=3.8", "jupyter", "nbformat>=5.9", "nbclient>=0.9", "ipykernel>=6", "papermill>=2.5"]
+
+[project.scripts]
+ipa-trends = "ipa_trends.cli:main"
+
+[tool.setuptools]
+packages = ["ipa_trends", "ipa_trends.definitions", "ipa_trends.style", "ipa_trends.reference"]
+
+[tool.setuptools.package-data]
+"ipa_trends.definitions" = ["*.csv"]
+"ipa_trends.style" = ["*.mplstyle"]
+"ipa_trends.reference" = ["*.json"]

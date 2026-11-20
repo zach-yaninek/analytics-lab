@@ -1,0 +1,6 @@
+# Monthly run. Monthly cells hold about a third of a quarter's tickets, so fewer Categories can be tested and a
+# change has to be larger before it is called out (each run writes the smallest detectable change per cell).
+RERUN_FREQUENCY: monthly
+CASE_EXPORTS: data/raw/IPA_CaseHistory_*.xlsx
+EQUIPMENT_LISTS: data/raw/IPA_Active_Equipment_list_*.xlsx
+OUTPUT_DIR: data/output

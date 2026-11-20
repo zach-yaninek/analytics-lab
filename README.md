@@ -1,6 +1,16 @@
 # analytics-lab
 Code repository for my Analytics Lab project (Roper IPA × MIT Analytics Lab).
 
+## Recurring service-ticket trends for IPA (Nov 2026)
+
+`trends/` is the deliverable for IPA's Product & Customer Service analytics team: a notebook (`trends/ticket_trends.ipynb`)
+and command line (`ipa-trends`) that rerun the service-ticket analysis on fresh exports at a frequency that is a free
+parameter (quarterly by default, monthly as the alternative). They report unplanned tickets per 100 installed
+machine-months by issue, by install cohort, product family and model, flag changes conservatively, and write a report,
+email text and dashboard tables. It is self-contained (IPA receives only `trends/`); its definitions are verbatim copies
+of `verification/` checked by `trends/tests/test_parity.py`. Runbook: `trends/README.md`; method: `trends/METHOD.md`;
+record: `docs/11_ticket_trends.md`.
+
 ## Review of the IPA service-ticket SQL analysis (Oct 2026)
 
 | Document | What it covers |

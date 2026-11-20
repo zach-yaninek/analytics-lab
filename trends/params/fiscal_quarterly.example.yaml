@@ -1,0 +1,7 @@
+# Quarterly on a fiscal year that starts in October (FY2027 Q1 = Oct-Dec 2026). Change YEAR_START_MONTH to suit.
+RERUN_FREQUENCY: quarterly
+YEAR_START_MONTH: 10
+FISCAL_YEAR_NAMED_BY: end
+CASE_EXPORTS: data/raw/IPA_CaseHistory_*.xlsx
+EQUIPMENT_LISTS: data/raw/IPA_Active_Equipment_list_*.xlsx
+OUTPUT_DIR: data/output
