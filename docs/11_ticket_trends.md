@@ -32,12 +32,17 @@ The definitions are verbatim copies of `verification/common.py`, `flags.py`, `fo
 - **An equipment-list ledger.** It counters the single snapshot's survivorship trend: unlisted tickets fall from
   11.1% in Aug 2025 to 1.0% in Aug 2026.
 - **Time-trend call-outs.** The latest final period is compared with the previous 12 months, and install cohorts
-  are contrasted on crude and same-age ratios.
+  are compared with the rest of the fleet, with newer and older installs (a peak), and with machines of the same age
+  in other cohorts (`trends/METHOD.md` §5 gives the rule).
 - **Data-quality gates.** These cover late Category labels, open tickets, taxonomy changes, closed-only or
   incomplete exports, and the case clock.
 
 **Reconciliation.** `ipa-trends reconcile` reproduces, on the original two files, the committed numbers in
 `fx_summary.json`, `fx_age_rates.csv`, `fx_family_rates.csv`, `fx_model_rates.csv`, `ag_type_rates.csv`,
-`ag_band_rates.csv`, the halves, the monthly counts and `ag_install_pooled.csv`, intervals included. On VD's
-synthetic fixture the engine already matches `fleet_exposure.machine_frame` machine by machine and `followups.py`'s
-tables value by value (`trends/tests/test_parity.py`). The run on IPA's files is to be done by the lead.
+`ag_band_rates.csv`, the halves, the monthly counts and `ag_install_pooled.csv`. Intervals are compared for
+`fx_age_rates.csv`, `fx_family_rates.csv`, `fx_model_rates.csv` and the under-4 and 4+ rates of `ag_type_rates.csv`.
+`ag_band_rates.csv` and `ag_install_pooled.csv` are compared on counts, machine-months and rates:
+`ag_install_pooled.csv`'s intervals were made with a different rule (association.ci: inverted-CDF percentiles, no
+Byar widening) and are not reproduced. On VD's synthetic fixture the engine already matches
+`fleet_exposure.machine_frame` machine by machine and `followups.py`'s tables value by value
+(`trends/tests/test_parity.py`). The run on IPA's files is to be done by the lead.

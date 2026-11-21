@@ -11,11 +11,16 @@ params/*.yml
 params/*.json
 !params/*.example.yaml
 !params/reconcile_*.yaml
-# executed notebooks, checkpoints, drafts
+# executed notebooks (only the empty ticket_trends.ipynb is committed), checkpoints, drafts, run logs
+*.ipynb
+!ticket_trends.ipynb
 executed_notebook.ipynb
 *.executed.ipynb
 .ipynb_checkpoints/
 *.eml
+*.log
+# the virtual environment of the one-time setup
+.venv/
 __pycache__/
 *.egg-info/
 build/

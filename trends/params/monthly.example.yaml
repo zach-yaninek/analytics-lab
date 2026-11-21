@@ -4,3 +4,4 @@ RERUN_FREQUENCY: monthly
 CASE_EXPORTS: data/raw/IPA_CaseHistory_*.xlsx
 EQUIPMENT_LISTS: data/raw/IPA_Active_Equipment_list_*.xlsx
 OUTPUT_DIR: data/output
+# Windows: OUTPUT_DIR: 'C:\Users\me\OneDrive - IPA\Trends\output'   (single quotes, or forward slashes: C:/Users/me/...)

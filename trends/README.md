@@ -26,16 +26,46 @@ has already seen, and the engine reproduces its numbers (see *Reconciliation*).
 
 ## One-time setup (about 15 minutes)
 
-You need Python 3.11 or later.
+You need Python 3.11 or later. Open a terminal in the folder that holds `trends`, then create a virtual environment
+(`.venv`) inside `trends`, activate it, and install the package into it.
+
+**Windows** (Command Prompt):
+
+```bat
+cd trends
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pip install -e .
+python -m ipykernel install --user --name python3
+ipa-trends selftest --quick
+```
+
+**macOS and Linux:**
 
 ```bash
 cd trends
-python -m venv .venv
-.venv/bin/pip install -r requirements.txt        # Windows: .venv\Scripts\pip install -r requirements.txt
-.venv/bin/pip install -e .                       # adds the ipa-trends command
-.venv/bin/python -m ipykernel install --user --name python3
-ipa-trends selftest --quick                      # runs the test suite on synthetic data (no IPA data needed)
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+python -m ipykernel install --user --name python3
+ipa-trends selftest --quick
 ```
+
+- `pip install -e .` adds the `ipa-trends` command to the environment.
+- `ipykernel install` makes the notebook's kernel (`python3`) run in this environment.
+- `ipa-trends selftest --quick` runs the test suite on synthetic data (no IPA data needed). It takes several minutes.
+- On Windows, if `python` is not found, use `py -m venv .venv`. In PowerShell, `.venv\Scripts\activate` runs a
+  script that the execution policy often blocks: use Command Prompt instead.
+
+**Activate the environment in every new terminal** before any `ipa-trends`, `pip` or `jupyter` command:
+`.venv\Scripts\activate` on Windows, `source .venv/bin/activate` on macOS and Linux (run in the `trends` folder).
+The prompt then starts with `(.venv)`. Every command below assumes it.
+
+**Start Jupyter from the environment:** activate it, then run `jupyter lab` (or `jupyter notebook`) in the
+`trends` folder; Jupyter opens in your browser, and `ticket_trends.ipynb` is in its file list. In VS Code, open the
+`trends` folder and choose the `.venv` environment (or the `python3` kernel) when the notebook asks for a kernel.
 
 **Save the Salesforce report once** (a "Details Only" report of cases, all record types and **all statuses**,
 exported as .xlsx by a user whose Salesforce time zone is **US Eastern**). It needs these columns:
@@ -64,29 +94,42 @@ ipa-trends inspect
    - the case report, as `IPA_CaseHistory_<YYYY-MM-DD>.xlsx`;
    - that month's equipment list, as `IPA_Active_Equipment_list_<YYYY-MM-DD>.xlsx`. **Keep the earlier equipment
      lists in the folder**: they let the run account for machines that were removed.
-2. Open `ticket_trends.ipynb` in Jupyter or VS Code. The first code cell holds the parameters; normally nothing
-   changes. To switch cadence, edit one line: `RERUN_FREQUENCY = 'monthly'`.
-3. **Run All.** Within a few minutes the notebook shows:
+2. Open `ticket_trends.ipynb` in Jupyter (`jupyter lab`, started from the activated environment) or VS Code. The
+   first code cell holds the parameters; normally nothing changes. To switch cadence, edit one line:
+   `RERUN_FREQUENCY = 'monthly'`.
+3. **Restart & Run All** (Jupyter: Kernel menu; VS Code: Restart, then Run All). A plain Run All keeps the names
+   left from earlier runs, so a name you have corrected would still stop the run. Within a few minutes the notebook
+   shows:
    - the latest period and the fleet rate against its baseline;
    - flagged changes and install cohorts that stand out;
    - the charts;
-   - data-quality notes, and when the next run is due.
+   - data-quality notes, and when the next run is due (always after the export date; a period already due but with
+     too many tickets still open is listed as needing a newer export).
 4. Read the data-quality notes. A period that is too fresh is marked *provisional* and reported in the next run.
 5. If "Ready to distribute" says yes, attach `data/output/latest/report.pdf` and paste
    `data/output/latest/email_summary.txt` into an email to the distribution list. A Power Automate flow can do this
-   instead (see *Sharing*).
+   instead (see *Sharing*). After a back-run (`LATEST_PERIOD`), `latest/` is unchanged: send the files from the run
+   folder the notebook names.
 6. The dashboard picks up `latest/*.csv`. `data/output/runs/<run_id>/` keeps every run.
 
-The same run without Jupyter:
+The same run without Jupyter (in a terminal with the environment activated):
 
 ```bash
 ipa-trends run                                    # defaults, or:
 ipa-trends run --params params/quarterly.yaml     # a copy of params/quarterly.example.yaml
 ipa-trends run --set RERUN_FREQUENCY=monthly
-ipa-trends run --engine notebook                  # executes the notebook headless and saves it with the run
+ipa-trends run --engine notebook                  # runs the notebook headless, scans it, then publishes the run with it
 ```
 
-With papermill: `papermill ticket_trends.ipynb out.ipynb -p RERUN_FREQUENCY monthly` (or `-f params/monthly.yaml`).
+**To keep an executed notebook, use `ipa-trends run --engine notebook`.** The notebook then only stages its run.
+The command line scans the executed notebook, and only then publishes the run and saves the notebook as
+`runs/<run_id>/executed_notebook.ipynb` of that run, never in `latest/`. `BASE_DIR` and every parameter set in the
+parameter file or with `--set` are passed to the notebook. A back-run (`LATEST_PERIOD`) leaves `latest/` unchanged
+with either engine, and the notebook and console say so.
+
+papermill can run the notebook too, but the notebook then publishes its run itself, and the copy papermill writes is
+not scanned. Write it outside `OUTPUT_DIR`, under a name git ignores, and do not share it:
+`papermill ticket_trends.ipynb ticket_trends.executed.ipynb -p RERUN_FREQUENCY monthly` (or `-f params/monthly.yaml`).
 
 ## Changing the cadence
 
@@ -99,6 +142,11 @@ Change only `RERUN_FREQUENCY`.
 - **Fiscal year:** set `YEAR_START_MONTH` (10 for October).
 - **Other lengths:** any whole number of months works, and periods are counted from a fixed anchor so their edges
   never move between runs.
+- **Explicit periods** (a 4-4-5 calendar, say): set `PERIOD_EDGES` to the period edges. The wording then says
+  'period' ('the previous four periods', 'Report (custom periods)'), and the baseline is the explicit periods that
+  start in the `BASELINE_MONTHS` (12) before the latest one, and at least the one just before it.
+  `RERUN_FREQUENCY` still names the run and keys the dashboard. Runs with explicit edges name no next run, and
+  `ipa-trends next-runs` lists `RERUN_FREQUENCY`'s periods, not the explicit ones.
 
 To see when runs are due:
 
@@ -110,8 +158,19 @@ ipa-trends next-runs --set RERUN_FREQUENCY=monthly
 ## Parameters
 
 Set them in the notebook's parameters cell, in a YAML/JSON file (`--params`, or papermill `-f`), or one at a time
-(`--set NAME=VALUE`, or papermill `-p`). A misspelt name stops the run with a "did you mean" suggestion. Relative
-paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` environment variable).
+(`--set NAME=VALUE`, or papermill `-p`). Parameter names are written in capitals. A misspelt name, or a parameter
+name in the wrong case (`rerun_frequency`, also as papermill `-p rerun_frequency monthly`), stops the run with E22
+and the right spelling; papermill only warns about a name that is both misspelt and in lower case. In Jupyter a name
+you have since corrected stays in memory until the kernel restarts, so use Restart & Run All. Relative paths are
+read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` environment variable). A relative `--params`
+path is read from the current folder, then from the trends folder.
+
+In a YAML parameter file, write a Windows path in single quotes or with forward slashes:
+`OUTPUT_DIR: 'C:\Users\me\OneDrive - IPA\Trends\output'` or `OUTPUT_DIR: C:/Users/me/OneDrive - IPA/Trends/output`.
+In double quotes a backslash starts an escape sequence: the file is then refused with E22, which gives the line and
+column, or, for `\t` and `\n`, the path silently changes. Text holding a colon or `#` needs quotes too:
+`REPORT_TITLE: 'IPA: quarterly trends'`. On the command line, `--set` keeps text as typed:
+`--set "REPORT_TITLE=IPA: quarterly trends"`.
 
 **Cadence**
 
@@ -121,14 +180,21 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 | `YEAR_START_MONTH` | `1` | first month of the reporting year (10 for an October fiscal year) |
 | `FISCAL_YEAR_NAMED_BY` | `'end'` | 'end': the year starting Oct 2026 is FY2027 |
 | `ANCHOR_DATE` | `None` | 'YYYY-MM-DD' a date that starts a period, for unusual calendars |
-| `PERIOD_EDGES` | `None` | explicit period edges ['YYYY-MM-DD', ...] (overrides RERUN_FREQUENCY) |
-| `LATEST_PERIOD` | `None` | report an earlier final period as the latest (back-runs); never overwrites latest/ |
+| `PERIOD_EDGES` | `None` | explicit period edges ['YYYY-MM-DD', ...] in place of RERUN_FREQUENCY's periods (the wording then says 'period') |
+| `LATEST_PERIOD` | `None` | report an earlier final period as the latest (a back-run): its label or start date ('2026 Q2', '2026-04-01'); never changes latest/ |
 | `BASELINE_MONTHS` | `None` | months of baseline before the latest period (default: 12, or one period if longer) |
-| `HISTORY_MONTHS` | `None` | months of history in the charts (default: 24, or three periods if longer) |
+| `HISTORY_MONTHS` | `None` | months of history on the time charts, always with the baseline and latest period (default: 24, or three periods if longer) |
 | `LABEL_LAG_DAYS` | `14` | days after a period ends before it counts as final (Categories are filled at close) |
 | `MAX_OPEN_SHARE` | `0.02` | a period with more of its tickets still open stays provisional |
 | `MAX_BLANK_CATEGORY_SHARE` | `0.05` | above this share of blank Categories (or twice the typical share), issue-level comparisons skip the period |
 | `MAX_UNMAPPED_SHARE` | `0.05` | above this share of unmapped tickets, affected groups are not tested |
+
+**Back-runs.** `LATEST_PERIOD` reports an earlier final period as if it were the latest; take its label or start date
+(`period_key`) from `periods.csv`. The run goes to `runs/<run_id>/` only, so `latest/` and the dashboard keep the
+regular run. A back-run names no next run (`next_run_after` is null), and with `--engine notebook` its executed
+notebook is filed under its own run.
+
+**`HISTORY_MONTHS`** limits only the time charts: every table keeps every period.
 
 **Inputs (relative paths are read from the trends folder)**
 
@@ -143,13 +209,17 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 | `DATA_START` | `None` | 'YYYY-MM-DD' first day the export covers (default: the first ticket's day) |
 | `DATA_END` | `None` | 'YYYY-MM-DD' last day the export covers (default: the last ticket's day) |
 | `COLUMN_ALIASES` | `{}` | {'renamed header': 'expected header'} if IPA renames a column |
-| `CATEGORY_ALIASES` | `{}` | {'new Category name': 'old Category name'} so a renamed Category keeps its series |
-| `REQUEST_TYPES_LOCAL` | `None` | CSV adding new Trouble Code x Category combinations to the request groups |
+| `CATEGORY_ALIASES` | `{}` | {'new Category name': 'old Category name'}: for a renamed or split Category, so its series and tests continue |
+| `REQUEST_TYPES_LOCAL` | `None` | CSV adding genuinely new Trouble Code x Category combinations to the request groups (not for a renamed or split Category) |
 | `UNMAPPED_POLICY` | `'separate'` | 'separate': unmapped combinations form their own, never-tested group |
 | `CASE_CLOCK_TZ` | `'America/New_York'` | time zone of the case times in the export (US Eastern for IPA) |
 | `DATE_FORMAT` | `None` | e.g. '%m/%d/%Y %I:%M %p' when dates are stored as text (default: detected) |
 | `BASE_DIR` | `None` | folder relative paths are read from (default: the trends folder) |
 | `OUTPUT_DIR` | `'data/output'` | where runs are written (runs/<run_id>/ and latest/) |
+
+**A renamed or split Category** (W04 or W27): map each new name to the old one in `CATEGORY_ALIASES`, so the series
+and its tests continue. Adding the new names to `REQUEST_TYPES_LOCAL` instead would hold back the Category-level
+tests of that Trouble Code's groups until the whole baseline uses the new names.
 
 **Breakdowns**
 
@@ -163,7 +233,7 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 | `MODEL_FILTER` | `None` | only these models (reconciliation) |
 | `POOL_SMALL_STRATA` | `True` | pool models with too few machines into one "Other models" series |
 | `MIN_TYPE_MONTHS` | `100` | machine-months a model needs over 396 days for its own series (100 means 7.7 machines) |
-| `MIN_CELL_MONTHS` | `100` | cells with fewer machine-months are shown hollow |
+| `MIN_CELL_MONTHS` | `100` | cells with fewer machine-months keep their rate, with meets_min_exposure False; the cohort map leaves them blank |
 | `THIRD_PARTY_PLANS` | `['Vogeltronix']` | service plans whose service does not reach the case export (excluded) |
 | `MISSING_INSTALL_DATE` | `'exclude'` | 'exclude' machines without an install date, or 'data_start' |
 
@@ -191,6 +261,9 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 | `MAKE_CHARTS` | `'auto'` | 'auto': charts when matplotlib is installed |
 | `MAKE_REPORT` | `True` | write report.html, report.pdf and the email text |
 | `REPORT_TITLE` | `'IPA service-ticket trends'` | title of the report and email |
+| `PRIVACY_ALLOW` | `[]` | names the privacy scan lets through although a real field holds them too (a model word that is also a city); never account names or numbers |
+
+`PRIVACY_ALLOW` is only for genuine collisions found after a P01 (see *Privacy*).
 
 ## Outputs (`data/output/latest/` and `data/output/runs/<run_id>/`)
 
@@ -205,16 +278,20 @@ append**. Column types are in `schema.json`.
 |---|---|
 | `rates_final.csv` | The dashboard feed: final periods only, every breakdown × issue (tickets, machine-months, average installed machines, rate per 100, 95% interval) |
 | `rates.csv` | The same for every period, with its status (partial, in progress and provisional periods included) |
-| `changes.csv` | The latest period against its baseline, cell by cell: ratio, interval, q-value, status, reason when not tested, smallest detectable change, sentence |
-| `cohort_contrasts.csv` | Install cohorts over the last 12 months: rate; ratios to the rest of the fleet, to newer and to older installs, and to earlier installs at the same age; status, sentence |
+| `changes.csv` | The latest period against its baseline, cell by cell: ratio, interval, q-value, status, reason when not tested, smallest detectable change, sentence. `baseline_labels`, `baseline_periods_used` and `baseline_set` ('all', or 'labels' for issue-level rows, which leave out periods with incomplete Category labels) name each row's own baseline; `sustained` and `previous_status` compare it with the period before. An untested cell's sentence gives its rate and the reason, never a change |
+| `cohort_contrasts.csv` | Install cohorts over the last `CONTRAST_MONTHS` (12) months of final periods. Each row names its own window in `window_label` (issue-level rows leave out periods with incomplete Category labels). Columns: rate; ratios to the rest of the fleet, to newer and to older installs, and to machines of the same age in other cohorts (over the whole history); `position` (oldest, interior, newest, too_new, undated); status, basis and sentence (not-tested rows give only the rate and the reason) |
 | `periods.csv` | The reporting grid: status and reason, open and blank-Category shares |
 | `data_quality.csv` | Per-period counts: planned, cancelled, duplicate, open, unlisted, unmapped |
 | `strata.csv` | Which models were pooled; cohort date ranges |
 | `unmapped.csv` | Trouble Code × Category combinations missing from the reference |
 | `report.html`, `report.pdf` | The report (the PDF is the attachment to send) |
 | `email_summary.txt`, `.html` | Paste-ready email text, at most 15 lines |
-| `charts/*.png` | Fleet trend, request groups, cohort profile, cohort × period map, changes, data quality |
-| `manifest.json` | Parameters (absolute paths shortened to their last folder), input fingerprints, warnings, checks, privacy scan totals, `distribution_ready`, `next_run_after` |
+| `charts/*.png` | Fleet trend, request groups, cohort profile, cohort × period map, changes, data quality. The time charts (fleet trend, request groups, cohort × period map, data quality) show the last `HISTORY_MONTHS` months. The changes chart shows the fleet and its request groups, then other flagged or watch-list cells, fleet-wide first, at most 15 rows, keeping one row for each flagged direction. Data quality marks the run's own blank-Category limit. Hollow markers and bars are periods that are not final yet |
+| `manifest.json` | Parameters (absolute paths shortened to their last folder), input fingerprints, warnings, checks, privacy scan totals, `distribution_ready`, `next_run_after` (the next run's due date, after this export's date; null for back-runs and explicit `PERIOD_EDGES`) |
+| `executed_notebook.ipynb` | Only in `runs/<run_id>/`, and only with `--engine notebook`: the executed notebook, after its privacy scan |
+
+`OUTPUT_DIR` also holds `failed/<stamp>/error.txt` for each run that stopped (see *When something is wrong*) and,
+for a moment while `latest/` is replaced, `latest.new/` or `latest.old/`.
 
 ## Sharing
 
@@ -225,7 +302,12 @@ Nothing is sent automatically, and no email credentials live in the code. Pick o
 - **B. Power Automate.** Keep `OUTPUT_DIR` in a OneDrive or SharePoint folder. A flow triggers when
   `latest/manifest.json` changes, reads `distribution_ready` and `run_id` (to avoid duplicates), and sends the PDF
   and summary to the list or posts them in Teams. Runs are staged outside `OUTPUT_DIR` and copied in only after
-  every check and the privacy scan pass, so the flow never sees a half-written run.
+  every check and the privacy scan pass. `latest/` is then replaced as a whole: a complete copy (`latest.new/`) is
+  renamed into place and the old one (`latest.old/`) removed, and `latest/manifest.json` is written last, as a new
+  file. So the flow never sees a half-written run or a mix of two runs, and a back-run, which leaves `latest/`
+  alone, does not trigger it. Because the folder is replaced, OneDrive or SharePoint version history for the files
+  in `latest/` starts again with each run; `runs/<run_id>/` keeps every run. This has not yet been tried on
+  SharePoint itself.
 - **C. Dashboard.** Point Power BI at `latest/rates_final.csv` (and the other tables).
 
 ## Scheduling (optional)
@@ -234,21 +316,51 @@ The manual cycle above is the main process, because the Salesforce export is don
 itself, schedule it daily with `--only-if-new`: it skips the run until the inputs change. This works for any
 frequency, including ones a calendar can't express, such as every 5 months.
 
-```bash
-ipa-trends run --params params/quarterly.yaml --only-if-new
-```
+A scheduled task starts in another folder and without the virtual environment, so call `ipa-trends` by its full
+path inside `.venv`:
 
-- **Windows:** use Task Scheduler. Keep the input and output folders on a local or network drive, not cloud-only
-  OneDrive files.
-- **Linux/macOS:** use cron, for example `0 7 * * *`.
+- **Windows:** in Task Scheduler, create a daily task whose action is *Start a program*, with
+  - *Program/script*: `C:\path\to\trends\.venv\Scripts\ipa-trends.exe`
+  - *Add arguments*: `run --params params\quarterly.yaml --only-if-new`
+  - *Start in*: `C:\path\to\trends`
+
+  A relative `--params` path is also looked for in the trends folder, so the file is found even if *Start in* is
+  left empty (the task then starts in System32); a full path such as `C:\path\to\trends\params\quarterly.yaml` works
+  too. To keep the console output, set *Program/script* to `cmd.exe` and *Add arguments* to
+  `/c .venv\Scripts\ipa-trends.exe run --params params\quarterly.yaml --only-if-new >> run.log 2>&1`, with *Start in*
+  as above. Keep the input and output folders on a local or network drive, not cloud-only OneDrive files.
+- **macOS and Linux:** a crontab line such as
+
+  ```bash
+  0 7 * * * cd /path/to/trends && .venv/bin/ipa-trends run --params params/quarterly.yaml --only-if-new >> run.log 2>&1
+  ```
+
+A run that stops exits with a non-zero code (Task Scheduler shows it as the task's *Last Run Result*) and leaves
+`OUTPUT_DIR/failed/<stamp>/error.txt` (see *When something is wrong*). Git ignores `run.log`, which can name local
+folders.
 
 ## When something is wrong
 
-**Exit codes:** 0 OK or skipped; 1 a runtime check or the privacy scan failed; 2 an input or parameter problem;
-3 unexpected.
+**Exit codes:** 0 OK or skipped (`--only-if-new`); 1 a runtime check (C01) or the privacy scan (P01) failed; 2 an
+input, parameter or output-folder problem (E01-E10, E20-E25, E30, E31); 3 unexpected (E99).
+`ipa-trends run --engine notebook` exits with the code of the error the notebook stopped on.
 
-An unexpected error's traceback goes to a private log on the computer, never to the console, notebook or output
-folder. A failed run writes only `failed/<stamp>/error.txt` (code and stage).
+**What a run that stops leaves.** It writes `OUTPUT_DIR/failed/<stamp>/error.txt` with the code, the stage, the exit
+code and the package version (never the message or any cell value), and the console or notebook names the file.
+This holds for every coded error once `OUTPUT_DIR` can be read from the parameters, with two exceptions: nothing is
+written for E31, or when `OUTPUT_DIR` is inside a git repository that does not ignore it; the console says so
+instead. (In the notebook, a misspelt parameter name stops it before the run starts, so only the notebook shows that
+error.) With `--engine notebook`, the executed notebook is kept beside `error.txt` when its outputs pass the privacy
+scan. When they cannot be scanned (for example, the inputs are missing), it stays in a private temporary folder
+whose path is printed; delete it once you have looked at it. After a P01 it is deleted. Nothing reaches `latest/`
+before every check and the privacy scan pass, and `latest/` is then replaced as a whole, so a run that stops leaves
+it as it was. If `latest/` itself cannot be replaced (E30, a locked file), the message says what was and was not
+updated.
+
+**Unexpected errors.** An unexpected error's traceback goes to a private log on this computer, never to the console,
+notebook or output folder. The log is a new file that only you can read, in the folder `ipa_trends_logs_<user>` of
+the temporary folder, which only you can open (`<user>` is your user name on Windows, your user id elsewhere). If
+the log cannot be written, E99 says so and still shows only the error's type.
 
 | Code | Meaning | Fix |
 |---|---|---|
@@ -264,20 +376,20 @@ folder. A failed run writes only `failed/<stamp>/error.txt` (code and stage).
 | E10 | Over 0.5% of rows have no Case Number or Serial # | Check the export's columns |
 | E20 | `RERUN_FREQUENCY` / `INSTALL_COHORT_WIDTH` not recognised (weeks, pandas aliases, out of range) | Use `'quarterly'`, `'monthly'` or `'N months'` |
 | E21 | `ANCHOR_DATE` after the 28th | Choose day 1 to 28 |
-| E22 | Unknown or invalid parameter | The message suggests the right name or value |
+| E22 | Unknown, misspelt or wrong-case parameter, an invalid value, or a parameter file that is missing or not valid YAML or JSON | The message gives the right name (`RERUN_FREQUENCY`, not `rerun_frequency`) or value, or the file's line and column. In the notebook, after correcting a name, use Restart & Run All |
 | E24 | No reporting period overlaps the data | Check `PERIOD_EDGES` and the export dates |
-| E25 | `LATEST_PERIOD` is not a final period, or `BASELINE_MONTHS` is shorter than a period | Use a label from `periods.csv` |
-| E30 | A file in `latest/` is locked (open in Excel, OneDrive) | Close it and run again |
+| E25 | `LATEST_PERIOD` is not a final period of this run, or `BASELINE_MONTHS` is shorter than a period | Use a label or start date (`period_key`) from `periods.csv`; leave `BASELINE_MONTHS` empty or make it longer |
+| E30 | `OUTPUT_DIR` could not be written: a file in `latest/` or `runs/<run_id>/` is open (Excel, OneDrive) or read-only, or the disk is full. `latest/` is replaced as a whole, so it normally still holds the previous run; the message says what was and was not updated (and, if `latest/` could not be put back, that the previous run is in `latest.old/`) | Close the file and run again |
 | E31 | `OUTPUT_DIR` is inside a git repository and not ignored | Move it outside, or under `data/` |
 | C01 | A runtime check failed (numbers would not add up) | Send the code and manifest to the MIT team |
-| P01 | The privacy scan found a real identifier in an output | Send the field names (not the contents) to the MIT team |
+| P01 | The privacy scan found a real identifier in an output (with `--engine notebook`, also in the executed notebook) | Send the field names (not the contents) to the MIT team; a model or Category word that equals a one-word city, location or note can be listed in `PRIVACY_ALLOW` |
 | E99 | Unexpected error | Send the code and stage, not the private log |
 
 | Warning | Meaning |
 |---|---|
 | W01 | Tickets outside `DATA_START`..`DATA_END` were left out |
 | W03 | **Blocking.** A month has under 20% of the usual case rows (incomplete export?) |
-| W04 | Trouble Code × Category combinations missing from the reference (see `unmapped.csv`); affected groups may go untested |
+| W04 | Trouble Code × Category combinations missing from the reference (see `unmapped.csv`); affected groups may go untested. For a renamed or split Category, map each new name to the old name in `CATEGORY_ALIASES` so its series continues; use `REQUEST_TYPES_LOCAL` only for genuinely new combinations |
 | W07 | The newest equipment list is much older or newer than the case data |
 | W08 | Machines without (readable) install dates were left out |
 | W09 | Unknown Status (treated as open) or Case Record Type values. **Blocking** at 10 or more record-type tickets, which could be planned work |
@@ -297,16 +409,29 @@ folder. A failed run writes only `failed/<stamp>/error.txt` (code and stage).
 | W23 | Machines dropped off a later equipment list; their exposure ends midway |
 | W24 | The export date is before the last ticket; the last ticket date was used |
 | W25 | Tickets fall outside `PERIOD_EDGES` |
-| W26 | **Blocking.** No recent ticket is still open: the export may be filtered to closed cases |
+| W26 | **Blocking.** None of the tickets opened in the 14 days before the export date is still open: the export may be filtered to closed cases (every case row counts, whatever `DATA_END` says; not judged with fewer than 30 such tickets) |
+| W27 | A Category appeared in or disappeared from the latest period against the baseline: the Category-level tests of the groups it belongs to were held back, and the group totals were still tested. For a renamed or split Category, map each new name to the old one in `CATEGORY_ALIASES` |
 
 ## Privacy
 
 - Outputs hold only period, model, family, install cohort, age and issue labels with counts and rates. They never
   hold account names, sites, serials, case numbers or pseudonyms.
 - Real strings are read into memory for matching, the account bootstrap and the privacy scan.
-- The scan checks every table, the manifest, chart text, the report, the email and any executed notebook before
-  anything is published.
-- Keep `trends/data/` out of version control (`trends/.gitignore` does this) and restrict access to `OUTPUT_DIR`.
+- The scan checks every table, the manifest, chart text, the report and the email before anything is published.
+  The executed-notebook scan applies only to `ipa-trends run --engine notebook`, which publishes nothing until the
+  notebook's outputs pass it too. A notebook saved from Jupyter, or written by papermill, is not scanned: keep such
+  copies out of shared folders. Any executed notebook also shows the run's full folder paths (its parameters cell
+  holds `BASE_DIR`), which can include your user name; the manifest shortens such paths, the notebook does not.
+- A one-word real string (a city, location or credentialing note) that equals a word the package writes itself, or a
+  Trouble Code, Category or request group of the request-type reference or `REQUEST_TYPES_LOCAL`, is not counted on
+  its own; account names and multi-word names are. Labels from the data (models, families, Categories outside the
+  reference) never exempt anything, so a city typed into the Model column stops publication with P01. If a model or
+  Category word genuinely equals such a string (a Location 'Remote' and the model LVD-Remote-2.0), list it in
+  `PRIVACY_ALLOW`; an account name always counts, listed or not. The executed notebook is scanned with the same
+  words.
+- Keep `trends/data/` out of version control and restrict access to `OUTPUT_DIR`. `trends/.gitignore` ignores
+  `data/`, spreadsheets and CSV files, parameter files other than the examples, executed notebooks (every `.ipynb`
+  file but `ticket_trends.ipynb`), `.venv/` and log files.
 - Commit `ticket_trends.ipynb` only without outputs.
 
 ## For the MIT team
@@ -322,6 +447,7 @@ ipa-trends reconcile --params params/reconcile_2025-08_2026-08.yaml [--deep]
 
 ```bash
 python -I tests/run_tests.py
+python -I tests/test_units.py            # the unit tests alone (seconds)
 python -I tests/test_parity.py           # MIT repository only
 ```
 
@@ -334,4 +460,6 @@ python -I tests/sync_definitions.py --write   # after changing verification/
 
 **After changing the reconciliation targets:** `python -I tests/build_reference.py`.
 
-**After changing a parameter:** `python -I tests/make_notebook.py`, to regenerate the notebook's parameters cell.
+**After changing a parameter, its comment in `config.COMMENTS`, or the notebook text in `tests/make_notebook.py`:**
+`python -I tests/make_notebook.py`, to regenerate the notebook (a unit test checks that the committed notebook equals
+the generated one). The parameter tables above copy `config.DEFAULTS` and `config.COMMENTS`; update them too.

@@ -101,8 +101,10 @@ COMMENTS = {
     'DATA_START': "'YYYY-MM-DD' first day the export covers (default: the first ticket's day)",
     'DATA_END': "'YYYY-MM-DD' last day the export covers (default: the last ticket's day)",
     'COLUMN_ALIASES': "{'renamed header': 'expected header'} if IPA renames a column",
-    'CATEGORY_ALIASES': "{'new Category name': 'old Category name'} so a renamed Category keeps its series",
-    'REQUEST_TYPES_LOCAL': 'CSV adding new Trouble Code x Category combinations to the request groups',
+    'CATEGORY_ALIASES': "{'new Category name': 'old Category name'}: for a renamed or split Category, so its series "
+                        "and tests continue",
+    'REQUEST_TYPES_LOCAL': 'CSV adding genuinely new Trouble Code x Category combinations to the request groups (not '
+                           'for a renamed or split Category)',
     'UNMAPPED_POLICY': "'separate': unmapped combinations form their own, never-tested group",
     'CASE_CLOCK_TZ': 'time zone of the case times in the export (US Eastern for IPA)',
     'DATE_FORMAT': "e.g. '%m/%d/%Y %I:%M %p' when dates are stored as text (default: detected)",
@@ -112,10 +114,13 @@ COMMENTS = {
     'YEAR_START_MONTH': 'first month of the reporting year (10 for an October fiscal year)',
     'FISCAL_YEAR_NAMED_BY': "'end': the year starting Oct 2026 is FY2027",
     'ANCHOR_DATE': "'YYYY-MM-DD' a date that starts a period, for unusual calendars",
-    'PERIOD_EDGES': "explicit period edges ['YYYY-MM-DD', ...] (overrides RERUN_FREQUENCY)",
-    'LATEST_PERIOD': 'report an earlier final period as the latest (back-runs); never overwrites latest/',
+    'PERIOD_EDGES': "explicit period edges ['YYYY-MM-DD', ...] in place of RERUN_FREQUENCY's periods (the wording then "
+                    "says 'period')",
+    'LATEST_PERIOD': "report an earlier final period as the latest (a back-run): its label or start date ('2026 Q2', "
+                     "'2026-04-01'); never changes latest/",
     'BASELINE_MONTHS': 'months of baseline before the latest period (default: 12, or one period if longer)',
-    'HISTORY_MONTHS': 'months of history in the charts (default: 24, or three periods if longer)',
+    'HISTORY_MONTHS': 'months of history on the time charts, always with the baseline and latest period (default: 24, '
+                      'or three periods if longer)',
     'LABEL_LAG_DAYS': 'days after a period ends before it counts as final (Categories are filled at close)',
     'MAX_OPEN_SHARE': 'a period with more of its tickets still open stays provisional',
     'MAX_BLANK_CATEGORY_SHARE': 'above this share of blank Categories (or twice the typical share), issue-level '
@@ -129,7 +134,8 @@ COMMENTS = {
     'MODEL_FILTER': 'only these models (reconciliation)',
     'POOL_SMALL_STRATA': 'pool models with too few machines into one "Other models" series',
     'MIN_TYPE_MONTHS': 'machine-months a model needs over 396 days for its own series (100 means 7.7 machines)',
-    'MIN_CELL_MONTHS': 'cells with fewer machine-months are shown hollow',
+    'MIN_CELL_MONTHS': 'cells with fewer machine-months keep their rate, with meets_min_exposure False; the cohort map '
+                       'leaves them blank',
     'THIRD_PARTY_PLANS': 'service plans whose service does not reach the case export (excluded)',
     'MISSING_INSTALL_DATE': "'exclude' machines without an install date, or 'data_start'",
     'Q_CUT': 'false-discovery rate for a flag',
@@ -147,7 +153,8 @@ COMMENTS = {
     'MAKE_CHARTS': "'auto': charts when matplotlib is installed",
     'MAKE_REPORT': 'write report.html, report.pdf and the email text',
     'REPORT_TITLE': 'title of the report and email',
-    'PRIVACY_ALLOW': 'names the privacy scan lets through when a real field holds them too (a model named like a city)',
+    'PRIVACY_ALLOW': 'names the privacy scan lets through although a real field holds them too (a model word that is '
+                     'also a city); never account names or numbers',
 }
 assert set(COMMENTS) == set(DEFAULTS)
 
