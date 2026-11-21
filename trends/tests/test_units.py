@@ -296,7 +296,8 @@ def test_parameter_files_and_text_values():
                                                                'IPA: quarterly trends')
     (d / 'comma.json').write_text('{"RERUN_FREQUENCY": "monthly",\n "N_BOOT": 500,\n}\n', encoding='utf-8')
     e = problem(lambda: CFG.load_file(d / 'comma.json'))
-    assert e.code == 'E22' and 'line 2, column' in e.message, e.text()
+    # the position differs by Python version (3.13: the comma, line 2; 3.11-3.12: the closing brace, line 3)
+    assert e.code == 'E22' and re.search(r'line \d+, column \d+', e.message), e.text()
     (d / 'bom.json').write_bytes(b'\xef\xbb\xbf{"RERUN_FREQUENCY": "monthly"}')
     assert CFG.load_file(d / 'bom.json') == {'RERUN_FREQUENCY': 'monthly'}
     (d / 'latin1.yaml').write_bytes('REPORT_TITLE: Caf\xe9\n'.encode('latin-1'))
