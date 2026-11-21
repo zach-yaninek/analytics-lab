@@ -3,14 +3,20 @@
 The reference values are the aggregates committed under verification/outputs/ (fleet_exposure.py and followups.py
 on the Aug 2025 - Aug 2026 case export and the 19 Oct 2026 equipment list), frozen in
 ipa_trends/reference/reconcile_2025-08_2026-08.json by tests/build_reference.py. The engine is run five ways
-(whole window; the two halves; monthly; install cohorts; install years) and every count, machine-month, rate and
-interval is compared. The output holds counts and labels only, so it is safe to paste back to the MIT team.
+(whole window; the two halves; monthly; install cohorts; install years) and every reference count, machine-month
+and rate is compared. Intervals are compared only where the reference made them with the engine's rule
+(fleet_exposure.group_rates): the rates by age band, family and model (R2, fx_*_rates.csv) and the under-4 and 4+
+rates of ag_type_rates.csv (R3). ag_band_rates.csv (R4) and ag_install_pooled.csv (R8) are compared on counts,
+machine-months and rates only: ag_install_pooled's intervals were made with association.ci (inverted-CDF
+percentiles, no Byar widening), a different rule, and are not reproduced. The output holds counts and labels only,
+so it is safe to paste back to the MIT team.
 
   ipa-trends reconcile --params params/reconcile_2025-08_2026-08.yaml [--deep]
 
-Counts must match exactly; machine-months, rates and intervals to a relative 1e-8 (the follow-up tables were
-written with 10 significant digits). Intervals depend on the bootstrap draws, which depend on the account order;
-they match only if the accounts are numbered exactly as the original pseudonyms, which this engine reproduces.
+Counts must match exactly; machine-months, rates and the compared intervals to a relative 1e-8 (the follow-up
+tables were written with 10 significant digits). Intervals depend on the bootstrap draws, which depend on the
+account order; they match only if the accounts are numbered exactly as the original pseudonyms, which this engine
+reproduces.
 """
 import json
 import math
@@ -277,8 +283,11 @@ def report(t, out=print):
     if len(bad) > 40:
         out(f'    ... and {len(bad) - 40} more')
     values_ok = bad[bad.kind != 'interval'].empty
-    out(f'Values (counts, machine-months, rates): {"all match" if values_ok else "DIFFERENCES"}; intervals: '
-        f'{"all match" if bad[bad.kind == "interval"].empty else "differ (see above)"}; '
+    with_iv = sorted({str(x).split()[0] for x in df.target[df.kind == 'interval']})   # R2, R3: the others have none
+    intervals = (f'intervals compared ({", ".join(with_iv)}): '
+                 f'{"all match" if bad[bad.kind == "interval"].empty else "differ (see above)"}'
+                 if with_iv else 'no intervals compared')
+    out(f'Values (counts, machine-months, rates): {"all match" if values_ok else "DIFFERENCES"}; {intervals}; '
         f'{int(df.ok.sum())}/{len(df)} in all.')
     return bad.empty
 

@@ -27,7 +27,7 @@ GROUPS = [('Cadence', ['RERUN_FREQUENCY', 'YEAR_START_MONTH', 'FISCAL_YEAR_NAMED
           ('Call-outs (conservative screening flags)',
            ['Q_CUT', 'WATCH_Q', 'MIN_CHANGE', 'MIN_CONTRAST', 'CONTRAST_MONTHS', 'MIN_EXPECTED',
             'MIN_BASELINE_TICKETS', 'MIN_ACCOUNTS', 'TAU2_FLOOR', 'N_BOOT', 'SEED', 'COHORT_MAP_ISSUES']),
-          ('Outputs', ['MAKE_CHARTS', 'MAKE_REPORT', 'REPORT_TITLE'])]
+          ('Outputs', ['MAKE_CHARTS', 'MAKE_REPORT', 'REPORT_TITLE', 'PRIVACY_ALLOW'])]
 
 INTRO = """# IPA service-ticket trends
 
@@ -40,9 +40,11 @@ the previous 12 months and calls out changes conservatively, and lists install c
 1. About two weeks after the period ends, save the new case report and that month's equipment list into
    `trends/data/raw/` (keep the earlier equipment lists there too).
 2. Check the parameters below. Normally nothing changes; to switch cadence, edit only `RERUN_FREQUENCY`
-   (`'quarterly'` or `'monthly'`; any whole number of months works).
-3. **Run All.** The results appear below and in `trends/data/output/latest/`: `report.pdf` to attach,
-   `email_summary.txt` to paste, and CSV tables for the dashboard.
+   (`'quarterly'` or `'monthly'`; any whole number of months works). Parameter names are written in capitals.
+3. **Restart & Run All** (Kernel menu; in VS Code, Restart, then Run All). A plain Run All keeps the names left
+   from earlier runs, so a name you have corrected would still stop the run. The results appear below and in
+   `trends/data/output/latest/`: `report.pdf` to attach, `email_summary.txt` to paste, and CSV tables for the
+   dashboard.
 
 If something is wrong with an input, the run stops before computing anything and says how to fix it. See
 `trends/README.md` for the full runbook and `trends/METHOD.md` for the definitions and statistics."""
@@ -65,7 +67,7 @@ for _p in (_here, _here / 'trends', _here.parent):
 
 from ipa_trends import config, notebook
 
-params = config.collect(globals())   # every ALL-CAPS name above; a misspelt name stops the run
+params = config.collect(globals())   # every ALL-CAPS name above; a misspelt or lower-case name stops the run
 result = notebook.run_and_show(params)"""
 
 

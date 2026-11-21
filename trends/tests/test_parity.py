@@ -6,7 +6,8 @@ Runs only when ../verification exists (the MIT repository); IPA's standalone cop
      files are byte copies;
   2. machine frame: on VD's synthetic fixture, the engine with edges [2025-08-01, 2026-02-15, 2026-09-01] equals
      fleet_exposure.machine_frame serial by serial (start, months, halves, tickets, age bands, accounts) and uses the
-     same account order for the bootstrap;
+     same account order for the bootstrap. Two machines without tickets are moved to install dates after the window
+     and inside the second half, so machines without exposure (no age band) are compared too;
   3. rates: the engine's rates by family, age band and model equal fleet_exposure.group_rates on that frame,
      intervals included;
   4. reconcile: followups.py (Part A) is run on the fixture; the reconcile machinery rebuilds its reference values
@@ -39,8 +40,13 @@ def ok(name, cond):
     return bool(cond)
 
 
+EDGES = ['2025-08-01', '2026-02-15', '2026-09-01']
+NO_EXPOSURE_INSTALLS = (pd.Timestamp('2026-09-20'), pd.Timestamp('2026-05-04'))   # after the window; in the 2nd half
+
+
 def fixture():
-    """VD's synthetic workbooks (make_fixture.py, local clock), built into a temporary folder."""
+    """VD's synthetic workbooks (make_fixture.py, local clock), built into a temporary folder, with the two
+    machines of NO_EXPOSURE_INSTALLS added (see no_exposure_machines)."""
     sys.path.insert(0, str(VER / 'tests'))
     sys.path.insert(0, str(VER))
     import make_fixture
@@ -48,7 +54,37 @@ def fixture():
     with open(out / 'build.log', 'w') as log:
         subprocess.run([sys.executable, '-I', str(VER / 'tests' / 'make_fixture.py'), '--out', str(out)],
                        check=True, stdout=log, stderr=log)
+    no_exposure_machines(out / 'fake_cases.xlsx', out / make_fixture.EQUIPMENT_FILE)
     return out, out / 'fake_cases.xlsx', out / make_fixture.EQUIPMENT_FILE
+
+
+def no_exposure_machines(xlsx, equipment):
+    """Rewrite the equipment copy: the first two listed serials without tickets get the install dates of
+    NO_EXPOSURE_INSTALLS, so one machine has no exposure in the window and another none in its first half (their
+    age bands are missing, which the band checks must compare as equal)."""
+    import openpyxl
+
+    def key(s):                         # how a serial could still meet a ticket (spaces, case, leading zeros)
+        return str(s).strip().casefold().lstrip('0')
+    cases = pd.read_excel(xlsx, sheet_name='ipa_repair cases', usecols=['Serial #'], dtype=str)
+    ticketed = {key(s) for s in cases['Serial #'].dropna()}
+    wb = openpyxl.load_workbook(equipment)
+    ws = wb.worksheets[0]
+    head = [c.value for c in ws[1]]
+    i_serial, i_install, i_live = head.index('Serial Number'), head.index('Install Date'), head.index('Go Live Date')
+    rows = sorted((r for r in ws.iter_rows(min_row=2) if r[i_serial].value and key(r[i_serial].value) not in ticketed),
+                  key=lambda r: key(r[i_serial].value))
+    assert len(rows) >= len(NO_EXPOSURE_INSTALLS), 'the fixture has too few listed serials without tickets'
+    for r, day in zip(rows, NO_EXPOSURE_INSTALLS):
+        r[i_install].value = r[i_live].value = day.to_pydatetime()
+    wb.save(equipment)
+
+
+def same(a, b):
+    """Equal element by element, a missing value equal to a missing value (an age band is missing for a machine
+    without exposure; pandas 3 keeps NaN through astype(str), and NaN never equals NaN)."""
+    a, b = a.astype(object), b.astype(object)
+    return bool(((a == b) | (a.isna() & b.isna())).all())
 
 
 def verification_frames(xlsx, equipment):
@@ -95,12 +131,14 @@ def engine_frames(xlsx, equipment, list_date, edges):
     return pop, mp, sorted(pop.customer.unique()), outside
 
 
-def machine_frame_parity(xlsx, equipment, list_date='2026-10-19'):
+def machine_frame_parity(xlsx, equipment, list_date='2026-10-19', no_band=None):
     """[(check, ok)]: the engine against fleet_exposure.machine_frame, machine by machine (also used by
-    `ipa-trends reconcile --deep` on the real files)."""
+    `ipa-trends reconcile --deep` on the real files). Age bands are compared with a missing band equal to a missing
+    band; `no_band` (a dict), when given, receives the engine's number of machines without a band in the whole
+    window, h1 and h2."""
     sys.path.insert(0, str(VER))
     FXv, m, acc_v = verification_frames(xlsx, equipment)
-    pop, mp, acc_e, outside = engine_frames(xlsx, equipment, list_date, ['2025-08-01', '2026-02-15', '2026-09-01'])
+    pop, mp, acc_e, outside = engine_frames(xlsx, equipment, list_date, EDGES)
     o, n = m.set_index('serial'), pop.set_index('serial')
     res = [('same machines in the population', set(o.index) == set(n.index)),
            ('same accounts in the same bootstrap order', acc_v == acc_e),
@@ -109,17 +147,20 @@ def machine_frame_parity(xlsx, equipment, list_date='2026-10-19'):
     o, n = o.loc[common_ix], n.loc[common_ix]
     res += [('exposure start (every machine)', bool((o.start == n.start).all())),
             ('whole-window machine-months (every machine)', float((o.months - n.months).abs().max()) < 1e-12),
-            ('whole-window age band (every machine)', bool((o.age_band.astype(str) == n.age_band.astype(str)).all())),
+            ('whole-window age band (every machine)', same(o.age_band, n.age_band)),
             ('account label (every machine)', bool((o.customer == n.customer).all()))]
+    counts = {'whole': int(n.age_band.isna().sum())}
     for pos, h in ((0, 'h1'), (1, 'h2')):
         q = mp[mp.period_pos == pos].set_index('serial')
         mm = q.months.reindex(common_ix).fillna(0.0)
         tt = q['all'].reindex(common_ix).fillna(0)
-        ab = q.age_band.reindex(common_ix).astype(str).replace('nan', 'NaN')
+        ab = q.age_band.reindex(common_ix)
+        counts[h] = int(ab.isna().sum())
         res += [(f'{h} machine-months (every machine)', float((o[f'months_{h}'] - mm).abs().max()) < 1e-12),
                 (f'{h} tickets (every machine)', bool((o[f'tickets_{h}'] == tt).all())),
-                (f'{h} age band (every machine)',
-                 bool((o[f'age_band_{h}'].astype(str).replace('nan', 'NaN') == ab).all()))]
+                (f'{h} age band (every machine)', same(o[f'age_band_{h}'], ab))]
+    if no_band is not None:
+        no_band.update(counts)
     return res
 
 
@@ -214,8 +255,14 @@ def main():
     print('Fixture (verification/tests/make_fixture.py)')
     base, xlsx, equipment = fixture()
     print('Machine frame against fleet_exposure.machine_frame')
-    for name, good in machine_frame_parity(xlsx, equipment):
+    no_band = {}
+    frame_checks = machine_frame_parity(xlsx, equipment, no_band=no_band)
+    for name, good in frame_checks:
         ok(name, good)
+    ok(f"all {len(frame_checks)} machine-frame checks pass with machines without exposure in the fixture "
+       f"(no age band: whole window {no_band['whole']}, h1 {no_band['h1']}, h2 {no_band['h2']})",
+       len(frame_checks) == 13 and all(g for _, g in frame_checks)
+       and no_band['whole'] >= 1 and no_band['h1'] >= 2 and no_band['h2'] >= 1)
     print('Rates against fleet_exposure.group_rates')
     res, runs = rates_parity(xlsx, equipment)
     for name, good in res:

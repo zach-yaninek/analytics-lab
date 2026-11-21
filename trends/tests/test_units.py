@@ -240,6 +240,79 @@ def test_config_defaults_and_errors():
     assert CFG.resolve({'STRATIFY_BY': '["model"]', 'CATEGORY_DIMS': '["fleet"]'}).STRATIFY_BY == ['model']
 
 
+def test_parameter_names_in_the_wrong_case():
+    """papermill passes names as typed: a lower-case parameter name stops the run instead of leaving the default in
+    force. Suggestions ignore case; functions, modules and _names are not parameters; a misspelt name next to the
+    right one (still in memory after an earlier Run All) gets the Restart & Run All hint."""
+    import types
+
+    def problem(fn):
+        try:
+            fn()
+        except ConfigError as e:
+            return e
+        raise AssertionError('accepted')
+    for ns in ({'rerun_frequency': 'monthly'}, {'Rerun_Frequency': 'monthly', 'RERUN_FREQUENCY': 'quarterly'}):
+        e = problem(lambda: CFG.collect(ns))
+        assert e.code == 'E22' and 'parameter names are written in capitals: RERUN_FREQUENCY' in e.text(), e.text()
+    assert CFG.collect({'seed': lambda: 0, 'stats': types.ModuleType('stats'), '_n_boot': 5, 'params': {},
+                        'N_BOOT': 500}) == {'N_BOOT': 500}
+    left = problem(lambda: CFG.collect({'RERUN_FREQUENCEY': 'monthly', 'RERUN_FREQUENCY': 'monthly'})).text()
+    assert 'did you mean RERUN_FREQUENCY?' in left and 'Restart & Run All' in left
+    assert 'Restart & Run All' not in problem(lambda: CFG.collect({'RERUN_FREQUENCEY': 'monthly'})).text()
+    for item, right in (('rerun_frequency=monthly', 'RERUN_FREQUENCY'), ('n_bot=500', 'N_BOOT')):
+        e = problem(lambda: CFG.parse_sets([item]))
+        assert e.code == 'E22' and right in e.text() and 'Restart' not in e.text(), e.text()
+
+
+def test_parameter_files_and_text_values():
+    """A relative --params path is also looked for in the trends folder; a malformed YAML or JSON file is E22 with the
+    line and column (not E99); a date, a colon or a # in a text value survives YAML and --set."""
+    import os
+
+    def problem(fn):
+        try:
+            fn()
+        except ConfigError as e:
+            return e
+        raise AssertionError('accepted')
+    d = Path(tempfile.mkdtemp())
+    here = os.getcwd()
+    try:
+        os.chdir(d)
+        assert CFG.load_file('params/quarterly.example.yaml')['RERUN_FREQUENCY'] == 'quarterly'
+        e = problem(lambda: CFG.load_file('params/missing.yaml'))
+        assert e.code == 'E22' and str(Path.cwd() / 'params' / 'missing.yaml') in e.message
+        assert str(TRENDS / 'params' / 'missing.yaml') in e.message
+    finally:
+        os.chdir(here)
+    (d / 'win.yaml').write_text('OUTPUT_DIR: "C:\\Users\\me\\OneDrive - IPA\\Trends"\n', encoding='utf-8')
+    e = problem(lambda: CFG.load_file(d / 'win.yaml'))
+    assert e.code == 'E22' and 'line 1, column' in e.message and 'single quotes' in e.fix, e.text()
+    (d / 'ok.yaml').write_text("OUTPUT_DIR: 'C:\\Users\\me\\OneDrive - IPA\\Trends'\nLATEST_PERIOD: 2026-04-01\n"
+                               "REPORT_TITLE: 'IPA: quarterly trends'\n", encoding='utf-8')
+    P = CFG.resolve(CFG.load_file(d / 'ok.yaml'))
+    assert (P.OUTPUT_DIR, P.LATEST_PERIOD, P.REPORT_TITLE) == ('C:\\Users\\me\\OneDrive - IPA\\Trends', '2026-04-01',
+                                                               'IPA: quarterly trends')
+    (d / 'comma.json').write_text('{"RERUN_FREQUENCY": "monthly",\n "N_BOOT": 500,\n}\n', encoding='utf-8')
+    e = problem(lambda: CFG.load_file(d / 'comma.json'))
+    assert e.code == 'E22' and 'line 2, column' in e.message, e.text()
+    (d / 'bom.json').write_bytes(b'\xef\xbb\xbf{"RERUN_FREQUENCY": "monthly"}')
+    assert CFG.load_file(d / 'bom.json') == {'RERUN_FREQUENCY': 'monthly'}
+    (d / 'latin1.yaml').write_bytes('REPORT_TITLE: Caf\xe9\n'.encode('latin-1'))
+    assert 'UTF-8' in problem(lambda: CFG.load_file(d / 'latin1.yaml')).message
+    assert CFG.parse_sets(['REPORT_TITLE=IPA: quarterly trends', 'LATEST_PERIOD=2026-04-01', 'CASE_SHEET=Report #3',
+                           'CASE_EXPORTS=[a.xlsx, b.xlsx]', 'N_BOOT=500']) == {
+        'REPORT_TITLE': 'IPA: quarterly trends', 'LATEST_PERIOD': '2026-04-01', 'CASE_SHEET': 'Report #3',
+        'CASE_EXPORTS': ['a.xlsx', 'b.xlsx'], 'N_BOOT': 500}
+    assert CFG.parse_sets(["REPORT_TITLE='IPA: q'", 'LATEST_PERIOD=null', 'EQUIPMENT_LISTS=*.xlsx']) == {
+        'REPORT_TITLE': 'IPA: q', 'LATEST_PERIOD': None, 'EQUIPMENT_LISTS': '*.xlsx'}
+    assert CFG.resolve({'LATEST_PERIOD': dt.date(2026, 4, 1)}).LATEST_PERIOD == '2026-04-01'
+    assert CFG.resolve({'LATEST_PERIOD': 2026}).LATEST_PERIOD == '2026'           # an annual label read as a number
+    assert CFG.resolve().PRIVACY_ALLOW == [] and CFG.resolve({'PRIVACY_ALLOW': 'Remote'}).PRIVACY_ALLOW == ['Remote']
+    assert problem(lambda: CFG.resolve({'PRIVACY_ALLOW': ['10098']})).code == 'E22'
+
+
 def test_notebook_parameters_cell():
     import nbformat
     nb = nbformat.read(str(TRENDS / 'ticket_trends.ipynb'), as_version=4)
@@ -251,6 +324,18 @@ def test_notebook_parameters_cell():
         if c.cell_type == 'code':
             assert not c.get('outputs') and c.get('execution_count') is None
             assert not any(line.lstrip().startswith(('%', '!')) for line in c.source.splitlines())
+
+
+def test_notebook_asks_for_restart_and_run_all():
+    """A plain Run All keeps names from earlier runs (a corrected typo would still stop the run), so the notebook's
+    instructions say Restart & Run All, and the committed notebook is the generated one."""
+    import nbformat
+    sys.path.insert(0, str(TRENDS / 'tests'))
+    import make_notebook
+    nb = nbformat.read(str(TRENDS / 'ticket_trends.ipynb'), as_version=4)
+    assert nb.cells[0].cell_type == 'markdown' and 'Restart & Run All' in nb.cells[0].source
+    assert '**Run All.**' not in nb.cells[0].source
+    assert [c.source for c in nb.cells] == [c.source for c in make_notebook.build().cells]
 
 
 def test_no_quarter_literals_in_code():
@@ -1357,6 +1442,73 @@ def test_privacy_scan_and_masking():
     assert '[redacted]' in PRIV.redact('ticket at Fake Memorial Hospital 017 today', real)
 
 
+def test_privacy_vocabulary_holds_trusted_words_only():
+    """Only trusted words exempt a one-word real string: the package's own literals, the request-type labels and
+    REQUEST_TYPES_LOCAL. A city typed into the Model column is a hit; a city or note equal to a package or request-type
+    word (Normal, Badge) is not; PRIVACY_ALLOW lets a genuine collision through, never an account name."""
+    P = CFG.resolve()
+    real = PRIV.real_sets({'Fake Community Clinic 012', 'Zenith'}, {'FT9000123'}, set(),
+                          {'text': {'Testville012', 'Normal', 'Badge', 'Remote'}, 'digit': set()})
+    s = PRIV.output_strings(real, P)
+    assert {'testville012', 'remote', 'zenith', 'fake community clinic 012'} <= s['text']
+    assert not {'normal', 'badge'} & s['text']
+    strata = pd.DataFrame({'stratum_dim': ['model', 'model'], 'stratum': ['Other models', 'LVD-Remote-2.0'],
+                           'member': ['Testville012', 'LVD-Remote-2.0']})
+    assert PRIV.scan_frame(strata, s, 'strata') == {'strata.stratum': 1, 'strata.member': 2}
+    assert PRIV.scan_texts(['- Badge Reader: 12 tickets, in the normal range'], s, 'notebook') == {}
+    allowed = PRIV.output_strings(real, CFG.resolve({'PRIVACY_ALLOW': ['Remote', 'Zenith']}))
+    assert 'remote' not in allowed['text'] and 'zenith' in allowed['text']
+    assert PRIV.scan_frame(strata, allowed, 'strata') == {'strata.member': 1}
+    d = Path(tempfile.mkdtemp())
+    (d / 'local.csv').write_text('trouble_code,category,group\nElectro/Mechanical,Latch Sensor,Door\n',
+                                 encoding='utf-8')
+    latch = PRIV.real_sets(set(), set(), set(), {'text': {'Latch'}, 'digit': set()})
+    assert 'latch' in PRIV.output_strings(latch, P)['text']
+    assert 'latch' not in PRIV.output_strings(latch, CFG.resolve({'REQUEST_TYPES_LOCAL': str(d / 'local.csv')}))['text']
+    # every word of a generated period or install-cohort label is a package word, or a year or number (masked)
+    labels = {'Unknown'}
+    for n in (1, 2, 3, 4, 5, 6, 12, 24):
+        for ysm, named, anchor in ((1, 'end', None), (4, 'end', None), (10, 'start', None), (1, 'end', '2025-02-15')):
+            g = CAD.period_grid(CAD.Cadence(n), T('2023-01-01'), T('2027-01-01'), ysm, named, anchor)
+            labels |= set(g.label) | set(g.label_long)
+    g = CAD.period_grid(None, T('2025-08-01'), T('2026-09-01'),
+                        explicit_edges=['2025-08-01', '2026-02-15', '2026-09-01'])
+    labels |= set(g.label) | set(g.label_long)
+    for width in ('1 year', '6 months', 'quarterly', '2 years'):
+        bins = CAD.cohort_bins(CAD.parse_frequency(width), '2016-01-01', last_install=T('2026-05-01'))
+        labels |= {b[0] for b in bins}
+    words = {w for lab in labels for w in FX.norm(PRIV.mask(lab)).split() if len(w) >= 4 and not w.isdigit()}
+    assert words and words <= PRIV.trusted_vocabulary(P), words - PRIV.trusted_vocabulary(P)
+
+
+def test_notebook_scan_uses_the_publish_vocabulary():
+    """The executed-notebook scan exempts exactly what the publish scan exempts: a 'Badge' credentialing note does not
+    stop a notebook that shows the Badge Reader Category, a city does, and PRIVACY_ALLOW applies."""
+    import nbformat
+    from ipa_trends import engine
+    real = PRIV.real_sets({'Fake Community Clinic 012'}, set(), set(),
+                          {'text': {'Badge', 'Testville012', 'Remote'}, 'digit': set()})
+    d = Path(tempfile.mkdtemp())
+
+    def notebook(i, text):
+        nb = nbformat.v4.new_notebook()
+        cell = nbformat.v4.new_code_cell('result')
+        cell.outputs = [nbformat.v4.new_output('display_data', data={'text/markdown': text})]
+        nb.cells = [cell]
+        nbformat.write(nb, str(d / f'{i}.ipynb'))
+        return d / f'{i}.ipynb'
+    saved = engine.real_strings
+    engine.real_strings = lambda P: real
+    try:
+        P = CFG.resolve()
+        assert engine.scan_notebook(P, notebook(1, '- Badge Reader: 12 tickets in the latest period')) == 0
+        assert engine.scan_notebook(P, notebook(2, '- Model Testville012: 3 machines')) == 1
+        assert engine.scan_notebook(P, notebook(3, '- LVD-Remote-2.0: higher')) == 1
+        assert engine.scan_notebook(CFG.resolve({'PRIVACY_ALLOW': ['Remote']}), notebook(3, '- LVD-Remote-2.0')) == 0
+    finally:
+        engine.real_strings = saved
+
+
 def test_repository_allowlist():
     """Only code, docs, tests, the empty notebook, example parameters and public aggregates are committed."""
     try:
@@ -1368,6 +1520,26 @@ def test_repository_allowlist():
                          r'reconcile_[\w-]+\.yaml|request_types_v0\.csv|reference/reconcile_[\w-]+\.json)$')
     bad = [f for f in listed if not allowed.search(f)]
     assert not bad, bad
+
+
+def test_reconcile_report_names_the_compared_intervals():
+    """Intervals are compared for R2 and R3 only (ag_band_rates has none; ag_install_pooled's were made with another
+    rule), so the summary line names the targets whose intervals were compared."""
+    from ipa_trends import reconcile as REC
+    t = REC.Tally()
+    t.add('R2 age_rates intervals', '<1 ci_lo', 1.0, 1.0, 'interval')
+    t.add('R3 ag_type_rates intervals', 'Door Under 4 rate_lo', 2.0, 2.0, 'interval')
+    t.add('R8 install_pooled (year)', '2015 Door rate', 0.0, 0.0)
+    lines = []
+    assert REC.report(t, out=lines.append)
+    assert lines[-1] == ('Values (counts, machine-months, rates): all match; intervals compared (R2, R3): all match; '
+                         '3/3 in all.'), lines[-1]
+    t = REC.Tally()
+    t.add('R8 install_pooled (cohort)', '2016-18 Door months', 5.0, 5.0)
+    lines = []
+    REC.report(t, out=lines.append)
+    assert 'no intervals compared' in lines[-1]
+    assert 'association.ci' in REC.__doc__ and 'every count, machine-month, rate and\ninterval' not in REC.__doc__
 
 
 def test_rates_many_equals_group_rates():

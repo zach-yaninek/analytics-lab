@@ -583,5 +583,5 @@ def scan_notebook(P, path):
                     texts.append(''.join(v) if isinstance(v, list) else str(v))
             if o.get('ename'):
                 texts.append(str(o.get('evalue', '')))
-    hits = PRIV.scan_texts(texts, PRIV.for_outputs(real_strings(P), PRIV.vocabulary()), 'notebook')
+    hits = PRIV.scan_texts(texts, PRIV.output_strings(real_strings(P), P), 'notebook')   # the publish scan's words
     return int(sum(hits.values()))

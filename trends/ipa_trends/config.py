@@ -5,13 +5,15 @@ checks it). Precedence: DEFAULTS < parameter file (YAML or JSON) < --set K=V on 
 edited in the notebook / injected by papermill.
 
 Every problem is collected and reported together, with "did you mean" suggestions for misspelt names, so a typo
-such as RERUN_FREQUENCEY stops the run instead of silently running quarterly.
+such as RERUN_FREQUENCEY, or a name in the wrong case such as rerun_frequency, stops the run instead of silently
+running quarterly.
 """
 import datetime as dt
 import difflib
 import json
 import os
 import re
+import types
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -84,6 +86,7 @@ DEFAULTS = {
     'MAKE_CHARTS': 'auto',
     'MAKE_REPORT': True,
     'REPORT_TITLE': 'IPA service-ticket trends',
+    'PRIVACY_ALLOW': [],
 }
 NAME_RE = re.compile(r'^[A-Z][A-Z0-9_]*$')
 
@@ -144,6 +147,7 @@ COMMENTS = {
     'MAKE_CHARTS': "'auto': charts when matplotlib is installed",
     'MAKE_REPORT': 'write report.html, report.pdf and the email text',
     'REPORT_TITLE': 'title of the report and email',
+    'PRIVACY_ALLOW': 'names the privacy scan lets through when a real field holds them too (a model named like a city)',
 }
 assert set(COMMENTS) == set(DEFAULTS)
 
@@ -250,6 +254,12 @@ def _bool(v):
     raise _Problem(f'{v!r} is not True or False')
 
 
+def _takes_text(check):
+    """Mark a checker whose parameter takes text: --set keeps such a value as typed (see parse_sets)."""
+    check.takes_text = True
+    return check
+
+
 def _text(allow_none=False):
     def check(v):
         if v is None and allow_none:
@@ -257,9 +267,33 @@ def _text(allow_none=False):
         if not isinstance(v, str) or not v.strip():
             raise _Problem('needs text')
         return v
-    return check
+    return _takes_text(check)
 
 
+@_takes_text
+def _latest_period(v):
+    """A period label or start date. YAML reads an unquoted 2026-04-01 as a date, and an annual label as a number."""
+    if v is None:
+        return None
+    if isinstance(v, dt.date):                  # datetime and pd.Timestamp included
+        return f'{v:%Y-%m-%d}'
+    if isinstance(v, int) and not isinstance(v, bool):
+        return str(v)
+    if not isinstance(v, str) or not v.strip():
+        raise _Problem('needs a period label or start date', "for example '2026 Q2' or '2026-04-01' (see periods.csv)")
+    return v.strip()
+
+
+def _allow_list(v):
+    v = [] if v is None else _str_list(v)
+    bad = [x for x in v if not re.search(r'[A-Za-z]', x)]
+    if bad:
+        raise _Problem(f'{bad} hold no letters', 'list names only (serials, zip codes and other numbers are always '
+                                                 'blocked)')
+    return v
+
+
+@_takes_text
 def _paths(v):
     v = _maybe_json(v)
     if isinstance(v, str):
@@ -269,6 +303,7 @@ def _paths(v):
     raise _Problem('needs a file path or pattern, or a list of them')
 
 
+@_takes_text
 def _tz(v):
     try:
         ZoneInfo(str(v))
@@ -277,6 +312,7 @@ def _tz(v):
     return str(v)
 
 
+@_takes_text
 def _date_format(v):
     if v is None:
         return None
@@ -316,7 +352,7 @@ SPEC = {
     'BASE_DIR': _text(allow_none=True), 'OUTPUT_DIR': _text(),
     'RERUN_FREQUENCY': _frequency('RERUN_FREQUENCY', 24), 'YEAR_START_MONTH': _number(1, 12, integer=True),
     'FISCAL_YEAR_NAMED_BY': _choice('end', 'start'), 'ANCHOR_DATE': _date, 'PERIOD_EDGES': _dates,
-    'LATEST_PERIOD': _text(allow_none=True), 'BASELINE_MONTHS': _number(1, 60, integer=True, allow_none=True),
+    'LATEST_PERIOD': _latest_period, 'BASELINE_MONTHS': _number(1, 60, integer=True, allow_none=True),
     'HISTORY_MONTHS': _number(1, 240, integer=True, allow_none=True), 'LABEL_LAG_DAYS': _number(0, 365, integer=True),
     'MAX_OPEN_SHARE': _number(0, 1), 'MAX_BLANK_CATEGORY_SHARE': _number(0, 1), 'MAX_UNMAPPED_SHARE': _number(0, 1),
     'STRATIFY_BY': lambda v: _str_list(v, choices=DIMENSIONS),
@@ -330,48 +366,85 @@ SPEC = {
     'CONTRAST_MONTHS': _number(1, 120, integer=True), 'MIN_EXPECTED': _number(0), 'MIN_BASELINE_TICKETS': _number(0),
     'MIN_ACCOUNTS': _number(0, integer=True), 'TAU2_FLOOR': _number(0), 'N_BOOT': _number(100, 100000, integer=True),
     'SEED': _number(0, integer=True), 'COHORT_MAP_ISSUES': _cohort_map_issues,
-    'MAKE_CHARTS': _make_charts, 'MAKE_REPORT': _bool, 'REPORT_TITLE': _text(),
+    'MAKE_CHARTS': _make_charts, 'MAKE_REPORT': _bool, 'REPORT_TITLE': _text(), 'PRIVACY_ALLOW': _allow_list,
 }
 assert set(SPEC) == set(DEFAULTS)
 
 
 # ------------------------------------------------------------------------------------------------ sources
-def unknown_names(names):
-    """[(code, message, fix)] for names that are not parameters, with the closest real name."""
+def unknown_names(names, present=()):
+    """[(code, message, fix)] for names that are not parameters, with the closest real name, matched in capitals
+    (rerun_frequency suggests RERUN_FREQUENCY). `present`: the parameter names a notebook holds. When it holds the
+    suggested name too, the wrong one may be left over from an earlier Run All (Jupyter keeps every name until the
+    kernel restarts), so the fix also says to use Restart & Run All."""
     out = []
     for n in names:
-        if n not in DEFAULTS:
-            close = difflib.get_close_matches(n, list(DEFAULTS), n=1, cutoff=0.6)
-            fix = f'did you mean {close[0]}?' if close else 'see the parameter list in trends/README.md'
-            out.append(('E22', f'{n} is not a parameter', fix))
+        if n in DEFAULTS:
+            continue
+        key = str(n).upper()
+        if key in DEFAULTS:
+            close, fix = key, f'parameter names are written in capitals: {key}.'
+        else:
+            match = difflib.get_close_matches(key, list(DEFAULTS), n=1, cutoff=0.6)
+            close = match[0] if match else None
+            fix = f'did you mean {close}?' if close else 'see the parameter list in trends/README.md'
+        if close and close in present:
+            fix += (' If you have already corrected it, the old name is still in memory from an earlier run: use '
+                    'Restart & Run All (Kernel menu).')
+        out.append(('E22', f'{n} is not a parameter', fix))
     return out
 
 
 def collect(namespace):
     """Parameters from a notebook's globals(): every ALL-CAPS name. Unknown names (a misspelt papermill -p) stop
-    the run with E22 instead of being ignored."""
+    the run with E22 instead of being ignored, and so does a parameter written in the wrong case (papermill
+    -p rerun_frequency monthly), which would otherwise leave the default in force."""
     found = {k: v for k, v in namespace.items() if NAME_RE.match(k) and not callable(v)}
-    problems = unknown_names(found)
+    wrong_case = [k for k, v in namespace.items() if not k.startswith('_') and k != k.upper()
+                  and k.upper() in DEFAULTS and not callable(v) and not isinstance(v, types.ModuleType)]
+    problems = unknown_names(list(found) + wrong_case, present=found)
     if problems:
         raise ConfigError(problems)
     return found
 
 
 def load_file(path):
-    """Parameters from a YAML (.yaml/.yml) or JSON (.json) file."""
-    path = Path(path)
-    if not path.exists():
-        raise ConfigError([('E22', f'parameter file {path.name} not found', 'check the --params path')])
-    text = path.read_text(encoding='utf-8')
+    """Parameters from a YAML (.yaml/.yml) or JSON (.json) file. A relative path is looked for in the current
+    folder, then in the trends folder, so `--params params/quarterly.yaml` works from any folder."""
+    given = Path(os.path.expanduser(str(path)))
+    tried = [given] if given.is_absolute() else [given, TRENDS_DIR / given]
+    path = next((p for p in tried if p.is_file()), None)
+    if path is None:
+        raise ConfigError([('E22', 'parameter file not found: ' + ' or '.join(str(p.resolve()) for p in tried),
+                            'check the --params path (a relative path is read from the current folder, then from '
+                            'the trends folder)')])
+    try:
+        text = path.read_text(encoding='utf-8-sig')
+    except UnicodeDecodeError:
+        raise ConfigError([('E22', f'{path.name} is not UTF-8 text', 'save the file with UTF-8 encoding')]) from None
     if path.suffix.lower() in ('.yaml', '.yml'):
         try:
             import yaml
         except ImportError:
             raise ConfigError([('E22', 'reading YAML parameter files needs PyYAML',
                                 'pip install pyyaml, or use a .json parameter file')])
-        data = yaml.safe_load(text) or {}
+        try:
+            data = yaml.safe_load(text) or {}
+        except yaml.YAMLError as e:
+            mark = getattr(e, 'problem_mark', None)
+            where = f' at line {mark.line + 1}, column {mark.column + 1}' if mark is not None else ''
+            raise ConfigError([('E22', f'{path.name} is not valid YAML{where} '
+                                       f'({getattr(e, "problem", None) or type(e).__name__})',
+                                "put text holding a colon or # in quotes, and write Windows paths in single quotes "
+                                "('C:\\Users\\me\\output') or with forward slashes (C:/Users/me/output)")]) from None
     else:
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise ConfigError([('E22', f'{path.name} is not valid JSON at line {e.lineno}, column {e.colno} '
+                                       f'({e.msg})',
+                                'check the commas and quotes there (no comma after the last item); in JSON write '
+                                'Windows paths with forward slashes or doubled backslashes')]) from None
     if not isinstance(data, dict):
         raise ConfigError([('E22', f'{path.name} does not hold NAME: value pairs', None)])
     problems = unknown_names(data)
@@ -380,8 +453,23 @@ def load_file(path):
     return data
 
 
+def _as_text(raw, parsed, paths=False):
+    """The --set value of a parameter that takes text: the text as typed ('IPA: quarterly trends', '2026-04-01'),
+    except null, a quoted value (read as YAML), and for file patterns a list of them."""
+    s = raw.strip()
+    if s in ('', '~') or s.lower() == 'null':
+        return None
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in '\'"':
+        return parsed if isinstance(parsed, str) and parsed != raw else s[1:-1]
+    if paths and isinstance(parsed, list) and parsed and all(isinstance(x, str) for x in parsed):
+        return parsed
+    return s
+
+
 def parse_sets(items):
-    """--set NAME=VALUE pairs; values are read as YAML (or JSON) literals when possible, else as text."""
+    """--set NAME=VALUE pairs; values are read as YAML (or JSON) literals when possible, else as text. A parameter
+    that takes text (titles, sheets, paths, the time zone, the date format, LATEST_PERIOD) keeps the text as typed,
+    so a colon, a # or a date in it survives."""
     out = {}
     for item in items or []:
         if '=' not in item:
@@ -396,6 +484,8 @@ def parse_sets(items):
                 out[k] = json.loads(v)
             except json.JSONDecodeError:
                 out[k] = v
+        if getattr(SPEC.get(k), 'takes_text', False):
+            out[k] = _as_text(v, out[k], paths=SPEC[k] is _paths)
     problems = unknown_names(out)
     if problems:
         raise ConfigError(problems)

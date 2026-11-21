@@ -17,6 +17,9 @@
      in a 2024 Q4 back-run each row names its own window and the short history skips the interior same-age check
   5. publishing: files, manifest, privacy scan, byte-identical reruns, a planted leak stops publication and is
      recorded in failed/; a file locked in latest/ stops the swap (E30) and leaves latest/ whole
+  5b. privacy scan: only trusted words exempt a one-word real string (a city typed into Model stops publication;
+     single-word city names that equal package words do not; PRIVACY_ALLOW lets a genuine collision through), and
+     the executed-notebook scan exempts exactly what the publish scan exempts
   6. export drift: title rows, another sheet name, a renamed header, a split Category, a renamed Trouble Code, a
      duplicate case, dates as text, mixed date formats, a Central-time export, a closed-only export, a report filtered
      to the quarter end, a one-month spike, removed machines, blank install dates and blank list fields
@@ -633,6 +636,88 @@ def notebook(fx):
     ok('the command line and the notebook write byte-identical tables', a == b and len(a) > 0)
 
 
+def privacy_scan(fx, null_fx):
+    """Only trusted words (package literals, request-type labels) exempt a one-word real string: copies of the
+    fixtures with edited equipment lists, published end to end, and the executed-notebook scan on the same words."""
+    print('5b. Privacy scan: trusted words only')
+    import nbformat
+    import openpyxl
+    from ipa_trends import config as CFG
+    from ipa_trends.engine import scan_notebook
+
+    def edited(src, name, edit):
+        out = TMP / f'priv_{name}'
+        shutil.copytree(src, out, dirs_exist_ok=True)
+        path = next(out.glob('IPA_Active_Equipment_list_*.xlsx'))
+        wb = openpyxl.load_workbook(path)
+        ws = wb['Equipment list - Monthly Report']
+        col = {c.value: i for i, c in enumerate(ws[1])}
+        edit(list(ws.iter_rows(min_row=2)), col)
+        wb.save(path)
+        return out
+
+    def published(p):
+        r, code = code_of(lambda: run(p, publish=True))
+        man = Path(p['OUTPUT_DIR']) / 'runs' / (r.paths['run_id'] if r is not None else '-') / 'manifest.json'
+        return code, json.loads(man.read_text())['privacy']['hits'] if man.exists() else None
+    kept = {}
+
+    def trusted_words(rows, c):
+        words = ['Normal', 'Orange', 'Door', 'Power', 'Training', 'Badge', 'Network', 'Unknown', 'Before', 'Hospital']
+        accounts = sorted({r[c['Account Name']].value for r in rows} - {None})
+        city = dict(zip(accounts, words))
+        for i, r in enumerate(rows):
+            a = r[c['Account Name']].value
+            if a in city:
+                r[c['Hospital City']].value = city[a]
+            elif a == accounts[-1]:
+                kept['city'] = r[c['Hospital City']].value
+            if i % 50 == 0:
+                r[c['Location']].value = 'Security'
+            if i % 70 == 0:
+                r[c['Vendor Credentialing Notes']].value = 'Badge'
+    wfx = edited(null_fx, 'words', trusted_words)
+    code, hits = published(params(wfx, OUTPUT_DIR=str(TMP / 'out' / 'priv_words')))
+    ok('null fixture whose one-word cities, locations and notes equal package or request-type words (Normal, Door, '
+       'Badge...) publishes with 0 privacy hits', code is None and hits == 0, f'{code} {hits}')
+
+    def city_in_model(rows, c):
+        by = {}
+        for r in rows:
+            by.setdefault(r[c['Account Name']].value, []).append(r)
+        for r in by[sorted(a for a, rs in by.items() if a and len(rs) >= 3)[0]][:3]:
+            r[c['Model']].value = r[c['Hospital City']].value
+    lean = {'STRATIFY_BY': ['install_cohort'], 'CATEGORY_DIMS': ['fleet']}      # strata.csv always lists the models
+    out = TMP / 'out' / 'priv_city'
+    r, code = code_of(lambda: run(params(edited(fx, 'city', city_in_model), OUTPUT_DIR=str(out), **lean), publish=True))
+    ok('a city typed into the Model column stops publication (P01)', code == 'P01', code)
+    ok('... and nothing is published', not list(out.glob('runs/*/manifest.json')) and not (out / 'latest').exists())
+
+    def remote(rows, c):
+        for r in rows[:5]:
+            r[c['Location']].value = 'Remote'
+    rfx = edited(fx, 'remote', remote)
+    code, _ = published(params(rfx, OUTPUT_DIR=str(TMP / 'out' / 'priv_remote'), **lean))
+    ok('a one-word Location equal to a model word (Remote; LVD-Remote-2.0) is a genuine collision: P01', code == 'P01',
+       code)
+    code, hits = published(params(rfx, OUTPUT_DIR=str(TMP / 'out' / 'priv_remote'), PRIVACY_ALLOW=['Remote'], **lean))
+    ok("... which PRIVACY_ALLOW = ['Remote'] lets through, with 0 privacy hits", code is None and hits == 0,
+       f'{code} {hits}')
+
+    def notebook_with(name, text):
+        nb = nbformat.v4.new_notebook()
+        cell = nbformat.v4.new_code_cell('result = notebook.run_and_show(params)')
+        cell.outputs = [nbformat.v4.new_output('display_data', data={'text/markdown': text})]
+        nb.cells = [cell]
+        nbformat.write(nb, str(TMP / f'priv_{name}.ipynb'))
+        return TMP / f'priv_{name}.ipynb'
+    P = CFG.resolve(params(wfx))
+    ok('the executed-notebook scan exempts what the publish scan exempts (a Badge note; the Badge Reader Category)',
+       scan_notebook(P, notebook_with('badge', '- Badge Reader: higher than the baseline')) == 0)
+    ok('... and still finds a real city in a notebook',
+       scan_notebook(P, notebook_with('city', f"- {kept['city']}")) == 1)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument('--quick', action='store_true')
@@ -652,6 +737,7 @@ def main(argv=None):
     cohort_rule(fx, a.quick)
     publishing(fx, truth)
     variants(runs, a.quick)
+    privacy_scan(fx, null_fx)
     if not a.no_notebook:
         notebook(fx)
     bad = [n for n, g in RESULTS if not g]

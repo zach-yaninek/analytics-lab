@@ -6,8 +6,13 @@ tables, the manifest, chart text, the report, the email text and an executed not
 normalised word n-grams, digit identifiers as whole cells and as 4+-digit tokens, with the copied
 fleet_exposure.text_leaks. Generated formats (period labels, years, hexadecimal hashes, run ids) are masked first
 so they cannot collide with a real number. A hit stops publication; only field names and counts are reported.
+
+A one-word real string that is also a trusted word (one the package writes itself, or a request-type label) is not
+counted on its own. Trusted words never come from the data: models, families, Categories and trouble codes outside
+the reference are scanned like any other text, so a city typed into the Model column stops publication.
 """
 import ast
+import functools
 import hashlib
 import re
 from pathlib import Path
@@ -17,6 +22,9 @@ import pandas as pd
 
 from .definitions import fleet_exposure_copy as FX
 
+PACKAGE_DIR = Path(__file__).resolve().parent
+REQUEST_TYPES = PACKAGE_DIR / 'definitions' / 'request_types_v0.csv'
+REQUEST_TYPE_COLUMNS = ('trouble_code', 'category', 'group')
 HEX = re.compile(r'\b(?=[0-9a-f]*[a-f])(?=[0-9a-f]*\d)[0-9a-f]{8,64}\b')
 YEAR = re.compile(r'\b(?:FY)?(?:19|20)\d{2}\b')
 GENERATED = [HEX, YEAR, re.compile(r'\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\b'), re.compile(r'\b\d+M\b')]
@@ -34,25 +42,56 @@ def real_sets(names, ids, cases, private):
             'accounts': accounts}
 
 
-def vocabulary(labels=()):
-    """Words the package itself writes (every string literal in its modules) and the published labels (models,
-    families, issues, periods, cohorts)."""
+@functools.lru_cache(maxsize=1)
+def package_words():
+    """Every word of every string literal in the package's modules (definitions/ included). Generated period and
+    install-cohort labels are made of these words (the month names, FY, Q, H, Before, From, Unknown) and of years
+    and numbers, which the scan masks or never holds as names."""
     words = set()
-    for p in Path(__file__).resolve().parent.glob('*.py'):
+    for p in sorted(PACKAGE_DIR.rglob('*.py')):
         for node in ast.walk(ast.parse(p.read_text(encoding='utf-8'))):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
                 words.update(FX.norm(node.value).split())
-    for lab in labels:
-        words.update(FX.norm(lab).split())
+    return frozenset(words)
+
+
+def request_type_words(path):
+    """Words of the trouble codes, Categories and request groups of a request-type file (the v0 reference or
+    REQUEST_TYPES_LOCAL). A file that cannot be read adds nothing, which only makes the scan stricter."""
+    try:
+        ref = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except (OSError, ValueError):
+        return set()
+    return {w for c in REQUEST_TYPE_COLUMNS if c in ref.columns for v in ref[c] for w in FX.norm(v).split()}
+
+
+def trusted_vocabulary(params=None):
+    """The words a one-word real string may equal without counting as a hit on its own, from trusted sources only:
+    the package's own literals (and with them the words of generated period and cohort labels), the request-type
+    reference and REQUEST_TYPES_LOCAL. Labels taken from the data (models, families, Categories and trouble codes
+    outside the reference, service statuses, countries) never add words."""
+    words = set(package_words()) | request_type_words(REQUEST_TYPES)
+    local = getattr(params, 'REQUEST_TYPES_LOCAL', None)
+    if local:
+        words |= request_type_words(params.path(local))
     return words
 
 
-def for_outputs(real, vocab):
-    """The real strings to scan generated outputs for. A one-word real string that is one of our own words or labels
-    (a hospital city named Normal or Orange, say) is not counted on its own; account names always are, and every
-    multi-word name (an account, an address) is matched in full."""
-    text = {t for t in real['text'] if ' ' in t or t not in vocab or t in real.get('accounts', set())}
+def for_outputs(real, vocab, allow=()):
+    """The real strings to scan generated outputs for. A one-word real string that is a trusted word (a hospital
+    city named Normal or Orange, say) is not counted on its own; account names always are, and every multi-word
+    name (an account, an address) is matched in full. `allow` (PRIVACY_ALLOW) names strings that may be published
+    although a real field holds them too, such as a model named like a city; it never covers an account name."""
+    accounts = real.get('accounts', set())
+    allow = {FX.norm(a) for a in allow or ()} - accounts
+    text = {t for t in real['text'] if t in accounts or (t not in allow and (' ' in t or t not in vocab))}
     return {'text': text, 'digit': real['digit'], 'max_words': max((len(t.split()) for t in text), default=1)}
+
+
+def output_strings(real, params):
+    """The real strings every output scan looks for: the published files and an executed notebook use this one
+    builder, so both exempt exactly the same words (the trusted vocabulary and PRIVACY_ALLOW)."""
+    return for_outputs(real, trusted_vocabulary(params), getattr(params, 'PRIVACY_ALLOW', None) or ())
 
 
 def mask(text):

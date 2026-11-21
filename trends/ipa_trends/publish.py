@@ -241,14 +241,9 @@ def publish(result, private, P, out=print, staging=None):
             'distribution_ready': bool(ready),
             'next_run_after': next_run_after(result.summary, P),
             'environment': _environment()}
-        # privacy scan of everything that will be published
-        labels = set()
-        for df in tables.values():
-            for col in ('stratum', 'issue', 'issue_group', 'period_label', 'label', 'install_cohort', 'model',
-                        'member', 'top_models', 'trouble_code', 'category'):
-                if col in df.columns:
-                    labels |= set(df[col].dropna().astype(str))
-        real = PRIV.for_outputs(real, PRIV.vocabulary(labels))
+        # privacy scan of everything that will be published: only trusted words (the package's own, the request-type
+        # labels) and PRIVACY_ALLOW exempt a one-word real string; labels from the data (models, Categories) are scanned
+        real = PRIV.output_strings(real, P)
         hits = {}
         for name, df in tables.items():
             hits.update(PRIV.scan_frame(df, real, name))
