@@ -414,6 +414,15 @@ def _run(P, verbose, out):
         if not cinfo['enough']:
             warn.add('W15', f'only {len(k)} of {cinfo["baseline_intended"]} baseline {P.cadence.plural} are final, '
                             'so no change is tested', 'a longer case export gives a full baseline')
+        moved = len(cinfo.get('taxonomy_appeared') or []) + len(cinfo.get('taxonomy_vanished') or [])
+        held = sorted(set(cinfo.get('taxonomy_blocked_category_groups') or []) - set(cinfo['taxonomy_blocked_groups']))
+        if moved:
+            # counts and group names only: the Categories themselves are listed in facts.json
+            warn.add('W27', f'{moved} Category name(s) appeared in or disappeared from {grid.label[latest_pos]} against '
+                            f'the baseline, so Category-level tests were held back in {len(held)} group(s) '
+                            f'({", ".join(held)}); the group totals were still tested',
+                     'if a Category was renamed or split, map each new name to the old one in CATEGORY_ALIASES so its '
+                     'series continues; use REQUEST_TYPES_LOCAL only for genuinely new combinations')
         say('Comparing install cohorts')
         contrasts, kinfo = COH.contrasts(ctx, latest_pos)
         prevc = COH.contrasts(ctx, prev_pos)[0] if prev_pos is not None else None

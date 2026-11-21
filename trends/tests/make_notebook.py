@@ -53,7 +53,8 @@ OUTRO = """## Next steps
 
 - Read the data-quality notes above. A period marked *provisional* is reported in the next run.
 - Send `latest/report.pdf` with the text of `latest/email_summary.txt` to the distribution list, once
-  "Ready to distribute" says yes.
+  "Ready to distribute" says yes. After a back-run (`LATEST_PERIOD` set), `latest/` is unchanged: send the files
+  from the run folder named above instead.
 - The Product Insights Dashboard reads `latest/rates_final.csv` (and the other tables; columns in `schema.json`).
 - Flags are screening flags for follow-up, not proof of a problem."""
 

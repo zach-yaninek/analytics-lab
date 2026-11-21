@@ -527,6 +527,8 @@ def split_category(quick):
            'the Door group still tested', not door.eligible.any()
            and 'taxonomy' in str(fleet.not_tested_reason.get('Deposit Door')) and bool(fleet.eligible.get('Door')),
            str(fleet.not_tested_reason.to_dict()))
+        ok(f'category_split with REQUEST_TYPES_LOCAL, {label}: W27 says Category-level tests were held back',
+           any(w['code'] == 'W27' for w in r.warnings), str(sorted({w['code'] for w in r.warnings})))
     if not quick:
         fx, _ = fixture('v_category_split', variant='category_split', scale=0.6)
         r = run(params(fx, CATEGORY_ALIASES={n: 'Deposit Door' for n in names[1:]}))
