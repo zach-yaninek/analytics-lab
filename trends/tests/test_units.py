@@ -282,8 +282,9 @@ def test_parameter_files_and_text_values():
         os.chdir(d)
         assert CFG.load_file('params/quarterly.example.yaml')['RERUN_FREQUENCY'] == 'quarterly'
         e = problem(lambda: CFG.load_file('params/missing.yaml'))
-        assert e.code == 'E22' and str(Path.cwd() / 'params' / 'missing.yaml') in e.message
-        assert str(TRENDS / 'params' / 'missing.yaml') in e.message
+        # resolved on both sides: on Windows the temp folder's short name (RUNNER~1) resolves to the long one
+        assert e.code == 'E22' and str((Path.cwd() / 'params' / 'missing.yaml').resolve()) in e.message, e.message
+        assert str((TRENDS / 'params' / 'missing.yaml').resolve()) in e.message, e.message
     finally:
         os.chdir(here)
     (d / 'win.yaml').write_text('OUTPUT_DIR: "C:\\Users\\me\\OneDrive - IPA\\Trends"\n', encoding='utf-8')
