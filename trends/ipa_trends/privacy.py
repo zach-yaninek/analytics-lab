@@ -7,8 +7,10 @@ normalised word n-grams, digit identifiers as whole cells and as 4+-digit tokens
 fleet_exposure.text_leaks. Generated formats (period labels, years, hexadecimal hashes, run ids) are masked first
 so they cannot collide with a real number. A hit stops publication; only field names and counts are reported.
 """
+import ast
 import hashlib
 import re
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -21,12 +23,36 @@ GENERATED = [HEX, YEAR, re.compile(r'\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\b'), 
 
 
 def real_sets(names, ids, cases, private):
-    """followups.real_sets for the run's own inputs: {'text', 'digit', 'max_words'} (never written)."""
+    """followups.real_sets for the run's own inputs: {'text', 'digit', 'max_words', 'accounts'} (never written).
+    `names` are account names; private['text'] adds the equipment list's address, city, location and notes."""
+    accounts = {FX.norm(n) for n in names if n}
     names = {str(n) for n in names if n} | set(private.get('text', set()))
     ids = {str(i) for i in ids if i} | {str(c) for c in cases if c} | set(private.get('digit', set()))
     text = {n for n in map(FX.norm, names | {i for i in ids if not i.isdigit()}) if len(n) >= 4 and not n.isdigit()}
     digit = {i for i in ids if i.isdigit()} | {re.sub(r'\D', '', i) for i in ids if len(re.sub(r'\D', '', i)) >= 7}
-    return {'text': text, 'digit': digit, 'max_words': max((len(t.split()) for t in text), default=1)}
+    return {'text': text, 'digit': digit, 'max_words': max((len(t.split()) for t in text), default=1),
+            'accounts': accounts}
+
+
+def vocabulary(labels=()):
+    """Words the package itself writes (every string literal in its modules) and the published labels (models,
+    families, issues, periods, cohorts)."""
+    words = set()
+    for p in Path(__file__).resolve().parent.glob('*.py'):
+        for node in ast.walk(ast.parse(p.read_text(encoding='utf-8'))):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                words.update(FX.norm(node.value).split())
+    for lab in labels:
+        words.update(FX.norm(lab).split())
+    return words
+
+
+def for_outputs(real, vocab):
+    """The real strings to scan generated outputs for. A one-word real string that is one of our own words or labels
+    (a hospital city named Normal or Orange, say) is not counted on its own; account names always are, and every
+    multi-word name (an account, an address) is matched in full."""
+    text = {t for t in real['text'] if ' ' in t or t not in vocab or t in real.get('accounts', set())}
+    return {'text': text, 'digit': real['digit'], 'max_words': max((len(t.split()) for t in text), default=1)}
 
 
 def mask(text):

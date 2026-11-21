@@ -127,7 +127,7 @@ def monthly_frames(ctx, before):
     grid = label_quality(grid, ctx.unplanned_window, P)
     grid = CAD.assign_statuses(grid, ctx.d0, ctx.d1, ctx.extracted_at, P.LABEL_LAG_DAYS,
                                dict(zip(grid.period_key, grid.open_share)), P.MAX_OPEN_SHARE)
-    grid['label_ok'] = grid.blank_category_share <= P.MAX_BLANK_CATEGORY_SHARE
+    grid['label_ok'] = grid.blank_category_share <= blank_category_limit(grid, P)
     mp, _ = EXP.machine_periods(ctx.pop, ctx.t, grid, ctx.catalog, ctx.dims)
     mp['model_stratum'] = mp.model.map(ctx.model_stratum)
     if ctx.params.MODEL_FILTER:
@@ -137,6 +137,14 @@ def monthly_frames(ctx, before):
 
 
 # ------------------------------------------------------------------------------------------------ period quality
+def blank_category_limit(grid, params):
+    """A period's Category labels count as incomplete above MAX_BLANK_CATEGORY_SHARE, or above twice the typical
+    (median) share of blank Categories if that is higher: some tickets are genuinely never categorised (about 2-5%
+    a month), so the gate looks for labels that are missing beyond the usual level, not for any blank at all."""
+    typical = float(grid.blank_category_share.median()) if len(grid) else 0.0
+    return max(params.MAX_BLANK_CATEGORY_SHARE, 2 * typical)
+
+
 def label_quality(grid, unplanned, params):
     """Open share and blank-Category share of each period's unplanned tickets (all serials)."""
     pos = EXP.ticket_periods(unplanned, grid)
@@ -279,7 +287,8 @@ def _run(P, verbose, out):
     grid = label_quality(grid, unplanned_window, P)
     grid = CAD.assign_statuses(grid, d0, d1, extracted, P.LABEL_LAG_DAYS,
                                dict(zip(grid.period_key, grid.open_share)), P.MAX_OPEN_SHARE)
-    grid['label_ok'] = grid.blank_category_share <= P.MAX_BLANK_CATEGORY_SHARE
+    blank_limit = blank_category_limit(grid, P)
+    grid['label_ok'] = grid.blank_category_share <= blank_limit
     latest_pos = CAD.latest_final(grid, P.LATEST_PERIOD)
 
     catalog = EXP.issue_catalog(t)
@@ -357,7 +366,8 @@ def _run(P, verbose, out):
              'extracted_at': f'{extracted:%Y-%m-%d}', 'extracted_at_source': extracted_src,
              'inputs': {'case_export': case_meta, 'equipment_lists': eq_meta},
              'clusters': len(clusters), 'bootstrap_weights_fingerprint': PRIV.weights_fingerprint(W),
-             'model_pool_label': pool_label, 'cohort_bins': [b[0] for b in bins]}
+             'model_pool_label': pool_label, 'cohort_bins': [b[0] for b in bins],
+             'blank_category_limit': blank_limit}
     tables = {'periods': periods, 'rates': rates, 'changes': changes, 'cohort_contrasts': contrasts,
               'data_quality': dq, 'strata': strata, 'unmapped': unmapped}
     check_rows = [{'check': c[0], 'expected': c[1], 'actual': c[2], 'passed': True} for c in checks]
@@ -445,11 +455,11 @@ def make_summary(P, grid, latest_pos, cinfo, kinfo, changes, contrasts, popres, 
         s['tested'] = int(changes.eligible.sum())
         s['cohort_call_outs'] = int(contrasts.status.str.startswith('stands_out').sum()) if len(contrasts) else 0
         s['cohort_window'] = kinfo.get('window_label')
-        open_p = grid[grid.status.isin(['provisional', 'in_progress'])]
-        s['not_yet_final'] = [{'label': r.label, 'status': r.status, 'reason': r.status_reason}
-                              for r in open_p.itertuples()]
         lp = dq.iloc[latest_pos]
         s['latest_unlisted_share'] = float(lp.unlisted_share)
+    open_p = grid[grid.status.isin(['provisional', 'in_progress'])]
+    s['not_yet_final'] = [{'label': r.label, 'status': r.status, 'reason': r.status_reason}
+                          for r in open_p.itertuples()]
     s['next_runs'], s['cron_hint'] = ([], None) if P.PERIOD_EDGES is not None else CAD.next_runs(
         P.cadence, grid.period_end[latest_pos] if latest_pos is not None else d1, P.LABEL_LAG_DAYS, 4,
         P.YEAR_START_MONTH, P.FISCAL_YEAR_NAMED_BY, P.ANCHOR_DATE)
@@ -493,5 +503,5 @@ def scan_notebook(P, path):
                     texts.append(''.join(v) if isinstance(v, list) else str(v))
             if o.get('ename'):
                 texts.append(str(o.get('evalue', '')))
-    hits = PRIV.scan_texts(texts, real_strings(P), 'notebook')
+    hits = PRIV.scan_texts(texts, PRIV.for_outputs(real_strings(P), PRIV.vocabulary()), 'notebook')
     return int(sum(hits.values()))

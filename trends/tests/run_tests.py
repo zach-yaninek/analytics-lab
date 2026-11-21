@@ -36,6 +36,7 @@ sys.path.insert(0, str(TRENDS / 'tests'))
 import pandas as pd  # noqa: E402
 
 RESULTS = []
+QUICK = {'on': False}
 TMP = Path(tempfile.mkdtemp(prefix='ipa_trends_tests_'))
 
 
@@ -143,16 +144,19 @@ def planted(fx, truth, runs, null_fx):
         return x.status.iloc[0] if len(x) else 'missing'
     ok('Deposit Door rise flagged (fleet)', status('fleet', 'Fleet', 'Deposit Door') == 'higher',
        status('fleet', 'Fleet', 'Deposit Door'))
-    ok('alEx Computer Board fall flagged', status('family', 'alEx', 'Computer Board') == 'lower',
+    # the fall has about 14 tickets against 35 expected at full scale; the quick (half-size) fixture may only reach the
+    # watch list, which is the conservative rule working as intended
+    want = ('lower', 'watch_lower') if QUICK['on'] else ('lower',)
+    ok('alEx Computer Board fall flagged', status('family', 'alEx', 'Computer Board') in want,
        status('family', 'alEx', 'Computer Board'))
     k = r.tables['cohort_contrasts']
     ts = k[(k.issue == 'Touchscreen')].set_index('install_cohort')
     ok('Touchscreen 2022 installs stand out', ts.status.get('2022') == 'stands_out_higher', ts.status.get('2022'))
     ok('Touchscreen 2023 installs stand out', ts.status.get('2023') == 'stands_out_higher', ts.status.get('2023'))
-    others = k[k.status.str.startswith('stands_out') & ~((k.issue == 'Touchscreen')
+    others = k[k.status.str.startswith('stands_out') & ~(k.issue.isin(['Touchscreen', 'Electronics'])
                                                           & k.install_cohort.isin(['2022', '2023']))]
-    print(f'      other cohort call-outs on the planted fixture: {len(others)} '
-          f'{list(zip(others.install_cohort, others.issue))[:6]}')
+    ok('no other install cohort stands out on the planted fixture', others.empty,
+       str(list(zip(others.install_cohort, others.issue))[:6]))
     flags = c[c.status.isin(['higher', 'lower'])]
     expected = {('fleet', 'Deposit Door'), ('family', 'Computer Board')}
     extra = flags[~flags.apply(lambda x: (x.stratum_dim, x.issue) in expected or x.issue_level != 'category'
@@ -316,6 +320,7 @@ def main(argv=None):
     ap.add_argument('--no-parity', action='store_true')
     ap.add_argument('--no-notebook', action='store_true')
     a = ap.parse_args(argv)
+    QUICK['on'] = a.quick
     t0 = time.time()
     unit()
     if not a.no_parity:

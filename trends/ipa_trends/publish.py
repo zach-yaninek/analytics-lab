@@ -64,9 +64,10 @@ COLUMNS = {
     'cohort_contrasts': ['window_label', 'install_cohort', 'issue_level', 'issue_group', 'issue', 'issue_key',
                          'window_periods', 'machines', 'accounts', 'machine_months', 'tickets', 'rate_per_100',
                          'ci_lo', 'ci_hi', 'ci_method', 'rate_rest', 'crude_ratio', 'crude_lo', 'crude_hi',
-                         'q_crude', 'expected_crude', 'same_age_ratio', 'same_age_lo', 'same_age_hi', 'q_same_age',
+                         'q_crude', 'p_call', 'q_call', 'expected_crude', 'position', 'newer_ratio', 'newer_lo', 'newer_hi',
+                         'older_ratio', 'older_lo', 'older_hi', 'same_age_ratio', 'same_age_lo', 'same_age_hi',
                          'same_age_dropped_share', 'mean_age_years', 'top_models', 'eligible', 'not_tested_reason',
-                         'status', 'persisting', 'sentence'],
+                         'status', 'basis', 'persisting', 'sentence'],
 }
 
 
@@ -185,6 +186,13 @@ def publish(result, private, P, out=print):
             'next_run_after': (result.summary.get('next_runs') or [{}])[0].get('due'),
             'environment': _environment()}
         # privacy scan of everything that will be published
+        labels = set()
+        for df in tables.values():
+            for col in ('stratum', 'issue', 'issue_group', 'period_label', 'label', 'install_cohort', 'model',
+                        'member', 'top_models', 'trouble_code', 'category'):
+                if col in df.columns:
+                    labels |= set(df[col].dropna().astype(str))
+        real = PRIV.for_outputs(real, PRIV.vocabulary(labels))
         hits = {}
         for name, df in tables.items():
             hits.update(PRIV.scan_frame(df, real, name))

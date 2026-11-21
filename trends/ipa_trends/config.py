@@ -115,7 +115,8 @@ COMMENTS = {
     'HISTORY_MONTHS': 'months of history in the charts (default: 24, or three periods if longer)',
     'LABEL_LAG_DAYS': 'days after a period ends before it counts as final (Categories are filled at close)',
     'MAX_OPEN_SHARE': 'a period with more of its tickets still open stays provisional',
-    'MAX_BLANK_CATEGORY_SHARE': 'above this share of blank Categories, issue-level comparisons skip the period',
+    'MAX_BLANK_CATEGORY_SHARE': 'above this share of blank Categories (or twice the typical share), issue-level '
+                                'comparisons skip the period',
     'MAX_UNMAPPED_SHARE': 'above this share of unmapped tickets, affected groups are not tested',
     'STRATIFY_BY': "breakdowns: 'install_cohort', 'family', 'model', 'age_group', 'service_status', ...",
     'CATEGORY_DIMS': 'breakdowns that also get Category-level rates',

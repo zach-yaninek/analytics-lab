@@ -64,9 +64,11 @@ Only final periods are compared or used as baselines.
 The 14-day lag comes from docs/04 §5.2: Trouble Code and Category are filled in near close, and in the reference
 export 54 of the 122 tickets opened in the last 7 days were still open and unlabelled.
 
-**Labels complete enough.** A period whose unplanned tickets have more than `MAX_BLANK_CATEGORY_SHARE` (5%) blank
-Categories is left out of issue-level baselines, and of tests when it is the latest period. In the reference
-export, Category was blank on 16.2% of tickets in Aug 2025 and 9.0% in Sep 2025.
+**Labels complete enough.** Some tickets are genuinely never categorised: 0.5–3.4% a month in the reference export
+after its first two months. The gate therefore looks for labels missing beyond the usual level. A period is left
+out of issue-level baselines, and of tests when it is the latest period, when more of its unplanned tickets have a
+blank Category than `MAX_BLANK_CATEGORY_SHARE` (5%) or twice the typical (median) share, whichever is higher. In the
+reference export, Category was blank on 16.2% of tickets in Aug 2025 and 9.0% in Sep 2025, so both are left out.
 
 ## 3. Exposure per period
 
@@ -116,31 +118,47 @@ fleet_exposure. The second condition means a fast-growing new model is not hidde
 ## 5. Install cohorts (the primary lens)
 
 The cohort view is how the Touchscreen problem was found: 2022-23 installs had 1.54 Touchscreen tickets per 100
-machine-months, 3.9 times the 2024-26 rate (`verification/outputs/followups/ag_install_pooled.csv`).
+machine-months, 3.9 times the 2024-26 rate (`verification/outputs/followups/ag_install_pooled.csv`). The decisive
+feature was a **peak**: those cohorts sat above both older and newer installs.
 
 **What each run shows**
 
 - **The cohort profile:** rates by install cohort over the last `CONTRAST_MONTHS` (12) of final periods.
 - **The cohort × period map:** how each install-date range's rate moves at the chosen frequency.
-- **Cohort contrasts:** two ratios for every cohort × issue.
-  - The **crude ratio** is the cohort's rate over the rest of the fleet's rate.
-  - The **same-age ratio** compares the cohort with machines of the same age band from other cohorts: observed ÷
-    Σ_band machine-months(cohort, band) × rate(other cohorts, band). Bands where the other cohorts have fewer than
-    100 machine-months are left out of both sides. The ratio is not estimable if that drops more than 25% of the
-    cohort's tickets.
+- **Four comparisons for every cohort × issue:**
+  - the **crude ratio**: the cohort's rate over the rest of the fleet's rate;
+  - **newer / older**: the cohort's rate over the rate of every cohort installed after it, and before it;
+  - the **same-age ratio**: the cohort against machines of the same age band in other cohorts, over the whole
+    final history (bands where the other cohorts have fewer than 100 machine-months are left out of both sides).
 
-**Intervals and corrections.** Both ratios get paired account-bootstrap intervals, and Benjamini–Hochberg q-values
-over the cohort × issue family.
+  Each gets a paired account-bootstrap interval and p-value.
 
-**When a cohort stands out.** Only when all of these hold:
+**When a cohort stands out (higher)**
 
-- both ratios are at least 1 + `MIN_CONTRAST` (1.5×), or both at most 1 ÷ 1.5;
-- both have q below 0.05;
-- at least 10 tickets are expected.
+| Cohort | Rule |
+|---|---|
+| Interior (has older and newer installs) | At least 1 + `MIN_CONTRAST` (1.5×) the rest of the fleet, **and** at least 1.25× both the newer and the older installs |
+| Newest | At least 1.5× both the rest of the fleet and earlier installs observed at the same age |
+| Oldest, pooled ('Before …'), or 'Unknown' | Shown but never called out |
 
-Requiring both ratios guards against reading an age effect as a cohort effect, and the reverse. One year of data
-cannot separate the two cleanly (docs/10). *Persisting* marks a cohort that also stood out in the window ending one
-period earlier.
+In addition, all of the cohort's comparisons must be beyond chance together. The call-out's p-value is the largest
+of their p-values (an intersection-union test), and one Benjamini–Hochberg correction runs over every cohort × issue
+cell (q below 0.05). At least 10 tickets must be expected, and the window's Category labels must be complete.
+'Lower' is the mirror image.
+
+**Why this rule**
+
+- **Why a peak.** A steady age effect cannot produce a peak, whether rates rise or fall with machine age: a cohort
+  in the middle of such a trend lies between its newer and older neighbours. Two neighbouring cohorts can both stand
+  out, because each is compared with all newer and all older installs.
+- **Why not the same-age ratio alone.** Within one year of data, machines of the same age come from neighbouring
+  install years (docs/10). A two-year block such as 2022-23 is then its own comparison: on the synthetic fixture the
+  same-age ratios of the planted 2022 and 2023 cohorts were only 1.5 and 1.2, against crude ratios of 2.8 and 2.7.
+  The same-age ratio is therefore reported for context and decides only for the newest cohort.
+- **What it achieves.** On the synthetic fixture, exactly the planted Touchscreen cohorts (and their Electronics
+  group) stand out. With no planted effect, nothing does.
+
+*Persisting* marks a cohort that also stood out in the window ending one period earlier.
 
 ## 6. Time-trend call-outs (conservative flags)
 
@@ -197,6 +215,11 @@ look 15% busier than one with 20. Published rates are not adjusted, and the unad
 
 **Sustained** marks a change also flagged, or on watch, in the same direction for the previous period against its
 own baseline.
+
+A lasting step is flagged when it starts. In later runs, the trailing baseline gradually takes in the higher level,
+so the flag fades while the trend charts and `rates.csv` keep showing the new level. On the synthetic fixture, a
+Deposit Door rise starting in July is flagged in the quarterly run for Q3. At monthly cadence it would be flagged
+for July; September, whose baseline already includes July and August, is not.
 
 **Wording.** Nouns follow the cadence ("the previous four quarters", "beyond normal month-to-month variation").
 The word "significant" is never used. A flag is a screening flag for follow-up, not proof of a problem. Each run

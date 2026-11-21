@@ -50,6 +50,63 @@ def pool_models(mp, grid, latest_pos, params):
     return label, desc, pool_label
 
 
+def rates_many(m, by, keys, W, clusters, months='months'):
+    """fleet_exposure.group_rates for many ticket columns at once: the same arithmetic, vectorised over the keys.
+
+    group_rates (copied verbatim in definitions/) stays the reference: tests check that this returns its values for
+    every key (counts exactly; machine-months, rates, ratios and intervals to floating-point rounding). Returns one
+    frame per key, with group_rates' columns."""
+    levels = sorted(m[by].dropna().unique(), key=str)
+    if not levels:
+        return {k: pd.DataFrame() for k in keys}
+    lev = m[by].map({v: i for i, v in enumerate(levels)})
+    ok = lev.notna().to_numpy()
+    li = lev[ok].astype(int).to_numpy()
+    ci = m.customer.map({a: i for i, a in enumerate(clusters)}).to_numpy()[ok]
+    L, C, K = len(levels), len(clusters), len(keys)
+    T = np.zeros((L, C, K))
+    M = np.zeros((L, C))
+    np.add.at(T, (li, ci), m[keys].to_numpy(float)[ok])
+    np.add.at(M, (li, ci), m[months].to_numpy(float)[ok])
+    Mb = W @ M.T                                                   # draws x levels
+    Tb = np.einsum('bc,lck->blk', W, T, optimize=True)             # draws x levels x keys
+    with np.errstate(invalid='ignore', divide='ignore'):
+        rate_b = Tb / Mb[:, :, None]
+        ratio_b = rate_b / (Tb.sum(1) / Mb.sum(1)[:, None])[:, None, :]
+        fleet = m[keys].to_numpy(float).sum(0) / m[months].to_numpy(float).sum()
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)          # levels empty in every draw give NaN, as before
+        blo, bhi = FX.pct_ci(rate_b)
+        rlo, rhi = FX.pct_ci(ratio_b)
+    exposed = m[m[months] > 0]
+    base = exposed.groupby(by, observed=True).agg(machines=('serial', 'size'), clusters=('customer', 'nunique'))
+    base = base.reindex(levels)
+    with_ticket = (exposed[keys] > 0).groupby(exposed[by], observed=True).sum().reindex(levels)
+    machines = base.machines.fillna(0).astype(int).to_numpy()
+    accounts = base.clusters.fillna(0).astype(int).to_numpy()
+    out = {}
+    for k, key in enumerate(keys):
+        g = pd.DataFrame({by: levels, 'machines': machines,
+                          'machines_with_ticket': with_ticket[key].fillna(0).astype(int).to_numpy(),
+                          'accounts': accounts, 'months': M.sum(1), 'tickets': T[:, :, k].sum(1)})
+        with np.errstate(invalid='ignore', divide='ignore'):
+            g['rate_per_100'] = 100 * g.tickets / g.months
+            lo, hi = FX.byar(g.tickets)
+            g['byar_lo'], g['byar_hi'] = 100 * lo / g.months, 100 * hi / g.months
+            g['boot_lo'], g['boot_hi'] = 100 * blo[:, k], 100 * bhi[:, k]
+            g['ratio_to_fleet'] = g.rate_per_100 / (100 * fleet[k])
+            weak = (g.accounts < FX.MIN_CLUSTERS) | (g.tickets == 0)
+            g['ci_method'] = np.where(weak, 'wider of bootstrap and Byar', 'cluster bootstrap')
+            g['ci_lo'] = np.where(weak, np.fmin(g.boot_lo, g.byar_lo), g.boot_lo)
+            g['ci_hi'] = np.where(weak, np.fmax(g.boot_hi, g.byar_hi), g.boot_hi)
+            g['ratio_lo'] = np.where(weak, np.fmin(rlo[:, k], g.byar_lo / (100 * fleet[k])), rlo[:, k])
+            g['ratio_hi'] = np.where(weak, np.fmax(rhi[:, k], g.byar_hi / (100 * fleet[k])), rhi[:, k])
+        g['vs_fleet'] = FX.classify(g.rename(columns={'accounts': 'clusters'}), 'ratio_lo', 'ratio_hi')
+        g['fleet_rate_per_100'] = 100 * fleet[k]
+        out[key] = g
+    return out
+
+
 def rate_table(mp, grid, catalog, dims, category_dims, W, clusters, params):
     """Long table of rates: one row per period x (dimension, stratum) x issue."""
     level_of = dict(zip(catalog.issue_key, catalog.issue_level))
@@ -63,10 +120,11 @@ def rate_table(mp, grid, catalog, dims, category_dims, W, clusters, params):
         for dim in ['fleet'] + list(dims):
             col = DIM_COLUMN[dim]
             keys = [k for k in catalog.issue_key if level_of[k] != 'category' or dim in category_dims]
+            many = rates_many(fp, col, keys, W, clusters)
             for key in keys:
-                with warnings.catch_warnings():         # empty strata in some bootstrap draws
-                    warnings.simplefilter('ignore', RuntimeWarning)
-                    r, _ = FX.group_rates(fp, col, W, clusters, tickets=key, months='months')
+                r = many[key]
+                if r.empty:
+                    continue
                 r = r.rename(columns={col: 'stratum', 'months': 'machine_months'})
                 r['stratum'] = r.stratum.astype(str)
                 r['avg_installed_machines'] = r.machine_months / months_in_period

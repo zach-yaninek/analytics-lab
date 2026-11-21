@@ -423,6 +423,34 @@ def test_repository_allowlist():
     assert not bad, bad
 
 
+def test_rates_many_equals_group_rates():
+    """The vectorised rates equal the copied fleet_exposure.group_rates for every key (the committed interval rule)."""
+    from ipa_trends import rates as RT
+    rng = np.random.default_rng(3)
+    n = 600
+    m = pd.DataFrame({'serial': [f'S{i}' for i in range(n)],
+                      'customer': rng.choice([f'Customer {i:03d}' for i in range(1, 41)], n),
+                      'grp': rng.choice(['a', 'b', 'c', 'tiny', None], n, p=[0.4, 0.3, 0.2, 0.05, 0.05]),
+                      'months': np.where(rng.random(n) < 0.05, 0.0, rng.uniform(0.5, 3.0, n))})
+    m.loc[m.grp == 'tiny', 'customer'] = 'Customer 001'          # a level in one account: not estimable
+    for k in ('k1', 'k2', 'zero'):
+        m[k] = rng.poisson(0.2 if k != 'zero' else 0.0, n) * (m.months > 0)
+    clusters = sorted(m.customer.unique())
+    W = FX.boot_weights(len(clusters), 300, 11)
+    many = RT.rates_many(m, 'grp', ['k1', 'k2', 'zero'], W, clusters)
+    for k in ('k1', 'k2', 'zero'):
+        ref, _ = FX.group_rates(m, 'grp', W, clusters, tickets=k)
+        mine = many[k]
+        assert list(ref.grp) == list(mine.grp)
+        for c in ('machines', 'machines_with_ticket', 'accounts', 'tickets'):
+            assert (ref[c].to_numpy() == mine[c].to_numpy()).all(), (k, c)
+        for c in ('months', 'rate_per_100', 'byar_lo', 'byar_hi', 'boot_lo', 'boot_hi', 'ratio_to_fleet', 'ci_lo',
+                  'ci_hi', 'ratio_lo', 'ratio_hi'):
+            assert np.allclose(ref[c].to_numpy(float), mine[c].to_numpy(float), rtol=1e-12, atol=1e-15,
+                               equal_nan=True), (k, c)
+        assert list(ref.ci_method) == list(mine.ci_method) and list(ref.vs_fleet) == list(mine.vs_fleet), k
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith('test_') and callable(v)]
 
 

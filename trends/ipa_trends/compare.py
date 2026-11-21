@@ -23,6 +23,8 @@ cell in the run.
   no_clear_change         tested, neither of the above
   not_tested              with the reason
 """
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -161,7 +163,8 @@ def comparison(ctx, latest_pos, tau2=None):
                 Eb = TBb[:, :, ki] / MBb * MLb * ratio_f[None, :]
             logs = stats.log_cc(TLb[:, :, ki], Eb)
             undefined = np.isnan(logs).mean(0)
-            with np.errstate(invalid='ignore'):
+            with np.errstate(invalid='ignore'), warnings.catch_warnings():
+                warnings.simplefilter('ignore', RuntimeWarning)   # cells undefined in every draw: reported below
                 v_boot = np.nanvar(logs, axis=0, ddof=1)
             acc_b = (TB[:, :, ki] > 0).sum(1)
             for li, lev in enumerate(levels):

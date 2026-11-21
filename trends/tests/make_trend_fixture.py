@@ -18,9 +18,10 @@ Usage
 
 The same arguments always give the same data and the same file bytes (fixed workbook created/modified properties
 and zip timestamps). Random draws come from separate streams, so --null changes only the planted tickets: the
-other tickets, the fleet and the extras are identical with and without it, and --snapshots changes only which
-equipment files are written. build() refuses to write into a folder holding IPA_*.xlsx files that it did not
-write (it never overwrites a real export); its own earlier files there are replaced.
+other tickets (all but their case numbers), the fleet and the extras are identical with and without it, and
+--snapshots changes only which equipment files are written (and so the population of the expected counts).
+build() refuses to write into a folder holding IPA_*.xlsx files that it did not write (it never overwrites a real
+export); its own earlier files there are replaced.
 
 Files written to DIR
   IPA_CaseHistory_2026-11-15.xlsx    sheet 'ipa_repair cases': the 19 headers in row 1, one row per case sorted by
@@ -43,16 +44,17 @@ Fleet (scale 1.0; --scale multiplies accounts and machines)
   SV-48-2.0 (scrubEx, 41%); alEx LC-D, alEx MC-S (alEx, 47%); scrubBank 240 (12%); and scrubBank 120, a tiny model
   with 5 machines installed 2025-07..2026-01 (under 100 machine-months in any window: it must be pooled). The fleet
   is larger than ~4,000 and alEx-heavy so that the planted alEx fall has at least 30 tickets expected without the
-  effect in 2026 Q3 (at the fleet's Computer Board rate an expected count of 30 *with* a x0.4 effect would need
-  about 4,500 alEx machines). Install dates 2010-01-01..2026-11-10, weighted toward 2018-2025 (2022-23 heaviest);
-  1% of listed machines have a blank Install Date; Go Live Date = install + 0-60 days (blank for 10%, and while
-  still in the future). Service Status follows age (Under Warranty when under 2 years old; Service Contract, No
-  Coverage, Not Serviceable after). Service Plan 'Ricoh' or 'Bell and Howell', except ONE account of 60 machines
-  all on 'Vogeltronix' (third party: the notebook excludes it), whose ticket rate is x0.02. A few accounts are in
-  Canada. Removed machines: 5% extra serials (240) removed on a uniform random day inside the window, rate x1.5
-  (x2 with variant removed_2x), with no ticket on or after the removal day; they are on no newest snapshot, but are
-  on the older snapshots dated before their removal. About 0.5% of the tickets are on 19 serials that are on no
-  snapshot at all.
+  effect in 2026 Q3 (at the fleet's Computer Board rate an expected count of 30 *with* a x0.4 effect needs about
+  4,500 alEx machines: --scale 2.1 or more). Install dates 2010-01-01..2026-11-10, weighted toward 2018-2025
+  (2022-23 heaviest); 1% of listed machines have a blank Install Date; Go Live Date = install + 0-60 days (blank for
+  10%, and while still in the future). Service Status follows age (Under Warranty when under 2 years old; Service
+  Contract, No Coverage, Not Serviceable after). Service Plan 'Ricoh' or 'Bell and Howell', except ONE account of 60
+  machines all on 'Vogeltronix' (third party: the notebook excludes it), whose ticket rate is x0.02. A few accounts
+  are in Canada. Removed machines: 374 extra machines (7.8%) removed on a uniform random day inside the window, rate
+  x1.5 (x2 with variant removed_2x), with no ticket on or after the removal day; about two thirds have a ticket, so
+  ~5% of the listed count (~240) appear in the case export as serials missing from the newest list. They are on the
+  older snapshots dated before their removal. About 0.5% of the tickets are on 19 serials that are on no snapshot
+  at all.
 
 Tickets (window 2024-01-01..2026-11-14 inclusive, Eastern)
   Unplanned tickets: per machine and day, Poisson with intensity
@@ -62,9 +64,11 @@ Tickets (window 2024-01-01..2026-11-14 inclusive, Eastern)
   month; day factor 0.3 on weekends and US federal holidays (pandas USFederalHolidayCalendar), else 1; rate
   multiplier 1 (listed), 1.5 (removed), 0.02 (Vogeltronix). `base` is set so that, without the planted effects,
   listed non-Vogeltronix machines average 6 unplanned tickets per 100 machine-months (machine-month = 30.4375
-  days); with them the fleet runs at about 6.2. The issue (Trouble Code, Category) is drawn with the real
+  days); with them the fleet runs at about 6.3. The issue (Trouble Code, Category) is drawn with the real
   unplanned-ticket counts of request_types_v0.csv (REQUEST_TYPES below; '[blank]' = an empty cell). Opened
-  06:00-20:59, mostly business hours, whole minutes.
+  06:00-20:59, mostly business hours, whole minutes. The age step is a real (unplanted) change: a cohort crossing
+  its 4th anniversary loses a third of its rate, so 2022 installs run about 15% lower in 2026 Q3 than in the four
+  quarters before, on every issue (fleet-wide the ages balance: about +0.5%).
   Other rows (about 6% of all rows): Cancelled Request (Miscellaneous; rate 3.2% of the unplanned intensity),
   Duplicate Case (Miscellaneous; 0.6% of unplanned tickets get a copy opened 5-180 minutes later), Preventative
   Maintenance (Category Annual / Paid PM / blank; 1.6%, business days), and for 7% of machines installed inside the
@@ -120,23 +124,26 @@ truth.json
   seed, null, variant, scale, window [first, last day], extract_date, snapshots [dates], case_file,
   equipment_files, counts {case_rows, unplanned, planned, cancelled, duplicate, monitoring, listed_machines_newest,
   removed_serials, third_party_machines, missing_install_dates, open_tickets, unmapped_tickets,
-  unlisted_never_listed_tickets, tickets_before_install, plus removed_serials_with_tickets, removed_serial_tickets,
+  unlisted_never_listed_tickets, tickets_before_install, plus removed_machines_generated, removed_serial_tickets,
   third_party_tickets, population_machines, population_machine_months, population_unplanned,
   fleet_rate_per_100_observed, fleet_rate_per_100_expected}, planted [{name, issue_level 'category', issue, group,
   trouble_code, scope, period [start, end_exclusive] or null, multiplier, expected_in_2026Q3,
-  expected_without_effect_in_2026Q3, exposure_months_2026Q3, fleet_expected_in_2026Q3,
-  fleet_expected_without_effect_in_2026Q3, expected_by_month, expected_without_effect_by_month,
-  exposure_months_by_month} (empty with --null, which adds null_expectations for the same cells instead)],
-  fake_strings {accounts, cities, serials_sample (first 50 on the newest list), case_numbers_sample (first 50
-  rows)}, headers_case, headers_equipment, population, variant_info, base_rate_per_machine_day, monitoring_share.
+  expected_without_effect_in_2026Q3, exposure_months_2026Q3, machines, fleet_expected_in_2026Q3,
+  fleet_expected_without_effect_in_2026Q3 (the same Category over the whole population), expected_in_2026Q3_by_
+  install_year (cohort cell), expected_by_month, expected_without_effect_by_month, exposure_months_by_month (calendar
+  months, so any period length can be summed)}] (empty with --null, which adds null_expectations for the same cells
+  instead), fake_strings {accounts, cities, serials_sample (first 50 on the newest list), case_numbers_sample (first
+  50 rows)}, headers_case, headers_equipment, population, variant_info, base_rate_per_machine_day, monitoring_share,
+  generator.
   counts are rows of the files as written, classified with the notebook's definitions (CASE_VIEWS: planned work =
   Trouble Code Preventative Maintenance or Installation, or Case Record Type Install Case; then Cancelled Request,
   Duplicate Case; the rest unplanned) on canonical labels, i.e. with a variant's relabelling undone (variant_info
-  gives what the variant changed). Expected counts are sums of intensities over the population (machines on any
-  written snapshot, non-blank serial, not Vogeltronix, non-blank install date; cell membership by the listed
-  install year / family), counting what the notebook should see as that Category: monitoring tickets (2%) are
-  left out, and in the by-month series the Jan-Feb 2024 blank Categories and the late open tickets are left out
-  too (in 2026 Q3 neither applies). Exposure: days from max(period start, install) to min(period end, removal) /
+  gives what the variant changed); removed_serials counts the removed machines' serials that appear in the case
+  export (removed_machines_generated counts them all). Expected counts are sums of intensities over the population
+  (machines on any written snapshot, non-blank serial, not Vogeltronix, non-blank install date; cell membership by the
+  listed install year / family), counting what the notebook should see as that Category: monitoring tickets (2%) are
+  left out, and in the by-month series the Jan-Feb 2024 blank Categories and the late open tickets are left out too
+  (in 2026 Q3 neither applies). Exposure: days from max(period start, install) to min(period end, removal) /
   30.4375.
 """
 import argparse
@@ -213,6 +220,7 @@ WINDOW = ('2024-01-01', '2026-11-14')
 DAY0 = np.datetime64(WINDOW[0], 'D')
 DAYS = np.arange(DAY0, np.datetime64(WINDOW[1], 'D') + np.timedelta64(1, 'D'))
 N_DAYS = len(DAYS)
+NAT_D, NAT_M = np.datetime64('NaT', 'D'), np.datetime64('NaT', 'm')
 MONTH_DAYS = 365.25 / 12
 EXTRACT_DATE = '2026-11-15'
 EXTRACT_HOUR = 6
@@ -226,7 +234,7 @@ QUARTER_END = ('2026-10-01', '2026-10-15')      # quarter_end_filter: first day 
 
 # ------------------------------------------------------------------------------------------------ fleet
 N_LISTED, N_ACCOUNTS, N_THIRD_PARTY = 4800, 150, 60
-REMOVED_SHARE = 0.05
+REMOVED_SHARE = 0.078               # removed machines generated; about two thirds have a ticket (~5% of listed)
 MODELS = [('LVD-Remote-2.0', 'scrubEx', 0.15), ('MV-2.0', 'scrubEx', 0.12), ('LVRR-WP', 'scrubEx', 0.08),
           ('SV-48-2.0', 'scrubEx', 0.06), ('alEx LC-D', 'alEx', 0.28), ('alEx MC-S', 'alEx', 0.19),
           ('scrubBank 240', 'scrubBank', 0.12)]
@@ -326,9 +334,6 @@ def _day(s):
 def _days(n):
     """Integer day counts -> timedelta64[D] (numpy deprecates adding bare integers to dates)."""
     return np.asarray(n, dtype=np.int64).astype('timedelta64[D]')
-
-
-NAT_D, NAT_M = np.datetime64('NaT', 'D'), np.datetime64('NaT', 'm')
 
 
 def _allocate(weights, total, minimum):
@@ -851,19 +856,21 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
         extract = QUARTER_END[1]
         cap = np.datetime64(f'{extract}T{EXTRACT_HOUR - 1:02d}:00', 'm')
         late = ~np.isnat(C['closed']) & (C['closed'] > cap)
-        C['closed'][late] = C['opened'][late] + (cap - C['opened'][late]) // 2
+        half = ((cap - C['opened'][late]).astype(np.int64) // 2).astype('timedelta64[m]')
+        C['closed'][late] = C['opened'][late] + half
         info['closed_times_pulled_back'] = int(late.sum())
         info['last_opened_written'] = str(C['opened'].max())[:10]
     if variant == 'duplicate_case':
         r = C['rows']
         _, _, _, unpl = _classify(r)
         y = C['opened'].astype('datetime64[D]')
-        ok = (unpl & ~C['monitoring'] & ~C['open'] & (y >= np.datetime64('2025-04-01')) & (y < np.datetime64('2025-07-01'))
-              & f['listed'][C['mi']] & ~_isin(r['Trouble Code Category'], ['Touchscreen', 'Deposit Door', 'Computer Board', None])
-              & (r['Trouble Code'] == 'Electro/Mechanical'))
-        i = int(vr.choice(np.flatnonzero(ok)))
-        alt = [c for t, c, _, _ in REQUEST_TYPES if t == 'Electro/Mechanical' and c not in (None, r['Trouble Code Category'][i], 'Deposit Door')]
-        dup = {k: (np.insert(v, i + 1, v[i]) if k != 'rows' else {h: np.insert(x, i + 1, x[i]) for h, x in v.items()})
+        ok = (unpl & ~C['monitoring'] & ~C['open'] & (y >= np.datetime64('2025-04-01'))
+              & (y < np.datetime64('2025-07-01')) & f['listed'][C['mi']] & (r['Trouble Code'] == 'Electro/Mechanical')
+              & ~_isin(r['Trouble Code Category'], ['Touchscreen', 'Deposit Door', 'Computer Board', None]))
+        i = int(vr.choice(np.flatnonzero(ok)))            # a 2025 Q2 door/mechanical ticket: no planted cell moves
+        alt = [c for t, c, _, _ in REQUEST_TYPES
+               if t == 'Electro/Mechanical' and c not in (None, r['Trouble Code Category'][i], 'Deposit Door')]
+        dup = {k: ({h: np.insert(x, i + 1, x[i]) for h, x in v.items()} if k == 'rows' else np.insert(v, i + 1, v[i]))
                for k, v in C.items()}
         dr = dup['rows']
         dr['Status'][i + 1] = 'Closed' if dr['Status'][i] != 'Closed' else 'Trouble Closed'
@@ -884,7 +891,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
     monitoring = np.array([bool(TEMPLATE_RE.search(t or '')) for t in R['Trouble Reported']], bool)
 
     # equipment lists (list variants first)
-    eq = {'serial': f['serial'][:n_grid].astype(object), 'account': np.array([acc['name'][k] for k in f['acct'][:n_grid]], dtype=object),
+    eq = {'serial': f['serial'][:n_grid].astype(object),
+          'account': np.array([acc['name'][k] for k in f['acct'][:n_grid]], dtype=object),
           'model': f['model'][:n_grid].astype(object), 'family': f['family'][:n_grid].astype(object),
           'blank_install': f['blank_install'][:n_grid].copy()}
     listed_rows = np.flatnonzero(f['listed'][:n_grid])
@@ -927,7 +935,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
     pop_mask = on_any & has_serial & ~f['tp'][:n_grid] & ~eq['blank_install']
     pop = np.flatnonzero(pop_mask)
     rowmult = np.where(f['removed'][:n_grid] & (variant == 'removed_2x'), REMOVED_MULT_2X / REMOVED_MULT, 1.0)
-    label = (1 - MONITORING_SHARE) * np.where(cal['early'], 1 - EARLY_BLANK[2], 1.0) * np.where(cal['late'], 1 - OPEN_SHARE, 1.0)
+    label = ((1 - MONITORING_SHARE) * np.where(cal['early'], 1 - EARLY_BLANK[2], 1.0)
+             * np.where(cal['late'], 1 - OPEN_SHARE, 1.0))     # share of tickets written with their Category
     if variant == 'quarter_end_filter':
         label = label * (np.arange(N_DAYS) < _day(QUARTER_END[0]))
 
@@ -979,7 +988,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
             yr = f['year'][rows]
             res['expected_in_2026Q3_by_install_year'] = {
                 str(y): round(float((per_day(i, rows[yr == y])[q3] * lq).sum()), 3) for y in sc['install_years']}
-        res.update({'expected_by_month': monthly(with_e * label), 'expected_without_effect_by_month': monthly(without * label),
+        res.update({'expected_by_month': monthly(with_e * label),
+                    'expected_without_effect_by_month': monthly(without * label),
                     'exposure_months_by_month': monthly(expo)})
         return res
 
@@ -1000,8 +1010,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
         hit = (R['Trouble Code Category'] == 'Deposit Door') & (opened >= np.datetime64(SPLIT_FROM, 'm'))
         R['Trouble Code Category'][hit] = np.where(vr.random(int(hit.sum())) < 0.5, 'Deposit Door - Latch',
                                                    'Deposit Door - Sensor')
-        info.update({'from': SPLIT_FROM, 'canonical': 'Deposit Door', 'written': ['Deposit Door - Latch', 'Deposit Door - Sensor'],
-                     'rows': int(hit.sum())})
+        info.update({'from': SPLIT_FROM, 'canonical': 'Deposit Door',
+                     'written': ['Deposit Door - Latch', 'Deposit Door - Sensor'], 'rows': int(hit.sum())})
     if variant == 'trouble_code_rename':
         hit = (R['Trouble Code'] == 'Preventative Maintenance') & (opened >= np.datetime64(SPLIT_FROM, 'm'))
         R['Trouble Code'][hit] = 'Preventive Maintenance'
@@ -1034,12 +1044,14 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
                      'rows_month_first': int((~day_first).sum()), 'rows_ambiguous': int((dom <= 12).sum())})
     if variant == 'baseline_spike':
         sp = cal['spike']
+        with_s, without_s = per_day(I_CB, pop)[sp] * label[sp], per_day(I_CB, pop, 'spike')[sp] * label[sp]
         info.update({'issue': 'Computer Board', 'period': list(SPIKE_MONTH), 'multiplier': SPIKE_MULT,
-                     'expected_in_period': round(float((per_day(I_CB, pop)[sp] * label[sp]).sum()), 3),
-                     'expected_without_spike_in_period': round(float((per_day(I_CB, pop, 'spike')[sp] * label[sp]).sum()), 3)})
+                     'expected_in_period': round(float(with_s.sum()), 3),
+                     'expected_without_spike_in_period': round(float(without_s.sum()), 3)})
     if variant == 'removed_2x':
+        e_removed = lam[removed_rows].sum() * REMOVED_MULT_2X / REMOVED_MULT
         info.update({'removed_multiplier': REMOVED_MULT_2X,
-                     'expected_tickets_on_removed_machines': round(float((lam[removed_rows] * REMOVED_MULT_2X / REMOVED_MULT).sum()), 3)})
+                     'expected_tickets_on_removed_machines': round(float(e_removed), 3)})
     data = []
     for j in range(len(opened_out)):
         row = [R[h][j] for h in HEADERS]
@@ -1047,8 +1059,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
         row[-1] = _py(closed[j])
         data.append(row)
     case_file = f'IPA_CaseHistory_{extract}.xlsx'
-    _write_case(out / case_file, header, data, case_sheet, dt.datetime.fromisoformat(extract).replace(hour=EXTRACT_HOUR),
-                title, footer, summary=variant != 'sheet_name')
+    when = dt.datetime.fromisoformat(extract).replace(hour=EXTRACT_HOUR)
+    _write_case(out / case_file, header, data, case_sheet, when, title, footer, summary=variant != 'sheet_name')
 
     # truth
     mi = C['mi']
@@ -1061,13 +1073,13 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
     pop_unplanned = int((unplanned & on_pop).sum())
     counts = {'case_rows': len(data), 'unplanned': int(unplanned.sum()), 'planned': int(planned.sum()),
               'cancelled': int(cancelled.sum()), 'duplicate': int(duplicate.sum()), 'monitoring': int(monitoring.sum()),
-              'listed_machines_newest': len(newest_rows), 'removed_serials': int(f['n_removed']),
+              'listed_machines_newest': len(newest_rows), 'removed_serials': int(len(set(mi[on_removed].tolist()))),
               'third_party_machines': int(f['tp'][newest_present].sum()),
               'missing_install_dates': int(eq['blank_install'][newest_present].sum()),
               'open_tickets': int((C['rows']['Status'] == 'Dispatch').sum()), 'unmapped_tickets': int(unmapped.sum()),
               'unlisted_never_listed_tickets': int(never.sum()), 'tickets_before_install': int(before.sum()),
-              'removed_serials_with_tickets': int(len(set(mi[on_removed].tolist()))),
-              'removed_serial_tickets': int(on_removed.sum()), 'third_party_tickets': int(on_tp.sum()),
+              'removed_machines_generated': int(f['n_removed']), 'removed_serial_tickets': int(on_removed.sum()),
+              'third_party_tickets': int(on_tp.sum()),
               'population_machines': int(len(pop)), 'population_machine_months': round(pop_months, 3),
               'population_unplanned': pop_unplanned,
               'fleet_rate_per_100_observed': round(100 * pop_unplanned / pop_months, 4),
@@ -1094,7 +1106,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
                         f"(without effect {e['expected_without_effect_in_2026Q3']:.1f})"
                         for e in (planted or truth['null_expectations']))
     print(f"{out}: {case_file} {counts['case_rows']:,} rows, {counts['unplanned']:,} unplanned; "
-          f"{counts['listed_machines_newest']:,} listed machines (+{counts['removed_serials']} removed) in "
+          f"{counts['listed_machines_newest']:,} listed machines (+{counts['removed_serials']} removed serials with "
+          f"tickets) in "
           f"{len(equipment_files)} snapshot(s); fleet rate {counts['fleet_rate_per_100_observed']:.2f}/100 mm; "
           f"2026Q3 expected{' (null)' if null else ''}: {summary}; variant={variant}")
     return truth
@@ -1110,7 +1123,10 @@ def main(argv=None):
     ap.add_argument('--snapshots', type=int, default=1, help='monthly equipment snapshots ending 2026-11-14')
     ap.add_argument('--scale', type=float, default=1.0, help='multiplies the number of accounts and machines')
     a = ap.parse_args(argv)
-    build(a.out, seed=a.seed, null=a.null, variant=a.variant, snapshots=a.snapshots, scale=a.scale)
+    try:
+        build(a.out, seed=a.seed, null=a.null, variant=a.variant, snapshots=a.snapshots, scale=a.scale)
+    except (FileExistsError, ValueError) as e:
+        raise SystemExit(f'make_trend_fixture: {e}')
 
 
 if __name__ == '__main__':

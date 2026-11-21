@@ -127,7 +127,7 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 | `HISTORY_MONTHS` | `None` | months of history in the charts (default: 24, or three periods if longer) |
 | `LABEL_LAG_DAYS` | `14` | days after a period ends before it counts as final (Categories are filled at close) |
 | `MAX_OPEN_SHARE` | `0.02` | a period with more of its tickets still open stays provisional |
-| `MAX_BLANK_CATEGORY_SHARE` | `0.05` | above this share of blank Categories, issue-level comparisons skip the period |
+| `MAX_BLANK_CATEGORY_SHARE` | `0.05` | above this share of blank Categories (or twice the typical share), issue-level comparisons skip the period |
 | `MAX_UNMAPPED_SHARE` | `0.05` | above this share of unmapped tickets, affected groups are not tested |
 
 **Inputs (relative paths are read from the trends folder)**
@@ -206,7 +206,7 @@ append**. Column types are in `schema.json`.
 | `rates_final.csv` | The dashboard feed: final periods only, every breakdown × issue (tickets, machine-months, average installed machines, rate per 100, 95% interval) |
 | `rates.csv` | The same for every period, with its status (partial, in progress and provisional periods included) |
 | `changes.csv` | The latest period against its baseline, cell by cell: ratio, interval, q-value, status, reason when not tested, smallest detectable change, sentence |
-| `cohort_contrasts.csv` | Install cohorts over the last 12 months: rate, crude and same-age ratios, status, sentence |
+| `cohort_contrasts.csv` | Install cohorts over the last 12 months: rate; ratios to the rest of the fleet, to newer and to older installs, and to earlier installs at the same age; status, sentence |
 | `periods.csv` | The reporting grid: status and reason, open and blank-Category shares |
 | `data_quality.csv` | Per-period counts: planned, cancelled, duplicate, open, unlisted, unmapped |
 | `strata.csv` | Which models were pooled; cohort date ranges |
