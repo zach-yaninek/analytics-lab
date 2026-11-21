@@ -738,8 +738,8 @@ def main(argv=None):
     planted(fx, truth, runs, null_fx)
     cohort_rule(fx, a.quick)
     publishing(fx, truth)
-    variants(runs, a.quick)
     privacy_scan(fx, null_fx)
+    variants(runs, a.quick)
     if not a.no_notebook:
         notebook(fx)
     bad = [n for n, g in RESULTS if not g]

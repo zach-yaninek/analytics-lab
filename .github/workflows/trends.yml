@@ -1,0 +1,39 @@
+# Tests the recurring trend notebook (trends/) on synthetic data only: no IPA data is ever needed or present.
+name: trends
+
+on:
+  push:
+    paths: ['trends/**', '.github/workflows/trends.yml']
+  pull_request:
+    paths: ['trends/**', '.github/workflows/trends.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / pandas ${{ matrix.pandas }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        pandas: ['2.2.*', '3.0.*']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "pandas==${{ matrix.pandas }}" numpy openpyxl pyyaml matplotlib nbformat nbclient ipykernel papermill
+          python -m ipykernel install --user --name python3
+      - name: Tests (with parity against verification/)
+        if: runner.os == 'Linux'
+        env:
+          MPLBACKEND: Agg
+        run: python -I trends/tests/run_tests.py --quick
+      - name: Tests (synthetic data only)
+        if: runner.os == 'Windows'
+        env:
+          MPLBACKEND: Agg
+        run: python -I trends/tests/run_tests.py --quick --no-parity
