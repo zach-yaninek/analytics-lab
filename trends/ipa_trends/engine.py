@@ -506,7 +506,7 @@ def strata_table(pop, mp, model_desc, bins, dims, grid):
 
 
 def make_summary(P, grid, latest_pos, cinfo, kinfo, changes, contrasts, popres, dq, tfacts, extracted, src, d0, d1):
-    s = {'rerun_frequency': P.cadence.canonical, 'frequency_name': P.cadence.adjective,
+    s = {'rerun_frequency': P.cadence.canonical, 'frequency_name': P.cadence.adjective, 'period_noun': P.cadence.noun,
          'data_window': [f'{d0:%Y-%m-%d}', f'{d1 - pd.Timedelta(days=1):%Y-%m-%d}'],
          'extracted_at': f'{extracted:%Y-%m-%d}', 'periods': len(grid),
          'final_periods': int((grid.status == 'final').sum()), 'latest_label': None}

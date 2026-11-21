@@ -74,7 +74,7 @@ def _print_result(r):
     s = r.summary
     print()
     if s.get('latest_label'):
-        print(f"Latest final {s['frequency_name']} period: {s['latest_label']} "
+        print(f"Latest final {s.get('period_noun', 'period')}: {s['latest_label']} "
               f"(baseline: {len(s.get('baseline_labels', []))} of {s.get('baseline_intended')} periods)")
         if 'fleet_rate_latest' in s:
             print(f"Fleet: {s['fleet_rate_latest']:.2f} unplanned tickets per 100 installed machine-months "

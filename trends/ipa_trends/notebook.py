@@ -73,7 +73,9 @@ def _hand_off(path, doc):
 def show(result):
     display, Markdown, Image, HTML = _display()
     s = result.summary
-    lines = [f"### {s.get('latest_label') or 'No final period yet'} ({s.get('frequency_name')} run)"]
+    name = str(s.get('frequency_name') or '').strip('()')          # 'quarterly', 'every 5 months', 'custom periods'
+    lines = [f"### {s.get('latest_label') or 'No final period yet'} "
+             f"({f'a run {name}' if name.startswith('every') else f'{name} run'})"]
     if s.get('latest_label'):
         if 'fleet_rate_latest' in s:
             lines.append(f"**Fleet:** {s['fleet_rate_latest']:.2f} unplanned tickets per 100 installed "
