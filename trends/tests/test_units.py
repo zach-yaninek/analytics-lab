@@ -21,6 +21,7 @@ import pandas as pd  # noqa: E402
 
 from ipa_trends import cadence as CAD  # noqa: E402
 from ipa_trends import cohorts as COH  # noqa: E402
+from ipa_trends import compare as CMP  # noqa: E402
 from ipa_trends import config as CFG  # noqa: E402
 from ipa_trends import exposure as EXP  # noqa: E402
 from ipa_trends import inputs as INP  # noqa: E402
@@ -116,6 +117,52 @@ def test_baseline_positions():
     mask[pos[:3]] = False
     pos2, _, enough2 = CAD.baseline_positions(g, latest, 12, CAD.Cadence(3), mask=mask)
     assert len(pos2) == 1 and not enough2                  # needs at least half of the intended periods
+
+
+def _edges_445(start, stop):
+    """4-4-5 week periods (28, 28, 35 days) from `start` until an edge reaches `stop`."""
+    edges, k = [T(start)], 0
+    while edges[-1] < T(stop):
+        edges.append(edges[-1] + pd.Timedelta(days=(28, 28, 35)[k % 3]))
+        k += 1
+    return [f'{e:%Y-%m-%d}' for e in edges]
+
+
+def test_custom_periods():
+    """PERIOD_EDGES: the wording says 'period' whatever the length, months and the canonical form stay those of
+    RERUN_FREQUENCY (run id, dashboard key), and the baseline counts the explicit periods inside BASELINE_MONTHS."""
+    from ipa_trends import report as REP
+    yearly = ['2024-01-01', '2025-01-01', '2026-01-01', '2027-01-01']
+    P = CFG.resolve({'PERIOD_EDGES': yearly})
+    cad = P.cadence
+    assert isinstance(cad, CAD.CustomPeriods) and cad.months == 3 and cad.canonical == '3M'
+    assert (cad.noun, cad.plural, cad.variation) == ('period', 'periods', 'period-to-period variation')
+    assert cad.previous(1) == 'the previous period' and cad.previous(4) == 'the previous four periods'
+    assert REP._kind(cad) == 'Report (custom periods)' and P.public()['RERUN_FREQUENCY'] == '3M'
+    assert type(CFG.resolve().cadence) is CAD.Cadence
+    d0, d1, export = T('2024-01-01'), T('2026-11-15'), T('2026-11-15')
+
+    def baseline(edges, d0=d0):
+        g = CAD.period_grid(None, d0, d1, explicit_edges=edges)
+        g = CAD.assign_statuses(g, d0, d1, export, 14, {}, 0.02)
+        latest = CAD.latest_final(g)
+        pos, intended, enough = CAD.baseline_positions(g, latest, 12, CAD.CustomPeriods(3, tuple(edges)))
+        return g.label[latest], [g.label[p] for p in pos], intended, enough
+    # yearly: 2025 against 2024 (before, 12 // 3 = 4 periods were intended and nothing was ever tested)
+    assert baseline(yearly) == ('2025', ['2024'], 1, True)
+    half = ['2024-01-01', '2024-07-01', '2025-01-01', '2025-07-01', '2026-01-01', '2026-07-01', '2027-01-01']
+    assert baseline(half) == ('2026 H1', ['2025 H1', '2025 H2'], 2, True)
+    lab, pos, intended, enough = baseline(_edges_445('2024-01-01', '2026-11-15'))
+    assert lab == '28 Sep-25 Oct 2026' and len(pos) == 12 and intended == 12 and enough
+    # a 53-week year is longer than the 12-month window: its baseline is the one period before, as for long cadences
+    year53 = ['2023-12-31', '2025-01-05', '2026-01-04', '2027-01-03']
+    assert baseline(year53, d0=T('2023-12-31')) == ('5 Jan 2025-3 Jan 2026', ['31 Dec 2023-4 Jan 2025'], 1, True)
+    # explicit periods the data do not reach still count as intended (a back-run to 2024 has none of its one)
+    early = ['2023-01-01'] + yearly
+    g = CAD.assign_statuses(CAD.period_grid(None, d0, d1, explicit_edges=early), d0, d1, export, 14, {}, 0.02)
+    pos, intended, enough = CAD.baseline_positions(g, 0, 12, CAD.CustomPeriods(3, tuple(early)))
+    assert g.label[0] == '2024' and pos == [] and intended == 1 and not enough
+    assert CAD.baseline_positions(g, 0, 12, CAD.CustomPeriods(3, tuple(yearly)))[1:] == (1, False)   # none before
 
 
 def test_next_runs_and_cron():
@@ -303,12 +350,18 @@ def test_byar_and_bh():
 
 
 def test_dl_pool_worked_example():
-    """y = (-0.1, 0, 0.05, 0.05), v = 0.002: Q = 7.5, C = 1,500, tau^2 = (7.5 - 3) / 1,500 = 0.003."""
+    """y = (-0.1, 0, 0.05, 0.05), v = 0.002: Q = 7.5, C = 1,500, tau^2 = (7.5 - 3) / 1,500 = 0.003; no residual
+    is beyond 3 total standard deviations sqrt(0.002 + 0.003), so winsorising changes nothing."""
     Q, C, df = stats.dl_pool([np.array([-0.1, 0, 0.05, 0.05])], [np.full(4, 0.002)])
     assert close(Q, 7.5, 1e-9) and close(C, 1500, 1e-9) and df == 3 and close((Q - df) / C, 0.003, 1e-12)
-    # a one-period spike is pulled in to +-3 standard errors
-    Q2, _, _ = stats.dl_pool([np.array([0, 0, 0, 1.0])], [np.full(4, 0.002)])
-    assert Q2 < 500 * 1.0 ** 2
+    # a one-period doubling in one of 11 pooled cells is pulled in: unwinsorised it alone gives tau^2 = 0.0054
+    flat = [0.01 * np.array([1, -1, 1, -1, 1, -1])] * 10
+    spike = [np.array([0, 0, 0, 0, 0, math.log(2)])]
+    v = [np.full(6, 0.002)] * 11
+    Q0, C0, df0 = stats.dl_pool(flat + spike, v, passes=0)
+    Q1, C1, df1 = stats.dl_pool(flat + spike, v)
+    raw0 = (500 * 5 / 6 * math.log(2) ** 2 + 10 * 0.3 - 55) / 27500                 # 0.00539
+    assert close((Q0 - df0) / C0, raw0, 1e-12) and (Q1 - df1) / C1 < 0.1 * raw0
 
 
 def test_tau2_rules():
@@ -316,8 +369,146 @@ def test_tau2_rules():
     e = [np.full(5, 100.0)] * 3
     tau2, f = stats.tau2_dl(o, e, [1, 1, 1], 0.001)
     assert f['estimable'] and tau2 >= 0.001
+    # broken series are left out, not winsorised: a Category that vanished (no ticket in the last period where 82
+    # are expected) or appeared (none in the first, 20 expected); a zero inside the history is ordinary variation
+    gone = [np.array([100, 104, 96, 112, 0]), np.array([0, 22, 18, 21, 39])]
+    tau2_gone, f = stats.tau2_dl(o + gone, e + [np.full(5, x.sum() / 5) for x in gone], [1] * 5, 0.001)
+    assert tau2_gone == tau2 and f['broken_cells'] == 2 and f['cells'] == 3
+    f = stats.tau2_dl(o + [np.array([8, 6, 0, 9, 7])], e + [np.full(5, 6.0)], [1] * 4, 0.001)[1]
+    assert f['broken_cells'] == 0 and f['cells'] == 4
     tau2, f = stats.tau2_dl([np.array([3, 4, 2])], [np.array([3.0, 3.0, 3.0])], [1], 0.001)
     assert not f['estimable'] and tau2 == stats.TAU2_UNESTIMABLE  # cells expecting < 5 tickets do not count
+
+
+def test_tau2_keeps_ordinary_variation():
+    """One cell expecting 800 tickets a period, log-normal period effects with tau^2 = 0.01 over 10 periods: the
+    mean estimate is within 10% of 0.01. Winsorising on the sampling standard deviation alone clipped about a
+    third of the periods and gave about 0.005."""
+    rng = np.random.default_rng(2)
+    est = []
+    for _ in range(1000):
+        o = rng.poisson(800 * np.exp(rng.normal(0, 0.1, 10) - 0.005)).astype(float)
+        est.append(stats.tau2_dl([o], [np.full(10, o.sum() / 10)], [1], 1e-12)[1]['raw'])
+    assert abs(np.mean(est) - 0.01) < 0.001, np.mean(est)
+
+
+def test_baseline_phrase_and_sentences():
+    """Each row is worded from its own baseline; untested rows give the rate and the reason, never a ratio."""
+    from types import SimpleNamespace
+    q, m = CAD.Cadence(3), CAD.Cadence(1)
+    assert CMP.baseline_phrase(q, 4, 4) == 'the previous four quarters'
+    assert CMP.baseline_phrase(q, 3, 4) == 'three of the previous four quarters (those with complete Category labels)'
+    assert CMP.baseline_phrase(m, 11, 12) == '11 of the previous 12 months (those with complete Category labels)'
+    nan = float('nan')
+    base = dict(stratum_dim='fleet', stratum='Fleet', issue='Door', rate_latest=1.92, change_ratio=1.07, ci_lo=0.95,
+                ci_hi=1.2, status='no_clear_change', not_tested_reason='', baseline_periods_used=4,
+                baseline_set='all', sustained=False, previous_status='')
+
+    def say(cad=q, **kw):
+        return CMP.sentence(SimpleNamespace(**{**base, **kw}), '2025 Q1', cad, 4)
+    assert say() == ('Door: 1.92 per 100 installed machine-months in 2025 Q1, 7% above the previous four quarters '
+                     '(95% interval -5% to +20%).')
+    assert say(baseline_periods_used=3, baseline_set='labels') == (
+        'Door: 1.92 per 100 installed machine-months in 2025 Q1, 7% above three of the previous four quarters (those '
+        'with complete Category labels; 95% interval -5% to +20%).')
+    assert say(change_ratio=0.998).startswith('Door: 1.92 per 100 installed machine-months in 2025 Q1, level with')
+    untested = say(stratum_dim='install_cohort', stratum='2018', status='not_tested', change_ratio=nan, ci_lo=nan,
+                   ci_hi=nan, not_tested_reason='fewer than 10 tickets expected')
+    assert untested == ('Door (install cohort 2018): 1.92 per 100 installed machine-months in 2025 Q1; not tested '
+                        '(fewer than 10 tickets expected).')
+    big = say(status='not_tested', change_ratio=2.04, ci_lo=0.9, ci_hi=4.6, not_tested_reason='unknown stratum')
+    assert '%' not in big and big.endswith('; not tested (unknown stratum).')
+    gone = say(status='not_tested', rate_latest=nan, change_ratio=float('inf'), not_tested_reason='not estimable')
+    assert 'nan' not in gone and 'inf' not in gone and 'no installed machine-months in 2025 Q1' in gone
+    flag = dict(status='higher', change_ratio=1.5, ci_lo=1.25, ci_hi=1.8, sustained=True)
+    assert say(previous_status='higher', **flag).endswith('not proof of a problem; also flagged last quarter.')
+    assert say(previous_status='watch_higher', **flag).endswith('; also on the watch list last quarter.')
+    assert say(status='watch_higher', change_ratio=1.5, ci_lo=0.98, ci_hi=2.3, sustained=True,
+               previous_status='higher').endswith(': could still be chance; also flagged last quarter.')
+    custom = CMP.sentence(SimpleNamespace(**{**base, **flag, 'sustained': False, 'baseline_periods_used': 1}),
+                          '28 Sep-25 Oct 2026', CAD.CustomPeriods(3, ('2026-08-31', '2026-09-28', '2026-10-26')), 1)
+    assert 'above the previous period' in custom and 'beyond normal period-to-period variation' in custom
+
+
+def test_baseline_labels_per_row():
+    """changes.csv names each row's own baseline: issue-level rows leave out a period with incomplete labels."""
+    from types import SimpleNamespace
+    from ipa_trends import publish as PUB
+    periods = pd.DataFrame({'period_key': ['2024-01-01', '2024-04-01', '2024-07-01', '2024-10-01', '2025-01-01'],
+                            'label': ['2024 Q1', '2024 Q2', '2024 Q3', '2024 Q4', '2025 Q1']})
+    changes = pd.DataFrame({'stratum_dim': ['fleet', 'fleet'], 'stratum': ['Fleet', 'Fleet'],
+                            'issue_key': ['all', 'group|Door'], 'baseline_periods_used': [4, 3],
+                            'baseline_set': ['all', 'labels'], 'status': ['no_clear_change'] * 2})
+    result = SimpleNamespace(tables={'periods': periods, 'changes': changes}, params={'RERUN_FREQUENCY': '3M'},
+                             summary={'latest_period_key': '2025-01-01', 'latest_label': '2025 Q1',
+                                      'baseline_labels': ['2024 Q1', '2024 Q2', '2024 Q3', '2024 Q4']},
+                             facts={'comparison': {'baseline_positions': [0, 1, 2, 3],
+                                                   'baseline_label_positions': [1, 2, 3]}})
+    out = PUB.prepare_tables(result, 'run', 'hash')['changes']
+    assert list(out.baseline_labels) == ['2024 Q1; 2024 Q2; 2024 Q3; 2024 Q4', '2024 Q2; 2024 Q3; 2024 Q4']
+    assert list(out.baseline_set) == ['all', 'labels'] and list(out.baseline_periods_used) == [4, 3]
+
+
+def _taxonomy_tickets(quarters, split_from=None):
+    """Electro/Mechanical tickets per quarter from 2025 Q1: Deposit Door 30 (Door) and SAM 20 (Mechanical); from
+    quarter `split_from`, Deposit Door is written 'Deposit Door - Latch' / '- Sensor', both mapped to Door (as in a
+    REQUEST_TYPES_LOCAL file). Software: 10 a quarter, one of them a 'Training' ticket in the last quarter only."""
+    rows = []
+    for q in range(quarters):
+        cats = [('SAM', 'Mechanical', 20), ('Issue', 'Software', 10 - (q == quarters - 1))]
+        if split_from is not None and q >= split_from:
+            cats += [('Deposit Door - Latch', 'Door', 15), ('Deposit Door - Sensor', 'Door', 15)]
+        else:
+            cats += [('Deposit Door', 'Door', 30)]
+        if q == quarters - 1:
+            cats += [('Training', 'Software', 1)]      # 10% of Software but one ticket: too few to judge
+        for cat, grp, n in cats:
+            tc = 'Software' if grp == 'Software' else 'Electro/Mechanical'
+            start = T('2025-01-15') + pd.DateOffset(months=3 * q)
+            rows += [{'ts': start + pd.Timedelta(hours=i), 'trouble_code': tc, 'category': cat, 'cgroup': grp,
+                      'ctype': cat, 'monitoring': False, 'unmapped': False} for i in range(n)]
+    return pd.DataFrame(rows)
+
+
+def _fleet_category_cells(t, latest_start, base_periods):
+    """Fleet Category rows of a comparison: tickets in the latest quarter, expected = the baseline quarters' mean."""
+    now = t[t.ts >= T(latest_start)].groupby(['cgroup', 'ctype']).size()
+    base = t[t.ts < T(latest_start)].groupby(['cgroup', 'ctype']).size() / base_periods
+    keys = sorted(set(now.index) | set(base.index))
+    return pd.DataFrame({'stratum_dim': 'fleet', 'issue_level': 'category', 'issue_group': [k[0] for k in keys],
+                         'issue': [k[1] for k in keys], 'tickets_latest': [now.get(k, 0) for k in keys],
+                         'expected_latest': [base.get(k, 0.0) for k in keys]})
+
+
+def test_taxonomy_gate_appeared_and_vanished():
+    """A split Category mapped in REQUEST_TYPES_LOCAL leaves no unmapped tickets, but its new names appear and the
+    old name vanishes: the Category-level tests of the Trouble Code's groups are suspended, the groups stay tested.
+    It holds at the split quarter and while the baseline still holds a quarter before the split."""
+    groups = {'Electro/Mechanical': ['Door', 'Mechanical', 'Not categorised'], 'Software': ['Software']}
+    grid = CAD.period_grid(CAD.Cadence(3), T('2025-01-01'), T('2026-01-01'))
+    t = _taxonomy_tickets(4, split_from=3)
+    every, unmapped_cat, moved, facts = CMP.taxonomy_blocked(t, grid, 3, groups, 0.05, [0, 1, 2],
+                                                             _fleet_category_cells(t, '2025-10-01', 3), 10)
+    assert every == set() and unmapped_cat == set() and moved == {'Door', 'Mechanical'}
+    assert facts == {'appeared': ['Electro/Mechanical / Deposit Door - Latch',
+                                  'Electro/Mechanical / Deposit Door - Sensor'], 'vanished': ['Door / Deposit Door']}
+    grid5 = CAD.period_grid(CAD.Cadence(3), T('2025-01-01'), T('2026-04-01'))
+    t = _taxonomy_tickets(5, split_from=3)                           # latest 2026 Q1, split in 2025 Q4
+    cells = _fleet_category_cells(t, '2026-01-01', 4)                 # Deposit Door: 22.5 expected, none seen
+    _, _, moved, facts = CMP.taxonomy_blocked(t, grid5, 4, groups, 0.05, [0, 1, 2, 3], cells, 10)
+    assert moved == {'Door', 'Mechanical'} and len(facts['appeared']) == 2 and facts['vanished']
+    t = _taxonomy_tickets(5, split_from=1)                           # the whole baseline is after the split
+    assert CMP.taxonomy_blocked(t, grid5, 4, groups, 0.05, [1, 2, 3], _fleet_category_cells(
+        t[t.ts >= T('2025-04-01')], '2026-01-01', 3), 10)[:3] == (set(), set(), set())
+    t = _taxonomy_tickets(4)                                         # no change; one rare 'Training' ticket
+    assert CMP.taxonomy_blocked(t, grid, 3, groups, 0.05, [0, 1, 2], _fleet_category_cells(t, '2025-10-01', 3),
+                                10)[:3] == (set(), set(), set())
+    # unmapped combinations are still caught from the latest period alone, at every level of the groups
+    t = _taxonomy_tickets(4, split_from=3)
+    t['unmapped'] = t.category.str.contains(' - ')
+    every, _, moved, _ = CMP.taxonomy_blocked(t, grid, 3, groups, 0.05, [0, 1, 2],
+                                              _fleet_category_cells(t, '2025-10-01', 3), 10)
+    assert {'Door', 'Mechanical', 'Unmapped'} <= every and moved == set()
 
 
 def test_two_sided_p():

@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import pandas as pd
 
-from .cadence import Cadence, parse_frequency
+from .cadence import Cadence, CustomPeriods, parse_frequency
 from .errors import ConfigError
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -405,7 +405,11 @@ def parse_sets(items):
 # ------------------------------------------------------------------------------------------------ resolved
 class Params:
     """Validated parameters (attributes with the parameter names) plus derived values:
-    cadence, cohort_width, base_dir, output_dir, baseline_months, history_months."""
+    cadence, cohort_width, base_dir, output_dir, baseline_months, history_months.
+
+    `cadence` is RERUN_FREQUENCY, or with PERIOD_EDGES a CustomPeriods cadence (same months and canonical form,
+    so the run id and dashboard key are unchanged), whose wording says 'period' and whose baselines count the
+    explicit periods."""
 
     def __init__(self, values, sources, base_dir):
         self._values = values
@@ -414,6 +418,8 @@ class Params:
             setattr(self, k, v)
         self.base_dir = base_dir
         self.cadence = values['RERUN_FREQUENCY']
+        if values['PERIOD_EDGES'] is not None:
+            self.cadence = CustomPeriods(self.cadence.months, tuple(values['PERIOD_EDGES']))
         self.cohort_width = values['INSTALL_COHORT_WIDTH']
         n = self.cadence.months if values['PERIOD_EDGES'] is None else 1
         self.baseline_months = values['BASELINE_MONTHS'] or max(12, n)

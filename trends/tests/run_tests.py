@@ -322,6 +322,38 @@ def variants(base_runs, quick):
                fl[~fl.issue.isin(['Deposit Door', 'Door'])].empty, str(list(fl.issue)))
         if variant == 'closed_only':
             ok('closed_only: not marked ready to distribute', any(w.get('blocking') for w in r.warnings))
+    split_category(quick)
+    if base is not None:
+        c = base.tables['changes']
+        ok('unchanged fixture: no Category is taken to have appeared or disappeared',
+           not c.not_tested_reason.str.contains('appeared or disappeared').any())
+        zero = c[(c.tickets_latest == 0) & c.change_ratio.notna()]
+        ok(f'cells with no tickets in the latest period ({len(zero)}): the ratio lies inside its interval',
+           ((zero.ci_lo <= zero.change_ratio) & (zero.change_ratio <= zero.ci_hi)).all())
+        fin = c[(c.crude_ratio > 0) & c.change_ratio.notna() & c.day_factor_baseline.notna()]
+        gap = (fin.crude_ratio - fin.change_ratio * fin.day_factor_latest / fin.day_factor_baseline).abs()
+        ok('crude ratio = change ratio x business-day factor on every row', (gap <= 1e-9 * fin.crude_ratio).all())
+        nt = c[c.status == 'not_tested']
+        ok('sentences: no nan or inf, and untested cells state no change',
+           not c.sentence.str.contains(r'\bnan\b|\binf\b').any()
+           and not nt.sentence.str.contains(r'% (?:above|below)|level with').any()
+           and all(s.endswith(f'; not tested ({w}).') for s, w in zip(nt.sentence, nt.not_tested_reason)))
+        per = base.tables['periods'].set_index('label')
+        if not bool(per.label_ok.get('2024 Q1', True)):      # the fixture's 2024 Q1 has too many blank Categories
+            label_baseline(run(params(fixture('base')[0], LATEST_PERIOD='2025 Q1')))
+    edges = base_runs.get('explicit edges')
+    if edges is not None:
+        s = ' '.join(edges.tables['changes'].sentence)
+        ok('explicit edges: sentences say periods, not quarters', 'period' in s and 'quarter' not in s)
+    if not quick:
+        yearly = run(params(fixture('base')[0], PERIOD_EDGES=['2024-01-01', '2025-01-01', '2026-01-01',
+                                                               '2027-01-01']))
+        fl = yearly.tables['changes']
+        fl = fl[(fl.stratum_dim == 'fleet') & (fl.issue_key == 'all')]
+        ok('yearly PERIOD_EDGES: 2025 is compared with 2024 (one period of baseline)',
+           yearly.summary.get('latest_label') == '2025' and bool(fl.eligible.iloc[0])
+           and 'the previous period' in fl.sentence.iloc[0], f'{yearly.summary.get("latest_label")}; '
+                                                             f'{fl.not_tested_reason.iloc[0]}')
     if not quick:
         cfx, _ = fixture('v_central_clock', variant='central_clock', scale=0.6)
         bfx, _ = fixture('v_base_06', scale=0.6)
@@ -345,6 +377,62 @@ def _blank_serials(case, dest, every=50):
     for r in range(2, ws.max_row + 1, every):
         ws.cell(r, col).value = None
     wb.save(dest / Path(case).name)
+
+
+def label_baseline(r):
+    """A run for 2025 Q1, whose baseline holds 2024 Q1 with incomplete Category labels: issue-level rows use the
+    other three quarters, and their sentences and published baseline labels say so."""
+    from ipa_trends import publish as PUB
+    c = r.tables['changes']
+    lab, every = c[c.baseline_set == 'labels'], c[c.baseline_set == 'all']
+    ok('label-incomplete baseline: issue-level rows use 3 of the 4 quarters, all-ticket rows all 4',
+       len(lab) and lab.baseline_periods_used.eq(3).all() and every.baseline_periods_used.eq(4).all())
+    said = lab[lab.status != 'not_tested'].sentence
+    ok('label-incomplete baseline: issue-level sentences name three of the previous four quarters',
+       len(said) and said.str.contains(r'three of the previous four quarters \(those with complete Category labels;')
+       .all() and every[every.status != 'not_tested'].sentence.str.contains('the previous four quarters [(]').all(),
+       said.iloc[0] if len(said) else '')
+    pub = PUB.prepare_tables(r, 'run', 'hash')['changes']
+    ok('label-incomplete baseline: changes.csv names each row\'s own baseline quarters',
+       set(pub[pub.baseline_set == 'labels'].baseline_labels) == {'2024 Q2; 2024 Q3; 2024 Q4'}
+       and set(pub[pub.baseline_set == 'all'].baseline_labels) == {'2024 Q1; 2024 Q2; 2024 Q3; 2024 Q4'},
+       str(sorted(set(pub.baseline_labels))))
+
+
+def split_category(quick):
+    """A split Category whose new names were added to REQUEST_TYPES_LOCAL leaves nothing unmapped, so only the
+    appeared / vanished rule stops false flags: none on Deposit Door or its new names, at the split quarter and one
+    quarter after (when the new names have part of a baseline). CATEGORY_ALIASES instead continues the series."""
+    local = TMP / 'request_types_local.csv'
+    local.write_text('trouble_code,category,group\nElectro/Mechanical,Deposit Door - Latch,Door\n'
+                     'Electro/Mechanical,Deposit Door - Sensor,Door\n', encoding='utf-8')
+    names = ['Deposit Door', 'Deposit Door - Latch', 'Deposit Door - Sensor']
+    when = [('split quarter', 'v_category_split', {})]
+    if not quick:
+        when.append(('one quarter after the split', 'v_category_split_q2', {'split_from': '2026-04-01'}))
+    for label, name, build in when:
+        fx, _ = fixture(name, variant='category_split', scale=0.6, **build)
+        r, code = code_of(lambda: run(params(fx, REQUEST_TYPES_LOCAL=str(local))))
+        if not ok(f'category_split with REQUEST_TYPES_LOCAL, {label}: runs', r is not None, code):
+            continue
+        c = r.tables['changes']
+        bad = c[c.issue.isin(names) & c.status.isin(['higher', 'lower'])]
+        ok(f'category_split with REQUEST_TYPES_LOCAL, {label}: no Deposit Door, Latch or Sensor flag', bad.empty,
+           str(list(zip(bad.stratum, bad.issue, bad.status))[:6]))
+        door = c[(c.issue_group == 'Door') & (c.issue_level == 'category')]
+        fleet = c[(c.stratum_dim == 'fleet') & (c.issue.isin(['Door'] + names))].set_index('issue')
+        ok(f'category_split with REQUEST_TYPES_LOCAL, {label}: Door Categories held back as a taxonomy change, '
+           'the Door group still tested', not door.eligible.any()
+           and 'taxonomy' in str(fleet.not_tested_reason.get('Deposit Door')) and bool(fleet.eligible.get('Door')),
+           str(fleet.not_tested_reason.to_dict()))
+    if not quick:
+        fx, _ = fixture('v_category_split', variant='category_split', scale=0.6)
+        r = run(params(fx, CATEGORY_ALIASES={n: 'Deposit Door' for n in names[1:]}))
+        c = r.tables['changes']
+        dd = c[(c.stratum_dim == 'fleet') & (c.issue == 'Deposit Door')].status
+        ok('category_split with CATEGORY_ALIASES: the series continues, the planted Deposit Door rise is flagged '
+           'and nothing is held back', list(dd) == ['higher'] and not c.not_tested_reason.str.contains(
+               'appeared or disappeared').any(), str(list(dd)))
 
 
 def notebook(fx):

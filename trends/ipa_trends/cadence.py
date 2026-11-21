@@ -3,7 +3,8 @@
 RERUN_FREQUENCY is both how often the notebook is rerun and the length of every reporting period. Everything that
 depends on it is derived here: period edges (always counted from a fixed anchor, so nothing drifts between runs),
 labels, statuses, baselines, sentence nouns and the dates the next runs are due. The install-cohort width uses the
-same parser. Nothing elsewhere in the package is written for quarters; a test checks for quarter and year literals
+same parser. Explicit PERIOD_EDGES give a CustomPeriods cadence, whose wording says 'period' whatever the periods'
+length. Nothing elsewhere in the package is written for quarters; a test checks for quarter and year literals
 outside this module.
 
 Quarterly and monthly are the intended settings (the cadences proposed to IPA). Weeks are refused: weekly cells
@@ -69,6 +70,35 @@ class Cadence:
             return f'the previous {self.noun}'
         number = NUMBER_WORDS[k] if k < len(NUMBER_WORDS) else str(k)
         return f'the previous {number} {self.plural}'
+
+
+@dataclass(frozen=True)
+class CustomPeriods(Cadence):
+    """The cadence when PERIOD_EDGES gives explicit periods (a 4-4-5 calendar, half-years, reconciliation): the
+    wording says 'period' whatever their length ('the previous four periods', 'period-to-period variation',
+    'Report (custom periods)'), and baselines count the explicit periods. `months`, and so `canonical`, stay those
+    of RERUN_FREQUENCY, which key the run id and the dashboard."""
+    edges: tuple = ()
+
+    @property
+    def noun(self):
+        return 'period'
+
+    @property
+    def plural(self):
+        return 'periods'
+
+    @property
+    def adjective(self):
+        return '(custom periods)'
+
+    @property
+    def variation(self):
+        return 'period-to-period variation'
+
+    def starts(self):
+        """The start of every explicit period (the last edge only closes the last period)."""
+        return sorted({pd.Timestamp(e).normalize() for e in self.edges})[:-1]
 
 
 def parse_frequency(value, name='RERUN_FREQUENCY', max_months=24):
@@ -266,12 +296,22 @@ def baseline_positions(grid, latest_pos, baseline_months, cadence=None, mask=Non
     """Final periods that end within the `baseline_months` before the latest period starts.
 
     Returns (positions, intended, enough): `intended` is how many periods the window holds; `enough` requires at
-    least half of them (and at least one). `mask` (bool per period) can drop periods, for example those whose
-    Category labels are incomplete."""
+    least half of them (and at least one). With explicit edges (CustomPeriods) `intended` counts the explicit
+    periods that start inside the window, including any the data do not reach, and the window always reaches back
+    to the start of the period before L (one period when periods are longer than the window, as for long
+    cadences); otherwise it is baseline_months divided by the period length. `mask` (bool per period) can drop
+    periods, for example those whose Category labels are incomplete."""
     start_l = grid.period_start[latest_pos]
     window = start_l - pd.DateOffset(months=int(baseline_months))
+    custom = isinstance(cadence, CustomPeriods)
+    if custom:
+        before = [s for s in cadence.starts() if s < start_l]
+        if before and before[-1] < window:           # a 53-week year, say, against a 12-month window
+            window = before[-1]
     inside = (grid.period_start >= window) & (grid.period_end <= start_l) & (grid.index < latest_pos)
-    if cadence is not None:
+    if custom:
+        intended = max(1, sum(1 for s in before if s >= window))
+    elif cadence is not None:
         intended = int(baseline_months) // cadence.months
     else:
         intended = int(inside.sum())

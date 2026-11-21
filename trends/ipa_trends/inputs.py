@@ -495,8 +495,10 @@ def build_tickets(frame, meta, params, warn):
                                                                                     ascending=[False, True]))
     if len(combos):
         warn.add('W04', f'{int(combos.tickets.sum())} unplanned ticket(s) in {len(combos)} Trouble Code x Category '
-                        'combination(s) are not in the request-type reference (see unmapped.csv)',
-                 'add them to a REQUEST_TYPES_LOCAL file once IPA confirms where they belong')
+                        'combination(s) are not in the request-type reference (see unmapped.csv); groups they '
+                        'affect may go untested',
+                 'a renamed or split Category: map each new name to the old name in CATEGORY_ALIASES so its series '
+                 'continues; use REQUEST_TYPES_LOCAL only for genuinely new combinations')
     code_groups = ref.groupby('trouble_code').group.agg(lambda s: sorted(set(s))).to_dict()
     meta['content_fingerprint'] = fingerprint(t[['case_number', 'account', 'serial', 'opened_at', 'record_type',
                                                  'status', 'trouble_code', 'category']], 'case_number')

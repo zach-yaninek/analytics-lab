@@ -57,7 +57,8 @@ COLUMNS = {
               'stratum_key', 'issue_level', 'issue_group', 'issue', 'issue_key', 'tickets', 'machine_months',
               'avg_installed_machines', 'machines', 'machines_with_ticket', 'accounts', 'rate_per_100', 'ci_lo',
               'ci_hi', 'ci_method', 'ratio_to_fleet', 'ratio_lo', 'ratio_hi', 'vs_fleet', 'meets_min_exposure'],
-    'changes': ['latest_period_key', 'latest_label', 'baseline_labels', 'baseline_periods_used', 'stratum_dim',
+    'changes': ['latest_period_key', 'latest_label', 'baseline_labels', 'baseline_periods_used', 'baseline_set',
+                'stratum_dim',
                 'stratum', 'stratum_key', 'issue_level', 'issue_group', 'issue', 'issue_key', 'tickets_latest',
                 'months_latest', 'rate_latest', 'tickets_baseline', 'months_baseline', 'rate_baseline',
                 'expected_latest', 'day_factor_latest', 'day_factor_baseline', 'change_ratio', 'ci_lo', 'ci_hi',
@@ -88,6 +89,12 @@ def prepare_tables(result, run_id, defs_hash):
             df['latest_period_key'] = s.get('latest_period_key')
             df['latest_label'] = s.get('latest_label')
             df['baseline_labels'] = '; '.join(s.get('baseline_labels', []))
+            cmp_, plabels = (result.facts or {}).get('comparison') or {}, t.get('periods', pd.DataFrame())
+            if 'baseline_set' in df and 'label' in plabels:        # each row's own baseline ('all' or 'labels')
+                plabels = list(plabels.label)
+                own = {k: '; '.join(str(plabels[p]) for p in cmp_.get(src) or [])
+                       for k, src in (('all', 'baseline_positions'), ('labels', 'baseline_label_positions'))}
+                df['baseline_labels'] = df.baseline_set.map(own).fillna(df.baseline_labels)
         if name == 'cohort_contrasts' and len(df):
             df['window_label'] = s.get('cohort_window')
         if name in COLUMNS and len(df):

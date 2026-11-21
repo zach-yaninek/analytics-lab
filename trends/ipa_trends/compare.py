@@ -5,7 +5,10 @@ For each cell (stratum x issue) with latest period L and the pooled final baseli
   E_L    = rate_B x M_L x f_L / fbar_B           f: business-day factor (stats.day_factors); fbar_B weights the
                                                  baseline periods by the cell's machine-months
   ratio  = O_L / E_L                             the crude rate ratio (not standardised for age or model mix),
-                                                 adjusted only for the mix of business days
+                                                 adjusted only for the mix of business days; when O_L = 0 the
+                                                 continuity-corrected (O_L + 1/2) / (E_L + 1/2), the centre of its
+                                                 interval (crude_ratio, the unadjusted ratio, follows); a cell with
+                                                 nothing expected has neither
   Var(log ratio) = V_boot + tau^2 (1 + 1/K)      V_boot from the paired account bootstrap (the same draws reweight
                                                  L and B), tau^2 the between-period variance of the cell's family,
                                                  K the number of baseline periods
@@ -13,8 +16,8 @@ For each cell (stratum x issue) with latest period L and the pooled final baseli
 A cell is tested only when the latest period is final, the baseline has at least half its periods, E_L >= 10,
 the baseline has >= 20 tickets from >= 10 accounts, the issue is a real issue (not 'Not categorised' or
 'Unmapped'), and the data-quality gates pass for both L and B: Category labels complete enough, and no taxonomy
-change (unmapped Trouble Code x Category combinations). One Benjamini-Hochberg correction runs over every tested
-cell in the run.
+change (unmapped Trouble Code x Category combinations in L, or a Category that appeared or vanished between B and
+L: see taxonomy_blocked). One Benjamini-Hochberg correction runs over every tested cell in the run.
 
   higher / lower          q < Q_CUT and |ratio - 1| >= MIN_CHANGE; an increase must also survive putting back the
                           tickets on machines missing from the equipment list (survivorship check), else it is a
@@ -29,7 +32,7 @@ import numpy as np
 import pandas as pd
 
 from . import stats
-from .cadence import baseline_positions
+from .cadence import NUMBER_WORDS, baseline_positions
 from .definitions import fleet_exposure_copy as FX
 from .definitions import followups_copy as FU
 from .exposure import category_mask, ticket_periods
@@ -102,18 +105,33 @@ def _unlisted_cells(u, um, dim, level, key, positions):
     return float(n), float(mm.min_months.sum())
 
 
-def taxonomy_blocked(t, grid, latest_pos, code_groups, max_share):
-    """Groups whose tests are unsafe because Trouble Code x Category combinations missing from the reference reach
-    more than max_share of a Trouble Code's tickets in the latest period (a split or renamed Category, say).
+def taxonomy_blocked(t, grid, latest_pos, code_groups, max_share, base_pos=(), cells=None, min_expected=10):
+    """Groups whose tests are unsafe because IPA's taxonomy changed (a split or renamed Category, say), judged on
+    the latest period and the baseline periods `base_pos`. Three rules:
 
-    Returns (groups blocked at every level, groups blocked at the Category level only). When the Trouble Code fixes
-    the group (Electronics, Network, Software, Operator Error), the new Category still lands in the right group, so
-    only that group's Category-level tests are unsafe; otherwise the group(s) the Trouble Code maps to are blocked."""
+      unmapped   Trouble Code x Category combinations missing from the reference reach more than max_share of a
+                 Trouble Code's tickets in the latest period. When the Trouble Code fixes the group (Electronics,
+                 Network, Software, Operator Error), the new Category still lands in the right group, so only that
+                 group's Category-level tests are unsafe; otherwise the group(s) the Trouble Code maps to are blocked
+                 at every level.
+      appeared   a Category holds more than max_share of its Trouble Code's tickets in the latest period but under
+                 a fifth of max_share in a baseline period in which, at its latest share, it would have had at
+                 least min_expected tickets. Mapped or not: a split Category whose new names were added to
+                 REQUEST_TYPES_LOCAL has new names with little or no baseline and an old name that drops.
+      vanished   a Category whose fleet cell (in `cells`, the comparison rows) expects at least min_expected tickets
+                 in the latest period has none.
+
+    An appeared or vanished Category suspends the Category-level tests of its Trouble Code's group(s) only: a
+    split Category stays in its group, so the group totals and the groups' own tests are unaffected.
+    Returns (groups blocked at every level, groups whose Category-level tests are blocked by unmapped
+    combinations, groups whose Category-level tests are blocked by an appeared or vanished Category, facts)."""
     pos = ticket_periods(t, grid)
+    tc_all = t.trouble_code.fillna(FU.BLANK)
+    all_levels, category_only, moved = set(), set(), set()
+    facts = {'appeared': [], 'vanished': []}
     tl = t[pos == latest_pos]
-    all_levels, category_only = set(), set()
     if tl.empty:
-        return all_levels, category_only
+        return all_levels, category_only, moved, facts
     share = tl.groupby(tl.trouble_code.fillna(FU.BLANK)).unmapped.mean()
     for tc, s in share.items():
         if s <= max_share:
@@ -122,7 +140,34 @@ def taxonomy_blocked(t, grid, latest_pos, code_groups, max_share):
             category_only.add(FU.BY_TROUBLE_CODE[tc])
         else:
             all_levels |= set(code_groups.get(tc, [])) | {'Other', FU.NO_CAT, UNMAPPED}
-    return all_levels, category_only - all_levels
+    base_pos = [int(p) for p in base_pos]
+    if base_pos:
+        cols = [latest_pos] + base_pos
+        win = np.isin(pos, cols)
+        w = pd.DataFrame({'tc': tc_all.to_numpy()[win], 'cat': t.category.to_numpy()[win], 'p': pos[win],
+                          'cgroup': t.cgroup.to_numpy()[win]})
+        per_tc = w.groupby(['tc', 'p']).size().unstack(fill_value=0).reindex(columns=cols, fill_value=0)
+        named = w[w.cat.notna()]
+        per_cat = named.groupby(['tc', 'cat', 'p']).size().unstack(fill_value=0).reindex(columns=cols, fill_value=0)
+        for (tc, cat), n in per_cat.iterrows():
+            tot = per_tc.loc[tc]
+            if tot[latest_pos] == 0 or n[latest_pos] / tot[latest_pos] <= max_share:
+                continue
+            s_l = n[latest_pos] / tot[latest_pos]
+            if any(tot[p] * s_l >= min_expected and n[p] < tot[p] * max_share / 5 for p in base_pos):
+                facts['appeared'].append(f'{tc} / {cat}')
+                landed = named[(named.tc == tc) & (named.cat == cat) & (named.p == latest_pos)].cgroup
+                moved |= set(code_groups.get(tc, [])) | set(landed.dropna())
+    if cells is not None and len(cells) and base_pos:
+        fc = cells[(cells.stratum_dim == 'fleet') & (cells.issue_level == 'category')]
+        gone = fc[(fc.expected_latest >= min_expected) & (fc.tickets_latest == 0)]
+        inb = np.isin(pos, base_pos) & category_mask(t).to_numpy()
+        for g, k in zip(gone.issue_group, gone.issue):
+            facts['vanished'].append(f'{g} / {k}')
+            fed = set(tc_all[inb & (t.cgroup == g).to_numpy() & (t.ctype == k).to_numpy()])
+            moved |= {g}.union(*(code_groups.get(x, []) for x in fed))
+    moved &= set(FU.COMPONENT)                   # only groups with Categories under them have Category-level tests
+    return all_levels, category_only - all_levels, moved - all_levels - category_only, facts
 
 
 def comparison(ctx, latest_pos, tau2=None):
@@ -133,7 +178,6 @@ def comparison(ctx, latest_pos, tau2=None):
     base_lab, _, enough_lab = baseline_positions(grid, latest_pos, P.baseline_months, ctx.cadence,
                                                  mask=pd.Series(ctx.label_ok, index=grid.index))
     f, w_day, dfacts = stats.day_factors(ctx.t, grid, base_all if base_all else [latest_pos])
-    blocked, blocked_cat = taxonomy_blocked(ctx.t, grid, latest_pos, ctx.code_groups, P.MAX_UNMAPPED_SHARE)
     level_of = dict(zip(ctx.catalog.issue_key, ctx.catalog.issue_level))
     cells = []
     for dim in ['fleet'] + list(ctx.dims):
@@ -194,6 +238,12 @@ def comparison(ctx, latest_pos, tau2=None):
         c['rate_latest'] = 100 * c.tickets_latest / c.months_latest
         c['rate_baseline'] = 100 * c.tickets_baseline / c.months_baseline
     lr = stats.log_cc(c.tickets_latest, c.expected_latest)
+    # no tickets in L: O / E = 0 would lie outside its interval (built on the continuity-corrected log ratio), so
+    # publish the continuity-corrected ratio, the centre of that interval; the unadjusted ratio follows, keeping
+    # crude_ratio = change_ratio x f_L / fbar_B as on every other row
+    zero = (c.tickets_latest == 0) & (c.expected_latest > 0)
+    c.loc[zero, 'change_ratio'] = np.exp(lr[zero])
+    c.loc[zero, 'crude_ratio'] = c.change_ratio[zero] * c.day_factor_latest[zero] / c.day_factor_baseline[zero]
     c['z'] = lr / c.sd_log
     c['p_value'] = stats.two_sided_p(c.z)
     c['ci_lo'] = np.exp(lr - stats.Z95 * c.sd_log)
@@ -201,6 +251,8 @@ def comparison(ctx, latest_pos, tau2=None):
     c['mdc_pct'] = 100 * (np.exp(stats.Z_POWER80 * c.sd_log) - 1)
 
     # eligibility
+    blocked, blocked_cat, blocked_moved, tax = taxonomy_blocked(ctx.t, grid, latest_pos, ctx.code_groups,
+                                                                P.MAX_UNMAPPED_SHARE, base_lab, c, P.MIN_EXPECTED)
     reason = pd.Series('', index=c.index, dtype=object)
 
     def block(mask, why):
@@ -215,6 +267,8 @@ def comparison(ctx, latest_pos, tau2=None):
     block(c.issue_group.isin(blocked) & (c.issue_level != 'all'), 'possible taxonomy change (unmapped Categories)')
     block(c.issue_group.isin(blocked_cat) & (c.issue_level == 'category'),
           'possible taxonomy change (new Categories in this group)')
+    block(c.issue_group.isin(blocked_moved) & (c.issue_level == 'category'),
+          'possible taxonomy change (a Category in this group appeared or disappeared)')
     block(c.expected_latest.fillna(0) < P.MIN_EXPECTED, f'fewer than {P.MIN_EXPECTED:g} tickets expected')
     block(c.tickets_baseline < P.MIN_BASELINE_TICKETS, f'fewer than {P.MIN_BASELINE_TICKETS:g} baseline tickets')
     block(c.accounts_with_tickets_baseline < P.MIN_ACCOUNTS,
@@ -224,7 +278,7 @@ def comparison(ctx, latest_pos, tau2=None):
     c['eligible'] = reason == ''
     c['not_tested_reason'] = reason
     no_basis = ~(c.expected_latest > 0)            # nothing expected: the ratio and its interval mean nothing
-    c.loc[no_basis, ['change_ratio', 'ci_lo', 'ci_hi', 'z', 'p_value', 'mdc_pct']] = np.nan
+    c.loc[no_basis, ['change_ratio', 'crude_ratio', 'ci_lo', 'ci_hi', 'z', 'p_value', 'mdc_pct']] = np.nan
     q = np.full(len(c), np.nan)
     if c.eligible.any():
         q[c.eligible.to_numpy()] = FX.bh_q(c.p_value[c.eligible].to_numpy())
@@ -274,7 +328,8 @@ def comparison(ctx, latest_pos, tau2=None):
     info = {'latest_pos': latest_pos, 'baseline_positions': base_all, 'baseline_label_positions': base_lab,
             'baseline_intended': intended, 'enough': enough_all, 'day_factor': dfacts, 'tau2': tau2,
             'tau2_facts': tau_facts, 'taxonomy_blocked_groups': sorted(blocked),
-            'taxonomy_blocked_category_groups': sorted(blocked_cat)}
+            'taxonomy_blocked_category_groups': sorted(blocked_cat | blocked_moved),
+            'taxonomy_appeared': tax['appeared'], 'taxonomy_vanished': tax['vanished']}
     return c, info
 
 
@@ -306,18 +361,49 @@ def add_sustained(c, prev):
     return c
 
 
+def baseline_phrase(cadence, used, intended):
+    """'the previous four quarters', or 'three of the previous four quarters (those with complete Category labels)'."""
+    used, intended = int(used), int(intended)
+    if used <= 0:
+        return 'no baseline'
+    if used >= intended:
+        return cadence.previous(used)
+    word = NUMBER_WORDS[used] if used < len(NUMBER_WORDS) else str(used)
+    return f'{word} of {cadence.previous(intended)} (those with complete Category labels)'
+
+
+def _finite(v):
+    try:
+        return bool(np.isfinite(float(v)))
+    except (TypeError, ValueError):
+        return False
+
+
 def sentence(r, latest_label, cadence, k):
-    """Executive wording for one cell; nouns follow the cadence; never 'significant'."""
+    """Executive wording for one cell; nouns follow the cadence; never 'significant'.
+
+    k is the number of periods in the full ('all') baseline; the row's own baseline (baseline_periods_used) can be
+    smaller, because issue-level cells leave out periods whose Category labels are incomplete. A cell that was not
+    tested gets its rate and the reason only, never a ratio."""
     where = '' if r.stratum_dim == 'fleet' else f' ({DIM_LABEL[r.stratum_dim].lower()} {r.stratum})'
+    rate = (f'{r.rate_latest:.2f} per 100 installed machine-months in {latest_label}' if _finite(r.rate_latest)
+            else f'no installed machine-months in {latest_label}')
+    if r.status == 'not_tested' or not all(_finite(v) for v in (r.change_ratio, r.ci_lo, r.ci_hi)):
+        why = r.not_tested_reason if isinstance(r.not_tested_reason, str) and r.not_tested_reason else 'not estimable'
+        return f'{r.issue}{where}: {rate}; not tested ({why}).'
+    previous = baseline_phrase(cadence, getattr(r, 'baseline_periods_used', k), k)
     pct = 100 * (r.change_ratio - 1)
     lo, hi = 100 * (r.ci_lo - 1), 100 * (r.ci_hi - 1)
-    direction = 'above' if pct >= 0 else 'below'
-    text = (f'{r.issue}{where}: {r.rate_latest:.2f} per 100 installed machine-months in {latest_label}, '
-            f'{abs(pct):.0f}% {direction} {cadence.previous(k)} (95% interval {lo:+.0f}% to {hi:+.0f}%)')
+    vs = f'level with {previous}' if round(abs(pct)) == 0 else \
+        f'{abs(pct):.0f}% {"above" if pct > 0 else "below"} {previous}'
+    interval = f'95% interval {lo:+.0f}% to {hi:+.0f}%'
+    vs = f'{vs[:-1]}; {interval})' if vs.endswith(')') else f'{vs} ({interval})'    # one bracket, not two
+    text = f'{r.issue}{where}: {rate}, {vs}'
     if r.status in ('higher', 'lower'):
         text += f', beyond normal {cadence.variation}: a screening flag for follow-up, not proof of a problem'
     elif r.status.startswith('watch'):
         text += ': could still be chance'
     if getattr(r, 'sustained', False):
-        text += f'; also flagged last {cadence.noun}'
+        on_watch = str(getattr(r, 'previous_status', '')).startswith('watch')
+        text += f'; also on the watch list last {cadence.noun}' if on_watch else f'; also flagged last {cadence.noun}'
     return text + '.'

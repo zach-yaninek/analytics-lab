@@ -6,8 +6,11 @@
   day factors       weekends and US federal holidays get their own ticket weight, estimated from the baseline's fleet
                     tickets, so a period with more business days is not mistaken for a rise.
   tau^2             the between-period variance of log rates beyond sampling noise: DerSimonian-Laird pooled over the
-                    cells of an issue-level family, with standardised residuals winsorised at +-3 (a one-month spike
-                    cannot inflate it) and a floor.
+                    cells of an issue-level family, with a floor. Residuals are winsorised at +-3 total standard
+                    deviations (sampling plus between-period, starting from the unwinsorised estimate), so a
+                    one-period spike cannot inflate it while ordinary period-to-period variation in large cells is
+                    kept. A cell with no ticket in its first or last period (a Category that appeared or vanished)
+                    is a broken series and is left out.
 """
 import math
 
@@ -18,6 +21,7 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 Z95 = 1.959964
 Z_POWER80 = 2.801585       # 1.959964 + 0.841621: 80% power, two-sided 5%
 WINSOR = 3.0
+WINSOR_PASSES = 2          # winsorise, re-estimate tau^2, and winsorise again
 TAU2_UNESTIMABLE = 0.005   # conservative fallback (about the calendar-day month-to-month spread of fleet counts)
 MIN_CELL_EXPECTED_TAU = 5
 
@@ -97,21 +101,38 @@ def day_factors(t, grid, positions):
 
 
 # ------------------------------------------------------------------------------------------------ tau^2
-def dl_pool(ys, vs):
-    """DerSimonian-Laird moment sums over cells: ys, vs are lists of arrays (log rates and their sampling
-    variances per period). Residuals beyond +-3 standard errors are pulled in to +-3 first.
-    Returns (Q, C, df); tau^2 = (Q - df) / C."""
+def _dl_sums(ys, vs, tau2=None):
+    """DerSimonian-Laird moment sums (Q, C, df) over cells. With tau2, residuals beyond +-WINSOR total standard
+    deviations sqrt(v + tau2) are first pulled in to +-WINSOR."""
     Q = C = df = 0.0
     for y, v in zip(ys, vs):
         y, v = np.asarray(y, float), np.asarray(v, float)
         w = 1 / v
         ybar = np.sum(w * y) / np.sum(w)
-        z = np.clip((y - ybar) / np.sqrt(v), -WINSOR, WINSOR)
-        y = ybar + z * np.sqrt(v)
-        ybar = np.sum(w * y) / np.sum(w)
+        if tau2 is not None:
+            s = np.sqrt(v + tau2)
+            y = ybar + np.clip((y - ybar) / s, -WINSOR, WINSOR) * s
+            ybar = np.sum(w * y) / np.sum(w)
         Q += float(np.sum(w * (y - ybar) ** 2))
         C += float(np.sum(w) - np.sum(w ** 2) / np.sum(w))
         df += len(y) - 1
+    return Q, C, df
+
+
+def dl_pool(ys, vs, passes=WINSOR_PASSES):
+    """DerSimonian-Laird moment sums over cells: ys, vs are lists of arrays (log rates and their sampling
+    variances per period).
+
+    Residuals are winsorised at +-3 total standard deviations sqrt(v + tau^2): tau^2 starts at the unwinsorised
+    estimate and is re-estimated after each winsorising pass (`passes` of them). Scaling by the sampling variance
+    alone would clip ordinary between-period variation in large cells (where v is small) and bias tau^2 low; a
+    one-period spike in one cell still lies far outside the pooled total scale and is pulled in.
+    Returns (Q, C, df) of the last pass; tau^2 = (Q - df) / C."""
+    Q, C, df = _dl_sums(ys, vs)
+    for _ in range(int(passes)):
+        if df <= 0 or C <= 0:
+            break
+        Q, C, df = _dl_sums(ys, vs, max(0.0, (Q - df) / C))
     return Q, C, df
 
 
@@ -119,17 +140,25 @@ def tau2_dl(O, E, deff, floor):
     """Between-period variance of log rates, pooled over cells.
 
     O, E: lists of arrays (one per cell) of per-period observed and expected counts (E sums to O within a cell);
-    deff: per-cell design effect (>= 1) for clustering within accounts. Cells qualify when every period expects at
-    least 5 tickets and there are 3+ periods. Fewer than 5 pooled degrees of freedom: not estimable, and a
-    conservative default is used. Returns (tau2, facts)."""
+    deff: per-cell design effect (>= 1) for clustering within accounts; periods in time order. Cells qualify when
+    there are 3+ periods, every period expects at least 5 tickets, and the first and the last period each have at
+    least one. No ticket at either end where 5 or more are expected means the Category appeared or vanished during
+    the history (a split or renamed Category): a broken series, not between-period variation, and a split breaks
+    many cells at once, enough to swamp the winsorising. Fewer than 5 pooled degrees of freedom: not estimable, and
+    a conservative default is used. Returns (tau2, facts)."""
     ys, vs = [], []
+    broken = 0
     for o, e, d in zip(O, E, deff):
         o, e = np.asarray(o, float), np.asarray(e, float)
         if len(o) < 3 or (e < MIN_CELL_EXPECTED_TAU).any():
+            continue
+        if o[0] == 0 or o[-1] == 0:
+            broken += 1
             continue
         ys.append(log_cc(o, e))
         vs.append(max(float(d), 1.0) / (e + 0.5))
     Q, C, df = dl_pool(ys, vs)
     if df < 5 or C <= 0:
-        return max(floor, TAU2_UNESTIMABLE), {'cells': len(ys), 'df': df, 'estimable': False}
-    return max(floor, (Q - df) / C), {'cells': len(ys), 'df': df, 'estimable': True, 'raw': (Q - df) / C}
+        return max(floor, TAU2_UNESTIMABLE), {'cells': len(ys), 'df': df, 'estimable': False, 'broken_cells': broken}
+    return max(floor, (Q - df) / C), {'cells': len(ys), 'df': df, 'estimable': True, 'raw': (Q - df) / C,
+                                      'broken_cells': broken}

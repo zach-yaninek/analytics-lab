@@ -13,8 +13,9 @@ are copied here as literals.
 
 Usage
   python -I trends/tests/make_trend_fixture.py --out DIR [--seed 7] [--null] [--variant NAME] [--snapshots N]
-                                               [--scale 1.0]
+                                               [--scale 1.0] [--split-from YYYY-MM-DD]
   truth = build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0)    # from a test (returns truth)
+  (split_from='YYYY-MM-DD' moves the category_split date; the default is 2026-07-01)
 
 The same arguments always give the same data and the same file bytes (fixed workbook created/modified properties
 and zip timestamps). Random draws come from separate streams, so --null changes only the planted tickets: the
@@ -100,8 +101,8 @@ Variants (--variant NAME; each changes only what it says)
                        User' and 'Confidential Information - Do Not Distribute' after the data.
   sheet_name           the case sheet is named 'Report 1' (and there is no Summary sheet).
   header_alias         the header 'Trouble Code Category' is written 'Trouble Code Cat.'.
-  category_split       from 2026-07-01 'Deposit Door' is written 'Deposit Door - Latch' or 'Deposit Door - Sensor'
-                       (50/50), an IPA taxonomy change.
+  category_split       from 2026-07-01 (or --split-from) 'Deposit Door' is written 'Deposit Door - Latch' or
+                       'Deposit Door - Sensor' (50/50), an IPA taxonomy change.
   trouble_code_rename  from 2026-07-01 'Preventative Maintenance' is written 'Preventive Maintenance' (planned work
                        would leak into unplanned).
   duplicate_case       one Case Number appears twice with different contents (Status, Category, Sub Category,
@@ -809,10 +810,13 @@ def _snapshot_rows(f, acc, eq, date):
 
 
 # ------------------------------------------------------------------------------------------------ build
-def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
+def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0, split_from=None):
     """Write the fixture files to `out` and return the truth dict (also written to out/truth.json)."""
     if variant is not None and variant not in VARIANTS:
         raise ValueError(f'unknown variant {variant!r}; choose from {sorted(VARIANTS)}')
+    if split_from is not None and variant != 'category_split':
+        raise ValueError('split_from applies to the category_split variant only')
+    split_from = f'{pd.Timestamp(split_from or SPLIT_FROM):%Y-%m-%d}'
     snapshots = int(snapshots)
     if snapshots < 1:
         raise ValueError('snapshots must be at least 1')
@@ -1007,10 +1011,10 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0):
     R = {h: v.copy() for h, v in C['rows'].items()}
     opened, closed = C['opened'].copy(), C['closed'].copy()
     if variant == 'category_split':
-        hit = (R['Trouble Code Category'] == 'Deposit Door') & (opened >= np.datetime64(SPLIT_FROM, 'm'))
+        hit = (R['Trouble Code Category'] == 'Deposit Door') & (opened >= np.datetime64(split_from, 'm'))
         R['Trouble Code Category'][hit] = np.where(vr.random(int(hit.sum())) < 0.5, 'Deposit Door - Latch',
                                                    'Deposit Door - Sensor')
-        info.update({'from': SPLIT_FROM, 'canonical': 'Deposit Door',
+        info.update({'from': split_from, 'canonical': 'Deposit Door',
                      'written': ['Deposit Door - Latch', 'Deposit Door - Sensor'], 'rows': int(hit.sum())})
     if variant == 'trouble_code_rename':
         hit = (R['Trouble Code'] == 'Preventative Maintenance') & (opened >= np.datetime64(SPLIT_FROM, 'm'))
@@ -1122,9 +1126,11 @@ def main(argv=None):
     ap.add_argument('--variant', choices=sorted(VARIANTS), default=None)
     ap.add_argument('--snapshots', type=int, default=1, help='monthly equipment snapshots ending 2026-11-14')
     ap.add_argument('--scale', type=float, default=1.0, help='multiplies the number of accounts and machines')
+    ap.add_argument('--split-from', default=None, help="category_split: first day of the split (default 2026-07-01)")
     a = ap.parse_args(argv)
     try:
-        build(a.out, seed=a.seed, null=a.null, variant=a.variant, snapshots=a.snapshots, scale=a.scale)
+        build(a.out, seed=a.seed, null=a.null, variant=a.variant, snapshots=a.snapshots, scale=a.scale,
+              split_from=a.split_from)
     except (FileExistsError, ValueError) as e:
         raise SystemExit(f'make_trend_fixture: {e}')
 
