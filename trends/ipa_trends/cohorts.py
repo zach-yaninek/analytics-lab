@@ -18,8 +18,11 @@ Each cohort x issue has a position, chosen per issue. The 'newest' cohort is the
 dated cohort (other than the oldest) with at least MIN_EXPECTED tickets expected in the window. Dated cohorts
 installed after it are 'too_new' (usually because they are still filling up: machines were still being installed
 during the window): they are shown but never compared or called out. Comparing the cohort before them with a
-near-empty 'newer installs' group would hide a real difference for as long as the newest cohort fills up. The
-oldest, pooled cohort ('Before ...') is 'oldest' and 'Unknown' is 'undated': both are shown but never called out.
+near-empty 'newer installs' group would hide a real difference for as long as the newest cohort fills up. For the
+same reason, an earlier cohort whose newer installs would expect fewer than NEWER_SIDE_MIN_EXPECTED (40) tickets at the
+rest of the fleet's rate is also 'newest': a newer-installs comparison that small cannot confirm even a large
+difference, and it stays that way after the newest cohort becomes testable. The oldest, pooled cohort ('Before ...')
+is 'oldest' and 'Unknown' is 'undated': both are shown but never called out.
 The cohorts in between are 'interior'. When no cohort after the oldest is testable for an issue, the newest dated
 cohort is 'newest' and none is 'too_new'.
 
@@ -60,6 +63,8 @@ MIN_COMPARATOR_MONTHS = 100
 KEY_CHUNK = 8
 MAX_DROPPED = 0.25
 SAME_AGE_HISTORY_MONTHS = 24        # final history an interior cohort's same-age check needs
+NEWER_SIDE_MIN_EXPECTED = 40        # newer installs expecting fewer tickets are too few for the newer-installs
+                                    # comparison: such a cohort is compared like the newest one
 
 
 def same_age_table(O, M, min_comparator=MIN_COMPARATOR_MONTHS):
@@ -143,17 +148,23 @@ def window_label(grid, positions, full=()):
     return text
 
 
-def positions(c, dated, min_expected):
+def positions(c, dated, min_expected, newer_min=NEWER_SIDE_MIN_EXPECTED):
     """Position of every cohort x issue row, chosen per issue: 'undated' (Unknown), 'oldest' (the first dated cohort,
     pooled), 'newest' (the newest testable cohort: the newest dated cohort after the oldest with at least
-    `min_expected` tickets expected), 'too_new' (dated cohorts installed after it) or 'interior'. When no cohort after
-    the oldest is testable for an issue, the newest dated cohort is 'newest' and none is 'too_new'.
+    `min_expected` tickets expected, and any earlier cohort whose newer installs would expect fewer than `newer_min`
+    tickets at the rest of the fleet's rate, too few for the newer-installs comparison), 'too_new' (dated cohorts
+    installed after the newest testable one) or 'interior'. When no cohort after the oldest is testable for an issue,
+    the newest dated cohort is 'newest' and none is 'too_new'.
 
     c: rows with install_cohort, issue_key and expected_crude; dated: the dated cohorts in install order."""
     rank = c.install_cohort.map({k: j for j, k in enumerate(dated)}).astype(float)
     testable = (rank > 0) & (c.expected_crude.fillna(0) >= min_expected)
     newest = rank.where(testable).groupby(c.issue_key).transform('max').fillna(len(dated) - 1)
-    return pd.Series(np.select([rank.isna(), rank == 0, rank == newest, rank > newest],
+    # a cohort whose newer installs are too few for the newer-installs comparison is compared like the newest one
+    thin = pd.Series(False, index=c.index)
+    if 'expected_newer_side' in c:
+        thin = testable & (rank < newest) & (c.expected_newer_side.fillna(0) < newer_min)
+    return pd.Series(np.select([rank.isna(), rank == 0, (rank == newest) | thin, rank > newest],
                                ['undated', 'oldest', 'newest', 'too_new'], 'interior'), index=c.index, dtype=object)
 
 
@@ -251,6 +262,8 @@ def _chunk_rows(ctx, cohorts, order, bands, kk, win, hist, set_name):
         older_b = (tb / mb[..., None]) / (oob / mob[..., None])
         # z statistics: each ratio as observed over expected-at-the-comparison-rate, with its bootstrap spread
         e_new, e_old = m_c[:, None] * on / mn[:, None], m_c[:, None] * oo / mo[:, None]
+        # the newer installs' tickets if they had the rest of the fleet's rate: how much a newer-installs test can see
+        e_newer_side = mn[:, None] * o_r / m_r[:, None]
         z_newer = stats.log_cc(o_c, e_new) / np.nanstd(stats.log_cc(tb, mb[..., None] * onb / mnb[..., None]),
                                                        axis=0, ddof=1)
         z_older = stats.log_cc(o_c, e_old) / np.nanstd(stats.log_cc(tb, mb[..., None] * oob / mob[..., None]),
@@ -284,6 +297,7 @@ def _chunk_rows(ctx, cohorts, order, bands, kk, win, hist, set_name):
                          'rest_months': m_r[ci], 'crude_ratio': crude[ci, ki], 'crude_lo': clo, 'crude_hi': chi,
                          'expected_crude': e_crude[ci, ki], 'z_crude': z_crude[ci, ki],
                          'newer_ratio': newer[ci, ki], 'newer_lo': nlo, 'newer_hi': nhi, 'z_newer': z_newer[ci, ki],
+                         'expected_newer_side': e_newer_side[ci, ki],
                          'older_ratio': older[ci, ki], 'older_lo': olo, 'older_hi': ohi, 'z_older': z_older[ci, ki],
                          'same_age_ratio': same_age[ci, ki], 'same_age_lo': slo, 'same_age_hi': shi,
                          'z_same_age': z_sa[ci, ki], 'expected_same_age': e_sa[ci, ki],
@@ -376,7 +390,9 @@ def contrasts(ctx, latest_pos, months=None):
         [side + ' both newer and older installs and other cohorts at the same age',
          side + ' both newer and older installs' + short,
          side + ' both newer and older installs; the same-age ratio could not be estimated',
-         'newest testable cohort: ' + side + ' the rest of the fleet and other cohorts at the same age'], '')
+         np.where(c.get('expected_newer_side', pd.Series(np.inf, index=c.index)).fillna(np.inf) < NEWER_SIDE_MIN_EXPECTED,
+                  'newer installs too few to compare with: ', 'newest testable cohort: ')
+         + side + ' the rest of the fleet and other cohorts at the same age'], '')
     big = c.eligible & ((c.crude_ratio >= hi) | (c.crude_ratio <= lo)) & ~stands
     note = np.select([big & (c.position == 'oldest'), big & age_like & (c.crude_ratio >= hi), big & age_like,
                       big & interior & ~(up | down), big & newest & ~sa_ok, big & newest & ~(up | down), big],

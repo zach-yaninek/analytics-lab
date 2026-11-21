@@ -24,15 +24,20 @@ First release for IPA's Product & Customer Service analytics team.
 ### Changes from the independent review (before release)
 
 Nothing had been released, so the version stays 1.0.0. No copied definition, request-type reference, exposure rule
-or interval rule changed, so the method version stays 1.0 and the reconciliation targets are unchanged.
+or rate-interval rule (group_rates) changed, so the method version stays 1.0, `rates.csv` is unchanged and the
+reconciliation targets are unchanged. The change-ratio intervals in `changes.csv` do change, through the τ² estimate
+below.
 
 These method rules changed (`METHOD.md` gives each in full):
 - **Install cohorts** (§5): positions are chosen per issue. The newest cohort is the newest with at least 10 expected
-  tickets for the issue; the cohorts after it are 'too new' (shown, never compared). An interior cohort's peak must
+  tickets for the issue; the cohorts after it are 'too new' (shown, never compared). A cohort whose newer installs
+  would expect fewer than 40 tickets is compared like the newest one (rest of the fleet and same age), so a problem
+  on last year's installs is not lost when this year's cohort becomes testable. An interior cohort's peak must
   also be at least 1.25× machines of the same age in other cohorts once the final history spans 24 months (before,
   the same-age ratio decided only for the newest cohort). Each row is worded over its own window.
 - **Taxonomy gate** (§6): a Category that appeared or vanished between the baseline and the latest period holds back
-  the Category-level tests of its groups, which stay tested (new warning W27). W04's fix now points to
+  the Category-level tests of its groups, which stay tested (new warning W27, which names them; when the new names
+  are unmapped, W04 covers it and those groups are not tested at all). W04's fix now points to
   `CATEGORY_ALIASES`; `REQUEST_TYPES_LOCAL` is for genuinely new combinations only.
 - **Between-period variance τ²** (§6): residuals are winsorised at ±3 total standard deviations (sampling plus
   between-period), iterated, instead of ±3 sampling standard deviations; series broken by a Category that appeared or
@@ -50,7 +55,9 @@ These method rules changed (`METHOD.md` gives each in full):
   row whatever `DATA_END` says, and is not judged with fewer than 30 of them.
 - **Privacy scan** (§11): only trusted words (the package's own and the request-type labels) exempt a one-word real
   string; labels from the data are scanned, so a city typed into the Model column stops publication. New parameter
-  `PRIVACY_ALLOW` for genuine collisions. The executed-notebook scan uses the same words.
+  `PRIVACY_ALLOW` for genuine collisions (never an account name or an identifier, letters included). The
+  executed-notebook scan uses the same words, and the notebook `--engine notebook` files (in `runs/` or beside a
+  failure record) leaves out the injected parameter values.
 
 Other changes:
 - **Failure handling:** a run that stops leaves `OUTPUT_DIR/failed/<stamp>/error.txt` (code, stage, exit code),

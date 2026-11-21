@@ -8,8 +8,10 @@
   tau^2             the between-period variance of log rates beyond sampling noise: DerSimonian-Laird pooled over the
                     cells of an issue-level family, with a floor. Residuals are winsorised at +-3 total standard
                     deviations (sampling plus between-period, starting from the unwinsorised estimate), so a
-                    one-period spike cannot inflate it while ordinary period-to-period variation in large cells is
-                    kept. A cell with no ticket in its first or last period (a Category that appeared or vanished)
+                    one-period spike in a single cell cannot inflate it while ordinary period-to-period variation in
+                    large cells is kept; a spike shared by many cells of the family is only partly pulled in and
+                    raises tau^2 (more conservative). A cell with no ticket in its first or last period (a Category
+                    that appeared or vanished)
                     is a broken series and is left out.
 """
 import math

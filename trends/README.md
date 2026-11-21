@@ -288,7 +288,7 @@ append**. Column types are in `schema.json`.
 | `email_summary.txt`, `.html` | Paste-ready email text, at most 15 lines |
 | `charts/*.png` | Fleet trend, request groups, cohort profile, cohort × period map, changes, data quality. The time charts (fleet trend, request groups, cohort × period map, data quality) show the last `HISTORY_MONTHS` months. The changes chart shows the fleet and its request groups, then other flagged or watch-list cells, fleet-wide first, at most 15 rows, keeping one row for each flagged direction. Data quality marks the run's own blank-Category limit. Hollow markers and bars are periods that are not final yet |
 | `manifest.json` | Parameters (absolute paths shortened to their last folder), input fingerprints, warnings, checks, privacy scan totals, `distribution_ready`, `next_run_after` (the next run's due date, after this export's date; null for back-runs and explicit `PERIOD_EDGES`) |
-| `executed_notebook.ipynb` | Only in `runs/<run_id>/`, and only with `--engine notebook`: the executed notebook, after its privacy scan |
+| `executed_notebook.ipynb` | Only in `runs/<run_id>/` (or beside a failure record), and only with `--engine notebook`: the executed notebook, after its privacy scan, without the injected parameter values |
 
 `OUTPUT_DIR` also holds `failed/<stamp>/error.txt` for each run that stopped (see *When something is wrong*) and,
 for a moment while `latest/` is replaced, `latest.new/` or `latest.old/`.
@@ -410,7 +410,7 @@ the log cannot be written, E99 says so and still shows only the error's type.
 | W24 | The export date is before the last ticket; the last ticket date was used |
 | W25 | Tickets fall outside `PERIOD_EDGES` |
 | W26 | **Blocking.** None of the tickets opened in the 14 days before the export date is still open: the export may be filtered to closed cases (every case row counts, whatever `DATA_END` says; not judged with fewer than 30 such tickets) |
-| W27 | A Category appeared in or disappeared from the latest period against the baseline: the Category-level tests of the groups it belongs to were held back, and the group totals were still tested. For a renamed or split Category, map each new name to the old one in `CATEGORY_ALIASES` |
+| W27 | A Category appeared in or disappeared from the latest period against the baseline: the Category-level tests of the groups it names were held back, and those groups' totals were still tested. (When the new names are missing from the reference, W04 covers it: those groups are not tested at all.) For a renamed or split Category, map each new name to the old one in `CATEGORY_ALIASES` |
 
 ## Privacy
 
@@ -420,15 +420,17 @@ the log cannot be written, E99 says so and still shows only the error's type.
 - The scan checks every table, the manifest, chart text, the report and the email before anything is published.
   The executed-notebook scan applies only to `ipa-trends run --engine notebook`, which publishes nothing until the
   notebook's outputs pass it too. A notebook saved from Jupyter, or written by papermill, is not scanned: keep such
-  copies out of shared folders. Any executed notebook also shows the run's full folder paths (its parameters cell
-  holds `BASE_DIR`), which can include your user name; the manifest shortens such paths, the notebook does not.
+  copies out of shared folders. The notebook that `--engine notebook` files (in `runs/<run_id>/`, or beside a
+  failure record in `failed/<stamp>/`) leaves out the injected parameter values (the manifest lists the parameters),
+  but its outputs still show the run folder's full path, which can include your user name; the manifest shortens
+  such paths, the notebook does not.
 - A one-word real string (a city, location or credentialing note) that equals a word the package writes itself, or a
   Trouble Code, Category or request group of the request-type reference or `REQUEST_TYPES_LOCAL`, is not counted on
   its own; account names and multi-word names are. Labels from the data (models, families, Categories outside the
   reference) never exempt anything, so a city typed into the Model column stops publication with P01. If a model or
   Category word genuinely equals such a string (a Location 'Remote' and the model LVD-Remote-2.0), list it in
-  `PRIVACY_ALLOW`; an account name always counts, listed or not. The executed notebook is scanned with the same
-  words.
+  `PRIVACY_ALLOW`; an account name or an identifier (a serial or case number, letters included) always counts,
+  listed or not. The executed notebook is scanned with the same words.
 - Keep `trends/data/` out of version control and restrict access to `OUTPUT_DIR`. `trends/.gitignore` ignores
   `data/`, spreadsheets and CSV files, parameter files other than the examples, executed notebooks (every `.ipynb`
   file but `ticket_trends.ipynb`), `.venv/` and log files.

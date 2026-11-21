@@ -414,13 +414,14 @@ def _run(P, verbose, out):
         if not cinfo['enough']:
             warn.add('W15', f'only {len(k)} of {cinfo["baseline_intended"]} baseline {P.cadence.plural} are final, '
                             'so no change is tested', 'a longer case export gives a full baseline')
-        moved = len(cinfo.get('taxonomy_appeared') or []) + len(cinfo.get('taxonomy_vanished') or [])
-        held = sorted(set(cinfo.get('taxonomy_blocked_category_groups') or []) - set(cinfo['taxonomy_blocked_groups']))
-        if moved:
-            # counts and group names only: the Categories themselves are listed in facts.json
-            warn.add('W27', f'{moved} Category name(s) appeared in or disappeared from {grid.label[latest_pos]} against '
-                            f'the baseline, so Category-level tests were held back in {len(held)} group(s) '
-                            f'({", ".join(held)}); the group totals were still tested',
+        # groups whose Category-level tests the appeared / vanished rule held back while their totals stayed tested;
+        # groups that unmapped combinations block at every level are W04's (their totals are not tested either)
+        held = cinfo.get('taxonomy_moved_groups') or []
+        if held:
+            # group names only: the Categories themselves are listed in facts.json
+            warn.add('W27', f'a Category appeared in or disappeared from {grid.label[latest_pos]} against the baseline in '
+                            f'{len(held)} group(s) ({", ".join(held)}), so their Category-level tests were held back; '
+                            'the totals of those groups were still tested',
                      'if a Category was renamed or split, map each new name to the old one in CATEGORY_ALIASES so its '
                      'series continues; use REQUEST_TYPES_LOCAL only for genuinely new combinations')
         say('Comparing install cohorts')

@@ -157,7 +157,7 @@ another:
 
 | Position | When it stands out (higher) |
 |---|---|
-| Newest: the newest dated cohort with at least `MIN_EXPECTED` (10) tickets expected for the issue in the window | At least 1 + `MIN_CONTRAST` (1.5×) both the rest of the fleet and machines of the same age in other cohorts |
+| Newest: the newest dated cohort with at least `MIN_EXPECTED` (10) tickets expected for the issue in the window, and any earlier cohort whose newer installs would expect fewer than 40 tickets at the rest of the fleet's rate (`expected_newer_side`: too few for a newer-installs comparison) | At least 1 + `MIN_CONTRAST` (1.5×) both the rest of the fleet and machines of the same age in other cohorts |
 | Too new: dated cohorts installed after the newest one (usually still filling up) | Shown but never compared or called out: not tested, 'too new: still filling up (N expected tickets)' (or 'fewer than 10 tickets expected' when none of its machines was installed during the window) |
 | Interior: between the oldest and the newest | At least 1.5× the rest of the fleet **and** at least 1.25× both the newer and the older installs (a peak). When the final history behind the window spans at least 24 months and the same-age ratio is estimable, **also** at least 1.25× machines of the same age in other cohorts |
 | Oldest, pooled ('Before …'), or 'Unknown' | Shown but never called out |
@@ -202,7 +202,12 @@ estimated, or 'could still be chance' when it passes every margin but not the co
   filling up, the cohort before it would be compared with a near-empty group of newer installs, which would hide a
   real difference for as long as the newest cohort fills up. So the newest cohort with at least 10 expected tickets for
   the issue is compared with the rest of the fleet and with machines of the same age, and the cohorts after it wait
-  until they have enough tickets.
+  until they have enough tickets. The same holds the day the newest cohort reaches 10 expected tickets: its few
+  machine-months are still too small a group of newer installs for the cohort before it. So any cohort whose newer
+  installs would expect fewer than 40 tickets (at the rest of the fleet's rate) is compared the same way as the
+  newest one; with 40 expected tickets, a newer-installs ratio of about 1.7 can clear the bar after the
+  Benjamini–Hochberg correction. On the synthetic 2025-cohort fixture, Touchscreen 2025 then stays called out when the
+  2026 cohort becomes testable, where the newer-installs comparison alone had p 0.07.
 - **What it achieves.** On the synthetic fixture (seed 7, full size), exactly the planted Touchscreen 2022 and 2023
   cohorts (and their Electronics group) stand out. The two ×3 cohorts are adjacent, so each lies in the other's
   newer or older comparator and in its same-age comparator: at half fleet size, and on some seeds at full size (seed
@@ -247,8 +252,10 @@ f̄_B weights the baseline periods by the cell's machine-months. Without it, a m
 look 15% busier than one with 20. Published rates are not adjusted, and the unadjusted ratio is written too.
 
 When L has no tickets, the published ratio is the continuity-corrected (O_L + ½) ÷ (E_L + ½), the centre of its
-interval, and the unadjusted ratio follows it (times f_L ÷ f̄_B), so a point estimate never lies outside its
-interval. A cell with nothing expected has no ratio, adjusted or not.
+interval, and the unadjusted ratio follows it (times f_L ÷ f̄_B), so its point estimate lies inside its interval.
+A cell with nothing expected has no ratio, adjusted or not. Cells with a ticket or two against a tiny expected count
+keep O ÷ E, which can lie outside their (continuity-corrected) interval; they are far below `MIN_EXPECTED`, never
+tested, and their sentences give no ratio.
 
 **The variance:** Var(log ratio) = V_boot + τ² (1 + 1/K).
 
@@ -259,8 +266,11 @@ interval. A cell with nothing expected has no ratio, adjusted or not.
   - It is estimated on the final periods before L at the run's own length when there are at least 6 of them,
     otherwise on monthly periods, unscaled (conservative for longer periods).
   - Residuals are winsorised at ±3 total standard deviations, √(sampling variance + τ²): τ² starts at the
-    unwinsorised estimate and is re-estimated after each of two passes. A one-period spike cannot inflate it, and
-    ordinary period-to-period variation in large cells is kept. (Winsorising on the sampling variance alone clipped
+    unwinsorised estimate and is re-estimated after each of two passes. A one-period spike in a single cell cannot
+    inflate it, and ordinary period-to-period variation in large cells is kept. A spike shared by many cells of a
+    family (an issue's one-month spike sits in the fleet cell and in every install-cohort cell) is only partly
+    pulled in and raises τ², which makes that family's tests more conservative, not less. (Winsorising on the
+    sampling variance alone clipped
     that variation and biased τ² low: to about half the true value of 0.01 for a cell expecting 800 tickets a
     period.)
   - A cell with no ticket in its first or last estimation period, where 5 or more are expected (a Category that
@@ -286,7 +296,9 @@ interval. A cell with nothing expected has no ratio, adjusted or not.
     Category that **appeared** (more than 5% of its Trouble Code's tickets in L, but under 1% in a baseline period
     that would have held at least 10 of them at the latest share) or **vanished** (no tickets in L where the fleet
     expects at least 10) suspends the Category-level tests of the groups its Trouble Code maps to; the groups
-    themselves stay tested, and W27 says so. This catches a split Category whose new names were added to
+    themselves stay tested, and W27 names them. (When the new names are missing from the reference, the unmapped
+    rule above already holds back those groups at every level, and W04 says so instead.) This catches a split
+    Category whose new names were added to
     `REQUEST_TYPES_LOCAL`, and it lifts once the whole baseline uses the new names. `CATEGORY_ALIASES`, with each
     new name mapped to the old one, keeps the series instead. A genuine jump of a rare Category, from under 1% to
     over 5% of its Trouble Code's tickets, is held back the same way; its group's total is still tested.
@@ -352,7 +364,8 @@ Warnings are written to `manifest.json` and shown in the report. **Blocking** wa
 `ipa-trends reconcile` runs the engine on the original two files (case export Aug 2025–Aug 2026; equipment list of
 19 Oct 2026). It checks the engine against the aggregates committed under `verification/outputs/`:
 
-- the fleet totals, third-party and unlisted counts (`fx_summary.json`);
+- the fleet totals, third-party machines and tickets, and unlisted counts (`fx_summary.json`; the reference's
+  third-party machine-months and accounts are not compared, and no rate depends on them);
 - rates and intervals by age band, family and model (`fx_age_rates.csv`, `fx_family_rates.csv`,
   `fx_model_rates.csv`);
 - under-4 and 4+ rates by request group and Category, with intervals (`ag_type_rates.csv`);
@@ -410,5 +423,6 @@ and cohort labels) and the Trouble Codes, Categories and request groups of the r
 `REQUEST_TYPES_LOCAL`. The exemption never covers account names or multi-word names. Labels from the data (models,
 families, Categories outside the reference) never exempt anything, so a city typed into the Model column stops
 publication. For a genuine collision (a Location 'Remote' and the model LVD-Remote-2.0), the word can be listed in
-`PRIVACY_ALLOW`. An account name counts even when it is listed, and an entry without letters (a serial, a zip code)
-is refused (E22).
+`PRIVACY_ALLOW`. An account name or an identifier (a serial or case number, letters included) counts even when it
+is listed, and an entry without letters (a zip code, a numeric serial) is refused (E22). The executed notebook that
+`--engine notebook` files leaves out the injected parameter values, which the scan (it reads outputs) would not see.

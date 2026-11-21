@@ -245,10 +245,13 @@ class _Run:
         months = getattr(self.P, 'history_months', None)
         if not months or 'period_start' not in p or 'period_end' not in p:
             return list(range(len(p)))
-        start = pd.to_datetime(p.period_start)
-        cut = pd.to_datetime(p.period_end).max() - pd.DateOffset(months=int(months))
-        first = min([i for i in range(len(p)) if start.iloc[i] >= cut] + list(keep) + [len(p) - 1])
-        return list(range(first, len(p)))
+        start, end = pd.to_datetime(p.period_start), pd.to_datetime(p.period_end)
+        last = len(p) - 1
+        if getattr(self.P, 'LATEST_PERIOD', None) and keep:
+            last = max(keep)            # a back-run reports as of its latest period: later periods stay off the axis
+        cut = end.iloc[last] - pd.DateOffset(months=int(months))
+        first = min([i for i in range(last + 1) if start.iloc[i] >= cut] + list(keep) + [last])
+        return list(range(first, last + 1))
 
     def _window_note(self):
         """'' or 'for issues, only the 3 final quarters with complete Category labels' when the issue-level cohort
@@ -575,7 +578,7 @@ class _Run:
                 f'machine-months over {own}, {r.crude_ratio:.1f}x the rest of the fleet')
         newer, older, same = (getattr(r, k, None) for k in ('newer_ratio', 'older_ratio', 'same_age_ratio'))
         if getattr(r, 'position', '') == 'newest':
-            text += f' and {same:.1f}x earlier installs at the same age' if _finite(same) else ''
+            text += f' and {same:.1f}x other cohorts at the same age' if _finite(same) else ''
         elif _finite(newer) and _finite(older):
             text += f' ({newer:.1f}x newer installs, {older:.1f}x older installs)'
         return text + '.'
@@ -667,7 +670,8 @@ class _Run:
         n = len(FU.PRIMARY)
         nine = CAD.NUMBER_WORDS[n] if n < len(CAD.NUMBER_WORDS) else str(n)
         return (f"the ticket's Trouble Code and Category mapped by the project's request-type reference to one of "
-                f'{nine} analysed groups. Tickets with a blank Category form a separate group, {FU.NO_CAT}, and '
+                f'{nine} analysed groups (monitoring-template tickets form the Monitoring group). Tickets with a '
+                f'blank Category whose Trouble Code does not decide the group form a separate group, {FU.NO_CAT}, and '
                 f'combinations missing from the reference an {UNMAPPED} group; neither is tested.')
 
     def cohort_rule(self, form='full'):
@@ -679,24 +683,28 @@ class _Run:
         peak = f'at least {_x(hi)} the rest of the fleet and at least {_x(side)} both newer and older installs'
         same_age = (f'when at least {months} months of final history exist and the same-age ratio can be estimated, '
                     f'the cohort must also be at least {_x(side)} machines of the same age in other cohorts')
-        newest = (f'the newest cohort with at least {P.MIN_EXPECTED:g} tickets expected is compared with the rest of '
-                  f'the fleet and with earlier installs at the same age (at least {_x(hi)} each); newer cohorts are '
-                  'still filling up and are shown but not compared')
+        thin = getattr(COH, 'NEWER_SIDE_MIN_EXPECTED', 40)
+        newest = (f'the newest cohort with at least {P.MIN_EXPECTED:g} tickets expected, and any cohort whose newer '
+                  f'installs would expect fewer than {thin:g} tickets (too few to compare with), is compared with the '
+                  f'rest of the fleet and with machines of the same age in other cohorts (at least {_x(hi)} each); '
+                  'newer cohorts are still filling up and are shown but not compared')
         together = (f'All the comparisons a call-out needs must hold together: its q-value (the Benjamini-Hochberg-'
                     f'corrected largest p-value of those comparisons) must be below {P.Q_CUT:g}.')
         mirror = f"'Lower' is the mirror image (at most {_x(1 / hi)} and {_x(1 / side)})."
         if form == 'short':
             return (f'Install cohort: machines grouped by install date. A cohort stands out when it is {peak} (a peak; '
                     f'with at least {months} months of final history, also at least {_x(side)} machines of the same '
-                    f'age elsewhere); the newest cohort with enough expected tickets needs at least {_x(hi)} both the '
-                    'rest of the fleet and earlier installs at the same age. The q-value (the Benjamini-Hochberg-'
+                    f'age elsewhere); the newest cohort with enough expected tickets (or with too few newer installs '
+                    f'to compare with) needs at least {_x(hi)} both the rest of the fleet and machines of the same age '
+                    'in other cohorts. The q-value (the Benjamini-Hochberg-'
                     f'corrected largest p-value of those comparisons) must be below {P.Q_CUT:g}.')
         if form == 'definition':
             return (f'A cohort with newer and older installs: {peak} (a peak in the install-date profile) and, when at '
                     f'least {months} months of final history exist and the same-age ratio can be estimated, at least '
                     f'{_x(side)} machines of the same age in other cohorts. The newest cohort with at least '
-                    f'{P.MIN_EXPECTED:g} tickets expected: at least {_x(hi)} both the rest of the fleet and earlier '
-                    'installs at the same age (newer cohorts are still filling up and are not compared). All the '
+                    f'{P.MIN_EXPECTED:g} tickets expected, and a cohort whose newer installs are too few to compare '
+                    f'with: at least {_x(hi)} both the rest of the fleet and machines of the same age in other cohorts '
+                    '(newer cohorts are still filling up and are not compared). All the '
                     'comparisons must hold together: the q-value (the '
                     f'Benjamini-Hochberg-corrected largest of their p-values) is below {P.Q_CUT:g}. {mirror}')
         if form == 'lede':
@@ -1894,7 +1902,9 @@ def _write_html(R, charts, path):
                                                            if e.get('snapshot_date') else '')
                       for e in inputs.get('equipment_lists') or [])
     details = [('Run ID', R.run_id), ('Package version', __version__), ('Method version', METHOD_VERSION),
-               ('Definitions hash', R.defs_hash), ('Rerun frequency', f'{adj} ({s.get("rerun_frequency", "")})'),
+               ('Definitions hash', R.defs_hash),
+               ('Rerun frequency', f'{CAD.Cadence(R.cad.months).adjective} ({s.get("rerun_frequency", "")})'
+                + ('; periods from PERIOD_EDGES' if getattr(P, 'PERIOD_EDGES', None) is not None else '')),
                ('Case export', case), ('Equipment lists', lists),
                ('Data window', f'{window[0]} to {window[1]}'), ('Exported', s.get('extracted_at', '')),
                ('Bootstrap resamples', f'{P.N_BOOT:,}')]
@@ -2114,8 +2124,10 @@ def _email_lines(R, pdf):
     if R.no_charts:
         notes.append(f'no charts or PDF, because {R.no_charts}')
     out.append(('p', 'Data notes: ' + ('; '.join(notes) if notes else 'none') + '.'))
+    tables = ('runs/' + str(R.run_id) + '/rates_final.csv (a back-run: latest/ was not changed)'
+              if getattr(P, 'LATEST_PERIOD', None) else 'latest/rates_final.csv')
     out.append(('p', (f'Full report attached ({FILES["report_pdf"] if pdf else FILES["report_html"]}). '
-                      'Dashboard tables: latest/rates_final.csv')))
+                      f'Dashboard tables: {tables}')))
     while len(out) > MAX_EMAIL_LINES:          # drop the optional watch line, then the last items
         drop = next((i for i, (k, t) in enumerate(out) if t.startswith('Watch list:')), None)
         if drop is None:

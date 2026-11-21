@@ -627,6 +627,15 @@ def test_cohort_positions_per_issue():
     assert [pos['b', k] for k in dated] == ['oldest', 'newest', 'too_new', 'too_new']
     assert [pos['c', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']
     assert [pos['d', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']
+    # a cohort whose newer installs would expect fewer than 40 tickets is compared like the newest one, also when a
+    # newer cohort is testable (the day 2018 reaches 10 expected tickets, 2017's newer side is still tiny)
+    c['expected_newer_side'] = c.install_cohort.map({'Before 2016': 900, '2016': 120, '2017': 39, '2018': 0,
+                                                     'Unknown': np.nan})
+    pos = COH.positions(c, dated, 10).groupby([c.issue_key, c.install_cohort]).first()
+    assert [pos['d', k] for k in dated] == ['oldest', 'interior', 'newest', 'newest']
+    assert [pos['a', k] for k in dated] == ['oldest', 'interior', 'newest', 'too_new']     # unchanged
+    assert pos['d', 'Unknown'] == 'undated'
+    assert [pos['c', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']   # 2017 is not testable
 
 
 def test_cohort_call_rule():
@@ -1441,6 +1450,18 @@ def test_privacy_scan_and_masking():
     assert hits == {'t.stratum': 1, 't.note': 1}
     assert PRIV.scan_texts(['Customer at Testville 05 site'], real, 'r') == {'r': 1}
     assert '[redacted]' in PRIV.redact('ticket at Fake Memorial Hospital 017 today', real)
+
+
+def test_privacy_allow_never_covers_an_identifier():
+    """PRIVACY_ALLOW lets a genuine collision through, but never an account name or a serial (letters included)."""
+    real = PRIV.real_sets(names={'Acme Clinic'}, ids={'AB1234'}, cases=set(), private={'text': {'Remote'}})
+    vocab = PRIV.trusted_vocabulary(CFG.resolve())
+    def hits(allow):
+        return PRIV.scan_texts(['model AB1234', 'Acme Clinic', 'LVD Remote'], PRIV.for_outputs(real, vocab, allow),
+                               'x').get('x', 0)
+    assert hits([]) == 3, hits([])
+    assert hits(['Remote']) == 2, hits(['Remote'])                       # the collision goes through
+    assert hits(['AB1234', 'Acme Clinic', 'Remote']) == 2                # the serial and the account never do
 
 
 def test_privacy_vocabulary_holds_trusted_words_only():

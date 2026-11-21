@@ -4,7 +4,9 @@ The reference values are the aggregates committed under verification/outputs/ (f
 on the Aug 2025 - Aug 2026 case export and the 19 Oct 2026 equipment list), frozen in
 ipa_trends/reference/reconcile_2025-08_2026-08.json by tests/build_reference.py. The engine is run five ways
 (whole window; the two halves; monthly; install cohorts; install years) and every reference count, machine-month
-and rate is compared. Intervals are compared only where the reference made them with the engine's rule
+and rate is compared, except the third-party machine-months and accounts (the population facts hold only the
+third-party machines and tickets; no rate depends on them). Intervals are compared only where the reference made
+them with the engine's rule
 (fleet_exposure.group_rates): the rates by age band, family and model (R2, fx_*_rates.csv) and the under-4 and 4+
 rates of ag_type_rates.csv (R3). ag_band_rates.csv (R4) and ag_install_pooled.csv (R8) are compared on counts,
 machine-months and rates only: ag_install_pooled's intervals were made with association.ci (inverted-CDF

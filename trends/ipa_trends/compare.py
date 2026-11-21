@@ -329,6 +329,7 @@ def comparison(ctx, latest_pos, tau2=None):
             'baseline_intended': intended, 'enough': enough_all, 'day_factor': dfacts, 'tau2': tau2,
             'tau2_facts': tau_facts, 'taxonomy_blocked_groups': sorted(blocked),
             'taxonomy_blocked_category_groups': sorted(blocked_cat | blocked_moved),
+            'taxonomy_moved_groups': sorted(set(blocked_moved) - set(blocked)),
             'taxonomy_appeared': tax['appeared'], 'taxonomy_vanished': tax['vanished']}
     return c, info
 

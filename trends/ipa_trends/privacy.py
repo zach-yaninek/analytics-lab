@@ -36,10 +36,11 @@ def real_sets(names, ids, cases, private):
     accounts = {FX.norm(n) for n in names if n}
     names = {str(n) for n in names if n} | set(private.get('text', set()))
     ids = {str(i) for i in ids if i} | {str(c) for c in cases if c} | set(private.get('digit', set()))
-    text = {n for n in map(FX.norm, names | {i for i in ids if not i.isdigit()}) if len(n) >= 4 and not n.isdigit()}
+    serials = {n for n in map(FX.norm, {i for i in ids if not i.isdigit()}) if len(n) >= 4 and not n.isdigit()}
+    text = {n for n in map(FX.norm, names) if len(n) >= 4 and not n.isdigit()} | serials
     digit = {i for i in ids if i.isdigit()} | {re.sub(r'\D', '', i) for i in ids if len(re.sub(r'\D', '', i)) >= 7}
     return {'text': text, 'digit': digit, 'max_words': max((len(t.split()) for t in text), default=1),
-            'accounts': accounts}
+            'accounts': accounts, 'ids': serials}
 
 
 @functools.lru_cache(maxsize=1)
@@ -81,10 +82,11 @@ def for_outputs(real, vocab, allow=()):
     """The real strings to scan generated outputs for. A one-word real string that is a trusted word (a hospital
     city named Normal or Orange, say) is not counted on its own; account names always are, and every multi-word
     name (an account, an address) is matched in full. `allow` (PRIVACY_ALLOW) names strings that may be published
-    although a real field holds them too, such as a model named like a city; it never covers an account name."""
-    accounts = real.get('accounts', set())
-    allow = {FX.norm(a) for a in allow or ()} - accounts
-    text = {t for t in real['text'] if t in accounts or (t not in allow and (' ' in t or t not in vocab))}
+    although a real field holds them too, such as a model named like a city; it never covers an account name or an
+    identifier (a serial or case number, letters included)."""
+    accounts, ids = real.get('accounts', set()), real.get('ids', set())
+    allow = {FX.norm(a) for a in allow or ()} - accounts - ids
+    text = {t for t in real['text'] if t in accounts or t in ids or (t not in allow and (' ' in t or t not in vocab))}
     return {'text': text, 'digit': real['digit'], 'max_words': max((len(t.split()) for t in text), default=1)}
 
 

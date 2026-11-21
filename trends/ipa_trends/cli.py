@@ -132,6 +132,8 @@ def run_notebook(P, args):
                 os.environ.pop(NB.RESULT_ENV, None)
             else:
                 os.environ[NB.RESULT_ENV] = before
+        if out_nb.exists():
+            _redact_parameters(out_nb)            # before anything scans or files it
         try:
             reported = json.loads(handoff.read_text(encoding='utf-8'))
         except (OSError, ValueError):
@@ -220,6 +222,25 @@ def _notebook_error(failure, reported, executed=True):
         code, text = 'E99', f'E99: {head}{saved}\n  Fix: send the error code and stage (not the log) to the MIT team'
     stage = reported.get('stage') if reported.get('code') == code else None
     return NotebookError(code, text, stage=stage or stage_for(code, 'notebook'))
+
+
+def _redact_parameters(path):
+    """Leave the injected parameter values out of an executed notebook before it is scanned or filed. They can hold
+    absolute paths (with a user name) or whatever was typed into a text parameter, and the privacy scan reads only
+    cell outputs. The run's manifest.json lists the parameters it used."""
+    import nbformat
+    try:
+        nb = nbformat.read(str(path), as_version=4)
+    except Exception:                            # noqa: BLE001 - an unreadable notebook is never filed as clean
+        return
+    for cell in nb.cells:
+        if 'injected-parameters' in cell.get('metadata', {}).get('tags', []):
+            cell.source = ('# Parameters injected by ipa-trends run --engine notebook: their values are left out of '
+                           'this copy.\n# The run\'s manifest.json lists the parameters it used.')
+    pm = nb.metadata.get('papermill')
+    if isinstance(pm, dict):
+        pm.update({'parameters': {}, 'input_path': None, 'output_path': None})
+    nbformat.write(nb, str(path))
 
 
 def _scan(P, path):

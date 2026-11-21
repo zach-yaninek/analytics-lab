@@ -249,6 +249,17 @@ def cohort_rule(base_fx, quick):
                                                               & (k.install_cohort == '2025'))]
         ok(f'cohort_2025, {lab}: no other install cohort stands out', others.empty,
            str(list(zip(others.install_cohort, others.issue))[:6]))
+    # the day the 2026 cohort becomes testable (simulated by setting MIN_EXPECTED just under its expected Touchscreen
+    # tickets), its few machine-months are still too few for a newer-installs comparison: 2025 must stay called out
+    k = r.tables['cohort_contrasts']
+    e26 = float(k[(k.issue == 'Touchscreen') & (k.install_cohort == '2026')].expected_crude.iloc[0])
+    r = run(params(fx, MIN_EXPECTED=max(1.0, e26 - 0.05)))
+    ts = r.tables['cohort_contrasts']
+    ts = ts[ts.issue == 'Touchscreen'].set_index('install_cohort')
+    ok(f'cohort_2025, the 2026 cohort just testable ({e26:.1f} expected): Touchscreen 2025 still stands out, compared '
+       'like the newest cohort because its newer installs are too few', ts.status.get('2025') == 'stands_out_higher'
+       and ts.position.get('2025') == 'newest' and ts.position.get('2026') == 'newest',
+       f"2025 {ts.position.get('2025')} {ts.status.get('2025')}; 2026 {ts.position.get('2026')}")
     # Touchscreen x3 while a machine is 3-5 years old, the same for every install year: the cohorts at that age in the
     # window peak against newer and older installs, but match machines of the same age in other cohorts (no call-out
     # on seeds 3, 7 and 11 at full size; at half size seed 3 has the 2026 Door call-out noted in planted())
@@ -407,6 +418,8 @@ def variants(base_runs, quick):
             door = c[(c.stratum_dim == 'fleet') & (c.issue_group == 'Door') & (c.issue_level != 'all')]
             ok('category_split: Door is not flagged (taxonomy change)', not door.status.isin(['higher', 'lower']).any()
                and door.not_tested_reason.str.contains('taxonomy').any())
+            held = [w['message'] for w in r.warnings if w['code'] == 'W27']
+            ok('category_split: W27 names no group whose total W04 already held back', not held, str(held))
         if variant == 'trouble_code_rename':
             # renamed planned work lands in Unmapped, which is never tested, and blocks Other; Door keeps the planted
             # Deposit Door rise, so it is not part of this check
@@ -616,6 +629,18 @@ def notebook(fx):
                f'{rc} {recs}')
     ok('E10 with --engine notebook: the scanned executed notebook is kept with the failure record',
        bool(list((TMP / 'nb_E10_notebook').glob('failed/*/executed_notebook.ipynb'))))
+    # a text parameter is not an output: a run that stops before the publish scan must not file what was typed into
+    # it (the executed notebook's injected values are left out of every copy)
+    out = TMP / 'nb_E10_title'
+    typed = 'Trends for Fake Memorial Hospital 001'
+    rc = cli.main(['run', '--engine', 'notebook', '--set', f'CASE_EXPORTS={e10}/IPA_CaseHistory_*.xlsx', '--set',
+                   f'EQUIPMENT_LISTS={e10}/IPA_Active_Equipment_list_*.xlsx', '--set', f'OUTPUT_DIR={out}',
+                   '--set', f'REPORT_TITLE={typed}', '--quiet'])
+    filed = [f for f in out.rglob('*') if f.is_file()]
+    ok('E10 with --engine notebook and a name typed into REPORT_TITLE: the failure record and its notebook never '
+       'show it', rc == 2 and any(f.name == 'executed_notebook.ipynb' for f in filed)
+       and not [f for f in filed if typed in f.read_text(encoding='utf-8', errors='ignore')],
+       f'{rc} {[f.name for f in filed]}')
     tempfile.tempdir = saved_tmp
     bad = TMP / 'nb_bad'
     bad.mkdir(parents=True, exist_ok=True)
