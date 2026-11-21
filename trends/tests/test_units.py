@@ -856,6 +856,21 @@ def test_report_forest_rows():
     assert extra.attrs['forced'] == ['lower']                      # kept for the title, not for its strength
 
 
+def test_report_history_note_for_back_runs():
+    """A back-run's time charts end at its own period: the note says the later periods are left out, not earlier."""
+    from types import SimpleNamespace
+    from ipa_trends import report as REP
+    def note(before, after):
+        R = SimpleNamespace(hidden_periods=before + after, hidden_before=before, hidden_after=after,
+                            labels=['2024 Q1', '2025 Q1'], plural='quarters', noun='quarter')
+        return REP._Run.history_note(R)
+    assert note(0, 0) == ''
+    assert note(2, 0) == 'Quarters before 2024 Q1 are not shown (HISTORY_MONTHS); rates.csv holds every quarter.'
+    assert note(0, 6) == ('Quarters after 2025 Q1 are not shown (a back-run reports as of 2025 Q1); rates.csv holds '
+                          'every quarter.')
+    assert 'before 2024 Q1 (HISTORY_MONTHS) and after 2025 Q1' in note(2, 6)
+
+
 def test_report_history_and_cohort_rule():
     """HISTORY_MONTHS limits the time charts' axis but always keeps the baseline and latest periods; the cohort rule
     text follows the parameters and never claims that a peak rules out every age effect."""

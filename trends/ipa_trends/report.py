@@ -216,6 +216,8 @@ class _Run:
         # months, always with the baseline and latest periods; tables and texts keep every period
         self.view = self._history(baseline + ([latest] if latest is not None else []))
         self.hidden_periods = len(labels) - len(self.view)
+        self.hidden_before = self.view[0] if self.view else 0              # left out by HISTORY_MONTHS
+        self.hidden_after = len(labels) - 1 - self.view[-1] if self.view else 0   # after a back-run's period
         self.labels = [labels[i] for i in self.view]
         self.status = [status[i] for i in self.view]
         self.view_keys = [str(p.period_key.iloc[i]) for i in self.view]
@@ -448,8 +450,15 @@ class _Run:
         """'' or a note that the chart leaves out the periods before its axis starts (HISTORY_MONTHS)."""
         if not self.hidden_periods or not self.labels:
             return ''
-        return (f'{_cap(self.plural)} before {self.labels[0]} are not shown (HISTORY_MONTHS); {source} holds every '
-                f'{self.noun}.')
+        before = f'before {self.labels[0]}'
+        after = f'after {self.labels[-1]}'
+        if self.hidden_before and self.hidden_after:
+            what = f'{before} (HISTORY_MONTHS) and {after} (a back-run reports as of {self.labels[-1]}) are not shown'
+        elif self.hidden_after:
+            what = f'{after} are not shown (a back-run reports as of {self.labels[-1]})'
+        else:
+            what = f'{before} are not shown (HISTORY_MONTHS)'
+        return f'{_cap(self.plural)} {what}; {source} holds every {self.noun}.'
 
     def quiet(self, r):
         """Why a tested cell was not flagged: 'normal' (its interval includes no change), 'small' (clearly
