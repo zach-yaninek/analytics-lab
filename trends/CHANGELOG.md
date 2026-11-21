@@ -37,7 +37,7 @@ These method rules changed (`METHOD.md` gives each in full):
   the same-age ratio decided only for the newest cohort). Each row is worded over its own window.
 - **Taxonomy gate** (§6): a Category that appeared or vanished between the baseline and the latest period holds back
   the Category-level tests of its groups, which stay tested (new warning W27, which names them; when the new names
-  are unmapped, W04 covers it and those groups are not tested at all). W04's fix now points to
+  are unmapped, W04 covers it). W04's fix now points to
   `CATEGORY_ALIASES`; `REQUEST_TYPES_LOCAL` is for genuinely new combinations only.
 - **Between-period variance τ²** (§6): residuals are winsorised at ±3 total standard deviations (sampling plus
   between-period), iterated, instead of ±3 sampling standard deviations; series broken by a Category that appeared or

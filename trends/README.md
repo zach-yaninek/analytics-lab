@@ -410,7 +410,7 @@ the log cannot be written, E99 says so and still shows only the error's type.
 | W24 | The export date is before the last ticket; the last ticket date was used |
 | W25 | Tickets fall outside `PERIOD_EDGES` |
 | W26 | **Blocking.** None of the tickets opened in the 14 days before the export date is still open: the export may be filtered to closed cases (every case row counts, whatever `DATA_END` says; not judged with fewer than 30 such tickets) |
-| W27 | A Category appeared in or disappeared from the latest period against the baseline: the Category-level tests of the groups it names were held back, and those groups' totals were still tested. (When the new names are missing from the reference, W04 covers it: those groups are not tested at all.) For a renamed or split Category, map each new name to the old one in `CATEGORY_ALIASES` |
+| W27 | A Category appeared in or disappeared from the latest period against the baseline: the Category-level tests of the groups it names were held back, and those groups' totals were still tested. (When the new names are missing from the reference, W04 covers it: those groups are held back at every level, or only at Category level when their Trouble Code decides the group.) For a renamed or split Category, map each new name to the old one in `CATEGORY_ALIASES` |
 
 ## Privacy
 

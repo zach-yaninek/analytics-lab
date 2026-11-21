@@ -637,6 +637,10 @@ def test_cohort_positions_per_issue():
     assert [pos['a', k] for k in dated] == ['oldest', 'interior', 'newest', 'too_new']     # unchanged
     assert pos['d', 'Unknown'] == 'undated'
     assert [pos['c', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']   # 2017 is not testable
+    # ... but only where the same-age ratio can be trusted (24 months of history): otherwise the peak test stays
+    pos = COH.positions(c, dated, 10, same_age_ok=pd.Series(False, index=c.index))
+    pos = pos.groupby([c.issue_key, c.install_cohort]).first()
+    assert [pos['d', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']
 
 
 def test_cohort_call_rule():
@@ -1352,6 +1356,30 @@ def test_notebook_engine_injects_base_dir():
     assert len(kept) == 1 and str(kept[0]) in err.getvalue()
 
 
+def test_notebook_copy_leaves_out_parameter_values():
+    """The executed notebook filed by --engine notebook keeps no parameter value: neither the injected cell nor the
+    notebook's own parameters cell (a value typed there), nor papermill's metadata."""
+    import nbformat
+    from ipa_trends import cli
+    nb = nbformat.v4.new_notebook()
+    own = nbformat.v4.new_code_cell("REPORT_TITLE = 'Trends for Fake Memorial Hospital 001'")
+    own.metadata['tags'] = ['parameters']
+    inj = nbformat.v4.new_code_cell("CASE_EXPORTS = 'C:/Users/someone/IPA/IPA_CaseHistory_*.xlsx'")
+    inj.metadata['tags'] = ['injected-parameters']
+    nb.cells = [own, inj, nbformat.v4.new_code_cell('print(1)')]
+    nb.metadata['papermill'] = {'parameters': {'CASE_EXPORTS': 'C:/Users/someone'}, 'input_path': 'C:/x.ipynb',
+                                'output_path': 'C:/y.ipynb'}
+    d = Path(tempfile.mkdtemp())
+    for published, says in ((True, 'manifest.json'), (False, 'keeps no record')):
+        path = d / f'nb_{published}.ipynb'
+        nbformat.write(nb, str(path))
+        cli._redact_parameters(path, published=published)
+        text = path.read_text(encoding='utf-8')
+        assert 'Fake Memorial' not in text and 'someone' not in text and 'x.ipynb' not in text, text
+        assert says in text and 'print(1)' in text
+        nbformat.validate(nbformat.read(str(path), as_version=4))
+
+
 def test_notebook_engine_publishes_after_the_scan():
     """--engine notebook: the notebook only stages its run, and the command line publishes it, with the executed
     notebook in its run folder (not in latest/), once the notebook's outputs pass the privacy scan. A real identifier
@@ -1478,6 +1506,11 @@ def test_privacy_allow_never_covers_an_identifier():
     assert hits([]) == 3, hits([])
     assert hits(['Remote']) == 2, hits(['Remote'])                       # the collision goes through
     assert hits(['AB1234', 'Acme Clinic', 'Remote']) == 2                # the serial and the account never do
+    # a placeholder serial that is a trusted word ('UNKNOWN') must not stop every run on the 'Unknown' cohort label
+    real = PRIV.real_sets(names={'Acme Clinic'}, ids={'UNKNOWN', 'AB1234'}, cases=set(), private={})
+    assert PRIV.scan_texts(['install cohort Unknown', 'install date unknown'],
+                           PRIV.for_outputs(real, vocab, []), 'x') == {}
+    assert PRIV.scan_texts(['model AB1234'], PRIV.for_outputs(real, vocab, ['AB1234']), 'x') == {'x': 1}
 
 
 def test_privacy_vocabulary_holds_trusted_words_only():

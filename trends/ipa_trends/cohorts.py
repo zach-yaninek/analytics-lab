@@ -20,8 +20,10 @@ installed after it are 'too_new' (usually because they are still filling up: mac
 during the window): they are shown but never compared or called out. Comparing the cohort before them with a
 near-empty 'newer installs' group would hide a real difference for as long as the newest cohort fills up. For the
 same reason, an earlier cohort whose newer installs would expect fewer than NEWER_SIDE_MIN_EXPECTED (40) tickets at the
-rest of the fleet's rate is also 'newest': a newer-installs comparison that small cannot confirm even a large
-difference, and it stays that way after the newest cohort becomes testable. The oldest, pooled cohort ('Before ...')
+rest of the fleet's rate is also 'newest', once the history is long enough for the same-age ratio (24 months): a
+newer-installs comparison that small confirms only very large differences, and it stays that small for a while after
+the newest cohort becomes testable. With a shorter history such a cohort stays interior, because its same-age ratio
+then leans on the neighbouring cohorts, which may share its problem. The oldest, pooled cohort ('Before ...')
 is 'oldest' and 'Unknown' is 'undated': both are shown but never called out.
 The cohorts in between are 'interior'. When no cohort after the oldest is testable for an issue, the newest dated
 cohort is 'newest' and none is 'too_new'.
@@ -148,11 +150,13 @@ def window_label(grid, positions, full=()):
     return text
 
 
-def positions(c, dated, min_expected, newer_min=NEWER_SIDE_MIN_EXPECTED):
+def positions(c, dated, min_expected, newer_min=NEWER_SIDE_MIN_EXPECTED, same_age_ok=None):
     """Position of every cohort x issue row, chosen per issue: 'undated' (Unknown), 'oldest' (the first dated cohort,
     pooled), 'newest' (the newest testable cohort: the newest dated cohort after the oldest with at least
-    `min_expected` tickets expected, and any earlier cohort whose newer installs would expect fewer than `newer_min`
-    tickets at the rest of the fleet's rate, too few for the newer-installs comparison), 'too_new' (dated cohorts
+    `min_expected` tickets expected, and any earlier testable cohort whose newer installs would expect fewer than
+    `newer_min` tickets at the rest of the fleet's rate, too few for a reliable newer-installs comparison, provided its
+    same-age ratio can be trusted (`same_age_ok`: 24 months of history; without it the cohort stays interior, as the
+    same-age ratio of a short history leans on the neighbouring cohorts)), 'too_new' (dated cohorts
     installed after the newest testable one) or 'interior'. When no cohort after the oldest is testable for an issue,
     the newest dated cohort is 'newest' and none is 'too_new'.
 
@@ -164,6 +168,8 @@ def positions(c, dated, min_expected, newer_min=NEWER_SIDE_MIN_EXPECTED):
     thin = pd.Series(False, index=c.index)
     if 'expected_newer_side' in c:
         thin = testable & (rank < newest) & (c.expected_newer_side.fillna(0) < newer_min)
+        if same_age_ok is not None:
+            thin &= pd.Series(same_age_ok, index=c.index).fillna(False).astype(bool)
     return pd.Series(np.select([rank.isna(), rank == 0, (rank == newest) | thin, rank > newest],
                                ['undated', 'oldest', 'newest', 'too_new'], 'interior'), index=c.index, dtype=object)
 
@@ -340,7 +346,9 @@ def contrasts(ctx, latest_pos, months=None):
         c['rate_per_100'] = 100 * c.tickets / c.machine_months
         c['rate_rest'] = 100 * c.rest_tickets / c.rest_months
     dated = [cohorts[i] for i in order]
-    c['position'] = positions(c, dated, P.MIN_EXPECTED)
+    # the newer-side fallback needs a same-age ratio worth trusting: 24 months of history, few tickets dropped
+    trusted = c.window_set.map(long_history).astype(bool) & (c.same_age_dropped_share <= MAX_DROPPED)
+    c['position'] = positions(c, dated, P.MIN_EXPECTED, same_age_ok=trusted)
     # cohorts with machines installed during the window are still filling up
     pop = getattr(ctx, 'pop', None)
     filling = {s: (set(dated) if pop is None or not w else

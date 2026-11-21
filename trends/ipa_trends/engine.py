@@ -419,9 +419,10 @@ def _run(P, verbose, out):
         held = cinfo.get('taxonomy_moved_groups') or []
         if held:
             # group names only: the Categories themselves are listed in facts.json
-            warn.add('W27', f'a Category appeared in or disappeared from {grid.label[latest_pos]} against the baseline in '
-                            f'{len(held)} group(s) ({", ".join(held)}), so their Category-level tests were held back; '
-                            'the totals of those groups were still tested',
+            warn.add('W27', f'Category-level tests were held back in {len(held)} group(s) ({", ".join(held)}): a '
+                            'Category under a Trouble Code that maps to them appeared in or disappeared from '
+                            f'{grid.label[latest_pos]} against the baseline; the totals of those groups were still '
+                            'tested',
                      'if a Category was renamed or split, map each new name to the old one in CATEGORY_ALIASES so its '
                      'series continues; use REQUEST_TYPES_LOCAL only for genuinely new combinations')
         say('Comparing install cohorts')

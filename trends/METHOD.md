@@ -157,7 +157,7 @@ another:
 
 | Position | When it stands out (higher) |
 |---|---|
-| Newest: the newest dated cohort with at least `MIN_EXPECTED` (10) tickets expected for the issue in the window, and any earlier cohort whose newer installs would expect fewer than 40 tickets at the rest of the fleet's rate (`expected_newer_side`: too few for a newer-installs comparison) | At least 1 + `MIN_CONTRAST` (1.5×) both the rest of the fleet and machines of the same age in other cohorts |
+| Newest: the newest dated cohort with at least `MIN_EXPECTED` (10) tickets expected for the issue in the window, and, once the final history spans 24 months, any earlier cohort whose newer installs would expect fewer than 40 tickets at the rest of the fleet's rate (`expected_newer_side`: too few for a reliable newer-installs comparison) | At least 1 + `MIN_CONTRAST` (1.5×) both the rest of the fleet and machines of the same age in other cohorts |
 | Too new: dated cohorts installed after the newest one (usually still filling up) | Shown but never compared or called out: not tested, 'too new: still filling up (N expected tickets)' (or 'fewer than 10 tickets expected' when none of its machines was installed during the window) |
 | Interior: between the oldest and the newest | At least 1.5× the rest of the fleet **and** at least 1.25× both the newer and the older installs (a peak). When the final history behind the window spans at least 24 months and the same-age ratio is estimable, **also** at least 1.25× machines of the same age in other cohorts |
 | Oldest, pooled ('Before …'), or 'Unknown' | Shown but never called out |
@@ -203,11 +203,14 @@ estimated, or 'could still be chance' when it passes every margin but not the co
   real difference for as long as the newest cohort fills up. So the newest cohort with at least 10 expected tickets for
   the issue is compared with the rest of the fleet and with machines of the same age, and the cohorts after it wait
   until they have enough tickets. The same holds the day the newest cohort reaches 10 expected tickets: its few
-  machine-months are still too small a group of newer installs for the cohort before it. So any cohort whose newer
-  installs would expect fewer than 40 tickets (at the rest of the fleet's rate) is compared the same way as the
-  newest one; with 40 expected tickets, a newer-installs ratio of about 1.7 can clear the bar after the
-  Benjamini–Hochberg correction. On the synthetic 2025-cohort fixture, Touchscreen 2025 then stays called out when the
-  2026 cohort becomes testable, where the newer-installs comparison alone had p 0.07.
+  machine-months are still too small a group of newer installs for the cohort before it. So, once the final history
+  spans 24 months (the same-age ratio is then worth trusting), any cohort whose newer installs would expect fewer than
+  40 tickets (at the rest of the fleet's rate) is compared the same way as the newest one; with fewer than 40 expected
+  tickets, only a newer-installs ratio well above 1.7 clears the bar after the Benjamini–Hochberg correction. On the
+  synthetic 2025-cohort fixture, Touchscreen 2025 then stays called out when the 2026 cohort becomes testable, where
+  the newer-installs comparison alone had p 0.07. With a shorter history such a cohort keeps the peak test: its
+  same-age ratio would lean on the neighbouring cohorts, which may share its problem (in a 2024 Q4 back-run of the
+  planted fixture, judging Touchscreen 2023 on the same-age ratio lost the call-out, because 2022 is also ×3).
 - **What it achieves.** On the synthetic fixture (seed 7, full size), exactly the planted Touchscreen 2022 and 2023
   cohorts (and their Electronics group) stand out. The two ×3 cohorts are adjacent, so each lies in the other's
   newer or older comparator and in its same-age comparator: at half fleet size, and on some seeds at full size (seed
@@ -296,8 +299,9 @@ tested, and their sentences give no ratio.
     Category that **appeared** (more than 5% of its Trouble Code's tickets in L, but under 1% in a baseline period
     that would have held at least 10 of them at the latest share) or **vanished** (no tickets in L where the fleet
     expects at least 10) suspends the Category-level tests of the groups its Trouble Code maps to; the groups
-    themselves stay tested, and W27 names them. (When the new names are missing from the reference, the unmapped
-    rule above already holds back those groups at every level, and W04 says so instead.) This catches a split
+    themselves stay tested, and W27 names them. (When the new names are missing from the reference, W04 covers it:
+    the unmapped rule above holds back those groups at every level, or, for a Trouble Code that decides the group
+    (Electronics, Network, Software, Operator Error), only their Category-level tests.) This catches a split
     Category whose new names were added to
     `REQUEST_TYPES_LOCAL`, and it lifts once the whole baseline uses the new names. `CATEGORY_ALIASES`, with each
     new name mapped to the old one, keeps the series instead. A genuine jump of a rare Category, from under 1% to

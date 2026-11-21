@@ -132,12 +132,12 @@ def run_notebook(P, args):
                 os.environ.pop(NB.RESULT_ENV, None)
             else:
                 os.environ[NB.RESULT_ENV] = before
-        if out_nb.exists():
-            _redact_parameters(out_nb)            # before anything scans or files it
         try:
             reported = json.loads(handoff.read_text(encoding='utf-8'))
         except (OSError, ValueError):
             reported = {}
+        if out_nb.exists():                       # before anything scans or files it
+            _redact_parameters(out_nb, published=failure is None and bool(reported.get('ok')))
         # the notebook's own parameters (its cell plus what was injected) decide what is scanned and where it goes
         PN = _notebook_params(reported, P)
         if failure is not None or not reported.get('ok'):
@@ -224,19 +224,23 @@ def _notebook_error(failure, reported, executed=True):
     return NotebookError(code, text, stage=stage or stage_for(code, 'notebook'))
 
 
-def _redact_parameters(path):
-    """Leave the injected parameter values out of an executed notebook before it is scanned or filed. They can hold
+def _redact_parameters(path, published=True):
+    """Leave the parameter values out of an executed notebook before it is scanned or filed: the injected cell, the
+    notebook's own parameters cell (values may have been typed into it) and papermill's metadata. They can hold
     absolute paths (with a user name) or whatever was typed into a text parameter, and the privacy scan reads only
-    cell outputs. The run's manifest.json lists the parameters it used."""
+    cell outputs. A published run's manifest.json lists the parameters it used; a failure record keeps none."""
     import nbformat
     try:
         nb = nbformat.read(str(path), as_version=4)
     except Exception:                            # noqa: BLE001 - an unreadable notebook is never filed as clean
         return
+    where = ("# The run's manifest.json lists the parameters it used." if published else
+             '# A failed run keeps no record of them; error.txt gives the code and the stage.')
     for cell in nb.cells:
-        if 'injected-parameters' in cell.get('metadata', {}).get('tags', []):
-            cell.source = ('# Parameters injected by ipa-trends run --engine notebook: their values are left out of '
-                           'this copy.\n# The run\'s manifest.json lists the parameters it used.')
+        tags = cell.get('metadata', {}).get('tags', [])
+        if 'injected-parameters' in tags or 'parameters' in tags:
+            what = 'injected by ipa-trends run --engine notebook' if 'injected-parameters' in tags else 'cell'
+            cell.source = f'# Parameters {what}: their values are left out of this copy.\n{where}'
     pm = nb.metadata.get('papermill')
     if isinstance(pm, dict):
         pm.update({'parameters': {}, 'input_path': None, 'output_path': None})

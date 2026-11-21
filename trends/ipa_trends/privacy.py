@@ -83,10 +83,11 @@ def for_outputs(real, vocab, allow=()):
     city named Normal or Orange, say) is not counted on its own; account names always are, and every multi-word
     name (an account, an address) is matched in full. `allow` (PRIVACY_ALLOW) names strings that may be published
     although a real field holds them too, such as a model named like a city; it never covers an account name or an
-    identifier (a serial or case number, letters included)."""
+    identifier (a serial or case number, letters included). A one-word identifier that is itself a trusted word (a
+    placeholder serial 'UNKNOWN') is exempt like any other trusted word: the labels hold that word anyway."""
     accounts, ids = real.get('accounts', set()), real.get('ids', set())
     allow = {FX.norm(a) for a in allow or ()} - accounts - ids
-    text = {t for t in real['text'] if t in accounts or t in ids or (t not in allow and (' ' in t or t not in vocab))}
+    text = {t for t in real['text'] if t in accounts or (t not in allow and (' ' in t or t not in vocab))}
     return {'text': text, 'digit': real['digit'], 'max_words': max((len(t.split()) for t in text), default=1)}
 
 

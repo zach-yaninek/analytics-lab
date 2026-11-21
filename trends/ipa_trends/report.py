@@ -681,7 +681,8 @@ class _Run:
         return (f"the ticket's Trouble Code and Category mapped by the project's request-type reference to one of "
                 f'{nine} analysed groups (monitoring-template tickets form the Monitoring group). Tickets with a '
                 f'blank Category whose Trouble Code does not decide the group form a separate group, {FU.NO_CAT}, and '
-                f'combinations missing from the reference an {UNMAPPED} group; neither is tested.')
+                f'combinations missing from the reference, unless their Trouble Code decides the group, an '
+                f'{UNMAPPED} group; neither is tested.')
 
     def cohort_rule(self, form='full'):
         """The install-cohort call-out rule in words, with this run's thresholds (cohorts.contrasts applies it):
@@ -693,8 +694,9 @@ class _Run:
         same_age = (f'when at least {months} months of final history exist and the same-age ratio can be estimated, '
                     f'the cohort must also be at least {_x(side)} machines of the same age in other cohorts')
         thin = getattr(COH, 'NEWER_SIDE_MIN_EXPECTED', 40)
-        newest = (f'the newest cohort with at least {P.MIN_EXPECTED:g} tickets expected, and any cohort whose newer '
-                  f'installs would expect fewer than {thin:g} tickets (too few to compare with), is compared with the '
+        newest = (f'the newest cohort with at least {P.MIN_EXPECTED:g} tickets expected, and (with at least {months} '
+                  f'months of final history) any cohort whose newer installs would expect fewer than {thin:g} tickets '
+                  '(too few to compare with), is compared with the '
                   f'rest of the fleet and with machines of the same age in other cohorts (at least {_x(hi)} each); '
                   'newer cohorts are still filling up and are shown but not compared')
         together = (f'All the comparisons a call-out needs must hold together: its q-value (the Benjamini-Hochberg-'
@@ -711,8 +713,9 @@ class _Run:
             return (f'A cohort with newer and older installs: {peak} (a peak in the install-date profile) and, when at '
                     f'least {months} months of final history exist and the same-age ratio can be estimated, at least '
                     f'{_x(side)} machines of the same age in other cohorts. The newest cohort with at least '
-                    f'{P.MIN_EXPECTED:g} tickets expected, and a cohort whose newer installs are too few to compare '
-                    f'with: at least {_x(hi)} both the rest of the fleet and machines of the same age in other cohorts '
+                    f'{P.MIN_EXPECTED:g} tickets expected, and (with at least {months} months of final history) a '
+                    'cohort whose newer installs are too few to compare with: at least '
+                    f'{_x(hi)} both the rest of the fleet and machines of the same age in other cohorts '
                     '(newer cohorts are still filling up and are not compared). All the '
                     'comparisons must hold together: the q-value (the '
                     f'Benjamini-Hochberg-corrected largest of their p-values) is below {P.Q_CUT:g}. {mirror}')
@@ -839,8 +842,9 @@ class _Run:
                                         'before it.')),
             ('Same-age ratio', ("A cohort's tickets over those expected from machines of the same age in other "
                                 'cohorts, over the whole final history. It decides for the newest cohort with enough '
-                                f'expected tickets, and for the other cohorts once at least {SAME_AGE_HISTORY_MONTHS} '
-                                'months of final history exist.')),
+                                f'expected tickets and, once at least {SAME_AGE_HISTORY_MONTHS} months of final '
+                                'history exist, for every other cohort too (alone for a cohort whose newer installs '
+                                'are too few to compare with).')),
             ('Stands out', self.cohort_rule('definition')),
             ('Unlisted tickets', ('Tickets on machines missing from every equipment list. They are not in the rates; '
                                   'the survivorship check puts them back for increases.')),

@@ -304,6 +304,13 @@ def cohort_rule(base_fx, quick):
        info.get('same_age_check_interior') == {'all': False, 'labels': False}
        and called.basis.str.contains(f'needs {COH.SAME_AGE_HISTORY_MONTHS} months of final history').all(),
        str(list(called.basis)[:3]))
+    if not quick:
+        # with a short history a cohort with few newer installs keeps the peak test (its same-age ratio would lean on
+        # the neighbouring, also planted, cohort): the planted 2023 Touchscreen cohort stays called out
+        t23 = k[(k.issue == 'Touchscreen') & (k.install_cohort == '2023')]
+        ok('2024 Q4 back-run: Touchscreen 2023 installs still stand out (peak test kept with a short history)',
+           len(t23) == 1 and t23.status.iloc[0] == 'stands_out_higher' and t23.position.iloc[0] == 'interior',
+           str(t23[['position', 'status', 'q_call']].to_dict('records')))
 
 
 def publishing(fx, truth):
