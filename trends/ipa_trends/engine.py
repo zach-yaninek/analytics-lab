@@ -5,6 +5,10 @@ issue), warnings, checks and facts. Real account names and serials exist only in
 bootstrap, matching and the privacy scan, and are dropped before it returns.
 """
 import datetime as dt
+import getpass
+import os
+import re
+import stat
 import tempfile
 import traceback
 from dataclasses import dataclass, field
@@ -25,7 +29,7 @@ from . import rates as RT
 from . import stats
 from .definitions import fleet_exposure_copy as FX
 from .definitions import followups_copy as FU
-from .errors import TrendsError
+from .errors import TrendsError, stage_for
 
 
 @dataclass
@@ -165,34 +169,107 @@ def label_quality(grid, unplanned, params):
 
 
 # ------------------------------------------------------------------------------------------------ the run
-def run(params=None, publish=True, verbose=True, out=print):
+def run(params=None, publish=True, verbose=True, out=print, staging=None):
     """Run the analysis. `params`: a dict of overrides (or resolved Params). publish=True writes the run folder
-    (tables, charts, report, email text, manifest) after every check and the privacy scan pass."""
-    stage = 'parameters'
+    (tables, charts, report, email text, manifest) after every check and the privacy scan pass.
+
+    Errors are TrendsErrors with a code, a stage and an exit code (anything unexpected becomes E99, its traceback in
+    a private log). A publishing run that stops records it in OUTPUT_DIR/failed/<stamp>/error.txt (publish.
+    record_failure) once OUTPUT_DIR is known. With `staging` (a folder), the run is staged there and the caller
+    publishes it and records any failure (`ipa-trends run --engine notebook`, which scans the notebook first)."""
+    stage, P = 'parameters', None
     try:
         P = params if isinstance(params, CFG.Params) else CFG.resolve(params or {})
-        stage = 'inputs'
+        stage = 'analysis'
         result, private = _run(P, verbose, out)
         if publish:
             stage = 'publish'
             from . import publish as PUB
-            result.paths = PUB.publish(result, private, P, out=out if verbose else (lambda *a, **k: None))
+            result.paths = PUB.publish(result, private, P, out=out if verbose else (lambda *a, **k: None),
+                                       staging=staging)
         return result
-    except TrendsError:
+    except TrendsError as e:
+        e.stage = e.stage or stage_for(e.code, stage)
+        if publish and staging is None:
+            _record_failure(e, P, params)
         raise
     except Exception as e:                          # noqa: BLE001
-        log = _private_log(e)
-        raise TrendsError('E99', f'unexpected {type(e).__name__} during {stage}; the full traceback is in a private '
-                                 f'log on this computer: {log}',
-                          'send the error code and stage (not the log) to the MIT team') from None
+        err = unexpected(e, stage)
+        if publish and staging is None:
+            _record_failure(err, P, params)
+        raise err from None
+
+
+def unexpected(e, stage):
+    """E99 for an unexpected exception: its traceback goes to a private log on this computer, and only its type and
+    where it happened are shown (its message can quote a cell value)."""
+    stage = f'{stage}{_where(e)}'
+    try:
+        saved = f'the full traceback is in a private log on this computer: {_private_log(e)}'
+    except Exception:                               # noqa: BLE001 - never fall back to showing the exception
+        saved = 'its traceback could not be saved to a private log on this computer'
+    return TrendsError('E99', f'unexpected {type(e).__name__} during {stage}; {saved}',
+                       'send the error code and stage (not the log) to the MIT team', stage=stage)
+
+
+def _where(e):
+    """', in module.function' for the innermost frame of this package in e's traceback ('' if there is none)."""
+    try:
+        here = Path(__file__).resolve().parent
+        frames = [f for f in traceback.extract_tb(e.__traceback__) if Path(f.filename).resolve().is_relative_to(here)]
+        return f', in {Path(frames[-1].filename).stem}.{frames[-1].name}' if frames else ''
+    except Exception:                               # noqa: BLE001 - called while handling an error: never raise
+        return ''
 
 
 def _private_log(e):
-    d = Path(tempfile.gettempdir()) / 'ipa_trends_logs'
-    d.mkdir(parents=True, exist_ok=True)
-    path = d / f'error_{dt.datetime.now():%Y%m%dT%H%M%S}.log'
-    path.write_text(''.join(traceback.format_exception(e)), encoding='utf-8')
-    return path
+    """Write e's traceback to a new file that only this user can read, in a folder of the temporary directory that
+    only this user can open; returns its path. Raises OSError when the folder is not this user's own."""
+    owner = str(os.getuid()) if hasattr(os, 'getuid') else re.sub(r'\W', '_', getpass.getuser())
+    d = Path(tempfile.gettempdir()) / f'ipa_trends_logs_{owner}'
+    d.mkdir(mode=0o700, exist_ok=True)
+    st = os.lstat(d)
+    if not stat.S_ISDIR(st.st_mode) or (hasattr(os, 'getuid') and st.st_uid != os.getuid()):
+        raise OSError(f'{d} is not a folder of this user')
+    if stat.S_IMODE(st.st_mode) & 0o077:
+        os.chmod(d, 0o700)
+    fd, path = tempfile.mkstemp(prefix=f'error_{dt.datetime.now():%Y%m%dT%H%M%S}_', suffix='.log', dir=d)
+    with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        f.write(''.join(traceback.format_exception(e)))
+    return Path(path)
+
+
+def output_dir_of(overrides):
+    """OUTPUT_DIR as resolve() gives it, from OUTPUT_DIR and BASE_DIR alone, so that a failure can be recorded even
+    when other parameters are invalid; None when those two cannot be read."""
+    if isinstance(overrides, CFG.Params):
+        return overrides.output_dir
+    try:
+        given = dict(overrides or {})
+        return CFG.resolve({k: given[k] for k in ('OUTPUT_DIR', 'BASE_DIR') if k in given}).output_dir
+    except Exception:                               # noqa: BLE001
+        return None
+
+
+def _record_failure(e, P, params):
+    from .publish import record_failure
+    out_dir = P.output_dir if P is not None else output_dir_of(params)
+    e.failure_record = record_failure(out_dir, e) if out_dir is not None else \
+        (None, 'no failure record was written: OUTPUT_DIR could not be read from the parameters')
+
+
+def closed_only_check(tickets, extracted, warn, days=14, at_least=30):
+    """W26 (blocking): a report filtered to closed cases would quietly undercount the most recent weeks, so some of
+    the tickets opened in the `days` before the export should still be open. Every case row counts, whatever
+    DATA_END says (tickets opened before an earlier DATA_END have had weeks to close); with fewer than `at_least`
+    such tickets there is nothing to judge (a report filtered to an earlier date)."""
+    recent = tickets[(tickets.ts >= extracted - pd.Timedelta(days=days))
+                     & (tickets.ts < extracted + pd.Timedelta(days=1))]
+    if len(recent) >= at_least and not recent.is_open.any():
+        warn.add('W26', f'none of the {len(recent)} tickets opened in the {days} days before the export '
+                        f'({extracted:%Y-%m-%d}) is still open, so the export may be filtered to closed cases and '
+                        'recent periods undercounted', 'export all statuses (the report must not filter on Status)',
+                 blocking=True)
 
 
 def _run(P, verbose, out):
@@ -237,12 +314,7 @@ def _run(P, verbose, out):
         warn.add('W12', f'{100 * early:.1f}% of weekday tickets were opened before 06:00, which suggests the export is '
                         'not on US Eastern time', 'export as a user whose Salesforce time zone is US Eastern, or set '
                                                   'CASE_CLOCK_TZ to the export\'s time zone')
-    # a report filtered to closed cases would quietly undercount the most recent weeks
-    recent = tickets[~outside & (tickets.ts >= d1 - pd.Timedelta(days=14)) & tickets.unplanned]
-    if len(recent) >= 30 and not recent.is_open.any():
-        warn.add('W26', f'none of the {len(recent)} tickets opened in the last 14 days is still open, so the export may '
-                        'be filtered to closed cases and recent periods undercounted',
-                 'export all statuses (the report must not filter on Status)', blocking=True)
+    closed_only_check(tickets, extracted, warn)
     period_days = 31 * (P.cadence.months if P.PERIOD_EDGES is None else 1)
     if newest < d1 - pd.Timedelta(days=max(45, period_days // 2)):
         warn.add('W07', f'the newest equipment list ({newest:%Y-%m-%d}) is more than {max(45, period_days // 2)} '
@@ -460,9 +532,16 @@ def make_summary(P, grid, latest_pos, cinfo, kinfo, changes, contrasts, popres, 
     open_p = grid[grid.status.isin(['provisional', 'in_progress'])]
     s['not_yet_final'] = [{'label': r.label, 'status': r.status, 'reason': r.status_reason}
                           for r in open_p.itertuples()]
+    # next runs: periods due (end + LABEL_LAG_DAYS) after this export was taken, so never on or before its own date.
+    # A period already due but still provisional (too many tickets open) needs a newer export instead. A back-run
+    # (LATEST_PERIOD) is not part of the schedule and names neither; explicit PERIOD_EDGES have no due dates.
+    lag = pd.Timedelta(days=P.LABEL_LAG_DAYS)
     s['next_runs'], s['cron_hint'] = ([], None) if P.PERIOD_EDGES is not None else CAD.next_runs(
-        P.cadence, grid.period_end[latest_pos] if latest_pos is not None else d1, P.LABEL_LAG_DAYS, 4,
-        P.YEAR_START_MONTH, P.FISCAL_YEAR_NAMED_BY, P.ANCHOR_DATE)
+        P.cadence, extracted - lag, P.LABEL_LAG_DAYS, 4, P.YEAR_START_MONTH, P.FISCAL_YEAR_NAMED_BY, P.ANCHOR_DATE)
+    due = grid[(grid.status == 'provisional') & (grid.period_end + lag <= extracted)]
+    s['needs_newer_export'] = [{'label': r.label, 'reason': r.status_reason} for r in due.itertuples()]
+    if P.LATEST_PERIOD is not None:
+        s['next_runs'], s['needs_newer_export'] = [], []
     s['version'], s['method_version'] = __version__, METHOD_VERSION
     return s
 

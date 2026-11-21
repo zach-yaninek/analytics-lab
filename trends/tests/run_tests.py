@@ -12,12 +12,15 @@
      HISTORY_MONTHS changes no number
   4. planted effects: the Deposit Door rise and the alEx Computer Board fall in 2026 Q3 are flagged; the Touchscreen
      2022-23 install cohort stands out; a null fixture's false alarms are counted
-  5. publishing: files, manifest, privacy scan, byte-identical reruns, a planted leak stops publication
+  5. publishing: files, manifest, privacy scan, byte-identical reruns, a planted leak stops publication and is
+     recorded in failed/; a file locked in latest/ stops the swap (E30) and leaves latest/ whole
   6. export drift: title rows, another sheet name, a renamed header, a split Category, a renamed Trouble Code, a
      duplicate case, dates as text, mixed date formats, a Central-time export, a closed-only export, a report filtered
      to the quarter end, a one-month spike, removed machines, blank install dates and blank list fields
-  7. the notebook headless (papermill or nbclient) at 3, 1 and 5 months; a misspelt parameter stops it (exit 2);
-     the command line and the notebook write identical tables
+  7. the notebook headless (papermill or nbclient) at 3, 1 and 5 months, leaving no temporary folder; BASE_DIR in a
+     parameter file; a back-run (its notebook in its own run folder, latest/ untouched); E01 and E10 give exit 2
+     and a failure record on both engines; a misspelt parameter stops it (exit 2); the command line and the
+     notebook write identical tables
 """
 import argparse
 import hashlib
@@ -212,6 +215,8 @@ def publishing(fx, truth):
     man = json.loads((latest / 'manifest.json').read_text())
     ok('manifest: privacy scan found nothing', man['privacy']['hits'] == 0)
     ok('manifest: no absolute paths', str(TMP) not in json.dumps(man['inputs']))
+    ok('manifest: the next run is due after the export date', (man['next_run_after'] or '') > man['extracted_at'],
+       f"{man['next_run_after']} vs {man['extracted_at']}")
     first = {f.name: hashlib.sha256(f.read_bytes()).hexdigest() for f in latest.glob('*.csv')}
     run(p, publish=True)
     second = {f.name: hashlib.sha256(f.read_bytes()).hexdigest() for f in latest.glob('*.csv')}
@@ -227,6 +232,45 @@ def publishing(fx, truth):
         caught = True
     ok('a planted leak (a real account name in the title) stops publication', caught or not have_report)
     ok('... and latest/ is left untouched', (latest / 'manifest.json').read_bytes() == before)
+    records = sorted((out / 'failed').glob('*/error.txt'))
+    ok('... and failed/<stamp>/error.txt records the code, stage and exit code only', not have_report or (
+        records and records[-1].read_text().startswith('code: P01\nstage: privacy scan\nexit_code: 1\n')
+        and leak not in records[-1].read_text()), str([r.read_text() for r in records]))
+    # a monthly run, with DATA_END six weeks before the export, while a file in latest/ is open in Excel: on Windows
+    # renaming latest/ then fails
+    import os
+    from ipa_trends import publish as PUB
+    from ipa_trends.errors import OutputError
+    def files():
+        return {str(f.relative_to(latest)): f.read_bytes() for f in latest.rglob('*') if f.is_file()}
+    previous = files()
+    real, waits = os.replace, PUB.RETRY_WAITS
+
+    def locked(src, dst, *a, **k):
+        if Path(src) == latest:
+            raise PermissionError(13, 'The process cannot access the file because it is being used')
+        return real(src, dst, *a, **k)
+    os.replace, PUB.RETRY_WAITS = locked, ()
+    try:
+        run({**p, 'RERUN_FREQUENCY': 'monthly', 'DATA_END': '2026-09-30', 'MAKE_CHARTS': False, 'MAKE_REPORT': False},
+            publish=True)
+        err = None
+    except OutputError as e:
+        err = e
+    finally:
+        os.replace, PUB.RETRY_WAITS = real, waits
+    ok('a locked file in latest/ stops the swap with E30 (exit 2), saying latest/ was not updated',
+       err is not None and err.code == 'E30' and err.exit_code == 2 and 'latest/ was not updated' in err.message,
+       err and err.text())
+    ok('... and latest/ still holds the whole previous run, nothing left half-copied',
+       files() == previous and not list(out.rglob('*.partial'))
+       and not [d.name for d in out.iterdir() if d.name.startswith('latest.')])
+    monthly = [json.loads(m.read_text()) for m in (out / 'runs').glob('*_1M_*/manifest.json')]
+    ok('... while the monthly run folder is complete, its next run due after the export date',
+       len(monthly) == 1 and (monthly[0]['next_run_after'] or '') > monthly[0]['extracted_at'],
+       str([(m['next_run_after'], m['extracted_at']) for m in monthly]))
+    ok('... and W26 (closed cases only?) does not fire for data ending before the export: those tickets had weeks to '
+       'close', len(monthly) == 1 and not [w for w in monthly[0]['warnings'] if w['code'] == 'W26'])
     return r
 
 
@@ -292,6 +336,17 @@ def variants(base_runs, quick):
            r.facts['population']['removed_machines'] > 0)
 
 
+def _blank_serials(case, dest, every=50):
+    """A copy of the case export in `dest` with Serial # blank on every `every`-th row (E10: over 0.5% of rows)."""
+    import openpyxl
+    wb = openpyxl.load_workbook(case)
+    ws = wb['ipa_repair cases']
+    col = [c.value for c in ws[1]].index('Serial #') + 1
+    for r in range(2, ws.max_row + 1, every):
+        ws.cell(r, col).value = None
+    wb.save(dest / Path(case).name)
+
+
 def notebook(fx):
     print('7. Notebook')
     try:
@@ -300,6 +355,9 @@ def notebook(fx):
         print('  nbclient not installed: skipped')
         return
     from ipa_trends import cli
+    nbtmp = TMP / 'nbtmp'                        # the command line's temporary folders, to see that none is left
+    nbtmp.mkdir()
+    saved_tmp, tempfile.tempdir = tempfile.tempdir, str(nbtmp)
     for freq in ('quarterly', 'monthly', '5 months'):
         out = TMP / f'nb_{freq.replace(" ", "")}'
         argv = ['run', '--engine', 'notebook', '--set', f'RERUN_FREQUENCY={freq}', '--set',
@@ -309,6 +367,64 @@ def notebook(fx):
         rc = cli.main(argv)
         ok(f'notebook headless at {freq}: exit 0', rc == 0, rc)
         ok(f'notebook headless at {freq}: executed notebook saved', bool(list(out.glob('runs/*/executed_notebook.ipynb'))))
+    ok('notebook headless: no temporary folder is left behind', not list(nbtmp.iterdir()), str(list(nbtmp.iterdir())))
+    # BASE_DIR in a parameter file: the notebook reads and writes the folders the parameters name
+    base = TMP / 'nb_base'
+    (base / 'data' / 'raw').mkdir(parents=True)
+    for f in list(fx.glob('IPA_*.xlsx')):
+        shutil.copy(f, base / 'data' / 'raw' / f.name)
+    pfile = TMP / 'nb_base.json'
+    pfile.write_text(json.dumps({'BASE_DIR': str(base), 'N_BOOT': 400, 'MAKE_CHARTS': False, 'MAKE_REPORT': False}))
+    def home():                                  # the trends folder's own data/output
+        d = TRENDS / 'data' / 'output'
+        return sorted((str(p.relative_to(d)), p.stat().st_mtime_ns) for p in d.rglob('*')) if d.exists() else None
+    home_before = home()
+    rc = cli.main(['run', '--engine', 'notebook', '--params', str(pfile), '--quiet'])
+    bout = base / 'data' / 'output'
+    first = json.loads((bout / 'latest' / 'manifest.json').read_text())['run_id'] if (
+        bout / 'latest' / 'manifest.json').exists() else None
+    ok('BASE_DIR from a parameter file, --engine notebook: exit 0, published under BASE_DIR with its notebook',
+       rc == 0 and first and (bout / 'runs' / first / 'executed_notebook.ipynb').exists(), rc)
+    ok('... and nothing was written to the trends folder\'s data/output', home() == home_before)
+    # a back-run with the notebook engine: its notebook is filed under the back-run, and latest/ is left alone
+    if first:
+        def latest_files():
+            return {str(f): f.read_bytes() for f in (bout / 'latest').rglob('*') if f.is_file()}
+        snap = latest_files()
+        nb_first = (bout / 'runs' / first / 'executed_notebook.ipynb').read_bytes()
+        rc = cli.main(['run', '--engine', 'notebook', '--params', str(pfile), '--set', 'LATEST_PERIOD=2025 Q2',
+                       '--quiet'])
+        back = [d for d in (bout / 'runs').iterdir() if d.name != first]
+        nb_back = back[0] / 'executed_notebook.ipynb' if len(back) == 1 else None
+        text = nb_back.read_text() if nb_back and nb_back.exists() else ''
+        ok('a back-run with --engine notebook: exit 0, its executed notebook saved in its own run folder',
+           rc == 0 and bool(text), f'{rc} {[d.name for d in back]}')
+        ok('... latest/ and the latest run\'s notebook are left untouched',
+           latest_files() == snap
+           and (bout / 'runs' / first / 'executed_notebook.ipynb').read_bytes() == nb_first)
+        ok('... and the notebook says latest/ was not changed, and names no next run',
+           'a back-run: `latest/` was not changed' in text and 'also copied to `latest/`' not in text
+           and 'Next run due' not in text and len(back) == 1
+           and json.loads((back[0] / 'manifest.json').read_text())['next_run_after'] is None)
+    # input errors: the same code and exit code on both engines, and a failure record
+    e10 = TMP / 'nb_e10'
+    e10.mkdir()
+    for f in fx.glob('IPA_Active_Equipment_list_*.xlsx'):
+        shutil.copy(f, e10 / f.name)
+    _blank_serials(next(fx.glob('IPA_CaseHistory_*.xlsx')), e10, every=50)
+    for code, src in (('E01', TMP / 'nb_missing'), ('E10', e10)):
+        for engine in ('direct', 'notebook'):
+            out = TMP / f'nb_{code}_{engine}'
+            rc = cli.main(['run', '--engine', engine, '--set', f'CASE_EXPORTS={src}/IPA_CaseHistory_*.xlsx', '--set',
+                           f'EQUIPMENT_LISTS={src}/IPA_Active_Equipment_list_*.xlsx', '--set', f'OUTPUT_DIR={out}',
+                           '--quiet'])
+            recs = [r.read_text() for r in out.glob('failed/*/error.txt')]
+            ok(f'{code} with --engine {engine}: exit 2 and a failure record with that code',
+               rc == 2 and len(recs) == 1 and recs[0].startswith(f'code: {code}\nstage: inputs\nexit_code: 2\n'),
+               f'{rc} {recs}')
+    ok('E10 with --engine notebook: the scanned executed notebook is kept with the failure record',
+       bool(list((TMP / 'nb_E10_notebook').glob('failed/*/executed_notebook.ipynb'))))
+    tempfile.tempdir = saved_tmp
     bad = TMP / 'nb_bad'
     bad.mkdir(parents=True, exist_ok=True)
     rc = subprocess.run([sys.executable, '-m', 'papermill', str(TRENDS / 'ticket_trends.ipynb'), str(bad / 'x.ipynb'),

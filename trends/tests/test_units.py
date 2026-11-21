@@ -127,6 +127,38 @@ def test_next_runs_and_cron():
     assert cron5 is None                                    # 5 does not divide 12: daily --only-if-new instead
 
 
+def test_next_runs_after_the_export():
+    """A run's next run is due after its own export date. Exported 15 Nov 2026 with Oct still provisional (10.4% of
+    its tickets open), Oct's due date (15 Nov) has passed: it needs a newer export, and the next run is Nov's. A
+    back-run (LATEST_PERIOD) is not part of the schedule: it names neither, and its manifest no next_run_after."""
+    from ipa_trends import engine
+    from ipa_trends import publish as PUB
+    from ipa_trends.notebook import next_run_lines
+    d0, d1, ex = T('2026-01-01'), T('2026-11-15'), T('2026-11-15')
+
+    def summary(P, months):
+        g = CAD.period_grid(CAD.Cadence(months), d0, d1)
+        g = CAD.assign_statuses(g, d0, d1, ex, 14, {'2026-10-01': 0.104}, 0.02)
+        return engine.make_summary(P, g, None, {}, {}, None, None, None, None, None, ex, 'EXTRACTED_AT', d0, d1)
+    M = CFG.resolve({'RERUN_FREQUENCY': 'monthly'})
+    s = summary(M, 1)
+    assert s['next_runs'][0] == {'label': 'Nov 2026', 'period_start': '2026-11-01', 'period_end': '2026-12-01',
+                                 'due': '2026-12-15'}
+    assert len(s['next_runs']) == 4 and all(r['due'] > '2026-11-15' for r in s['next_runs'])
+    assert s['needs_newer_export'] == [{'label': 'Oct 2026', 'reason': '10.4% of its tickets were still open when '
+                                                                       'exported'}]
+    assert PUB.next_run_after(s, M) == '2026-12-15'
+    assert next_run_lines(s, bold=False) == ['Next run due: 2026-12-15 (for Nov 2026).', 'Oct 2026 needs a newer '
+                                             'export: 10.4% of its tickets were still open when exported.']
+    B = CFG.resolve({'RERUN_FREQUENCY': 'monthly', 'LATEST_PERIOD': 'Sep 2026'})
+    b = summary(B, 1)
+    assert b['next_runs'] == b['needs_newer_export'] == [] and PUB.next_run_after(b, B) is None
+    assert next_run_lines(b) == []
+    q = summary(CFG.resolve(), 3)                          # quarterly: unchanged, Q4 due 15 Jan
+    assert q['next_runs'][0]['label'] == '2026 Q4' and q['next_runs'][0]['due'] == '2027-01-15'
+    assert q['needs_newer_export'] == []
+
+
 def test_cohort_bins():
     bins = CAD.cohort_bins(CAD.Cadence(12), '2016-01-01', last_install=T('2026-05-01'))
     labels = [b[0] for b in bins]
@@ -395,6 +427,423 @@ def test_clock_conversion():
     s = pd.Series(pd.to_datetime(['2026-03-31 23:30', '2026-11-01 01:30']))
     out, amb = INP.to_eastern(s, 'America/Chicago', w)
     assert out[0] == T('2026-04-01 00:30') and amb == 1         # 23:30 Central on 31 Mar is Q2 in Eastern
+
+
+def test_closed_only_check():
+    """W26 looks at every ticket opened in the 14 days before the export, whatever DATA_END says: none open among 30
+    or more is blocking; one open, fewer than 30, or only older tickets (an earlier DATA_END) is not."""
+    from ipa_trends.engine import closed_only_check
+    ex = T('2026-11-15')
+
+    def codes(opened, open_flags):
+        w = INP.Warnings()
+        closed_only_check(pd.DataFrame({'ts': pd.to_datetime(opened), 'is_open': open_flags}), ex, w)
+        return [(x['code'], x.get('blocking')) for x in w.items]
+    recent = list(pd.date_range('2026-11-02 09:00', periods=40, freq='7h'))     # 2 to 13 Nov
+    assert codes(recent, [False] * 40) == [('W26', True)]
+    assert codes(recent, [False] * 39 + [True]) == []
+    assert codes(recent[:29], [False] * 29) == []
+    older = list(pd.date_range('2026-09-01', periods=200, freq='5h'))           # before DATA_END = 30 Sep
+    assert codes(older + recent[:10], [False] * 210) == []
+    assert codes(recent + [ex + pd.Timedelta(hours=8)], [False] * 41)[0] == ('W26', True)     # the export day counts
+
+
+# ------------------------------------------------------------------------------------------------ failures, publishing
+def test_exit_codes_follow_the_codes():
+    """Every code is raised with the class whose exit code the README documents: 1 for C and P codes, 2 for E01-E31
+    (inputs, parameters, the output folder), 3 for E99. E30 and E31 are OutputErrors."""
+    from ipa_trends import errors as ERR
+    codes = ('E01', 'E10', 'E22', 'E25', 'E30', 'E31', 'C01', 'P01', 'E99', 'E1', 'X01', None)
+    assert [ERR.exit_code_for(c) for c in codes] == [2, 2, 2, 2, 2, 2, 1, 1, 3, 3, 3, 3]
+    classes = {c.__name__: c for c in (ERR.TrendsError, ERR.ConfigError, ERR.InputError, ERR.OutputError,
+                                        ERR.CheckError, ERR.PrivacyError)}
+    seen = set()
+    for p in (TRENDS / 'ipa_trends').rglob('*.py'):
+        for cls, code in re.findall(r"(\w+Error)\(\[?\(?'([ECP]\d{2})'", p.read_text(encoding='utf-8')):
+            if cls in classes:
+                seen.add(code)
+                assert classes[cls].exit_code == ERR.exit_code_for(code), (p.name, cls, code)
+    assert {'E01', 'E10', 'E20', 'E22', 'E30', 'E31', 'C01', 'P01', 'E99'} <= seen, sorted(seen)
+    assert ERR.NotebookError('E10', 'E10: x').exit_code == 2 and ERR.NotebookError('E99', 'E99: x').exit_code == 3
+    assert [ERR.stage_for(c) for c in ('E05', 'E22', 'E30', 'C01', 'P01', 'E99')] == [
+        'inputs', 'parameters', 'publish', 'checks', 'privacy scan', 'run']
+
+
+def test_failure_record():
+    """failed/<stamp>/error.txt holds the code, stage and exit code, never the message (it can name local paths);
+    nothing is written for E31, or inside a git work tree that does not ignore OUTPUT_DIR."""
+    import shutil
+    from ipa_trends import __version__
+    from ipa_trends import publish as PUB
+    from ipa_trends.errors import OutputError
+    d = Path(tempfile.mkdtemp())
+    e = InputError('E01', 'no case export matches /home/someone/IPA_CaseHistory_*.xlsx', 'save it')
+    path, note = PUB.record_failure(d / 'out', e)
+    assert path.read_text() == f'code: E01\nstage: inputs\nexit_code: 2\npackage_version: {__version__}\n'
+    assert path.parent.parent == d / 'out' / 'failed' and str(path) in note
+    again, _ = PUB.record_failure(d / 'out', e)
+    assert again != path and again.exists() and path.exists()          # a second failure keeps the first record
+    nb = d / 'executed.ipynb'
+    nb.write_text('{}')
+    path, note = PUB.record_failure(d / 'out', e, files={'executed_notebook.ipynb': nb})
+    assert (path.parent / 'executed_notebook.ipynb').exists() and 'with executed_notebook.ipynb' in note
+    assert PUB.record_failure(d / 'e31', OutputError('E31', 'x'))[0] is None and not (d / 'e31').exists()
+    if shutil.which('git'):
+        repo = d / 'repo'
+        repo.mkdir()
+        subprocess.run(['git', 'init', '-q', str(repo)], check=True, capture_output=True)
+        path, note = PUB.record_failure(repo / 'out', e)
+        assert path is None and 'git repository' in note and not (repo / 'out').exists()
+        (d / 'stage').mkdir()
+        (d / 'stage' / 'manifest.json').write_text('{}')
+        try:
+            PUB.place_run(d / 'stage', repo / 'out', 'r1')
+        except OutputError as e31:
+            assert e31.code == 'E31' and e31.exit_code == 2 and not (repo / 'out').exists()
+        else:
+            raise AssertionError('no E31')
+        (repo / '.gitignore').write_text('out/\n')
+        assert PUB.record_failure(repo / 'out', e)[0] is not None
+
+
+def test_failures_are_recorded_with_exit_codes():
+    """An input error stops a publishing run with exit 2 and a failure record, from the engine and the command line;
+    a parameter problem is recorded when OUTPUT_DIR can still be read; a run that does not publish writes nothing."""
+    import contextlib
+    import io
+    from ipa_trends import cli, engine
+    d = Path(tempfile.mkdtemp())
+    p = {'CASE_EXPORTS': str(d / 'missing' / '*.xlsx'), 'OUTPUT_DIR': str(d / 'out')}
+    for publish in (False, True):
+        try:
+            engine.run(p, publish=publish, verbose=False)
+        except InputError as e:
+            assert e.code == 'E01' and e.stage == 'inputs' and e.exit_code == 2
+            record = e.failure_record
+        else:
+            raise AssertionError('no E01')
+        assert (record is not None) == publish and (d / 'out').exists() == publish
+    assert record[0].read_text().startswith('code: E01\nstage: inputs\nexit_code: 2\n')
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+        rc = cli.main(['run', '--set', f'CASE_EXPORTS={d}/missing/*.xlsx', '--set', f'OUTPUT_DIR={d}/cli'])
+    assert rc == 2 and len(list((d / 'cli' / 'failed').glob('*/error.txt'))) == 1 and 'Failure record' in err.getvalue()
+    with contextlib.redirect_stderr(io.StringIO()):
+        rc = cli.main(['run', '--set', 'RERUN_FREQUENCY=weekly', '--set', f'OUTPUT_DIR={d}/cfg'])
+    rec = next((d / 'cfg' / 'failed').glob('*/error.txt')).read_text()
+    assert rc == 2 and rec.startswith('code: E20\nstage: parameters\nexit_code: 2\n')
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+        rc = cli.main(['run', '--params', str(d / 'missing.yaml')])
+    assert rc == 2 and 'no failure record was written: OUTPUT_DIR could not be read' in err.getvalue()
+
+
+def test_private_log():
+    """An unexpected error's traceback goes to a new 0600 file in this user's 0700 folder; when that cannot be
+    written, E99 says so and still never shows the exception's message (exit 3 on the command line)."""
+    import contextlib
+    import io
+    import os
+    import shutil
+    import stat
+    from ipa_trends import cli, engine
+    leak = "could not convert string to float: 'Fake Memorial Hospital 017'"
+    d = Path(tempfile.mkdtemp())
+    saved, umask = tempfile.tempdir, os.umask(0o022)
+    tempfile.tempdir = str(d)
+
+    def boom(args):
+        raise ValueError(leak)
+    real = cli.cmd_next_runs
+    try:
+        try:
+            boom(None)
+        except ValueError as e:
+            err = engine.unexpected(e, 'analysis')
+        assert err.code == 'E99' and err.exit_code == 3 and leak not in err.text() and 'private log' in err.text()
+        assert 'during analysis, in test_units.' not in err.text()            # only frames of the package are named
+        log = next(d.glob('ipa_trends_logs_*/*.log'))
+        assert leak in log.read_text()
+        if os.name == 'posix':
+            assert stat.S_IMODE(log.stat().st_mode) == 0o600 and stat.S_IMODE(log.parent.stat().st_mode) == 0o700
+            assert log.parent.name == f'ipa_trends_logs_{os.getuid()}'
+        shutil.rmtree(log.parent)
+        log.parent.write_text('a file where the log folder should be')
+        cli.cmd_next_runs = boom
+        out = io.StringIO()
+        with contextlib.redirect_stderr(out):
+            rc = cli.main(['next-runs'])
+        assert rc == 3 and 'could not be saved' in out.getvalue() and 'Fake Memorial' not in out.getvalue()
+    finally:
+        cli.cmd_next_runs = real
+        tempfile.tempdir = saved
+        os.umask(umask)
+
+
+def test_latest_swap_survives_a_lock():
+    """latest/ is replaced as a whole. A lock while swapping (os.replace refused, as on Windows while Excel holds a
+    file), or a full disk, leaves it exactly as it was, with no latest.new/, latest.old/ or .partial file left (E30,
+    exit 2); if latest/ cannot even be put back, E30 says where the previous run is. A clean run then replaces
+    latest/ whole, its manifest.json last."""
+    import os
+    from ipa_trends import publish as PUB
+    from ipa_trends.errors import OutputError
+    d = Path(tempfile.mkdtemp())
+
+    def staged(name, files):
+        for rel, text in files.items():
+            (d / name / rel).parent.mkdir(parents=True, exist_ok=True)
+            (d / name / rel).write_text(text)
+        return d / name
+    one = staged('one', {'rates.csv': '1', 'unmapped.csv': '1', 'charts/a.png': '1', 'manifest.json': '1'})
+    two = staged('two', {'rates.csv': '2', 'charts/b.png': '2', 'manifest.json': '2'})
+    out, latest = d / 'out', d / 'out' / 'latest'
+
+    def state(folder=latest):
+        return {p.relative_to(folder).as_posix(): p.read_text() for p in folder.rglob('*') if p.is_file()}
+    assert PUB.place_run(one, out, 'run1') == out / 'runs' / 'run1'
+    first = state()
+    assert first == {'rates.csv': '1', 'unmapped.csv': '1', 'charts/a.png': '1', 'manifest.json': '1'}
+    real, waits = os.replace, PUB.RETRY_WAITS
+    PUB.RETRY_WAITS = ()
+    lock, full, eio = PermissionError(13, 'in use'), OSError(28, 'No space left on device'), OSError(5, 'I/O error')
+    locks = [('moving latest/ aside', lambda src, dst: Path(src) == latest, 'latest/ was not updated', lock),
+             ('moving latest.new/ in', lambda src, dst: Path(src).name == 'latest.new', 'latest/ was not updated',
+              lock),
+             ('a file in runs/', lambda src, dst: Path(dst) == out / 'runs' / 'run3' / 'rates.csv',
+              'latest/ was not updated', lock),
+             # any other failure to write OUTPUT_DIR is E30 as well, with the system's reason
+             ('a full disk in runs/', lambda src, dst: Path(dst) == out / 'runs' / 'run3' / 'rates.csv',
+              'No space left on device. latest/ was not updated', full),
+             ('a full disk in latest.new/', lambda src, dst: Path(dst).parent.name == 'latest.new',
+              'No space left on device. latest/ was not updated', full),
+             ('an I/O error moving latest.new/ in', lambda src, dst: Path(src).name == 'latest.new',
+              'I/O error. latest/ was not updated', eio),
+             ('putting latest/ back as well', lambda src, dst: Path(src).name in ('latest.new', 'latest.old'),
+              'latest/ is missing: the previous run is in latest.old/', lock),
+             ('the manifest, copied into latest/ last', lambda src, dst: Path(dst) == latest / 'manifest.json',
+              'latest/ holds this run without its manifest', lock)]
+    try:
+        for what, locked, says, exc in locks:
+            def replace(src, dst, *a, **k):
+                if locked(src, dst):
+                    raise exc
+                return real(src, dst, *a, **k)
+            os.replace = replace
+            try:
+                PUB.place_run(two, out, 'run3' if 'runs' in what else 'run2')
+            except OutputError as e:
+                assert e.code == 'E30' and e.exit_code == 2 and says in e.message, (what, e.message)
+            else:
+                raise AssertionError(f'no E30 when {what}')
+            finally:
+                os.replace = real
+            assert not list(out.rglob('*.partial')), what
+            if 'back' in what:
+                assert state(out / 'latest.old') == first and not latest.exists()
+            elif 'manifest' in what:                                    # no manifest: --only-if-new runs again
+                assert state() == {'rates.csv': '2', 'charts/b.png': '2'} and not (out / 'latest.old').exists()
+            else:
+                assert state() == first and sorted(p.name for p in out.iterdir()) == ['latest', 'runs'], what
+        assert state(out / 'runs' / 'run2') == state(two)                # the run folder itself was published
+    finally:
+        os.replace, PUB.RETRY_WAITS = real, waits
+    calls = []
+
+    def spy(src, dst, *a, **k):
+        calls.append((Path(src).name, Path(dst).relative_to(out).as_posix()))
+        return real(src, dst, *a, **k)
+    os.replace = spy
+    try:
+        PUB.place_run(two, out, 'run2')
+    finally:
+        os.replace = real
+    assert state() == {'rates.csv': '2', 'charts/b.png': '2', 'manifest.json': '2'}
+    assert sorted(p.name for p in out.iterdir()) == ['latest', 'runs']
+    # latest/ is swapped as a folder, and its manifest.json arrives last, as a new file (a flow watches it)
+    assert calls.index(('latest', 'latest.old')) < calls.index(('latest.new', 'latest')) < len(calls) - 1
+    assert calls[-1] == ('manifest.json.partial', 'latest/manifest.json')
+    assert not [c for c in calls if c[1] == 'latest.new/manifest.json']
+
+
+def test_notebook_error_codes():
+    """--engine notebook takes the whole code from the notebook's error text (E10, not 'E1') and exits as that
+    code's class does; anything but a coded error is E99, without its message, which goes to the private log."""
+    from ipa_trends import cli
+
+    class Failed(Exception):
+        def __init__(self, ename, evalue):
+            self.ename, self.evalue = ename, evalue
+    cases = [('InputError', 'E10: case export: 60 of 5135 rows have no Case Number or Serial #', 'E10', 2),
+             ('InputError', 'E01: no case export matches data/raw/IPA_CaseHistory_*.xlsx', 'E01', 2),
+             ('ConfigError', '2 parameter problem(s):\nE20: RERUN_FREQUENCY = weekly\nE22: X is not a parameter',
+              'E20', 2), ('OutputError', 'E30: could not replace latest/', 'E30', 2),
+             ('CheckError', 'C01: runtime check(s) failed', 'C01', 1), ('PrivacyError', 'P01: the scan', 'P01', 1),
+             ('TrendsError', 'E99: unexpected KeyError during analysis', 'E99', 3), ('KeyError', "'E10'", 'E99', 3)]
+    d = Path(tempfile.mkdtemp())
+    saved, tempfile.tempdir = tempfile.tempdir, str(d)
+    try:
+        for ename, evalue, code, rc in cases:
+            e = cli._notebook_error(Failed(ename, evalue), {})
+            assert (e.code, e.exit_code) == (code, rc), (ename, evalue, e.code)
+            assert (e.text() == evalue) == (ename != 'KeyError')
+        e = cli._notebook_error(Failed('ValueError', "could not convert string to float: 'Fake Memorial'"), {})
+        assert e.code == 'E99' and 'unexpected ValueError; the executed notebook shows where' in e.text()
+        assert 'Fake Memorial' not in e.text() and 'private log' in e.text() and 'Fix:' in e.text()
+        e = cli._notebook_error(RuntimeError('Kernel died'), {}, executed=False)
+        assert e.code == 'E99' and 'could not be run (unexpected RuntimeError)' in e.text()
+        assert 'Kernel died' not in e.text() and 'executed notebook' not in e.text()
+        logs = ''.join(p.read_text() for p in d.glob('ipa_trends_logs_*/*.log'))
+        assert 'Fake Memorial' in logs and 'Kernel died' in logs
+    finally:
+        tempfile.tempdir = saved
+    assert cli._notebook_error(None, {}).code == 'E99'
+    assert cli._notebook_error(Failed('InputError', 'E05: x'), {'code': 'E05', 'stage': 'inputs'}).stage == 'inputs'
+
+
+def test_notebook_engine_injects_base_dir():
+    """--engine notebook always injects BASE_DIR, so the notebook reads and writes the folders the parameters name;
+    a failure under the nbclient fallback (papermill missing) keeps its code and exit code and is recorded."""
+    import contextlib
+    import io
+    import json
+    import os
+    import nbformat
+    from ipa_trends import cli, nbexec
+    d = Path(tempfile.mkdtemp())
+    (d / 'tmp').mkdir()
+    (d / 'p.json').write_text(json.dumps({'BASE_DIR': str(d / 'base'), 'OUTPUT_DIR': 'output'}))
+    seen = {}
+
+    class Failed(Exception):
+        ename, evalue = 'InputError', 'E01: no case export matches data/raw/IPA_CaseHistory_*.xlsx'
+
+    def fake(notebook, out_path, params, cwd=None, kernel_name='python3'):
+        seen.update(params, env=os.environ.get('IPA_TRENDS_RESULT'))
+        nbformat.write(nbformat.v4.new_notebook(), str(out_path))
+        raise Failed()
+    real_exec, real_pm, saved_tmp = nbexec.execute, sys.modules.get('papermill'), tempfile.tempdir
+    nbexec.execute, sys.modules['papermill'], tempfile.tempdir = fake, None, str(d / 'tmp')
+    try:
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = cli.main(['run', '--engine', 'notebook', '--params', str(d / 'p.json')])
+    finally:
+        nbexec.execute, tempfile.tempdir = real_exec, saved_tmp
+        if real_pm is None:
+            sys.modules.pop('papermill', None)
+        else:
+            sys.modules['papermill'] = real_pm
+    assert seen['BASE_DIR'] == str((d / 'base').resolve()) and seen['OUTPUT_DIR'] == 'output'
+    assert seen['env'].endswith('result.json') and 'IPA_TRENDS_RESULT' not in os.environ
+    assert rc == 2 and 'E01: no case export' in err.getvalue() and 'E99' not in err.getvalue()
+    assert len(list((d / 'base' / 'output' / 'failed').glob('*/error.txt'))) == 1
+    # its inputs are missing, so the executed notebook cannot be scanned: it stays in its temporary folder, named
+    kept = list((d / 'tmp').glob('ipa_trends_nb_*/executed.ipynb'))
+    assert len(kept) == 1 and str(kept[0]) in err.getvalue()
+
+
+def test_notebook_engine_publishes_after_the_scan():
+    """--engine notebook: the notebook only stages its run, and the command line publishes it, with the executed
+    notebook in its run folder (not in latest/), once the notebook's outputs pass the privacy scan. A real identifier
+    in them (P01, exit 1) publishes nothing, latest/ included, and deletes the notebook; so does a P01 from the run's
+    own scan inside the notebook, whose parameters cell may hold the leak. No temporary folder stays."""
+    import contextlib
+    import io
+    import json
+    import os
+    import nbformat
+    from ipa_trends import cli, engine, nbexec
+    d = Path(tempfile.mkdtemp())
+    (d / 'tmp').mkdir()
+    out, mode = d / 'out', {}
+
+    class Failed(Exception):
+        ename, evalue = 'PrivacyError', ("P01: the privacy scan found real identifiers in 1 output field(s): "
+                                         "['report and charts']; nothing was published")
+
+    def fake(notebook, out_path, params, cwd=None, kernel_name='python3'):     # what run_and_show does in the kernel
+        handoff = Path(os.environ['IPA_TRENDS_RESULT'])
+        if mode.get('p01'):                      # e.g. an account name in REPORT_TITLE
+            nbformat.write(nbformat.v4.new_notebook(), str(out_path))
+            handoff.write_text(json.dumps({'ok': False, 'code': 'P01', 'stage': 'privacy scan', 'exit_code': 1}))
+            raise Failed()
+        stage = handoff.parent / 'stage'
+        stage.mkdir()
+        (stage / 'rates.csv').write_text('a\n1\n')
+        (stage / 'manifest.json').write_text('{}')
+        nbformat.write(nbformat.v4.new_notebook(), str(out_path))
+        handoff.write_text(json.dumps({'ok': True, 'run_id': 'r1', 'output_dir': str(out), 'staged': str(stage),
+                                       'run_dir': str(out / 'runs' / 'r1'), 'latest_dir': str(out / 'latest'),
+                                       'distribution_ready': True, 'warnings': [],
+                                       'summary': {'latest_label': '2026 Q3', 'frequency_name': 'quarterly'}}))
+    saved = nbexec.execute, sys.modules.get('papermill'), engine.scan_notebook, tempfile.tempdir
+    nbexec.execute, sys.modules['papermill'], tempfile.tempdir = fake, None, str(d / 'tmp')
+    argv = ['run', '--engine', 'notebook', '--set', f'OUTPUT_DIR={out}', '--quiet']
+    try:
+        engine.scan_notebook = lambda P, path: 2
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+            rc = cli.main(argv)
+        assert rc == 1 and 'P01' in err.getvalue() and not (out / 'latest').exists() and not (out / 'runs').exists()
+        rec = next(out.glob('failed/*/error.txt'))
+        assert rec.read_text().startswith('code: P01\nstage: notebook privacy scan\nexit_code: 1\n')
+        assert not (rec.parent / 'executed_notebook.ipynb').exists() and not list((d / 'tmp').iterdir())
+        engine.scan_notebook = lambda P, path: 0
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            rc = cli.main(argv)
+        assert rc == 0 and (out / 'latest' / 'rates.csv').exists() and 'Executed notebook saved to' in said.getvalue()
+        assert (out / 'runs' / 'r1' / 'executed_notebook.ipynb').exists()
+        assert not (out / 'latest' / 'executed_notebook.ipynb').exists() and not list((d / 'tmp').iterdir())
+        mode['p01'] = True
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+            rc = cli.main(['run', '--engine', 'notebook', '--set', f'OUTPUT_DIR={d / "out2"}', '--quiet'])
+        rec = next((d / 'out2').glob('failed/*/error.txt'))
+        assert rc == 1 and rec.read_text().startswith('code: P01\nstage: privacy scan\nexit_code: 1\n')
+        assert not (rec.parent / 'executed_notebook.ipynb').exists() and not (d / 'out2' / 'runs').exists()
+        assert 'so it was deleted' in err.getvalue() and not list((d / 'tmp').iterdir())
+    finally:
+        nbexec.execute, engine.scan_notebook, tempfile.tempdir = saved[0], saved[2], saved[3]
+        if saved[1] is None:
+            sys.modules.pop('papermill', None)
+        else:
+            sys.modules['papermill'] = saved[1]
+
+
+def test_notebook_show_says_where_the_outputs_are():
+    """The notebook says '(also copied to latest/)' only when latest/ was replaced; a back-run says it was not."""
+    from types import SimpleNamespace
+    from ipa_trends import notebook as NB
+    shown, real = [], NB._display
+    NB._display = lambda: (shown.append, (lambda s: s), (lambda filename: filename), (lambda s: s))
+    try:
+        for latest in ('/x/latest', None):
+            NB.show(SimpleNamespace(summary={'latest_label': '2025 Q2', 'frequency_name': 'quarterly'}, tables={},
+                                    warnings=[], paths={'run_dir': '/x/runs/r', 'latest_dir': latest,
+                                                        'distribution_ready': True}))
+    finally:
+        NB._display = real
+    assert 'also copied to `latest/`' in shown[0] and 'back-run' not in shown[0]
+    assert 'a back-run: `latest/` was not changed' in shown[1] and 'also copied' not in shown[1]
+
+
+def test_notebook_says_where_the_failure_is_recorded():
+    """Run All that stops prints where the failure record is (or why there is none) before the error itself."""
+    import contextlib
+    import io
+    from ipa_trends import notebook as NB
+    d = Path(tempfile.mkdtemp())
+    said = io.StringIO()
+    with contextlib.redirect_stdout(said):
+        try:
+            NB.run_and_show({'CASE_EXPORTS': str(d / 'missing' / '*.xlsx'), 'OUTPUT_DIR': str(d / 'out')})
+        except InputError as e:
+            assert e.code == 'E01' and e.failure_record[0].exists()
+        else:
+            raise AssertionError('no E01')
+    assert said.getvalue().startswith(f"Failure record: {d / 'out' / 'failed'}")
 
 
 # ------------------------------------------------------------------------------------------------ privacy
