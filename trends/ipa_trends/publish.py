@@ -115,9 +115,14 @@ def schema(tables):
     return doc
 
 
+LOCATION_PARAMS = ('CASE_EXPORTS', 'EQUIPMENT_LISTS', 'OUTPUT_DIR', 'BASE_DIR')
+
+
 def input_key(params_public, inputs):
-    """Hash of the parameters and the input files' bytes: --only-if-new skips a run whose key has been published."""
-    h = hashlib.sha256(json.dumps(params_public, sort_keys=True, default=str).encode())
+    """Hash of the parameters and the input files' bytes: --only-if-new skips a run whose key has been published.
+    Where files are read from or written to does not change the key; the files' contents do."""
+    analysis = {k: v for k, v in params_public.items() if k not in LOCATION_PARAMS}
+    h = hashlib.sha256(json.dumps(analysis, sort_keys=True, default=str).encode())
     h.update(inputs['case_export']['sha256'].encode())
     for e in inputs['equipment_lists']:
         h.update(e['sha256'].encode())
@@ -176,7 +181,7 @@ def publish(result, private, P, out=print):
         manifest = {
             'schema_version': SCHEMA_VERSION, 'run_id': run_id, 'input_key': ikey,
             'generated_at': f'{dt.datetime.now():%Y-%m-%dT%H:%M:%S}', 'package_version': __version__,
-            'method_version': METHOD_VERSION, 'definitions_hash': defs, 'parameters': result.params,
+            'method_version': METHOD_VERSION, 'definitions_hash': defs, 'parameters': _public_params(result.params),
             'parameter_sources': P.sources, 'inputs': _public_inputs(result.facts['inputs']),
             'data_window': result.facts['data_window'], 'extracted_at': result.facts['extracted_at'],
             'extracted_at_source': result.facts['extracted_at_source'], 'summary': result.summary,
@@ -271,6 +276,17 @@ def _existing_parent(p):
     while not p.exists() and p != p.parent:
         p = p.parent
     return p
+
+
+def _public_params(params):
+    """Parameters for the manifest: an absolute path is shown by its last part only (it can hold a user name)."""
+    def show(v):
+        if isinstance(v, list):
+            return [show(x) for x in v]
+        if isinstance(v, str) and (v.startswith(('/', '\\', '~')) or re.match(r'^[A-Za-z]:[\\/]', v)):
+            return '.../' + re.split(r'[\\/]', v.rstrip('/\\'))[-1]
+        return v
+    return {k: show(v) if k in LOCATION_PARAMS + ('REQUEST_TYPES_LOCAL',) else v for k, v in params.items()}
 
 
 def _public_inputs(inputs):

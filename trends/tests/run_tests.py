@@ -158,10 +158,15 @@ def planted(fx, truth, runs, null_fx):
     ok('no other install cohort stands out on the planted fixture', others.empty,
        str(list(zip(others.install_cohort, others.issue))[:6]))
     flags = c[c.status.isin(['higher', 'lower'])]
-    expected = {('fleet', 'Deposit Door'), ('family', 'Computer Board')}
-    extra = flags[~flags.apply(lambda x: (x.stratum_dim, x.issue) in expected or x.issue_level != 'category'
-                               and x.issue_group in ('Door', 'Electronics'), axis=1)]
-    print(f'      flags on the planted fixture: {len(flags)} ({len(extra)} not explained by the planted cells)')
+    # the Deposit Door rise is fleet-wide, so it shows in every stratum's Door and Deposit Door; the alEx Computer
+    # Board fall shows in the fleet, in alEx and in its models
+    alex_models = set(truth.get('population', {}).get('alex_models', ['alEx LC-D', 'alEx MC-S']))
+    explained = flags.issue.isin(['Deposit Door', 'Door']) | (flags.issue.isin(['Computer Board', 'Electronics'])
+                                                              & (flags.stratum.isin(['Fleet', 'alEx'])
+                                                                 | flags.stratum.isin(alex_models)))
+    unexplained = flags[~explained]
+    print(f'      flags on the planted fixture: {len(flags)}; not from a planted cell: '
+          f'{list(zip(unexplained.stratum, unexplained.issue))}')
     m = run(params(fx, RERUN_FREQUENCY='monthly', CATEGORY_DIMS=['fleet', 'install_cohort', 'family'],
                    STRATIFY_BY=['install_cohort', 'family', 'model']))
     mc = m.tables['changes']
@@ -249,8 +254,10 @@ def variants(base_runs, quick):
             ok('category_split: Door is not flagged (taxonomy change)', not door.status.isin(['higher', 'lower']).any()
                and door.not_tested_reason.str.contains('taxonomy').any())
         if variant == 'trouble_code_rename':
-            ok('trouble_code_rename: no false flag in Other or Door', not c[c.issue_group.isin(['Other', 'Door'])
-                                                                          & c.status.isin(['higher', 'lower'])].shape[0])
+            # renamed planned work lands in Unmapped, which is never tested, and blocks Other; Door keeps the planted
+            # Deposit Door rise, so it is not part of this check
+            leak = c[c.issue_group.isin(['Other', 'Unmapped']) & c.status.isin(['higher', 'lower'])]
+            ok('trouble_code_rename: no false flag in Other or Unmapped', leak.empty, str(list(leak.issue)))
         if variant == 'quarter_end_filter':
             ok('quarter_end_filter: 2026 Q3 is final, not stuck provisional', r.summary.get('latest_label') == '2026 Q3',
                r.summary.get('latest_label'))
@@ -295,6 +302,7 @@ def notebook(fx):
         ok(f'notebook headless at {freq}: exit 0', rc == 0, rc)
         ok(f'notebook headless at {freq}: executed notebook saved', bool(list(out.glob('runs/*/executed_notebook.ipynb'))))
     bad = TMP / 'nb_bad'
+    bad.mkdir(parents=True, exist_ok=True)
     rc = subprocess.run([sys.executable, '-m', 'papermill', str(TRENDS / 'ticket_trends.ipynb'), str(bad / 'x.ipynb'),
                          '-p', 'RERUN_FREQUENCEY', 'monthly', '--cwd', str(TRENDS)], capture_output=True, text=True)
     if 'No module named papermill' in rc.stderr:

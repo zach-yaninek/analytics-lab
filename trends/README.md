@@ -117,7 +117,7 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 
 | Parameter | Default | What it does |
 |---|---|---|
-| `RERUN_FREQUENCY` | `'quarterly'` | how often this is rerun = length of each period: 'quarterly', 'monthly', '2 months'... |
+| `RERUN_FREQUENCY` | `'quarterly'` | how often this is rerun, and the length of each period: 'quarterly', 'monthly', '2 months' |
 | `YEAR_START_MONTH` | `1` | first month of the reporting year (10 for an October fiscal year) |
 | `FISCAL_YEAR_NAMED_BY` | `'end'` | 'end': the year starting Oct 2026 is FY2027 |
 | `ANCHOR_DATE` | `None` | 'YYYY-MM-DD' a date that starts a period, for unusual calendars |
@@ -162,7 +162,7 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 | `INSTALL_COHORT_EDGES` | `None` | explicit cohort edges ['2016-01-01', '2019-01-01', ...] (overrides the width) |
 | `MODEL_FILTER` | `None` | only these models (reconciliation) |
 | `POOL_SMALL_STRATA` | `True` | pool models with too few machines into one "Other models" series |
-| `MIN_TYPE_MONTHS` | `100` | machine-months a model needs over 396 days for its own series (100 = 7.7 machines) |
+| `MIN_TYPE_MONTHS` | `100` | machine-months a model needs over 396 days for its own series (100 means 7.7 machines) |
 | `MIN_CELL_MONTHS` | `100` | cells with fewer machine-months are shown hollow |
 | `THIRD_PARTY_PLANS` | `['Vogeltronix']` | service plans whose service does not reach the case export (excluded) |
 | `MISSING_INSTALL_DATE` | `'exclude'` | 'exclude' machines without an install date, or 'data_start' |
@@ -173,8 +173,8 @@ paths are read from the trends folder (or `BASE_DIR`, or the `IPA_TRENDS_HOME` e
 |---|---|---|
 | `Q_CUT` | `0.05` | false-discovery rate for a flag |
 | `WATCH_Q` | `0.2` | false-discovery rate for the watch list (report only) |
-| `MIN_CHANGE` | `0.2` | smallest change worth flagging (0.20 = 20%) |
-| `MIN_CONTRAST` | `0.5` | smallest cohort difference worth calling out (0.50 = 50% higher) |
+| `MIN_CHANGE` | `0.2` | smallest change worth flagging (0.20 means 20%) |
+| `MIN_CONTRAST` | `0.5` | smallest cohort difference worth calling out (0.50 means 50% higher) |
 | `CONTRAST_MONTHS` | `12` | months of final periods in the install-cohort comparison |
 | `MIN_EXPECTED` | `10` | fewest expected tickets in the latest period for a test |
 | `MIN_BASELINE_TICKETS` | `20` | fewest baseline tickets for a test |
@@ -214,7 +214,7 @@ append**. Column types are in `schema.json`.
 | `report.html`, `report.pdf` | The report (the PDF is the attachment to send) |
 | `email_summary.txt`, `.html` | Paste-ready email text, at most 15 lines |
 | `charts/*.png` | Fleet trend, request groups, cohort profile, cohort × period map, changes, data quality |
-| `manifest.json` | Parameters, input fingerprints, warnings, checks, privacy scan totals, `distribution_ready`, `next_run_after` |
+| `manifest.json` | Parameters (absolute paths shortened to their last folder), input fingerprints, warnings, checks, privacy scan totals, `distribution_ready`, `next_run_after` |
 
 ## Sharing
 
