@@ -1,0 +1,16 @@
+measure,value,source
+ticketed serials in case export (computed),3773.0,data
+devices in telemetry dictionary (Zac cell 9),7183.0,Zac printed
+transacting machines Aug 2025-Aug 2026 (Zac cell 11),6951.0,Zac printed
+ticketed machines matched to device dictionary (Zac cell 11),3041.0,Zac printed
+ticketed serials NOT in device dictionary,732.0,derived
+tickets NOT matched to device dictionary (Zac cell 11),1358.0,Zac printed
+share of devices with any ticket-based customer attribution (%),42.34,derived upper bound
+devices with no ticket in 13 months -> no customer attribution,4142.0,derived
+share of devices without attribution (%),57.66,derived
+share of ticketed serials matched (%),80.6,derived
+matched tickets per device (fleet denominator),0.851,derived
+matched tickets per matched ticketed device (naive denominator),2.01,derived
+inflation factor of naive vs fleet denominator,2.362,derived
+Poisson check: expected share ticketed if all devices shared one rate (%),57.3,model illustration
+observed share ticketed (%),42.34,derived

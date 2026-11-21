@@ -1,0 +1,21 @@
+% Compiles the report's Methods, Results, flowchart figure, Definitions, and Figures together, as a length and layout
+% check.
+% Build: pdflatex, bibtex, then pdflatex twice (for the figure reference and the notebook citations).
+% 11 pt, US letter, 1-inch margins.
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{pdflscape}
+\usepackage{url}
+\usepackage{graphicx}
+\begin{document}
+\input{ipa_methods_results.tex}
+\input{ipa_flowchart_tikz.tex}
+\input{ipa_definitions_short.tex}
+\input{ipa_figures.tex}
+\bibliographystyle{plain}
+\begingroup\raggedright  % long links break at slashes, so set the references ragged right
+\bibliography{notebooks}
+\endgroup
+\end{document}

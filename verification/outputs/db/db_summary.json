@@ -1,0 +1,995 @@
+{
+  "generated_utc": "2026-10-12 19:46:43",
+  "database_file": "ipa_transaction_events_202508_202608.db",
+  "workbook_file": "IPA_CaseHistory_Aug 2025-Aug2026.xlsx",
+  "expected_values_source": "Zac's notebook outputs (embedded constants)",
+  "elapsed_seconds": 1316.4,
+  "check_counts": {
+    "INFO": 6,
+    "PASS": 65,
+    "FAIL": 1
+  },
+  "steps": {
+    "0": {
+      "title": "schema, indexes, formats, counts",
+      "status": "done",
+      "seconds": 141.8,
+      "note": "4 tables, 3 indexes"
+    },
+    "1": {
+      "title": "device dictionary",
+      "status": "done",
+      "seconds": 2.1,
+      "note": "7183 devices, 695 hosts"
+    },
+    "2": {
+      "title": "ticket-device linkage",
+      "status": "done",
+      "seconds": 2.8,
+      "note": "6113 matched tickets"
+    },
+    "3": {
+      "title": "model/type map, mapping summary, host-level audit",
+      "status": "done",
+      "seconds": 1.3,
+      "note": "mapping_summary [16, 31, 83]"
+    },
+    "pass": {
+      "title": "single pass over transaction_events (feeds 4-7)",
+      "status": "done",
+      "seconds": 1144.0,
+      "note": "one pass over transaction_events"
+    },
+    "4": {
+      "title": "Zac's aggregation, reconciliation and rate tables",
+      "status": "done",
+      "seconds": 9.5,
+      "note": "418188 groups, 118047569 rows"
+    },
+    "4b": {
+      "title": "30-ticket pilot reproduction",
+      "status": "done",
+      "seconds": 1.2,
+      "note": "30 pilot tickets"
+    },
+    "5": {
+      "title": "clock test: hour profiles by zone x DST period",
+      "status": "done",
+      "seconds": 7.4,
+      "note": "utc"
+    },
+    "6": {
+      "title": "clock test: DST transition days",
+      "status": "done",
+      "seconds": 0.5,
+      "note": "ambiguous: utc, local_standard_no_dst"
+    },
+    "7": {
+      "title": "differing clock rows and ingestion offsets",
+      "status": "done",
+      "seconds": 0.0,
+      "note": "155 differing rows; ingestion test skipped"
+    },
+    "8": {
+      "title": "decision and summary",
+      "status": "done",
+      "seconds": 5.7,
+      "note": "utc (the recorded clock is UTC)"
+    }
+  },
+  "decisions": {
+    "clock_profiles_local": {
+      "verdict": "utc",
+      "consistent_hypotheses": [
+        "utc"
+      ],
+      "scores": {
+        "machine_local_dst": {
+          "comparisons": 16,
+          "matches": 2,
+          "consistent": false
+        },
+        "utc": {
+          "comparisons": 16,
+          "matches": 16,
+          "consistent": true
+        },
+        "local_standard_no_dst": {
+          "comparisons": 16,
+          "matches": 6,
+          "consistent": false
+        },
+        "fixed_eastern_wall": {
+          "comparisons": 16,
+          "matches": 10,
+          "consistent": false
+        },
+        "fixed_central_wall": {
+          "comparisons": 16,
+          "matches": 10,
+          "consistent": false
+        },
+        "fixed_pacific_wall": {
+          "comparisons": 16,
+          "matches": 10,
+          "consistent": false
+        }
+      },
+      "zone_shifts_vs_eastern": {
+        "Central|DST": 0.86,
+        "Mountain|DST": 1.88,
+        "Arizona (no DST)|DST": 2.89,
+        "Pacific|DST": 2.94,
+        "Hawaii (no DST)|DST": 5.92,
+        "Central|Standard": 0.86,
+        "Mountain|Standard": 1.88,
+        "Arizona (no DST)|Standard": 1.88,
+        "Pacific|Standard": 2.94,
+        "Hawaii (no DST)|Standard": 4.95
+      },
+      "standard_vs_dst_shifts": {
+        "Eastern": 1.01,
+        "Central": 1.0,
+        "Mountain": 1.01,
+        "Arizona (no DST)": 0.0,
+        "Pacific": 1.0,
+        "Hawaii (no DST)": 0.04
+      },
+      "rule": "Profiles of transaction_time_local hours by hospital zone. Machine-local wall clock: zone shifts vs Eastern ~0 and Standard-vs-DST shifts ~0. UTC: Central +1, Mountain +2, Pacific +3 (Arizona +3 in DST months, +2 in standard months) and Standard-vs-DST +1 in DST-observing zones. Fixed server wall clock: zone shifts like UTC, Standard-vs-DST 0 except no-DST zones. Tolerance +/-0.5 h; profiles need >= 5,000 rows."
+    },
+    "clock_profiles_utc": {
+      "verdict": "utc",
+      "consistent_hypotheses": [
+        "utc"
+      ],
+      "scores": {
+        "machine_local_dst": {
+          "comparisons": 16,
+          "matches": 2,
+          "consistent": false
+        },
+        "utc": {
+          "comparisons": 16,
+          "matches": 16,
+          "consistent": true
+        },
+        "local_standard_no_dst": {
+          "comparisons": 16,
+          "matches": 6,
+          "consistent": false
+        },
+        "fixed_eastern_wall": {
+          "comparisons": 16,
+          "matches": 10,
+          "consistent": false
+        },
+        "fixed_central_wall": {
+          "comparisons": 16,
+          "matches": 10,
+          "consistent": false
+        },
+        "fixed_pacific_wall": {
+          "comparisons": 16,
+          "matches": 10,
+          "consistent": false
+        }
+      },
+      "zone_shifts_vs_eastern": {
+        "Central|DST": 0.86,
+        "Mountain|DST": 1.88,
+        "Arizona (no DST)|DST": 2.89,
+        "Pacific|DST": 2.94,
+        "Hawaii (no DST)|DST": 5.92,
+        "Central|Standard": 0.86,
+        "Mountain|Standard": 1.88,
+        "Arizona (no DST)|Standard": 1.88,
+        "Pacific|Standard": 2.94,
+        "Hawaii (no DST)|Standard": 4.95
+      },
+      "standard_vs_dst_shifts": {
+        "Eastern": 1.01,
+        "Central": 1.0,
+        "Mountain": 1.01,
+        "Arizona (no DST)": 0.0,
+        "Pacific": 1.0,
+        "Hawaii (no DST)": 0.04
+      },
+      "rule": "Profiles of transaction_time_utc hours by hospital zone. Machine-local wall clock: zone shifts vs Eastern ~0 and Standard-vs-DST shifts ~0. UTC: Central +1, Mountain +2, Pacific +3 (Arizona +3 in DST months, +2 in standard months) and Standard-vs-DST +1 in DST-observing zones. Fixed server wall clock: zone shifts like UTC, Standard-vs-DST 0 except no-DST zones. Tolerance +/-0.5 h; profiles need >= 5,000 rows."
+    },
+    "dst_transition": {
+      "verdict": "ambiguous: utc, local_standard_no_dst",
+      "consistent_hypotheses": [
+        "utc",
+        "local_standard_no_dst"
+      ],
+      "scores": {
+        "machine_local_dst": {
+          "comparisons": 12,
+          "matches": 4,
+          "consistent": false
+        },
+        "utc": {
+          "comparisons": 12,
+          "matches": 12,
+          "consistent": true
+        },
+        "local_standard_no_dst": {
+          "comparisons": 12,
+          "matches": 12,
+          "consistent": true
+        },
+        "fixed_eastern_wall": {
+          "comparisons": 12,
+          "matches": 0,
+          "consistent": false
+        },
+        "fixed_central_wall": {
+          "comparisons": 12,
+          "matches": 0,
+          "consistent": false
+        },
+        "fixed_pacific_wall": {
+          "comparisons": 12,
+          "matches": 0,
+          "consistent": false
+        }
+      },
+      "rule": "Hourly counts by local date and transaction_time_local hour, compared with the mean of the two adjacent days. A DST-observing local wall clock has an (almost) empty 02:00-02:59 on the spring-forward day and a ~2x 01:00-01:59 on the fall-back day, but not in Arizona/Hawaii/Saskatchewan. UTC or local standard time: neither occurs anywhere. A single fixed DST wall clock: both occur in every zone, including no-DST zones. Each zone is classified by a Poisson log-likelihood ratio (gap: rate 2% of adjacent days vs 100%; doubled: 200% vs 100%), |LLR| > 3 (~20:1); smaller |LLR| is \"unclear\" and not scored. For large counts the cut-offs are a ratio of ~0.25 (spring) and ~1.44 (fall)."
+    },
+    "ingestion_offsets": {
+      "verdict": "not run: no ingestion/received timestamp column"
+    },
+    "clock_verdict": {
+      "verdict": "utc (the recorded clock is UTC)",
+      "hypothesis": "utc",
+      "consistent_hypotheses": [
+        "utc"
+      ],
+      "tests_used": [
+        "clock_profiles_local",
+        "dst_transition"
+      ],
+      "rule": "intersection of the hypotheses consistent with every test that ran"
+    }
+  },
+  "checks": [
+    {
+      "step": "0",
+      "check": "ingestion/received timestamp column found",
+      "expected": null,
+      "actual": null,
+      "status": "INFO",
+      "note": "used by the step-7 offset test; skipped gracefully if absent"
+    },
+    {
+      "step": "0",
+      "check": "transaction_codes rows",
+      "expected": 49,
+      "actual": 49,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "0",
+      "check": "database SHA-256 equals Zac's verified checksum",
+      "expected": "7aa5d423bb381db2e1ab60c3dc95ca986e0e1140a4b41140ac3ea101382244d0",
+      "actual": "7aa5d423bb381db2e1ab60c3dc95ca986e0e1140a4b41140ac3ea101382244d0",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "1",
+      "check": "devices rows",
+      "expected": 7183,
+      "actual": 7183,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "1",
+      "check": "device ids unique after clean()",
+      "expected": true,
+      "actual": true,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.cases",
+      "expected": 7471,
+      "actual": 7471,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.distinct_cases",
+      "expected": 7471,
+      "actual": 7471,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.customers",
+      "expected": 845,
+      "actual": 845,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.case_machines",
+      "expected": 3773,
+      "actual": 3773,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.models",
+      "expected": 31,
+      "actual": 31,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.first_opened",
+      "expected": "2025-08-01 07:22:00",
+      "actual": "2025-08-01 07:22:00",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "record_quality.last_opened",
+      "expected": "2026-08-31 17:45:00",
+      "actual": "2026-08-31 17:45:00",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "linkage.cases",
+      "expected": 7471,
+      "actual": 7471,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "linkage.matched_cases",
+      "expected": 6113,
+      "actual": 6113,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "linkage.matched_machines",
+      "expected": 3041,
+      "actual": 3041,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "2",
+      "check": "linkage.matched_pct",
+      "expected": 81.82,
+      "actual": 81.82,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "3",
+      "check": "model_type_mapping_head: printed rows reproduced",
+      "expected": "15/15",
+      "actual": "15/15",
+      "status": "PASS",
+      "note": "see db_model_type_mapping_head_vs_expected.csv"
+    },
+    {
+      "step": "3",
+      "check": "mapping_summary: Case models spanning more than one telemetry type",
+      "expected": 16,
+      "actual": 16,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "3",
+      "check": "mapping_summary: Customers spanning more than one observed host",
+      "expected": 31,
+      "actual": 31,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "3",
+      "check": "mapping_summary: Hosts linked to more than one case customer",
+      "expected": 83,
+      "actual": 83,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "3",
+      "check": "pandas re-implementation equals Zac SQL mapping_summary",
+      "expected": [
+        16,
+        31,
+        83
+      ],
+      "actual": [
+        16,
+        31,
+        83
+      ],
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4b",
+      "check": "pilot extraction: per-ticket indexed queries == rows collected in the scan",
+      "expected": true,
+      "actual": true,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "telemetry_month_code groups",
+      "expected": 418188,
+      "actual": 418188,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "atomic transactions represented",
+      "expected": 118047569,
+      "actual": 118047569,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "rows with local string IS NOT utc string (clocks_differ)",
+      "expected": 155,
+      "actual": 155,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "missing_time (utc NULL or local date NULL)",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "rows with NULL local date",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "rows whose local date differs from the date part of the local time string",
+      "expected": null,
+      "actual": 0,
+      "status": "INFO",
+      "note": "0 means transaction_date_local was derived from the same clock as transaction_time_local"
+    },
+    {
+      "step": "4",
+      "check": "telemetry device ids absent from Zac serialmap (raw, unclean ids)",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "row total: month-code aggregation == hour aggregation (independent query)",
+      "expected": 118047569,
+      "actual": 118047569,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "every code total reconciles to an independent COUNT(*) GROUP BY code",
+      "expected": true,
+      "actual": true,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "coverage.first_transaction_date",
+      "expected": "2025-08-01",
+      "actual": "2025-08-01",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "coverage.last_transaction_date",
+      "expected": "2026-08-28",
+      "actual": "2026-08-28",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "coverage.represented_transactions",
+      "expected": 118047569,
+      "actual": 118047569,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "coverage.transacting_machines",
+      "expected": 6951,
+      "actual": 6951,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Door issue",
+      "expected": 2212968,
+      "actual": 2212968,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Electronics/software/comms",
+      "expected": 45235,
+      "actual": 45235,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Incomplete transaction",
+      "expected": 473188,
+      "actual": 473188,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Malformed",
+      "expected": 6,
+      "actual": 6,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Mechanical fault",
+      "expected": 844284,
+      "actual": 844284,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Operational status",
+      "expected": 268236,
+      "actual": 268236,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Stock-out",
+      "expected": 3236592,
+      "actual": 3236592,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Success",
+      "expected": 110166059,
+      "actual": 110166059,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: Undefined",
+      "expected": 4959,
+      "actual": 4959,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "bucket total: User behavior",
+      "expected": 796042,
+      "actual": 796042,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "non-success transactions",
+      "expected": 7881510,
+      "actual": 7881510,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "non-success %",
+      "expected": 6.68,
+      "actual": 6.68,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "narrow fault transactions",
+      "expected": 889519,
+      "actual": 889519,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "narrow faults per 1,000",
+      "expected": 7.54,
+      "actual": 7.54,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "narrow faults per 1,000 excluding code 05",
+      "expected": 7.43,
+      "actual": 7.43,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "comparison_cohort: printed rows reproduced",
+      "expected": "2/2",
+      "actual": "2/2",
+      "status": "PASS",
+      "note": "see db_comparison_cohort_vs_expected.csv"
+    },
+    {
+      "step": "4",
+      "check": "ticket_cohort_exclusions: Included in comparison",
+      "expected": 4916,
+      "actual": 4916,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "ticket_cohort_exclusions: Missing host",
+      "expected": 48,
+      "actual": 48,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "ticket_cohort_exclusions: No device match",
+      "expected": 1203,
+      "actual": 1203,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "ticket_cohort_exclusions: No transactions in ticket month",
+      "expected": 479,
+      "actual": 479,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "ticket_cohort_exclusions: Shared/internal host",
+      "expected": 18,
+      "actual": 18,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "machine_type_rates: printed rows reproduced",
+      "expected": "15/15",
+      "actual": "15/15",
+      "status": "PASS",
+      "note": "see db_machine_type_rates_vs_expected.csv"
+    },
+    {
+      "step": "4",
+      "check": "rate numerator == directly linked eligible tickets",
+      "expected": 4916,
+      "actual": 4916,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "overall comparison rate per 100 active machine-months",
+      "expected": 7.11,
+      "actual": 7.11,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4",
+      "check": "monthly_comparison: printed rows reproduced",
+      "expected": "12/12",
+      "actual": "12/12",
+      "status": "PASS",
+      "note": "see db_monthly_comparison_vs_expected.csv"
+    },
+    {
+      "step": "4b",
+      "check": "pilot non-success events extracted",
+      "expected": 4736,
+      "actual": 4736,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "4b",
+      "check": "pilot_scenario_summary: printed rows reproduced",
+      "expected": "3/3",
+      "actual": "3/3",
+      "status": "PASS",
+      "note": "see db_pilot_scenario_summary_vs_expected.csv"
+    },
+    {
+      "step": "4b",
+      "check": "pilot_offset0: printed rows reproduced",
+      "expected": "30/30",
+      "actual": "30/30",
+      "status": "PASS",
+      "note": "see db_pilot_offset0_vs_expected.csv"
+    },
+    {
+      "step": "4b",
+      "check": "pilot_last_codes_head: printed rows reproduced",
+      "expected": "15/15",
+      "actual": "0/15",
+      "status": "FAIL",
+      "note": "see db_pilot_last_codes_head_vs_expected.csv"
+    },
+    {
+      "step": "4b",
+      "check": "pilot: tickets with >=3 non-success events / with a repeated code in the last three",
+      "expected": {
+        "tickets_with_3": 26,
+        "with_repeated_codes": 25
+      },
+      "actual": {
+        "tickets_with_3": 26,
+        "with_repeated_codes": 25
+      },
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "5",
+      "check": "hour profiles (transaction_time_local)",
+      "expected": null,
+      "actual": "utc",
+      "status": "INFO",
+      "note": ""
+    },
+    {
+      "step": "6",
+      "check": "DST-transition days",
+      "expected": null,
+      "actual": "ambiguous: utc, local_standard_no_dst",
+      "status": "INFO",
+      "note": ""
+    },
+    {
+      "step": "7",
+      "check": "rows with local IS NOT utc (dumped)",
+      "expected": 155,
+      "actual": 155,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "7",
+      "check": "dumped rows == clocks_differ total from the aggregation",
+      "expected": 155,
+      "actual": 155,
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "step": "7",
+      "check": "ingestion offsets",
+      "expected": null,
+      "actual": "not run: no ingestion/received timestamp column",
+      "status": "INFO",
+      "note": ""
+    },
+    {
+      "step": "8",
+      "check": "combined clock verdict (intersection of all clock tests)",
+      "expected": null,
+      "actual": "utc",
+      "status": "INFO",
+      "note": ""
+    },
+    {
+      "step": "8",
+      "check": "database file unchanged (size, mtime)",
+      "expected": true,
+      "actual": true,
+      "status": "PASS",
+      "note": ""
+    }
+  ],
+  "facts": {
+    "0": {
+      "sqlite_library_version": "3.45.1",
+      "db_size_bytes": 15174819840,
+      "other_timestamp_like_columns": [],
+      "time_formats": {
+        "date_local": "iso_date",
+        "time_local": "iso_datetime",
+        "time_utc": "iso_datetime",
+        "ingest": null
+      },
+      "has_rowid": true,
+      "rowid_range": [
+        1,
+        118047569
+      ],
+      "db_sha256": "7aa5d423bb381db2e1ab60c3dc95ca986e0e1140a4b41140ac3ea101382244d0"
+    },
+    "1": {
+      "device_ids_null_or_blank": 0,
+      "device_ids_changed_by_clean": 0,
+      "device_ids_colliding_case_insensitive": 0,
+      "rows": 7183,
+      "distinct_ids_after_clean": 7183,
+      "machine_types": 26,
+      "unknown_type_devices": 161,
+      "distinct_hosts": 695,
+      "distinct_hosts_normalised": 688,
+      "blank_string_hosts": 0,
+      "null_host_devices": 151,
+      "shared_internal_host_devices": 411,
+      "shared_internal_host_url_variants": 1,
+      "hosts_with_trailing_slash": 0
+    },
+    "3": {
+      "fleet_share_pct[Multi-account]": 27.23,
+      "hosts[Multi-account]": 82,
+      "fleet_share_pct[No host (NULL)]": 2.1,
+      "hosts[No host (NULL)]": 1,
+      "fleet_share_pct[No tickets]": 5.36,
+      "hosts[No tickets]": 126,
+      "fleet_share_pct[Shared internal host]": 5.72,
+      "hosts[Shared internal host]": 1,
+      "fleet_share_pct[Single-account]": 59.59,
+      "hosts[Single-account]": 486
+    },
+    "4": {
+      "scan_task_seconds": {
+        "A_month_code": 448.0,
+        "B_hours": 470.5,
+        "C_transition_days": 37.9,
+        "D_clock_differ": 15.9,
+        "F_pilot_rows": 40.2,
+        "G_code_totals": 102.7
+      },
+      "groups_with_null_month": 0,
+      "unmapped_ids_that_match_after_clean": 0,
+      "transacting_ids_not_in_devices_table": 0,
+      "device_table_ids_without_transactions": 232,
+      "rowid_span_minus_rows": 0
+    },
+    "5": {
+      "transacting_devices_by_zone": {
+        "Arizona (no DST)": 23,
+        "Central": 457,
+        "Eastern": 2101,
+        "Hawaii (no DST)": 10,
+        "Mountain": 64,
+        "Newfoundland": 2,
+        "Pacific": 293,
+        "Unlinked (no ticket location)": 4001
+      },
+      "utc_hour_differs_from_local_hour_rows": 155
+    },
+    "7": {
+      "clock_differ_offsets_hours": {
+        "-4.0": 130,
+        "-5.0": 25
+      },
+      "clock_differ_devices": 2
+    }
+  },
+  "outputs": {
+    "public": [
+      "db_schema_master.csv",
+      "db_schema_columns.csv",
+      "db_schema_indexes.csv",
+      "db_schema_resolution.csv",
+      "db_value_formats.csv",
+      "db_sqlite_stat1.csv",
+      "db_row_counts.csv",
+      "db_devices_summary.csv",
+      "db_devices_machine_types.csv",
+      "db_devices_status.csv",
+      "db_devices_type_by_status.csv",
+      "db_codes_buckets.csv",
+      "db_record_quality.csv",
+      "db_linkage.csv",
+      "db_unmatched_profile.csv",
+      "db_unmatched_near_match.csv",
+      "db_model_type_mapping.csv",
+      "db_model_type_mapping_head_vs_expected.csv",
+      "db_customer_host_audit.csv",
+      "db_mapping_summary_variants.csv",
+      "db_host_level.csv",
+      "db_host_class_fleet_share.csv",
+      "db_accounts_per_host.csv",
+      "db_hosts_per_account.csv",
+      "db_query_plans.csv",
+      "db_telemetry_by_month.csv",
+      "db_telemetry_date_coverage.csv",
+      "db_telemetry_buckets.csv",
+      "db_telemetry_code_totals.csv",
+      "db_comparison_cohort.csv",
+      "db_comparison_cohort_vs_expected.csv",
+      "db_ticket_cohort_exclusions.csv",
+      "db_machine_type_rates.csv",
+      "db_machine_type_rates_vs_expected.csv",
+      "db_monthly_comparison.csv",
+      "db_monthly_comparison_vs_expected.csv",
+      "db_pilot_window_counts.csv",
+      "db_pilot_scenario_summary.csv",
+      "db_pilot_scenario_summary_vs_expected.csv",
+      "db_pilot_offset0_vs_expected.csv",
+      "db_pilot_last_distinct_codes.csv",
+      "db_pilot_last_codes_head_vs_expected.csv",
+      "db_clock_devices_by_zone.csv",
+      "db_clock_hypotheses_local.csv",
+      "db_clock_hypotheses_utc.csv",
+      "db_clock_hour_profiles.csv",
+      "db_clock_shift_estimates.csv",
+      "db_clock_hour_by_zone_month.csv",
+      "db_date_time_mismatch_by_zone_hour.csv",
+      "db_dst_transition_hourly.csv",
+      "db_dst_transition_metrics.csv",
+      "db_clock_differ_rows.csv",
+      "db_clock_differ_summary.csv"
+    ],
+    "private": [
+      "db_private_events_first_rows.csv",
+      "db_private_host_map.csv",
+      "db_private_unmatched_near_match.csv",
+      "db_private_unmatched_serials.csv",
+      "db_private_host_level.csv",
+      "db_private_clock_differ_rows.csv",
+      "db_analysis.sqlite"
+    ]
+  }
+}

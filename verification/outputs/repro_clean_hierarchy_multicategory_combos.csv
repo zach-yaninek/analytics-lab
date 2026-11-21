@@ -1,0 +1,7 @@
+trouble_code,subcategory,categories,category_values,cases,cases_with_category
+Electronics,Replacement,5,"Camera,Computer Board,Decoder,Power Supply,Touchscreen",292,292
+Electro/Mechanical,Home Switch/Adjustment,2,"Packer,SAM",125,125
+Electro/Mechanical,Lock Adjustment,2,"Deposit Door,Service Door",57,57
+Electronics,Training,2,"Loader Board,Touchscreen",25,25
+Electro/Mechanical,Training,5,"Counterweight System,Deposit Door,Main Door,Service Door,User Door",21,21
+Software,End User,2,"Credit Issues,Training",11,11

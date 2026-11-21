@@ -1,0 +1,6 @@
+clock,zone_map,steps,backward,ties
+"export clock, as recorded",,7470,0,173
+shown locally: each recorded time as its hospital's zone would show it,"state + ZIP3: the state, with 3-digit ZIP rules for split states (timestamp_semantics.py)",7470,1312,133
+shown locally: each recorded time as its hospital's zone would show it,state only: the state alone,7470,1295,134
+"read as local: each recorded time read as its hospital's local time, moved to US Eastern","state + ZIP3: the state, with 3-digit ZIP rules for split states (timestamp_semantics.py)",7470,1220,127
+"read as local: each recorded time read as its hospital's local time, moved to US Eastern",state only: the state alone,7470,1210,128

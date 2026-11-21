@@ -1,0 +1,7 @@
+task,mode,plan
+A_month_code,chunked,SEARCH transaction_events USING INTEGER PRIMARY KEY (rowid>? AND rowid<?) | USE TEMP B-TREE FOR GROUP BY
+B_hours,chunked,SEARCH transaction_events USING INTEGER PRIMARY KEY (rowid>? AND rowid<?) | USE TEMP B-TREE FOR GROUP BY
+C_transition_days,chunked,SEARCH transaction_events USING INTEGER PRIMARY KEY (rowid>? AND rowid<?) | USE TEMP B-TREE FOR GROUP BY
+D_clock_differ,chunked,SEARCH transaction_events USING INTEGER PRIMARY KEY (rowid>? AND rowid<?)
+F_pilot_rows,chunked,SEARCH transaction_events USING INTEGER PRIMARY KEY (rowid>? AND rowid<?)
+G_code_totals,chunked,SEARCH transaction_events USING INTEGER PRIMARY KEY (rowid>? AND rowid<?) | USE TEMP B-TREE FOR GROUP BY

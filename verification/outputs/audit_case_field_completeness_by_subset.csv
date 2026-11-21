@@ -1,0 +1,9 @@
+subset,tickets,trouble_code_missing,category_missing,subcategory_missing,subcategory_missing_pct,resolution_missing,resolution_missing_pct
+All tickets,7471,101,330,2315,30.99,641,8.58
+Status Trouble Closed,7384,17,246,2230,30.2,594,8.04
+Status not Trouble Closed,87,84,84,85,97.7,47,54.02
+Unplanned (service_cases),7186,101,325,2042,28.42,499,6.94
+Other recorded issue & Trouble Closed,6506,0,224,1363,20.95,319,4.9
+No Trouble Found,577,0,0,577,100.0,118,20.45
+Cancelled request,247,0,0,247,100.0,135,54.66
+Proactive monitoring,132,11,85,132,100.0,106,80.3

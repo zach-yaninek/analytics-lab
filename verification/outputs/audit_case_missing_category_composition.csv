@@ -1,0 +1,13 @@
+trouble_code,status,cases
+Electro/Mechanical,Trouble Closed,12
+Electronics,Trouble Closed,7
+Miscellaneous,Trouble Closed,190
+Network,Trouble Closed,8
+Operator Error,Trouble Closed,1
+Repair/Investigate,Trouble Closed,4
+Software,Trouble Closed,2
+[Missing],Case Closed,4
+[Missing],Closed,6
+[Missing],Dispatch,63
+[Missing],Ricoh-Closed,11
+[Missing],Trouble Closed,17

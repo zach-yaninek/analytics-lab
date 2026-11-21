@@ -1,0 +1,13 @@
+pattern,trouble_reported_tickets,trouble_reported_share,trouble_reported_open_tickets,trouble_resolution_tickets,trouble_resolution_share
+replace*,149,0.0199,0,2023,0.2708
+resolve*,58,0.0078,0,153,0.0205
+repaired/repairing,2,0.0003,0,106,0.0142
+fixed,12,0.0016,0,114,0.0153
+tech/technician,151,0.0202,2,611,0.0818
+onsite/on site,361,0.0483,2,341,0.0456
+completed,27,0.0036,0,262,0.0351
+FCR (first-call troubleshooting),3001,0.4017,46,148,0.0198
+reboot/reset,2331,0.312,22,864,0.1156
+did not clear / no obstructions (intake triage),473,0.0633,3,19,0.0025
+call IPA once onsite (dispatch instruction),348,0.0466,3,38,0.0051
+past-tense repair phrase,91,0.0122,0,2879,0.3854

@@ -1,0 +1,431 @@
+machine_id,model,total_tickets,category,tickets
+M00071,MV,16,Power Supply,4
+M00071,MV,16,Computer Board,3
+M00071,MV,16,No Trouble Found,2
+M00071,MV,16,SAM,2
+M00071,MV,16,Touchscreen,2
+M00071,MV,16,Power,1
+M00071,MV,16,Training,1
+M00071,MV,16,[Missing],1
+M00087,LC-30,6,Computer Board,3
+M00087,LC-30,6,Counterweight System,2
+M00087,LC-30,6,Weight Scale,1
+M00089,LC-30,7,Main Door,4
+M00089,LC-30,7,Curtain,2
+M00089,LC-30,7,Counterweight System,1
+M00155,LVD-Remote,6,Computer Board,1
+M00155,LVD-Remote,6,Power Supply,1
+M00155,LVD-Remote,6,SAM,1
+M00155,LVD-Remote,6,Touchscreen,1
+M00155,LVD-Remote,6,User Door,1
+M00155,LVD-Remote,6,[Missing],1
+M00325,LVD-Remote,6,Computer Board,2
+M00325,LVD-Remote,6,Deposit Door,1
+M00325,LVD-Remote,6,Loader Board,1
+M00325,LVD-Remote,6,Power Supply,1
+M00325,LVD-Remote,6,User Access,1
+M00449,LVRR-WP,7,Deposit Door,4
+M00449,LVRR-WP,7,Computer Board,2
+M00449,LVRR-WP,7,Dead Data Jack,1
+M00487,SV-48,6,Computer Board,4
+M00487,SV-48,6,Network Settings,1
+M00487,SV-48,6,No Trouble Found,1
+M00549,MC-30,6,[Missing],2
+M00549,MC-30,6,Dead Data Jack,1
+M00549,MC-30,6,Main Door,1
+M00549,MC-30,6,No Trouble Found,1
+M00549,MC-30,6,Touchscreen,1
+M00564,LVRR-WP,5,Service Door,3
+M00564,LVRR-WP,5,No Trouble Found,1
+M00564,LVRR-WP,5,[Missing],1
+M00623,LVD-Remote,7,SAM,5
+M00623,LVD-Remote,7,No Trouble Found,1
+M00623,LVD-Remote,7,[Missing],1
+M00639,MV,7,Power Supply,3
+M00639,MV,7,Touchscreen,2
+M00639,MV,7,Computer Board,1
+M00639,MV,7,Power,1
+M00789,LVRR-WP,8,Packer,3
+M00789,LVRR-WP,8,Computer Board,1
+M00789,LVRR-WP,8,Deposit Door,1
+M00789,LVRR-WP,8,IP/Reprogramming,1
+M00789,LVRR-WP,8,Improper Use,1
+M00789,LVRR-WP,8,Loading Error,1
+M00791,LVRR-WP,6,Deposit Door,4
+M00791,LVRR-WP,6,Main Door,1
+M00791,LVRR-WP,6,Service Door,1
+M00863,LVD-Remote,6,Computer Board,2
+M00863,LVD-Remote,6,Loading Error,1
+M00863,LVD-Remote,6,No Trouble Found,1
+M00863,LVD-Remote,6,SAM,1
+M00863,LVD-Remote,6,User Door,1
+M00945,LC-30,7,Curtain,4
+M00945,LC-30,7,Main Door,2
+M00945,LC-30,7,Counterweight System,1
+M00956,LVRR-WP,7,Camera,2
+M00956,LVRR-WP,7,Computer Board,2
+M00956,LVRR-WP,7,Deposit Door,2
+M00956,LVRR-WP,7,Issue,1
+M01003,LVRR-WP,9,Packer,5
+M01003,LVRR-WP,9,Deposit Door,2
+M01003,LVRR-WP,9,Camera,1
+M01003,LVRR-WP,9,No Trouble Found,1
+M01070,MC-30,6,Counterweight System,2
+M01070,MC-30,6,Main Door,2
+M01070,MC-30,6,No Trouble Found,1
+M01070,MC-30,6,Weight Scale,1
+M01232,scrubBank 480,11,Main Door,4
+M01232,scrubBank 480,11,No Trouble Found,3
+M01232,scrubBank 480,11,[Missing],2
+M01232,scrubBank 480,11,Computer Board,1
+M01232,scrubBank 480,11,User Door,1
+M01300,LC-30,6,Computer Board,3
+M01300,LC-30,6,Badge Reader,1
+M01300,LC-30,6,Curtain,1
+M01300,LC-30,6,Main Door,1
+M01497,LVRR-WP-2.0,6,No Trouble Found,2
+M01497,LVRR-WP-2.0,6,Packer,2
+M01497,LVRR-WP-2.0,6,Deposit Door,1
+M01497,LVRR-WP-2.0,6,Service Door,1
+M01507,LC-30,6,Main Door,3
+M01507,LC-30,6,Counterweight System,1
+M01507,LC-30,6,No Trouble Found,1
+M01507,LC-30,6,[Missing],1
+M01554,MV,5,Packer,4
+M01554,MV,5,Loading Error,1
+M01626,MV,5,Deposit Door,4
+M01626,MV,5,No Trouble Found,1
+M02168,LVD-Remote-2.0,12,SAM,4
+M02168,LVD-Remote-2.0,12,Touchscreen,2
+M02168,LVD-Remote-2.0,12,Badge Reader,1
+M02168,LVD-Remote-2.0,12,Computer Board,1
+M02168,LVD-Remote-2.0,12,Network Settings,1
+M02168,LVD-Remote-2.0,12,No Trouble Found,1
+M02168,LVD-Remote-2.0,12,User Access,1
+M02168,LVD-Remote-2.0,12,[Missing],1
+M02303,MV-2.0,6,Network Intermittent,2
+M02303,MV-2.0,6,Drawers,1
+M02303,MV-2.0,6,No Trouble Found,1
+M02303,MV-2.0,6,Power Supply,1
+M02303,MV-2.0,6,Touchscreen,1
+M02335,alEx LC-D,14,Curtain,11
+M02335,alEx LC-D,14,[Missing],2
+M02335,alEx LC-D,14,Device Not Found,1
+M02341,LVD-Remote-2.0,5,SAM,2
+M02341,LVD-Remote-2.0,5,Main Door,1
+M02341,LVD-Remote-2.0,5,Touchscreen,1
+M02341,LVD-Remote-2.0,5,[Missing],1
+M02386,alEx LC-D,23,Curtain,12
+M02386,alEx LC-D,23,No Trouble Found,4
+M02386,alEx LC-D,23,[Missing],4
+M02386,alEx LC-D,23,Main Door,2
+M02386,alEx LC-D,23,Loading Error,1
+M02399,alEx LC-D,7,Curtain,6
+M02399,alEx LC-D,7,Counterweight System,1
+M02405,alEx LC-D,11,No Trouble Found,3
+M02405,alEx LC-D,11,Cable disconnected/Loose,2
+M02405,alEx LC-D,11,Dead Data Jack,2
+M02405,alEx LC-D,11,Network Settings,2
+M02405,alEx LC-D,11,IP/Reprogramming,1
+M02405,alEx LC-D,11,Network Intermittent,1
+M02459,MV-2.0,6,SAM,5
+M02459,MV-2.0,6,User Door,1
+M02541,alEx MC-D,6,Curtain,5
+M02541,alEx MC-D,6,Main Door,1
+M02545,alEx LC-S,6,Curtain,5
+M02545,alEx LC-S,6,Loading Error,1
+M02686,MV-2.0,8,Packer,3
+M02686,MV-2.0,8,No Trouble Found,2
+M02686,MV-2.0,8,Computer Board,1
+M02686,MV-2.0,8,IP/Reprogramming,1
+M02686,MV-2.0,8,[Missing],1
+M02758,scrubBank 480,13,User Door,4
+M02758,scrubBank 480,13,Main Door,3
+M02758,scrubBank 480,13,No Trouble Found,3
+M02758,scrubBank 480,13,Curtain,1
+M02758,scrubBank 480,13,SAM,1
+M02758,scrubBank 480,13,[Missing],1
+M02847,MV-2.0,7,Network Settings,4
+M02847,MV-2.0,7,[Missing],3
+M02848,MV-2.0,6,Deposit Door,4
+M02848,MV-2.0,6,Touchscreen,2
+M02859,SV-48-2.0,7,Packer,3
+M02859,SV-48-2.0,7,Deposit Door,1
+M02859,SV-48-2.0,7,Loading Error,1
+M02859,SV-48-2.0,7,No Trouble Found,1
+M02859,SV-48-2.0,7,SAM,1
+M02922,LVRR-WP,6,Computer Board,2
+M02922,LVRR-WP,6,Dead Data Jack,1
+M02922,LVRR-WP,6,Network Intermittent,1
+M02922,LVRR-WP,6,Network Settings,1
+M02922,LVRR-WP,6,[Missing],1
+M02975,LVRR-WP-2.0,12,Deposit Door,6
+M02975,LVRR-WP-2.0,12,Packer,2
+M02975,LVRR-WP-2.0,12,Camera,1
+M02975,LVRR-WP-2.0,12,Computer Board,1
+M02975,LVRR-WP-2.0,12,Touchscreen,1
+M02975,LVRR-WP-2.0,12,[Missing],1
+M02984,LVD-Remote-2.0,8,SAM,7
+M02984,LVD-Remote-2.0,8,No Trouble Found,1
+M03003,LVRR-WP-2.0,7,Camera,2
+M03003,LVRR-WP-2.0,7,Deposit Door,2
+M03003,LVRR-WP-2.0,7,Computer Board,1
+M03003,LVRR-WP-2.0,7,Power,1
+M03003,LVRR-WP-2.0,7,Service Door,1
+M03152,LVD-Remote-2.0,8,Touchscreen,4
+M03152,LVD-Remote-2.0,8,No Trouble Found,2
+M03152,LVD-Remote-2.0,8,Power Supply,2
+M03209,LVRR-WP-2.0,6,Deposit Door,4
+M03209,LVRR-WP-2.0,6,No Trouble Found,1
+M03209,LVRR-WP-2.0,6,Service Door,1
+M03292,LVRR-WP-2.0,6,Deposit Door,3
+M03292,LVRR-WP-2.0,6,Loading Error,1
+M03292,LVRR-WP-2.0,6,Network Settings,1
+M03292,LVRR-WP-2.0,6,Packer,1
+M03299,alEx LC-D,6,Curtain,5
+M03299,alEx LC-D,6,No Trouble Found,1
+M03346,MV-2.0,5,User Door,2
+M03346,MV-2.0,5,[Missing],2
+M03346,MV-2.0,5,Cable disconnected/Loose,1
+M03471,alEx LC-D,7,Curtain,4
+M03471,alEx LC-D,7,Computer Board,1
+M03471,alEx LC-D,7,Main Door,1
+M03471,alEx LC-D,7,Power Supply,1
+M03472,alEx LC-D,13,Curtain,9
+M03472,alEx LC-D,13,Counterweight System,1
+M03472,alEx LC-D,13,Main Door,1
+M03472,alEx LC-D,13,No Trouble Found,1
+M03472,alEx LC-D,13,[Missing],1
+M03488,alEx LC-D,8,Curtain,3
+M03488,alEx LC-D,8,Power Supply,2
+M03488,alEx LC-D,8,Cable disconnected/Loose,1
+M03488,alEx LC-D,8,Main Door,1
+M03488,alEx LC-D,8,Network Intermittent,1
+M03513,LVD-Remote-2.0,9,Computer Board,2
+M03513,LVD-Remote-2.0,9,No Trouble Found,2
+M03513,LVD-Remote-2.0,9,Touchscreen,2
+M03513,LVD-Remote-2.0,9,Firewall,1
+M03513,LVD-Remote-2.0,9,Main Door,1
+M03513,LVD-Remote-2.0,9,SAM,1
+M03529,alEx LC-D,8,Curtain,5
+M03529,alEx LC-D,8,Counterweight System,1
+M03529,alEx LC-D,8,Improper Use,1
+M03529,alEx LC-D,8,No Trouble Found,1
+M03629,alEx MC-D,11,Curtain,8
+M03629,alEx MC-D,11,No Trouble Found,2
+M03629,alEx MC-D,11,Network Settings,1
+M03630,alEx MC-D,8,Curtain,5
+M03630,alEx MC-D,8,Counterweight System,2
+M03630,alEx MC-D,8,Computer Board,1
+M03637,MV-2.0,7,Deposit Door,3
+M03637,MV-2.0,7,No Trouble Found,2
+M03637,MV-2.0,7,Drawers,1
+M03637,MV-2.0,7,Power Supply,1
+M03656,LVD-Remote-2.0,6,User Door,3
+M03656,LVD-Remote-2.0,6,Main Door,2
+M03656,LVD-Remote-2.0,6,SAM,1
+M03708,alEx MC-D,7,Curtain,5
+M03708,alEx MC-D,7,Badge Reader,1
+M03708,alEx MC-D,7,Counterweight System,1
+M03729,LVD-Remote-2.0,6,Touchscreen,5
+M03729,LVD-Remote-2.0,6,Loading Error,1
+M03753,MV-2.0,6,Deposit Door,4
+M03753,MV-2.0,6,Computer Board,1
+M03753,MV-2.0,6,No Trouble Found,1
+M03975,LVRR-WP-2.0,9,Deposit Door,6
+M03975,LVRR-WP-2.0,9,Network Intermittent,1
+M03975,LVRR-WP-2.0,9,No Trouble Found,1
+M03975,LVRR-WP-2.0,9,Touchscreen,1
+M03991,LVRR-WP,8,Deposit Door,5
+M03991,LVRR-WP,8,Camera,1
+M03991,LVRR-WP,8,No Trouble Found,1
+M03991,LVRR-WP,8,Power,1
+M04114,LVRR-WP,9,Computer Board,3
+M04114,LVRR-WP,9,No Trouble Found,2
+M04114,LVRR-WP,9,Deposit Door,1
+M04114,LVRR-WP,9,IP/Reprogramming,1
+M04114,LVRR-WP,9,Packer,1
+M04114,LVRR-WP,9,[Missing],1
+M04325,LVRR-WP-2.0,8,Deposit Door,6
+M04325,LVRR-WP-2.0,8,Camera,1
+M04325,LVRR-WP-2.0,8,[Missing],1
+M04340,LVRR-WP-2.0,6,[Missing],2
+M04340,LVRR-WP-2.0,6,Computer Board,1
+M04340,LVRR-WP-2.0,6,Power,1
+M04340,LVRR-WP-2.0,6,Power Supply,1
+M04340,LVRR-WP-2.0,6,SAM,1
+M04446,MV-2.0,6,Network Intermittent,1
+M04446,MV-2.0,6,Network Settings,1
+M04446,MV-2.0,6,No Trouble Found,1
+M04446,MV-2.0,6,Touchscreen,1
+M04446,MV-2.0,6,User Door,1
+M04446,MV-2.0,6,[Missing],1
+M04448,alEx LC-D,9,Curtain,5
+M04448,alEx LC-D,9,No Trouble Found,2
+M04448,alEx LC-D,9,Power Supply,1
+M04448,alEx LC-D,9,[Missing],1
+M04468,LVRR-WP-2.0,7,Deposit Door,6
+M04468,LVRR-WP-2.0,7,[Missing],1
+M04496,LVD-Remote-2.0,9,Touchscreen,6
+M04496,LVD-Remote-2.0,9,Computer Board,1
+M04496,LVD-Remote-2.0,9,No Trouble Found,1
+M04496,LVD-Remote-2.0,9,User Door,1
+M04510,alEx LC-D,12,Curtain,8
+M04510,alEx LC-D,12,Main Door,3
+M04510,alEx LC-D,12,[Missing],1
+M04523,alEx LC-S,6,Curtain,5
+M04523,alEx LC-S,6,Main Door,1
+M04534,alEx LC-D,8,Curtain,8
+M04581,alEx LC-D,8,Curtain,3
+M04581,alEx LC-D,8,Power Supply,3
+M04581,alEx LC-D,8,Main Door,1
+M04581,alEx LC-D,8,No Trouble Found,1
+M04582,alEx LC-D,6,Curtain,3
+M04582,alEx LC-D,6,Power Supply,3
+M04641,LVRR-WP-2.0,6,Deposit Door,5
+M04641,LVRR-WP-2.0,6,[Missing],1
+M04651,LVRR-WP-2.0,8,Deposit Door,3
+M04651,LVRR-WP-2.0,8,No Trouble Found,1
+M04651,LVRR-WP-2.0,8,Power,1
+M04651,LVRR-WP-2.0,8,Power Supply,1
+M04651,LVRR-WP-2.0,8,Service Door,1
+M04651,LVRR-WP-2.0,8,[Missing],1
+M04657,LVRR-WP-2.0,7,Deposit Door,6
+M04657,LVRR-WP-2.0,7,[Missing],1
+M04659,LVRR-WP-2.0,8,Deposit Door,5
+M04659,LVRR-WP-2.0,8,No Trouble Found,1
+M04659,LVRR-WP-2.0,8,Power,1
+M04659,LVRR-WP-2.0,8,Power Supply,1
+M04663,MV-2.0,7,Deposit Door,6
+M04663,MV-2.0,7,No Trouble Found,1
+M04764,alEx LC-D,8,Curtain,4
+M04764,alEx LC-D,8,Main Door,3
+M04764,alEx LC-D,8,[Missing],1
+M04791,LVRR-WP-2.0,14,Deposit Door,11
+M04791,LVRR-WP-2.0,14,No Trouble Found,1
+M04791,LVRR-WP-2.0,14,Packer,1
+M04791,LVRR-WP-2.0,14,Service Door,1
+M04825,MV-2.0,6,Deposit Door,3
+M04825,MV-2.0,6,Computer Board,1
+M04825,MV-2.0,6,Physical Damage,1
+M04825,MV-2.0,6,[Missing],1
+M04995,alEx MC-D,7,Curtain,4
+M04995,alEx MC-D,7,Counterweight System,1
+M04995,alEx MC-D,7,Physical Damage,1
+M04995,alEx MC-D,7,Touchscreen,1
+M05125,alEx MC-D,7,Curtain,2
+M05125,alEx MC-D,7,No Trouble Found,2
+M05125,alEx MC-D,7,Computer Board,1
+M05125,alEx MC-D,7,Counterweight System,1
+M05125,alEx MC-D,7,Loading Error,1
+M05132,LVRR-WP-2.0,7,Computer Board,3
+M05132,LVRR-WP-2.0,7,Badge Reader,1
+M05132,LVRR-WP-2.0,7,Deposit Door,1
+M05132,LVRR-WP-2.0,7,No Trouble Found,1
+M05132,LVRR-WP-2.0,7,[Missing],1
+M05187,LVRR-WP-2.0,7,Computer Board,3
+M05187,LVRR-WP-2.0,7,Packer,2
+M05187,LVRR-WP-2.0,7,Deposit Door,1
+M05187,LVRR-WP-2.0,7,[Missing],1
+M05220,LVRR-WP-2.0,11,Deposit Door,4
+M05220,LVRR-WP-2.0,11,Network Intermittent,2
+M05220,LVRR-WP-2.0,11,Computer Board,1
+M05220,LVRR-WP-2.0,11,Decoder,1
+M05220,LVRR-WP-2.0,11,No Trouble Found,1
+M05220,LVRR-WP-2.0,11,Touchscreen,1
+M05220,LVRR-WP-2.0,11,[Missing],1
+M05229,LVRR-WP-2.0,8,Deposit Door,2
+M05229,LVRR-WP-2.0,8,No Trouble Found,2
+M05229,LVRR-WP-2.0,8,Packer,2
+M05229,LVRR-WP-2.0,8,Computer Board,1
+M05229,LVRR-WP-2.0,8,[Missing],1
+M05241,LVRR-WP-2.0,7,Deposit Door,5
+M05241,LVRR-WP-2.0,7,Touchscreen,1
+M05241,LVRR-WP-2.0,7,[Missing],1
+M05332,SV-48-2.0,8,Deposit Door,5
+M05332,SV-48-2.0,8,Power Supply,2
+M05332,SV-48-2.0,8,Power,1
+M05361,MV-2.0,6,Packer,4
+M05361,MV-2.0,6,Computer Board,1
+M05361,MV-2.0,6,Deposit Door,1
+M05428,LVD-Remote-2.0,7,SAM,3
+M05428,LVD-Remote-2.0,7,Main Door,2
+M05428,LVD-Remote-2.0,7,[Missing],2
+M05548,LVD-Remote-2.0,7,[Missing],2
+M05548,LVD-Remote-2.0,7,Badge Reader,1
+M05548,LVD-Remote-2.0,7,Cable disconnected/Loose,1
+M05548,LVD-Remote-2.0,7,Computer Board,1
+M05548,LVD-Remote-2.0,7,Main Door,1
+M05548,LVD-Remote-2.0,7,No Trouble Found,1
+M05572,LVD-Remote-2.0,12,User Door,8
+M05572,LVD-Remote-2.0,12,[Missing],2
+M05572,LVD-Remote-2.0,12,Main Door,1
+M05572,LVD-Remote-2.0,12,No Trouble Found,1
+M05599,LVRR-WP-2.0,7,Badge Reader,2
+M05599,LVRR-WP-2.0,7,Computer Board,2
+M05599,LVRR-WP-2.0,7,Deposit Door,2
+M05599,LVRR-WP-2.0,7,[Missing],1
+M05629,LVRR-WP-2.0,6,Deposit Door,6
+M05807,LVD-Remote-2.0,6,Main Door,4
+M05807,LVD-Remote-2.0,6,Computer Board,1
+M05807,LVD-Remote-2.0,6,No Trouble Found,1
+M05904,LVD-Remote-2.0,9,SAM,6
+M05904,LVD-Remote-2.0,9,No Trouble Found,1
+M05904,LVD-Remote-2.0,9,User Door,1
+M05904,LVD-Remote-2.0,9,[Missing],1
+M05917,LVRR-WP-2.0,8,Deposit Door,7
+M05917,LVRR-WP-2.0,8,Computer Board,1
+M05930,MV-2.0,6,No Trouble Found,2
+M05930,MV-2.0,6,SAM,2
+M05930,MV-2.0,6,Computer Board,1
+M05930,MV-2.0,6,Packer,1
+M06292,MV-2.0,7,User Door,3
+M06292,MV-2.0,7,[Missing],2
+M06292,MV-2.0,7,Deposit Door,1
+M06292,MV-2.0,7,No Trouble Found,1
+M06293,LVRR-WP-2.0,7,Deposit Door,4
+M06293,LVRR-WP-2.0,7,Camera,1
+M06293,LVRR-WP-2.0,7,Loading Error,1
+M06293,LVRR-WP-2.0,7,No Trouble Found,1
+M06456,LVD-Remote-2.0,5,SAM,2
+M06456,LVD-Remote-2.0,5,User Door,2
+M06456,LVD-Remote-2.0,5,[Missing],1
+M06465,LVRR-WP-2.0,6,Deposit Door,5
+M06465,LVRR-WP-2.0,6,[Missing],1
+M06943,MV,5,Computer Board,2
+M06943,MV,5,No Trouble Found,1
+M06943,MV,5,Power Supply,1
+M06943,MV,5,[Missing],1
+M06954,LVRR-WP,5,Deposit Door,3
+M06954,LVRR-WP,5,Camera,1
+M06954,LVRR-WP,5,Computer Board,1
+M07004,SD-64,9,Power Supply,3
+M07004,SD-64,9,Loader Board,2
+M07004,SD-64,9,Touchscreen,2
+M07004,SD-64,9,No Trouble Found,1
+M07004,SD-64,9,[Missing],1
+M07012,SV-48,7,Computer Board,2
+M07012,SV-48,7,No Trouble Found,1
+M07012,SV-48,7,Power Supply,1
+M07012,SV-48,7,SAM,1
+M07012,SV-48,7,Touchscreen,1
+M07012,SV-48,7,User Door,1
+M07237,LVD-Remote,6,[Missing],2
+M07237,LVD-Remote,6,Main Door,1
+M07237,LVD-Remote,6,No Trouble Found,1
+M07237,LVD-Remote,6,SAM,1
+M07237,LVD-Remote,6,User Door,1
+M07420,MV,5,No Trouble Found,2
+M07420,MV,5,Power Supply,2
+M07420,MV,5,[Missing],1
+M07787,MV,6,Badge Reader,2
+M07787,MV,6,Loader Board,1
+M07787,MV,6,Network Intermittent,1
+M07787,MV,6,No Trouble Found,1
+M07787,MV,6,[Missing],1
+M07830,LC-30,9,Main Door,5
+M07830,LC-30,9,Counterweight System,3
+M07830,LC-30,9,No Trouble Found,1
+M07876,LC-30,7,Counterweight System,4
+M07876,LC-30,7,Weight Scale,2
+M07876,LC-30,7,Main Door,1

@@ -1,0 +1,4 @@
+table,index,unique,origin,partial,columns
+transaction_codes,sqlite_autoindex_transaction_codes_1,1,pk,0,transaction_code
+transaction_events,ix_ev_code,0,c,0,transaction_code
+transaction_events,ix_ev_device_date,0,c,0,"external_device_id,transaction_date_local"

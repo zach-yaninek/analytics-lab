@@ -1,0 +1,19 @@
+case_clock,telemetry_clock,add_hours,tickets,share
+US Eastern (DST-observing),UTC,4.0,5073,0.679
+US Eastern (DST-observing),UTC,5.0,2398,0.321
+US Eastern (DST-observing),machine-local,-6.0,10,0.0013
+US Eastern (DST-observing),machine-local,-5.0,4,0.0005
+US Eastern (DST-observing),machine-local,-3.0,739,0.0989
+US Eastern (DST-observing),machine-local,-2.0,184,0.0246
+US Eastern (DST-observing),machine-local,-1.0,1060,0.1419
+US Eastern (DST-observing),machine-local,0.0,5463,0.7312
+US Eastern (DST-observing),machine-local,1.5,11,0.0015
+US Central (DST-observing),UTC,5.0,5073,0.679
+US Central (DST-observing),UTC,6.0,2398,0.321
+US Central (DST-observing),machine-local,-5.0,10,0.0013
+US Central (DST-observing),machine-local,-4.0,4,0.0005
+US Central (DST-observing),machine-local,-2.0,739,0.0989
+US Central (DST-observing),machine-local,-1.0,184,0.0246
+US Central (DST-observing),machine-local,0.0,1060,0.1419
+US Central (DST-observing),machine-local,1.0,5463,0.7312
+US Central (DST-observing),machine-local,2.5,11,0.0015

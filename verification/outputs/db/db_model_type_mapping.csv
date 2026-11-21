@@ -1,0 +1,69 @@
+model,machine_type,matched_cases,machines
+A-LC,Unknown,10,5
+A-LC,alc-1,2,2
+LC-24,mlc-1,27,16
+LC-30,mlc-1,255,132
+LC-30,Unknown,1,1
+LVD-Remote,scrubex-2,465,241
+LVD-Remote,scrubex-1,23,16
+LVD-Remote,Unknown,4,3
+LVD-Remote-2.0,scrubex2.0-2,1227,608
+LVD-Remote-2.0,Unknown,13,6
+LVD-Remote-2.0,scrubex2.0-3,3,1
+LVD-Remote-2.0,sd2.0-49,1,1
+LVLR-WOP,scrubex-1,4,2
+LVRR-WOP,scrubex-3,14,6
+LVRR-WP,scrubex-3,293,156
+LVRR-WP,scrubex-7,119,55
+LVRR-WP,Unknown,12,7
+LVRR-WP,scrubex-1,8,3
+LVRR-WP-2.0,scrubex2.0-3,1085,541
+LVRR-WP-2.0,Unknown,2,1
+LVRR-WP-2.0,scrubex2.0-2,1,1
+LVRR-WP-2.0,scrubex-7,1,1
+LX,mlc-1,12,6
+MC-24,mlc-1,11,8
+MC-30,mlc-1,62,35
+MV,scrubex-4,247,126
+MV,scrubex-1,52,23
+MV,scrubex-5,4,1
+MV,Unknown,4,2
+MV,scrubex-6,1,1
+MV,scrubex-3,1,1
+MV-2.0,scrubex2.0-4,830,430
+MV-2.0,Unknown,5,3
+MV-2.0,scrubex2.0-2,1,1
+SC-24,mlc-1,10,7
+SC-30,mlc-1,1,1
+SD-64,sd-49,66,30
+SD-64,package name: alexsd-49,10,2
+SD-64,alexsd-49,4,1
+SV-48,scrubex-5,43,21
+SV-48,scrubex-1,2,2
+SV-48,scrubex2.0-5,1,1
+SV-48,scrubex-6,1,1
+SV-48,scrubex-4,1,1
+SV-48-2.0,scrubex2.0-5,111,68
+SV-48-2.0,scrubex2.0-4,3,1
+SV-48-2.0,scrubex2.0-0,1,1
+SV-48-2.0,Unknown,1,1
+alEx LC-D,alex2.0-3,295,121
+alEx LC-D,alex2.0-1,234,110
+alEx LC-D,Unknown,8,3
+alEx LC-D,alex2.0-0,6,2
+alEx LC-S,alex2.0-1,31,13
+alEx LC-S,alex2.0-3,30,15
+alEx LC-S,alex2.0-2,14,8
+alEx LC-S,Unknown,1,1
+alEx MC-D,alex2.0-3,112,46
+alEx MC-D,alex2.0-1,20,13
+alEx MC-D,Unknown,7,4
+alEx MC-S,alex2.0-3,29,18
+alEx MC-S,alex2.0-1,18,10
+alEx MC-S,alex2.0-4,17,11
+alEx MC-S,Unknown,2,1
+alEx SD 2.0,sd2.0-49,140,51
+alEx SD 2.0,scrubex2.0-2,1,1
+scrubBank 240,sbsx-49,20,12
+scrubBank 480,sbsx-51,72,20
+scrubXchange MX,sbsx-51,1,1

@@ -1,0 +1,8 @@
+tz,tickets,median_open_hour,p10_open_hour,opened_before_07,opened_after_19
+Arizona (no DST),51,13.72,10.4,0,0
+Central,1067,12.0,8.87,0,14
+Eastern,5478,10.88,7.98,4,75
+Hawaii,14,14.18,9.96,0,0
+Mountain,148,13.52,9.14,0,7
+Pacific,702,12.97,9.7,0,30
+Unparsed,11,8.77,7.1,0,0

@@ -1,0 +1,6 @@
+status,A monitoring template,B telemetry UI + code number,C telemetry UI mention,D code number only,E customer/other,all,share_A,share_B,share_C,share_D,share_E
+Trouble Closed,140,227,493,107,6417,7384,0.019,0.031,0.067,0.014,0.869
+Dispatch,0,6,0,2,56,64,0.0,0.094,0.0,0.031,0.875
+Ricoh-Closed,0,1,1,0,9,11,0.0,0.091,0.091,0.0,0.818
+Closed,0,0,0,0,7,7,0.0,0.0,0.0,0.0,1.0
+Case Closed,0,1,0,0,4,5,0.0,0.2,0.0,0.0,0.8

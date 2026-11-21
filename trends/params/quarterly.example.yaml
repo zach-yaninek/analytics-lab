@@ -1,0 +1,8 @@
+# Quarterly run (the default). Copy to params/quarterly.yaml and edit; relative paths are read from the trends folder.
+# Run:  ipa-trends run --params params/quarterly.yaml
+#  or:  ipa-trends run --engine notebook --params params/quarterly.yaml   (keeps the executed notebook with the run)
+RERUN_FREQUENCY: quarterly
+CASE_EXPORTS: data/raw/IPA_CaseHistory_*.xlsx
+EQUIPMENT_LISTS: data/raw/IPA_Active_Equipment_list_*.xlsx
+OUTPUT_DIR: data/output
+# Windows: OUTPUT_DIR: 'C:\Users\me\OneDrive - IPA\Trends\output'   (single quotes, or forward slashes: C:/Users/me/...)

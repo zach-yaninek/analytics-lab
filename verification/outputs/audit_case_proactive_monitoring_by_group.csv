@@ -1,0 +1,8 @@
+service_group,customer_or_other,proactive_monitoring,all
+Cancelled request,246,1,247
+Duplicate case,15,0,15
+Missing trouble code,90,11,101
+No Trouble Found,533,44,577
+Other recorded issue,6432,76,6508
+Planned work,23,0,23
+All,7339,132,7471

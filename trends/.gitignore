@@ -1,0 +1,26 @@
+# IPA's data and every run's outputs stay on this computer (never commit them)
+data/
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+!ipa_trends/definitions/request_types_v0.csv
+# parameter files can hold paths and names: only the examples are committed
+params/*.yaml
+params/*.yml
+params/*.json
+!params/*.example.yaml
+!params/reconcile_*.yaml
+# executed notebooks (only the empty ticket_trends.ipynb is committed), checkpoints, drafts, run logs
+*.ipynb
+!ticket_trends.ipynb
+executed_notebook.ipynb
+*.executed.ipynb
+.ipynb_checkpoints/
+*.eml
+*.log
+# the virtual environment of the one-time setup
+.venv/
+__pycache__/
+*.egg-info/
+build/

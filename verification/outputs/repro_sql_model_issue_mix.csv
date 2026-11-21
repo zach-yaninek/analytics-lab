@@ -1,0 +1,479 @@
+model,category,cases
+A-LC,Computer Board,8
+A-LC,No Trouble Found,7
+A-LC,Main Door,5
+A-LC,Network Settings,4
+A-LC,Badge Reader,4
+A-LC,Touchscreen,3
+A-LC,Dead Data Jack,3
+A-LC,Power Supply,2
+A-LC,Network Intermittent,2
+A-LC,Firewall,2
+A-LC,[Missing],2
+A-LC,User Access,1
+A-LC,Improper Use,1
+A-LC,Curtain,1
+A-LC,Counterweight System,1
+A-MC,Physical Damage,1
+A-MC,Main Door,1
+A-MC,Loading Error,1
+A-MC,Dead Data Jack,1
+A-MC,Curtain,1
+A-SC,Computer Board,3
+A-SC,User Door,1
+A-SC,Touchscreen,1
+A-SC,Network Intermittent,1
+A-SC,Main Door,1
+A-SC,Loading Error,1
+A-SC,Curtain,1
+A-SC,Badge Reader,1
+LC-24,Main Door,15
+LC-24,Counterweight System,5
+LC-24,Computer Board,5
+LC-24,[Missing],4
+LC-24,Curtain,2
+LC-24,Weight Scale,1
+LC-24,Touchscreen,1
+LC-24,Power,1
+LC-24,No Trouble Found,1
+LC-24,Network Settings,1
+LC-30,Main Door,85
+LC-30,Counterweight System,56
+LC-30,Curtain,53
+LC-30,Computer Board,32
+LC-30,No Trouble Found,17
+LC-30,Power,7
+LC-30,Dead Data Jack,7
+LC-30,Weight Scale,6
+LC-30,Touchscreen,6
+LC-30,Power Supply,6
+LC-30,Network Intermittent,4
+LC-30,Badge Reader,4
+LC-30,[Missing],4
+LC-30,Network Settings,3
+LC-30,User Access,2
+LC-30,Improper Use,2
+LC-30,Physical Damage,1
+LC-30,IP/Reprogramming,1
+LC-30,Device Not Found,1
+LC-30,Cable disconnected/Loose,1
+LVD-LOCAL,No Trouble Found,2
+LVD-LOCAL,Network Intermittent,2
+LVD-LOCAL,Network Settings,1
+LVD-LOCAL,Issue,1
+LVD-LOCAL,Computer Board,1
+LVD-Remote,User Door,156
+LVD-Remote,SAM,118
+LVD-Remote,Computer Board,87
+LVD-Remote,Main Door,79
+LVD-Remote,No Trouble Found,58
+LVD-Remote,[Missing],35
+LVD-Remote,Power Supply,27
+LVD-Remote,Touchscreen,24
+LVD-Remote,Network Settings,22
+LVD-Remote,Network Intermittent,16
+LVD-Remote,Loading Error,10
+LVD-Remote,Loader Board,10
+LVD-Remote,IP/Reprogramming,10
+LVD-Remote,Badge Reader,7
+LVD-Remote,Power,6
+LVD-Remote,Issue,5
+LVD-Remote,Deposit Door,5
+LVD-Remote,Cable disconnected/Loose,4
+LVD-Remote,Physical Damage,3
+LVD-Remote,Improper Use,3
+LVD-Remote,User Access,2
+LVD-Remote,Parts Order,2
+LVD-Remote,Drawers,2
+LVD-Remote,Credit Issues,2
+LVD-Remote,Packer,1
+LVD-Remote,Firewall,1
+LVD-Remote-2.0,SAM,277
+LVD-Remote-2.0,Touchscreen,211
+LVD-Remote-2.0,User Door,203
+LVD-Remote-2.0,No Trouble Found,134
+LVD-Remote-2.0,Main Door,130
+LVD-Remote-2.0,Computer Board,111
+LVD-Remote-2.0,[Missing],64
+LVD-Remote-2.0,Loading Error,38
+LVD-Remote-2.0,Power Supply,28
+LVD-Remote-2.0,Badge Reader,28
+LVD-Remote-2.0,Power,18
+LVD-Remote-2.0,Loader Board,18
+LVD-Remote-2.0,Network Settings,17
+LVD-Remote-2.0,Network Intermittent,17
+LVD-Remote-2.0,IP/Reprogramming,11
+LVD-Remote-2.0,Drawers,11
+LVD-Remote-2.0,Deposit Door,11
+LVD-Remote-2.0,Cable disconnected/Loose,11
+LVD-Remote-2.0,Issue,9
+LVD-Remote-2.0,Improper Use,7
+LVD-Remote-2.0,User Access,6
+LVD-Remote-2.0,Firewall,6
+LVD-Remote-2.0,Parts Order,5
+LVD-Remote-2.0,Dead Data Jack,5
+LVD-Remote-2.0,Credit Issues,5
+LVD-Remote-2.0,Training,4
+LVD-Remote-2.0,Decoder,4
+LVD-Remote-2.0,Physical Damage,2
+LVD-Remote-2.0,Security Updates,1
+LVD-Remote-2.0,Device Not Found,1
+LVLR-WOP,[Missing],2
+LVLR-WOP,Power Supply,1
+LVLR-WOP,Decoder,1
+LVLR-WOP,Computer Board,1
+LVRR-WOP,Deposit Door,5
+LVRR-WOP,Power Supply,2
+LVRR-WOP,Packer,2
+LVRR-WOP,No Trouble Found,2
+LVRR-WOP,Dead Data Jack,2
+LVRR-WOP,Network Intermittent,1
+LVRR-WOP,Loading Error,1
+LVRR-WOP,Firewall,1
+LVRR-WOP,Computer Board,1
+LVRR-WOP,[Missing],1
+LVRR-WP,Deposit Door,163
+LVRR-WP,Computer Board,92
+LVRR-WP,Packer,54
+LVRR-WP,No Trouble Found,51
+LVRR-WP,Network Settings,22
+LVRR-WP,[Missing],20
+LVRR-WP,Camera,19
+LVRR-WP,Service Door,18
+LVRR-WP,Power Supply,17
+LVRR-WP,Touchscreen,12
+LVRR-WP,Network Intermittent,12
+LVRR-WP,Loading Error,11
+LVRR-WP,IP/Reprogramming,11
+LVRR-WP,Badge Reader,10
+LVRR-WP,Dead Data Jack,6
+LVRR-WP,Main Door,5
+LVRR-WP,Improper Use,5
+LVRR-WP,Firewall,5
+LVRR-WP,Power,4
+LVRR-WP,Cable disconnected/Loose,4
+LVRR-WP,User Door,3
+LVRR-WP,Parts Order,3
+LVRR-WP,Issue,3
+LVRR-WP,Credit Issues,2
+LVRR-WP,SAM,1
+LVRR-WP,Decoder,1
+LVRR-WP-2.0,Deposit Door,641
+LVRR-WP-2.0,Touchscreen,94
+LVRR-WP-2.0,Computer Board,81
+LVRR-WP-2.0,Packer,79
+LVRR-WP-2.0,No Trouble Found,73
+LVRR-WP-2.0,[Missing],54
+LVRR-WP-2.0,Service Door,35
+LVRR-WP-2.0,Power,18
+LVRR-WP-2.0,Power Supply,15
+LVRR-WP-2.0,Badge Reader,14
+LVRR-WP-2.0,Network Settings,13
+LVRR-WP-2.0,Main Door,13
+LVRR-WP-2.0,Camera,13
+LVRR-WP-2.0,Network Intermittent,12
+LVRR-WP-2.0,Parts Order,8
+LVRR-WP-2.0,Loading Error,7
+LVRR-WP-2.0,User Door,6
+LVRR-WP-2.0,Issue,6
+LVRR-WP-2.0,Decoder,6
+LVRR-WP-2.0,IP/Reprogramming,5
+LVRR-WP-2.0,Dead Data Jack,5
+LVRR-WP-2.0,SAM,3
+LVRR-WP-2.0,Loader Board,2
+LVRR-WP-2.0,Device Not Found,2
+LVRR-WP-2.0,Cable disconnected/Loose,2
+LVRR-WP-2.0,Improper Use,1
+LVRR-WP-2.0,Firewall,1
+LVRR-WP-2.0,Curtain,1
+LVRR-WP-2.0,Credit Issues,1
+LX,Main Door,5
+LX,Counterweight System,3
+LX,Curtain,2
+LX,[Missing],2
+LX,Touchscreen,1
+MC-24,Counterweight System,3
+MC-24,Main Door,2
+MC-24,Computer Board,2
+MC-24,Touchscreen,1
+MC-24,Physical Damage,1
+MC-24,Network Settings,1
+MC-24,Cable disconnected/Loose,1
+MC-30,Main Door,17
+MC-30,Counterweight System,15
+MC-30,Curtain,7
+MC-30,Computer Board,7
+MC-30,No Trouble Found,5
+MC-30,Weight Scale,4
+MC-30,[Missing],3
+MC-30,Power,2
+MC-30,Network Settings,2
+MC-30,User Access,1
+MC-30,Touchscreen,1
+MC-30,Power Supply,1
+MC-30,Network Intermittent,1
+MC-30,Improper Use,1
+MC-30,Dead Data Jack,1
+MV,Computer Board,65
+MV,Deposit Door,43
+MV,User Door,38
+MV,Power Supply,35
+MV,Main Door,34
+MV,No Trouble Found,33
+MV,SAM,27
+MV,[Missing],27
+MV,Touchscreen,25
+MV,Packer,18
+MV,Network Settings,12
+MV,Power,11
+MV,Service Door,10
+MV,Network Intermittent,8
+MV,IP/Reprogramming,8
+MV,Loader Board,6
+MV,Dead Data Jack,6
+MV,Camera,5
+MV,Badge Reader,5
+MV,User Access,2
+MV,Loading Error,2
+MV,Improper Use,2
+MV,Firewall,2
+MV,Training,1
+MV,Physical Damage,1
+MV,Cable disconnected/Loose,1
+MV-2.0,Deposit Door,219
+MV-2.0,Touchscreen,149
+MV-2.0,No Trouble Found,71
+MV-2.0,Computer Board,66
+MV-2.0,SAM,64
+MV-2.0,Packer,60
+MV-2.0,User Door,50
+MV-2.0,Main Door,36
+MV-2.0,[Missing],32
+MV-2.0,Network Settings,22
+MV-2.0,Loading Error,18
+MV-2.0,Badge Reader,18
+MV-2.0,Power Supply,14
+MV-2.0,Network Intermittent,12
+MV-2.0,IP/Reprogramming,9
+MV-2.0,Service Door,8
+MV-2.0,Loader Board,8
+MV-2.0,Physical Damage,5
+MV-2.0,Dead Data Jack,5
+MV-2.0,Cable disconnected/Loose,5
+MV-2.0,Issue,4
+MV-2.0,Improper Use,4
+MV-2.0,Power,3
+MV-2.0,Parts Order,3
+MV-2.0,Drawers,3
+MV-2.0,User Access,2
+MV-2.0,Firewall,2
+MV-2.0,Decoder,2
+MV-2.0,Camera,2
+MV-2.0,Credit Issues,1
+SC-24,Curtain,4
+SC-24,Main Door,2
+SC-24,Counterweight System,2
+SC-24,Dead Data Jack,1
+SC-24,Computer Board,1
+SC-24,[Missing],1
+SC-30,No Trouble Found,2
+SD-64,SAM,26
+SD-64,User Door,12
+SD-64,Main Door,9
+SD-64,Computer Board,9
+SD-64,Power Supply,8
+SD-64,No Trouble Found,8
+SD-64,[Missing],6
+SD-64,Touchscreen,4
+SD-64,Network Settings,4
+SD-64,Loader Board,3
+SD-64,Firewall,2
+SD-64,Troubleshooting,1
+SD-64,Power,1
+SD-64,Parts Order,1
+SD-64,Loading Error,1
+SD-64,Issue,1
+SD-64,IP/Reprogramming,1
+SD-64,Badge Reader,1
+SV-48,Computer Board,16
+SV-48,No Trouble Found,7
+SV-48,User Door,6
+SV-48,Power Supply,6
+SV-48,Touchscreen,5
+SV-48,SAM,5
+SV-48,[Missing],5
+SV-48,Network Intermittent,4
+SV-48,Deposit Door,4
+SV-48,Parts Order,3
+SV-48,Network Settings,3
+SV-48,Main Door,3
+SV-48,Packer,2
+SV-48,Power,1
+SV-48,Camera,1
+SV-48,Badge Reader,1
+SV-48-2.0,Deposit Door,30
+SV-48-2.0,Touchscreen,13
+SV-48-2.0,Packer,11
+SV-48-2.0,No Trouble Found,11
+SV-48-2.0,User Door,7
+SV-48-2.0,SAM,7
+SV-48-2.0,Power Supply,7
+SV-48-2.0,Main Door,7
+SV-48-2.0,Computer Board,7
+SV-48-2.0,Power,4
+SV-48-2.0,Network Intermittent,3
+SV-48-2.0,Loading Error,3
+SV-48-2.0,IP/Reprogramming,2
+SV-48-2.0,Firewall,2
+SV-48-2.0,Dead Data Jack,2
+SV-48-2.0,Vendex Issues,1
+SV-48-2.0,User Access,1
+SV-48-2.0,Service Door,1
+SV-48-2.0,Improper Use,1
+SV-48-2.0,Decoder,1
+SV-48-2.0,Badge Reader,1
+SV-48-2.0,[Missing],1
+alEx LC-D,Curtain,283
+alEx LC-D,No Trouble Found,38
+alEx LC-D,Main Door,29
+alEx LC-D,Computer Board,29
+alEx LC-D,[Missing],27
+alEx LC-D,Power Supply,26
+alEx LC-D,Power,15
+alEx LC-D,Counterweight System,15
+alEx LC-D,Cable disconnected/Loose,14
+alEx LC-D,Dead Data Jack,13
+alEx LC-D,Badge Reader,11
+alEx LC-D,Network Settings,9
+alEx LC-D,Network Intermittent,7
+alEx LC-D,Improper Use,6
+alEx LC-D,Weight Scale,5
+alEx LC-D,User Access,4
+alEx LC-D,Touchscreen,4
+alEx LC-D,Physical Damage,4
+alEx LC-D,Loading Error,4
+alEx LC-D,Issue,3
+alEx LC-D,Firewall,2
+alEx LC-D,Deposit Door,2
+alEx LC-D,Decoder,2
+alEx LC-D,Credit Issues,2
+alEx LC-D,Troubleshooting,1
+alEx LC-D,Parts Order,1
+alEx LC-D,IP/Reprogramming,1
+alEx LC-D,Device Not Found,1
+alEx LC-S,Curtain,36
+alEx LC-S,Network Settings,5
+alEx LC-S,Main Door,5
+alEx LC-S,[Missing],4
+alEx LC-S,Network Intermittent,3
+alEx LC-S,User Access,2
+alEx LC-S,No Trouble Found,2
+alEx LC-S,Computer Board,2
+alEx LC-S,Cable disconnected/Loose,2
+alEx LC-S,Badge Reader,2
+alEx LC-S,Power Supply,1
+alEx LC-S,Power,1
+alEx LC-S,Physical Damage,1
+alEx LC-S,Loading Error,1
+alEx LC-S,Improper Use,1
+alEx LC-S,IP/Reprogramming,1
+alEx LC-S,Firewall,1
+alEx LC-S,Dead Data Jack,1
+alEx LC-S,Counterweight System,1
+alEx MC-D,Curtain,71
+alEx MC-D,No Trouble Found,13
+alEx MC-D,Counterweight System,10
+alEx MC-D,Computer Board,8
+alEx MC-D,Network Intermittent,4
+alEx MC-D,Main Door,4
+alEx MC-D,Dead Data Jack,4
+alEx MC-D,Cable disconnected/Loose,4
+alEx MC-D,[Missing],4
+alEx MC-D,Network Settings,3
+alEx MC-D,User Access,2
+alEx MC-D,Touchscreen,2
+alEx MC-D,Loading Error,2
+alEx MC-D,IP/Reprogramming,2
+alEx MC-D,Weight Scale,1
+alEx MC-D,Power Supply,1
+alEx MC-D,Physical Damage,1
+alEx MC-D,Improper Use,1
+alEx MC-D,Firewall,1
+alEx MC-D,Badge Reader,1
+alEx MC-S,Curtain,37
+alEx MC-S,Computer Board,8
+alEx MC-S,No Trouble Found,5
+alEx MC-S,Main Door,5
+alEx MC-S,[Missing],3
+alEx MC-S,Touchscreen,2
+alEx MC-S,Power Supply,2
+alEx MC-S,Power,2
+alEx MC-S,Network Settings,2
+alEx MC-S,Network Intermittent,2
+alEx MC-S,IP/Reprogramming,2
+alEx MC-S,User Access,1
+alEx MC-S,Parts Order,1
+alEx MC-S,Improper Use,1
+alEx MC-S,Decoder,1
+alEx MC-S,Dead Data Jack,1
+alEx MC-S,Counterweight System,1
+alEx MC-S,Cable disconnected/Loose,1
+alEx MC-S,Badge Reader,1
+alEx SD 2.0,SAM,56
+alEx SD 2.0,Main Door,25
+alEx SD 2.0,No Trouble Found,15
+alEx SD 2.0,[Missing],10
+alEx SD 2.0,Loading Error,9
+alEx SD 2.0,Computer Board,9
+alEx SD 2.0,User Door,6
+alEx SD 2.0,Network Settings,4
+alEx SD 2.0,Touchscreen,2
+alEx SD 2.0,Physical Damage,2
+alEx SD 2.0,Improper Use,2
+alEx SD 2.0,Firewall,2
+alEx SD 2.0,Curtain,2
+alEx SD 2.0,Training,1
+alEx SD 2.0,Power Supply,1
+alEx SD 2.0,Power,1
+alEx SD 2.0,Parts Order,1
+alEx SD 2.0,Network Intermittent,1
+alEx SD 2.0,Issue,1
+alEx SD 2.0,Deposit Door,1
+alEx SD 2.0,Cable disconnected/Loose,1
+alEx SD 2.0,Badge Reader,1
+scrubBank 240,Main Door,9
+scrubBank 240,No Trouble Found,4
+scrubBank 240,Issue,2
+scrubBank 240,Improper Use,2
+scrubBank 240,Badge Reader,2
+scrubBank 240,User Door,1
+scrubBank 240,Training,1
+scrubBank 240,[Missing],1
+scrubBank 480,Main Door,37
+scrubBank 480,User Door,20
+scrubBank 480,Computer Board,20
+scrubBank 480,No Trouble Found,18
+scrubBank 480,[Missing],12
+scrubBank 480,Curtain,8
+scrubBank 480,Loading Error,6
+scrubBank 480,Issue,6
+scrubBank 480,SAM,2
+scrubBank 480,Network Intermittent,2
+scrubBank 480,Touchscreen,1
+scrubBank 480,Power,1
+scrubBank 480,Network Settings,1
+scrubBank 480,Improper Use,1
+scrubBank 480,Dead Data Jack,1
+scrubXchange LX,Computer Board,8
+scrubXchange LX,Main Door,5
+scrubXchange LX,User Door,4
+scrubXchange LX,Service Door,1
+scrubXchange LX,SAM,1
+scrubXchange LX,Parts Order,1
+scrubXchange LX,Issue,1
+scrubXchange LX,Curtain,1
+scrubXchange LX,Badge Reader,1
+scrubXchange LX,[Missing],1
+scrubXchange MX,User Door,2
+scrubXchange MX,SAM,1
+scrubXchange MX,Loading Error,1

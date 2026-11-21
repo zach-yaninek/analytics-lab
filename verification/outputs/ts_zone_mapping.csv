@@ -1,0 +1,54 @@
+country,state,iana,zone,zip_rule,tickets
+US,AZ,America/Phoenix,Arizona (no DST),state default,51
+US,AL,America/Chicago,Central,state default,8
+US,AR,America/Chicago,Central,state default,7
+US,IA,America/Chicago,Central,state default,42
+US,IL,America/Chicago,Central,state default,257
+US,IN,America/Chicago,Central,IN split-zone ZIP3 rule -> Central,26
+US,KS,America/Chicago,Central,state default,2
+US,LA,America/Chicago,Central,state default,87
+US,MN,America/Chicago,Central,state default,15
+US,MO,America/Chicago,Central,state default,84
+US,MS,America/Chicago,Central,state default,10
+US,ND,America/Chicago,Central,state default,11
+US,NE,America/Chicago,Central,state default,17
+US,OK,America/Chicago,Central,state default,6
+US,TN,America/Chicago,Central,state default,51
+US,TX,America/Chicago,Central,state default,348
+US,WI,America/Chicago,Central,state default,89
+US,CT,America/New_York,Eastern,state default,261
+US,DC,America/New_York,Eastern,state default,94
+US,DE,America/New_York,Eastern,state default,76
+US,FL,America/New_York,Eastern,state default,271
+US,GA,America/New_York,Eastern,state default,418
+US,IN,America/Indiana/Indianapolis,Eastern,state default,130
+US,KY,America/New_York,Eastern,state default,1
+US,MA,America/New_York,Eastern,state default,355
+US,MD,America/New_York,Eastern,state default,260
+US,ME,America/New_York,Eastern,state default,15
+US,MI,America/Detroit,Eastern,state default,103
+US,NC,America/New_York,Eastern,state default,357
+US,NH,America/New_York,Eastern,state default,5
+US,NJ,America/New_York,Eastern,state default,374
+US,NJ,America/New_York,Eastern,"state default (4-digit ZIP, leading zero dropped)",27
+US,NY,America/New_York,Eastern,state default,1048
+US,OH,America/New_York,Eastern,state default,284
+CA,ON,America/Toronto,Eastern,state default,346
+US,PA,America/New_York,Eastern,state default,348
+CA,QC,America/Toronto,Eastern,state default,13
+US,SC,America/New_York,Eastern,state default,229
+US,TN,America/New_York,Eastern,TN split-zone ZIP3 rule -> Eastern,11
+US,VA,America/New_York,Eastern,state default,283
+US,WV,America/New_York,Eastern,state default,154
+US,HI,Pacific/Honolulu,Hawaii (no DST),state default,14
+US,CO,America/Denver,Mountain,state default,58
+US,ID,America/Boise,Mountain,state default,2
+US,MT,America/Denver,Mountain,state default,4
+US,NM,America/Denver,Mountain,state default,76
+US,TX,America/Denver,Mountain,TX split-zone ZIP3 rule -> Mountain,22
+US,UT,America/Denver,Mountain,state default,8
+CA,NFLD,America/St_Johns,Newfoundland,state default,11
+US,CA,America/Los_Angeles,Pacific,state default,614
+US,NV,America/Los_Angeles,Pacific,state default,23
+US,OR,America/Los_Angeles,Pacific,state default,49
+US,WA,America/Los_Angeles,Pacific,state default,16

@@ -1,0 +1,9 @@
+customers,state,address_precision,same_reviewed_system,same_name_tier_system
+Customer 016 + Customer 719,WI,ZIP+4/postal code,True,True
+Customer 095 + Customer 471,PA,ZIP5 only,False,False
+Customer 114 + Customer 364,NC,ZIP+4/postal code,True,True
+Customer 201 + Customer 230,FL,ZIP+4/postal code,True,True
+Customer 406 + Customer 409,NY,ZIP+4/postal code,True,True
+Customer 425 + Customer 430,NY,ZIP+4/postal code,True,True
+Customer 544 + Customer 547,VA,ZIP+4/postal code,True,True
+Customer 604 + Customer 715,ON,ZIP+4/postal code,False,False

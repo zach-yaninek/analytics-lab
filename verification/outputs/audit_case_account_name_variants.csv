@@ -1,0 +1,10 @@
+normalisation,account_labels,distinct_after,clusters_with_gt1_label,labels_in_clusters
+case/punctuation/& folded,845.0,845.0,0,0.0
++ drop Inc/LLC/The/of/and,845.0,845.0,0,0.0
++ drop Hospital/Medical/Center/Health/University/Saint etc.,845.0,842.0,3,6.0
+aggressive clusters whose labels share one City/State/Zip,,,0,
+within-state name pairs with difflib ratio >= 0.85,,,58,
+... of which share the same City/State/Zip,,,0,
+locations (City/State/Zip) with >1 account label,,,8,
+account labels with >1 location,,,0,
+account labels containing a mis-encoded '?' apostrophe,,,7,

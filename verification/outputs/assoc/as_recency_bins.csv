@@ -1,0 +1,23 @@
+curve,outcome,side,n,"[0,2) h","[2,6) h","[6,24) h","[24,168) h","[168,720] h",absent,"not listed, list full"
+bucket,Stock-out,ticket,2950,247,200,265,467,248,1520,3
+bucket,Door issue,ticket,2950,662,167,231,550,497,835,8
+bucket,Incomplete transaction,ticket,2950,152,73,139,424,312,1802,48
+bucket,User behavior,ticket,2950,173,105,286,524,247,1583,32
+bucket,Operational status,ticket,2950,75,28,37,116,159,2455,80
+bucket,Mechanical fault,ticket,2950,331,137,161,585,465,1266,5
+bucket,Electronics/software/comms,ticket,2950,105,47,62,172,230,2279,55
+bucket,Undefined,ticket,2950,2,1,3,15,48,2744,137
+bucket,Malformed,ticket,2950,1,0,0,1,0,2811,137
+bucket,any code,ticket,2950,1320,369,428,513,166,154,0
+bucket,Stock-out,control,2950,316,231,249,405,193,1553,3
+bucket,Door issue,control,2950,185,109,292,679,624,1054,7
+bucket,Incomplete transaction,control,2950,63,61,170,489,335,1799,33
+bucket,User behavior,control,2950,119,136,294,577,192,1613,19
+bucket,Operational status,control,2950,12,11,28,118,163,2563,55
+bucket,Mechanical fault,control,2950,112,103,199,670,530,1334,2
+bucket,Electronics/software/comms,control,2950,7,8,11,134,243,2484,63
+bucket,Undefined,control,2950,1,0,2,15,43,2795,94
+bucket,Malformed,control,2950,0,0,0,0,0,2856,94
+bucket,any code,control,2950,713,484,659,722,175,197,0
+target,target set,ticket,1469,582,124,127,177,100,352,7
+target,target set,control,1469,111,96,177,354,217,502,12

@@ -1,0 +1,31 @@
+case_id,stratum,pick_round,rank_among_date_eligible,implied_skipped_before,model,record_type,status,service_group,opened_month
+T00705,Electro/Mechanical,1,2,1,LVD-Remote,scrubEx / SD Case,Trouble Closed,Other recorded issue,2025-09
+T00783,Software,1,1,0,LVD-Remote-2.0,scrubEx / SD Case,Trouble Closed,Other recorded issue,2025-09
+T00951,Preventative Maintenance,1,4,3,LVRR-WP-2.0,General Case,Trouble Closed,Planned work,2025-09
+T00957,Repair/Investigate,2,2,0,scrubBank 480,General Case,Trouble Closed,Other recorded issue,2025-09
+T01157,Missing,0,1,1,alEx LC-D,General Case,Trouble Closed,Missing trouble code,2025-10
+T01287,Preventative Maintenance,0,0,0,LVD-Remote-2.0,scrubEx / SD Case,Trouble Closed,Planned work,2025-10
+T01629,Electronics,1,1,0,MV-2.0,scrubEx / SD Case,Trouble Closed,Other recorded issue,2025-10
+T01795,Installation,0,0,0,LVD-Remote-2.0,Install Case,Trouble Closed,Planned work,2025-10
+T01796,Installation,1,1,0,LVRR-WP-2.0,Install Case,Trouble Closed,Planned work,2025-10
+T01797,Installation,2,2,0,MV-2.0,Install Case,Trouble Closed,Planned work,2025-10
+T02128,Operator Error,2,3,1,MV-2.0,scrubEx / SD Case,Trouble Closed,Other recorded issue,2025-11
+T02229,Miscellaneous,2,3,1,MV,scrubEx / SD Case,Trouble Closed,Other recorded issue,2025-11
+T02268,Operator Error,1,2,1,LVD-Remote-2.0,scrubEx / SD Case,Trouble Closed,Other recorded issue,2025-11
+T03075,Electro/Mechanical,0,1,1,alEx LC-D,alEx Case,Trouble Closed,Other recorded issue,2026-01
+T03079,Software,2,2,0,scrubBank 480,ScrubBank,Trouble Closed,Other recorded issue,2026-01
+T03326,Miscellaneous,1,2,1,LVD-Remote-2.0,scrubEx / SD Case,Trouble Closed,No Trouble Found,2026-01
+T03959,Electronics,0,0,0,MC-30,alEx Case,Trouble Closed,Other recorded issue,2026-02
+T04699,Network,1,1,0,LVD-Remote,General Case,Trouble Closed,Other recorded issue,2026-04
+T04907,Electronics,2,2,0,LC-30,alEx Case,Trouble Closed,Other recorded issue,2026-04
+T05185,Canopy,0,0,0,alEx LC-D,alEx Case,Trouble Closed,Other recorded issue,2026-04
+T05506,Repair/Investigate,0,0,0,alEx SD 2.0,General Case,Trouble Closed,Other recorded issue,2026-05
+T05683,Repair/Investigate,1,1,0,LVD-Remote,General Case,Trouble Closed,Other recorded issue,2026-05
+T05924,Electro/Mechanical,2,4,2,LC-30,alEx Case,Trouble Closed,Other recorded issue,2026-06
+T06107,Miscellaneous,0,1,1,LVRR-WP-2.0,scrubEx / SD Case,Trouble Closed,No Trouble Found,2026-06
+T06354,Network,2,2,0,MC-24,alEx Case,Trouble Closed,Other recorded issue,2026-06
+T06445,Software,0,0,0,alEx LC-D,General Case,Trouble Closed,Other recorded issue,2026-07
+T06663,Operator Error,0,0,0,LVD-Remote-2.0,scrubEx / SD Case,Trouble Closed,Other recorded issue,2026-07
+T06672,Missing,2,3,1,alEx LC-D,General Case,Trouble Closed,Missing trouble code,2026-07
+T06712,Network,0,0,0,alEx LC-S,alEx Case,Trouble Closed,Other recorded issue,2026-07
+T06912,Missing,1,2,1,alEx LC-D,General Case,Trouble Closed,Missing trouble code,2026-07

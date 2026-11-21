@@ -1,0 +1,4 @@
+group,notes_present,notes_with_entry_stamp,share_any_stamp_after_open_date,share_any_stamp_2plus_days_after_open,share_earliest_stamp_on_open_date,share_earliest_stamp_before_open_date,share_all_stamps_on_open_date,median_latest_stamp_days_after_open,p90_latest_stamp_days_after_open,share_latest_stamp_after_close_date,multi_stamp_notes,share_multi_newest_first,share_multi_oldest_first
+all notes,4793,4536,0.8968,0.6448,0.2099,0.0046,0.101,3.0,11.0,0.0548,2381,0.9299,0.1067
+open tickets,38,34,0.9412,0.8824,0.1471,0.0,0.0588,5.5,12.0,,23,0.7826,0.087
+closed tickets,4755,4502,0.8965,0.643,0.2104,0.0047,0.1013,3.0,11.0,0.0548,2358,0.9313,0.1069

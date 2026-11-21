@@ -1,0 +1,3 @@
+cohort,active_machine_months_expected,tickets_expected,transactions_expected,zero_ticket_months_expected,active_machine_months_actual,tickets_actual,transactions_actual,zero_ticket_months_actual,match
+All represented active machine-months,70057,4933,109344700,65847,70057,4933,109344700,65847,True
+Known nonshared hosts,69155,4916,108944603,64961,69155,4916,108944603,64961,True

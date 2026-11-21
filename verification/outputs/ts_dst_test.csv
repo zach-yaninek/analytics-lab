@@ -1,0 +1,7 @@
+subset,window,comparison,expected_if_DST_observing_wall_clock,expected_if_UTC_or_nonDST_clock,n,n_ref,median_diff,median_diff_lo,median_diff_hi,p05_diff,p10_diff,p25_diff,p75_diff,p90_diff,qa_shift,qa_shift_lo,qa_shift_hi,ks_shift,ks_at_shift,ks_at_0,ks_shift_lo,ks_shift_hi
+all,full_season,Standard minus DST (Eastern hospitals),0.0,1.0,1766,3697,0.05,-0.17,0.24,0.13,0.06,-0.08,-0.32,-0.07,-0.06,-0.24,0.09,-0.05,0.029,0.032,-0.25,0.13
+all,fall_4wk (2025-10-05..11-01 vs 11-02..11-29),Standard minus DST (Eastern hospitals),0.0,1.0,368,434,-0.21,-0.76,0.54,0.08,-0.12,-0.22,0.0,0.87,-0.0,-0.4,0.4,-0.05,0.038,0.041,-0.4,0.3
+all,spring_4wk (2026-03-08..04-04 vs 02-08..03-07),Standard minus DST (Eastern hospitals),0.0,1.0,419,396,0.78,0.21,1.17,0.27,0.23,0.15,0.25,-0.06,0.31,-0.1,0.73,0.45,0.057,0.107,-0.1,0.75
+weekday_reactive,full_season,Standard minus DST (Eastern hospitals),0.0,1.0,1692,3543,0.06,-0.17,0.25,0.13,0.04,-0.1,-0.34,-0.08,-0.07,-0.26,0.09,-0.05,0.03,0.034,-0.25,0.15
+weekday_reactive,fall_4wk (2025-10-05..11-01 vs 11-02..11-29),Standard minus DST (Eastern hospitals),0.0,1.0,342,413,-0.05,-0.67,0.55,0.01,-0.12,-0.2,0.0,0.65,0.03,-0.36,0.44,-0.05,0.038,0.04,-0.43,0.35
+weekday_reactive,spring_4wk (2026-03-08..04-04 vs 02-08..03-07),Standard minus DST (Eastern hospitals),0.0,1.0,413,380,0.79,0.26,1.21,0.28,0.27,0.15,0.25,-0.04,0.32,-0.11,0.75,0.5,0.058,0.108,-0.03,0.75

@@ -1,0 +1,19 @@
+transition,day,hour,zone,count_on_day,mean_count_adjacent_days,ratio,log_likelihood_ratio,classification
+fall,2025-11-02,1,All devices,4716,6892.0,0.684,-3623.12,not doubled
+fall,2025-11-02,1,Arizona (no DST),93,86.0,1.081,-21.54,not doubled
+fall,2025-11-02,1,Central,238,489.0,0.487,-324.03,not doubled
+fall,2025-11-02,1,Eastern,1420,1974.5,0.719,-990.23,not doubled
+fall,2025-11-02,1,Hawaii (no DST),16,38.5,0.416,-27.41,not doubled
+fall,2025-11-02,1,Mountain,116,175.5,0.661,-95.09,not doubled
+fall,2025-11-02,1,Newfoundland,1,3.0,0.333,-2.31,unclear
+fall,2025-11-02,1,Pacific,645,745.5,0.865,-298.42,not doubled
+fall,2025-11-02,1,Unlinked (no ticket location),2187,3380.0,0.647,-1864.09,not doubled
+spring,2026-03-08,2,All devices,4844,7411.5,0.654,-11686.57,no gap
+spring,2026-03-08,2,Arizona (no DST),99,77.0,1.286,-311.83,no gap
+spring,2026-03-08,2,Central,249,390.5,0.638,-591.4,no gap
+spring,2026-03-08,2,Eastern,1526,2426.5,0.629,-3591.78,no gap
+spring,2026-03-08,2,Hawaii (no DST),22,41.0,0.537,-45.88,no gap
+spring,2026-03-08,2,Mountain,114,151.5,0.752,-297.5,no gap
+spring,2026-03-08,2,Newfoundland,0,1.0,0.0,0.98,unclear
+spring,2026-03-08,2,Pacific,582,1018.0,0.572,-1279.16,no gap
+spring,2026-03-08,2,Unlinked (no ticket location),2252,3306.0,0.681,-5570.0,no gap

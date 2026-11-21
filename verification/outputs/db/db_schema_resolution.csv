@@ -1,0 +1,13 @@
+table,logical,column
+transaction_events,device,external_device_id
+transaction_events,date_local,transaction_date_local
+transaction_events,time_local,transaction_time_local
+transaction_events,time_utc,transaction_time_utc
+transaction_events,code,transaction_code
+transaction_events,ingest,
+devices,device,external_device_id
+devices,status,device_status
+devices,type,machine_type
+devices,url,clearview_url
+transaction_codes,code,transaction_code
+transaction_codes,description,transaction_description

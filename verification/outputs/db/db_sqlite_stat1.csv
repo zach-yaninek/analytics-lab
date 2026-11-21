@@ -1,0 +1,5 @@
+tbl,idx,stat
+transaction_events,ix_ev_code,118047569 2409135
+transaction_events,ix_ev_device_date,118047569 16983 57
+transaction_codes,sqlite_autoindex_transaction_codes_1,49 1
+devices,,7183

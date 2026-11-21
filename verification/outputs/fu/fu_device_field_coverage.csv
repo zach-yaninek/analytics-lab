@@ -1,0 +1,5 @@
+field,non_blank_devices,distinct_values,devices
+location_name,6732,847,7183
+city,6731,480,7183
+state,6677,47,7183
+country,6660,2,7183

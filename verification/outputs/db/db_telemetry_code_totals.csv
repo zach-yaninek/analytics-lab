@@ -1,0 +1,50 @@
+transaction_code,transaction_description,bucket,transactions
+00,OK,Success,110166059
+03,Item not available,Stock-out,2016696
+77,Item not stocked,Stock-out,1219896
+15,Blocked Door,Door issue,1137966
+01,Incomplete Transaction,Incomplete transaction,473188
+26,Open Door Dispense,Door issue,365016
+19,Deposit Door not Opened,User behavior,346002
+79,Receiver Deposit Door is open,Door issue,290869
+76,Receiver Packer Stopped,Operational status,268236
+78,Receiver Deposit Door not completely opened,User behavior,226891
+04,Half Garment,User behavior,219716
+11,Door Did not Open,Mechanical fault,161552
+31,Slot Doors in Improper Position,Mechanical fault,137386
+18,SAM did not extend,Mechanical fault,122906
+16,Bad Weight,Mechanical fault,115278
+30,Main Door not Closed,Door issue,106392
+20,Deposit Door not Closed,Door issue,98479
+35,Lower SAM Extended,Mechanical fault,91763
+34,Upper SAM Extended,Mechanical fault,80992
+80,Receiver Deposit Door is open,Door issue,71287
+32,SAM in Improper Position,Mechanical fault,64434
+33,SAM Not Home,Mechanical fault,47955
+81,Opening Door Blocked,Door issue,40792
+25,No Communications with Dispenser,Electronics/software/comms,28580
+41,User Door 1 is Open,Door issue,26091
+17,SAM did not make it to Destination,Mechanical fault,15717
+05,Already Dispensed,Electronics/software/comms,12541
+42,User Door 2 is Open,Door issue,11900
+48,User Door 8 is Open,Door issue,11594
+43,User Door 3 is Open,Door issue,10727
+44,User Door 4 is Open,Door issue,9082
+47,User Door 7 is Open,Door issue,8531
+45,User Door 5 is Open,Door issue,8403
+46,User Door 6 is Open,Door issue,8220
+28,UNMAPPED CODE 28,Undefined,4959
+59,Bottom Door not Locked,Door issue,4129
+13,Invalid Driver Board Response,Electronics/software/comms,4114
+66,Did not reach horizontal position,Mechanical fault,3834
+27,Door did not lock,Door issue,2484
+61,Bottom Door not Opened,User behavior,2061
+60,Top Door not Opened,User behavior,1372
+67,Did not reach vertical position,Mechanical fault,1364
+14,Broken Limit Switches,Mechanical fault,1076
+56,Top Door not Closed,Door issue,466
+58,Top Door not Locked,Door issue,290
+57,Bottom Door not Closed,Door issue,250
+02,Door did not unlock,Mechanical fault,27
+=,UNMAPPED CODE =,Malformed,4
+30462084,UNMAPPED CODE 30462084,Malformed,2

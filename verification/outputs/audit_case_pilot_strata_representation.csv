@@ -1,0 +1,12 @@
+stratum,window_tickets,window_share_pct,pilot_tickets,pilot_share_pct,over_representation_x,window_planned_work,window_not_unplanned
+Canopy,2,0.03,1,3.33,111.0,0,0
+Electro/Mechanical,3271,51.43,3,10.0,0.2,3,3
+Electronics,1449,22.78,3,10.0,0.4,4,4
+Installation,3,0.05,3,10.0,200.0,3,3
+Miscellaneous,972,15.28,3,10.0,0.7,3,236
+Missing,22,0.35,3,10.0,28.6,0,0
+Network,414,6.51,3,10.0,1.5,0,0
+Operator Error,142,2.23,3,10.0,4.5,0,0
+Preventative Maintenance,5,0.08,2,6.67,83.4,5,5
+Repair/Investigate,3,0.05,3,10.0,200.0,0,0
+Software,77,1.21,3,10.0,8.3,0,0

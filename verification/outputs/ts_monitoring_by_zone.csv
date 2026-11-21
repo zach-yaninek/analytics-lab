@@ -1,0 +1,8 @@
+zone,A monitoring template,B telemetry UI + code number,C telemetry UI mention,D code number only,E customer/other,all,share_A,share_B,share_C,share_D,share_E
+Eastern,101,176,363,90,4733,5463,0.018,0.032,0.066,0.016,0.866
+Central,21,23,67,10,939,1060,0.02,0.022,0.063,0.009,0.886
+Pacific,12,26,49,5,610,702,0.017,0.037,0.07,0.007,0.869
+Mountain,6,6,10,1,147,170,0.035,0.035,0.059,0.006,0.865
+Arizona (no DST),0,3,2,2,44,51,0.0,0.059,0.039,0.039,0.863
+Hawaii (no DST),0,0,2,1,11,14,0.0,0.0,0.143,0.071,0.786
+Newfoundland,0,1,1,0,9,11,0.0,0.091,0.091,0.0,0.818

@@ -1,0 +1,31 @@
+case_id,stratum,category,service_group,status,record_type,model,proactive_monitoring,resolution_present,zac_availability,month
+T05185,Canopy,Troubleshooting,Other recorded issue,Trouble Closed,alEx Case,alEx LC-D,0,1,Candidate codes available,2026-04
+T00705,Electro/Mechanical,User Door,Other recorded issue,Trouble Closed,scrubEx / SD Case,LVD-Remote,0,1,Candidate codes available,2025-09
+T03075,Electro/Mechanical,Curtain,Other recorded issue,Trouble Closed,alEx Case,alEx LC-D,0,1,Candidate codes available,2026-01
+T05924,Electro/Mechanical,Curtain,Other recorded issue,Trouble Closed,alEx Case,LC-30,0,1,Candidate codes available,2026-06
+T01629,Electronics,Computer Board,Other recorded issue,Trouble Closed,scrubEx / SD Case,MV-2.0,0,1,No transactions observed,2025-10
+T03959,Electronics,Computer Board,Other recorded issue,Trouble Closed,alEx Case,MC-30,0,1,No transactions observed,2026-02
+T04907,Electronics,Power Supply,Other recorded issue,Trouble Closed,alEx Case,LC-30,0,1,Candidate codes available,2026-04
+T01795,Installation,,Planned work,Trouble Closed,Install Case,LVD-Remote-2.0,0,1,Candidate codes available,2025-10
+T01796,Installation,,Planned work,Trouble Closed,Install Case,LVRR-WP-2.0,0,1,Candidate codes available,2025-10
+T01797,Installation,,Planned work,Trouble Closed,Install Case,MV-2.0,0,1,Candidate codes available,2025-10
+T02229,Miscellaneous,Power,Other recorded issue,Trouble Closed,scrubEx / SD Case,MV,0,1,Candidate codes available,2025-11
+T03326,Miscellaneous,No Trouble Found,No Trouble Found,Trouble Closed,scrubEx / SD Case,LVD-Remote-2.0,0,0,Candidate codes available,2026-01
+T06107,Miscellaneous,No Trouble Found,No Trouble Found,Trouble Closed,scrubEx / SD Case,LVRR-WP-2.0,0,1,Candidate codes available,2026-06
+T01157,Missing,,Missing trouble code,Trouble Closed,General Case,alEx LC-D,1,0,Candidate codes available,2025-10
+T06672,Missing,,Missing trouble code,Trouble Closed,General Case,alEx LC-D,1,0,Candidate codes available,2026-07
+T06912,Missing,,Missing trouble code,Trouble Closed,General Case,alEx LC-D,0,0,Candidate codes available,2026-07
+T04699,Network,Network Intermittent,Other recorded issue,Trouble Closed,General Case,LVD-Remote,0,0,Candidate codes available,2026-04
+T06354,Network,Cable disconnected/Loose,Other recorded issue,Trouble Closed,alEx Case,MC-24,0,1,Candidate codes available,2026-06
+T06712,Network,Network Settings,Other recorded issue,Trouble Closed,alEx Case,alEx LC-S,0,1,Candidate codes available,2026-07
+T02128,Operator Error,Loading Error,Other recorded issue,Trouble Closed,scrubEx / SD Case,MV-2.0,0,1,Candidate codes available,2025-11
+T02268,Operator Error,Improper Use,Other recorded issue,Trouble Closed,scrubEx / SD Case,LVD-Remote-2.0,0,1,Candidate codes available,2025-11
+T06663,Operator Error,Improper Use,Other recorded issue,Trouble Closed,scrubEx / SD Case,LVD-Remote-2.0,0,1,Candidate codes available,2026-07
+T00951,Preventative Maintenance,Annual,Planned work,Trouble Closed,General Case,LVRR-WP-2.0,0,0,Candidate codes available,2025-09
+T01287,Preventative Maintenance,Paid PM,Planned work,Trouble Closed,scrubEx / SD Case,LVD-Remote-2.0,0,1,Candidate codes available,2025-10
+T00957,Repair/Investigate,,Other recorded issue,Trouble Closed,General Case,scrubBank 480,1,0,Candidate codes available,2025-09
+T05506,Repair/Investigate,,Other recorded issue,Trouble Closed,General Case,alEx SD 2.0,1,0,No transactions observed,2026-05
+T05683,Repair/Investigate,,Other recorded issue,Trouble Closed,General Case,LVD-Remote,1,1,No transactions observed,2026-05
+T00783,Software,User Access,Other recorded issue,Trouble Closed,scrubEx / SD Case,LVD-Remote-2.0,0,0,Candidate codes available,2025-09
+T03079,Software,Issue,Other recorded issue,Trouble Closed,ScrubBank,scrubBank 480,0,1,Candidate codes available,2026-01
+T06445,Software,User Access,Other recorded issue,Trouble Closed,General Case,alEx LC-D,0,1,Candidate codes available,2026-07

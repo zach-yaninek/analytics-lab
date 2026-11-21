@@ -1,0 +1,6 @@
+zone,eta_stamps,eta_hour_median,eta_hour_p10,eta_hour_p90,tickets_eta_on_close_date,close_minus_eta_median_h,close_minus_eta_p25_h,close_minus_eta_p75_h
+Eastern,523,10.22,8.0,15.0,190,3.17,1.6,5.13
+Central,93,11.5,8.0,15.4,35,3.92,2.0,5.67
+Mountain,18,10.31,8.0,12.5,4,4.78,4.2,5.73
+Arizona (no DST),4,13.28,12.5,15.3,1,1.78,1.78,1.78
+Pacific,61,13.75,11.5,17.5,8,4.01,2.89,4.19

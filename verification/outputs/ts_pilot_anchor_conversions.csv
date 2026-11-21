@@ -1,0 +1,31 @@
+case_id,opened_at,zone,season,trouble_code,monitoring_class,zac_window_empty,add_h_if_case_Eastern_tel_UTC,add_h_if_case_Eastern_tel_machine_local,add_h_if_case_Central_tel_UTC,add_h_if_case_Central_tel_machine_local
+T00705,2025-09-08 07:47:00,Eastern,DST (EDT),Electro/Mechanical,E customer/other,False,4.0,0.0,5.0,1.0
+T00783,2025-09-10 15:39:00,Eastern,DST (EDT),Software,C telemetry UI mention,False,4.0,0.0,5.0,1.0
+T00951,2025-09-19 12:55:00,Eastern,DST (EDT),Preventative Maintenance,E customer/other,False,4.0,0.0,5.0,1.0
+T00957,2025-09-19 16:35:00,Eastern,DST (EDT),Repair/Investigate,A monitoring template,False,4.0,0.0,5.0,1.0
+T01157,2025-10-01 09:14:00,Eastern,DST (EDT),,A monitoring template,False,4.0,0.0,5.0,1.0
+T01287,2025-10-07 13:17:00,Eastern,DST (EDT),Preventative Maintenance,E customer/other,False,4.0,0.0,5.0,1.0
+T01629,2025-10-23 09:26:00,Eastern,DST (EDT),Electronics,E customer/other,True,4.0,0.0,5.0,1.0
+T01795,2025-10-31 10:30:00,Eastern,DST (EDT),Installation,E customer/other,False,4.0,0.0,5.0,1.0
+T01796,2025-10-31 10:33:00,Eastern,DST (EDT),Installation,E customer/other,False,4.0,0.0,5.0,1.0
+T01797,2025-10-31 10:36:00,Eastern,DST (EDT),Installation,E customer/other,False,4.0,0.0,5.0,1.0
+T02128,2025-11-17 11:50:00,Arizona (no DST),Standard (EST),Operator Error,E customer/other,False,5.0,-2.0,6.0,-1.0
+T02229,2025-11-21 10:09:00,Eastern,Standard (EST),Miscellaneous,E customer/other,False,5.0,0.0,6.0,1.0
+T02268,2025-11-25 09:52:00,Eastern,Standard (EST),Operator Error,E customer/other,False,5.0,0.0,6.0,1.0
+T03075,2026-01-09 10:20:00,Eastern,Standard (EST),Electro/Mechanical,E customer/other,False,5.0,0.0,6.0,1.0
+T03079,2026-01-09 10:48:00,Eastern,Standard (EST),Software,E customer/other,False,5.0,0.0,6.0,1.0
+T03326,2026-01-22 09:25:00,Eastern,Standard (EST),Miscellaneous,E customer/other,False,5.0,0.0,6.0,1.0
+T03959,2026-02-23 11:19:00,Eastern,Standard (EST),Electronics,E customer/other,True,5.0,0.0,6.0,1.0
+T04699,2026-04-01 14:03:00,Eastern,DST (EDT),Network,E customer/other,False,4.0,0.0,5.0,1.0
+T04907,2026-04-14 12:24:00,Eastern,DST (EDT),Electronics,E customer/other,False,4.0,0.0,5.0,1.0
+T05185,2026-04-28 16:55:00,Eastern,DST (EDT),Canopy,E customer/other,False,4.0,0.0,5.0,1.0
+T05506,2026-05-15 07:37:00,Eastern,DST (EDT),Repair/Investigate,A monitoring template,True,4.0,0.0,5.0,1.0
+T05683,2026-05-27 08:23:00,Eastern,DST (EDT),Repair/Investigate,A monitoring template,True,4.0,0.0,5.0,1.0
+T05924,2026-06-09 15:28:00,Central,DST (EDT),Electro/Mechanical,E customer/other,False,4.0,-1.0,5.0,0.0
+T06107,2026-06-17 11:10:00,Eastern,DST (EDT),Miscellaneous,E customer/other,False,4.0,0.0,5.0,1.0
+T06354,2026-06-30 08:00:00,Central,DST (EDT),Network,C telemetry UI mention,False,4.0,-1.0,5.0,0.0
+T06445,2026-07-06 10:54:00,Eastern,DST (EDT),Software,E customer/other,False,4.0,0.0,5.0,1.0
+T06663,2026-07-15 23:29:00,Eastern,DST (EDT),Operator Error,E customer/other,False,4.0,0.0,5.0,1.0
+T06672,2026-07-16 09:36:00,Eastern,DST (EDT),,A monitoring template,False,4.0,0.0,5.0,1.0
+T06712,2026-07-20 09:16:00,Eastern,DST (EDT),Network,C telemetry UI mention,False,4.0,0.0,5.0,1.0
+T06912,2026-07-30 14:38:00,Eastern,DST (EDT),,E customer/other,False,4.0,0.0,5.0,1.0

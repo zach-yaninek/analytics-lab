@@ -1,0 +1,1529 @@
+unit_kind,unit,window,index_group,next_group,pairs,row_share,row_pairs,small_cell
+model,A-LC,30 days,Door,Door,1,1,1,True
+model,A-LC,30 days,Electronics,Electronics,2,1,2,True
+model,A-LC,30 days,Network,Electronics,1,1,1,True
+model,A-LC,30 days,No Trouble Found,Electronics,1,1,1,True
+model,A-SC,30 days,Door,Electronics,1,1,1,True
+model,A-SC,30 days,Electronics,Electronics,1,1,1,True
+model,LC-24,30 days,Door,Door,2,0.4,5,True
+model,LC-24,30 days,Door,Mechanical,1,0.2,5,True
+model,LC-24,30 days,Door,Monitoring,1,0.2,5,True
+model,LC-24,30 days,Door,No Trouble Found,1,0.2,5,True
+model,LC-24,30 days,Electronics,Electronics,1,0.5,2,True
+model,LC-24,30 days,Electronics,Not categorised,1,0.5,2,True
+model,LC-24,30 days,Mechanical,Mechanical,1,1,1,True
+model,LC-24,30 days,No Trouble Found,Door,1,1,1,True
+model,LC-24,7 days,Door,Door,2,0.4,5,True
+model,LC-24,7 days,Door,Mechanical,1,0.2,5,True
+model,LC-24,7 days,Door,Monitoring,1,0.2,5,True
+model,LC-24,7 days,Door,No Trouble Found,1,0.2,5,True
+model,LC-24,7 days,Electronics,Not categorised,1,1,1,True
+model,LC-30,30 days,Door,Door,3,0.2142857143,14,True
+model,LC-30,30 days,Door,Electronics,1,0.07142857143,14,True
+model,LC-30,30 days,Door,Mechanical,9,0.6428571429,14,False
+model,LC-30,30 days,Door,Monitoring,1,0.07142857143,14,True
+model,LC-30,30 days,Electronics,Door,1,0.1428571429,7,True
+model,LC-30,30 days,Electronics,Electronics,3,0.4285714286,7,True
+model,LC-30,30 days,Electronics,Mechanical,3,0.4285714286,7,True
+model,LC-30,30 days,Mechanical,Door,3,0.2,15,True
+model,LC-30,30 days,Mechanical,Electronics,3,0.2,15,True
+model,LC-30,30 days,Mechanical,Mechanical,6,0.4,15,False
+model,LC-30,30 days,Mechanical,Monitoring,1,0.06666666667,15,True
+model,LC-30,30 days,Mechanical,No Trouble Found,1,0.06666666667,15,True
+model,LC-30,30 days,Mechanical,Software,1,0.06666666667,15,True
+model,LC-30,30 days,Monitoring,Mechanical,1,1,1,True
+model,LC-30,30 days,Network,Electronics,1,0.5,2,True
+model,LC-30,30 days,Network,Network,1,0.5,2,True
+model,LC-30,30 days,No Trouble Found,Electronics,1,1,1,True
+model,LC-30,30 days,Other,Electronics,1,1,1,True
+model,LC-30,30 days,Software,Other,1,1,1,True
+model,LC-30,7 days,Door,Door,1,0.3333333333,3,True
+model,LC-30,7 days,Door,Electronics,1,0.3333333333,3,True
+model,LC-30,7 days,Door,Mechanical,1,0.3333333333,3,True
+model,LC-30,7 days,Electronics,Electronics,1,0.5,2,True
+model,LC-30,7 days,Electronics,Mechanical,1,0.5,2,True
+model,LC-30,7 days,Mechanical,Mechanical,2,0.6666666667,3,True
+model,LC-30,7 days,Mechanical,Software,1,0.3333333333,3,True
+model,LC-30,7 days,Network,Electronics,1,0.5,2,True
+model,LC-30,7 days,Network,Network,1,0.5,2,True
+model,LC-30,7 days,Software,Other,1,1,1,True
+model,LVD-LOCAL,30 days,Electronics,Network,1,1,1,True
+model,LVD-LOCAL,30 days,Network,Network,1,1,1,True
+model,LVD-LOCAL,7 days,Network,Network,1,1,1,True
+model,LVD-Remote,30 days,Door,Door,16,0.4705882353,34,False
+model,LVD-Remote,30 days,Door,Electronics,2,0.05882352941,34,True
+model,LVD-Remote,30 days,Door,Mechanical,10,0.2941176471,34,False
+model,LVD-Remote,30 days,Door,Monitoring,2,0.05882352941,34,True
+model,LVD-Remote,30 days,Door,Network,2,0.05882352941,34,True
+model,LVD-Remote,30 days,Door,No Trouble Found,1,0.02941176471,34,True
+model,LVD-Remote,30 days,Door,Not categorised,1,0.02941176471,34,True
+model,LVD-Remote,30 days,Electronics,Door,5,0.1724137931,29,False
+model,LVD-Remote,30 days,Electronics,Electronics,9,0.3103448276,29,False
+model,LVD-Remote,30 days,Electronics,Mechanical,5,0.1724137931,29,False
+model,LVD-Remote,30 days,Electronics,Network,5,0.1724137931,29,False
+model,LVD-Remote,30 days,Electronics,No Trouble Found,3,0.1034482759,29,True
+model,LVD-Remote,30 days,Electronics,Software,2,0.06896551724,29,True
+model,LVD-Remote,30 days,Mechanical,Door,6,0.2068965517,29,False
+model,LVD-Remote,30 days,Mechanical,Electronics,5,0.1724137931,29,False
+model,LVD-Remote,30 days,Mechanical,Mechanical,12,0.4137931034,29,False
+model,LVD-Remote,30 days,Mechanical,Monitoring,2,0.06896551724,29,True
+model,LVD-Remote,30 days,Mechanical,No Trouble Found,2,0.06896551724,29,True
+model,LVD-Remote,30 days,Mechanical,Not categorised,2,0.06896551724,29,True
+model,LVD-Remote,30 days,Monitoring,Door,1,1,1,True
+model,LVD-Remote,30 days,Network,Door,3,0.1875,16,True
+model,LVD-Remote,30 days,Network,Monitoring,1,0.0625,16,True
+model,LVD-Remote,30 days,Network,Network,7,0.4375,16,False
+model,LVD-Remote,30 days,Network,No Trouble Found,1,0.0625,16,True
+model,LVD-Remote,30 days,Network,Not categorised,1,0.0625,16,True
+model,LVD-Remote,30 days,Network,Operator error,2,0.125,16,True
+model,LVD-Remote,30 days,Network,Software,1,0.0625,16,True
+model,LVD-Remote,30 days,No Trouble Found,Door,5,0.4545454545,11,False
+model,LVD-Remote,30 days,No Trouble Found,Electronics,3,0.2727272727,11,True
+model,LVD-Remote,30 days,No Trouble Found,Mechanical,1,0.09090909091,11,True
+model,LVD-Remote,30 days,No Trouble Found,Network,1,0.09090909091,11,True
+model,LVD-Remote,30 days,No Trouble Found,No Trouble Found,1,0.09090909091,11,True
+model,LVD-Remote,30 days,Not categorised,Door,2,0.25,8,True
+model,LVD-Remote,30 days,Not categorised,Electronics,1,0.125,8,True
+model,LVD-Remote,30 days,Not categorised,Mechanical,1,0.125,8,True
+model,LVD-Remote,30 days,Not categorised,Network,1,0.125,8,True
+model,LVD-Remote,30 days,Not categorised,Not categorised,2,0.25,8,True
+model,LVD-Remote,30 days,Not categorised,Software,1,0.125,8,True
+model,LVD-Remote,30 days,Operator error,Electronics,1,1,1,True
+model,LVD-Remote,30 days,Other,Electronics,1,0.3333333333,3,True
+model,LVD-Remote,30 days,Other,Network,2,0.6666666667,3,True
+model,LVD-Remote,30 days,Software,Electronics,1,0.5,2,True
+model,LVD-Remote,30 days,Software,No Trouble Found,1,0.5,2,True
+model,LVD-Remote,7 days,Door,Door,5,0.3571428571,14,False
+model,LVD-Remote,7 days,Door,Mechanical,5,0.3571428571,14,False
+model,LVD-Remote,7 days,Door,Monitoring,2,0.1428571429,14,True
+model,LVD-Remote,7 days,Door,Network,1,0.07142857143,14,True
+model,LVD-Remote,7 days,Door,No Trouble Found,1,0.07142857143,14,True
+model,LVD-Remote,7 days,Electronics,Door,4,0.3076923077,13,True
+model,LVD-Remote,7 days,Electronics,Electronics,1,0.07692307692,13,True
+model,LVD-Remote,7 days,Electronics,Mechanical,3,0.2307692308,13,True
+model,LVD-Remote,7 days,Electronics,Network,3,0.2307692308,13,True
+model,LVD-Remote,7 days,Electronics,No Trouble Found,2,0.1538461538,13,True
+model,LVD-Remote,7 days,Mechanical,Door,2,0.1666666667,12,True
+model,LVD-Remote,7 days,Mechanical,Electronics,2,0.1666666667,12,True
+model,LVD-Remote,7 days,Mechanical,Mechanical,5,0.4166666667,12,False
+model,LVD-Remote,7 days,Mechanical,Monitoring,1,0.08333333333,12,True
+model,LVD-Remote,7 days,Mechanical,Not categorised,2,0.1666666667,12,True
+model,LVD-Remote,7 days,Network,Door,1,0.1428571429,7,True
+model,LVD-Remote,7 days,Network,Network,4,0.5714285714,7,True
+model,LVD-Remote,7 days,Network,Not categorised,1,0.1428571429,7,True
+model,LVD-Remote,7 days,Network,Software,1,0.1428571429,7,True
+model,LVD-Remote,7 days,No Trouble Found,Door,2,0.5,4,True
+model,LVD-Remote,7 days,No Trouble Found,Electronics,1,0.25,4,True
+model,LVD-Remote,7 days,No Trouble Found,Network,1,0.25,4,True
+model,LVD-Remote,7 days,Not categorised,Door,1,0.25,4,True
+model,LVD-Remote,7 days,Not categorised,Electronics,1,0.25,4,True
+model,LVD-Remote,7 days,Not categorised,Not categorised,2,0.5,4,True
+model,LVD-Remote,7 days,Software,Electronics,1,1,1,True
+model,LVD-Remote-2.0,30 days,Door,Door,29,0.453125,64,False
+model,LVD-Remote-2.0,30 days,Door,Electronics,7,0.109375,64,False
+model,LVD-Remote-2.0,30 days,Door,Mechanical,9,0.140625,64,False
+model,LVD-Remote-2.0,30 days,Door,Monitoring,9,0.140625,64,False
+model,LVD-Remote-2.0,30 days,Door,Network,4,0.0625,64,True
+model,LVD-Remote-2.0,30 days,Door,No Trouble Found,3,0.046875,64,True
+model,LVD-Remote-2.0,30 days,Door,Operator error,2,0.03125,64,True
+model,LVD-Remote-2.0,30 days,Door,Software,1,0.015625,64,True
+model,LVD-Remote-2.0,30 days,Electronics,Door,8,0.1025641026,78,False
+model,LVD-Remote-2.0,30 days,Electronics,Electronics,35,0.4487179487,78,False
+model,LVD-Remote-2.0,30 days,Electronics,Mechanical,9,0.1153846154,78,False
+model,LVD-Remote-2.0,30 days,Electronics,Monitoring,8,0.1025641026,78,False
+model,LVD-Remote-2.0,30 days,Electronics,Network,4,0.05128205128,78,True
+model,LVD-Remote-2.0,30 days,Electronics,No Trouble Found,8,0.1025641026,78,False
+model,LVD-Remote-2.0,30 days,Electronics,Operator error,3,0.03846153846,78,True
+model,LVD-Remote-2.0,30 days,Electronics,Software,3,0.03846153846,78,True
+model,LVD-Remote-2.0,30 days,Mechanical,Door,11,0.1375,80,False
+model,LVD-Remote-2.0,30 days,Mechanical,Electronics,7,0.0875,80,False
+model,LVD-Remote-2.0,30 days,Mechanical,Mechanical,44,0.55,80,False
+model,LVD-Remote-2.0,30 days,Mechanical,Monitoring,11,0.1375,80,False
+model,LVD-Remote-2.0,30 days,Mechanical,No Trouble Found,3,0.0375,80,True
+model,LVD-Remote-2.0,30 days,Mechanical,Operator error,3,0.0375,80,True
+model,LVD-Remote-2.0,30 days,Mechanical,Other,1,0.0125,80,True
+model,LVD-Remote-2.0,30 days,Monitoring,Door,3,0.2727272727,11,True
+model,LVD-Remote-2.0,30 days,Monitoring,Electronics,2,0.1818181818,11,True
+model,LVD-Remote-2.0,30 days,Monitoring,Mechanical,2,0.1818181818,11,True
+model,LVD-Remote-2.0,30 days,Monitoring,Monitoring,1,0.09090909091,11,True
+model,LVD-Remote-2.0,30 days,Monitoring,Network,3,0.2727272727,11,True
+model,LVD-Remote-2.0,30 days,Network,Electronics,7,0.5833333333,12,False
+model,LVD-Remote-2.0,30 days,Network,Network,2,0.1666666667,12,True
+model,LVD-Remote-2.0,30 days,Network,No Trouble Found,2,0.1666666667,12,True
+model,LVD-Remote-2.0,30 days,Network,Other,1,0.08333333333,12,True
+model,LVD-Remote-2.0,30 days,No Trouble Found,Door,3,0.1111111111,27,True
+model,LVD-Remote-2.0,30 days,No Trouble Found,Electronics,8,0.2962962963,27,False
+model,LVD-Remote-2.0,30 days,No Trouble Found,Mechanical,6,0.2222222222,27,False
+model,LVD-Remote-2.0,30 days,No Trouble Found,Monitoring,1,0.03703703704,27,True
+model,LVD-Remote-2.0,30 days,No Trouble Found,Network,1,0.03703703704,27,True
+model,LVD-Remote-2.0,30 days,No Trouble Found,No Trouble Found,6,0.2222222222,27,False
+model,LVD-Remote-2.0,30 days,No Trouble Found,Operator error,1,0.03703703704,27,True
+model,LVD-Remote-2.0,30 days,No Trouble Found,Other,1,0.03703703704,27,True
+model,LVD-Remote-2.0,30 days,Not categorised,Door,3,0.3,10,True
+model,LVD-Remote-2.0,30 days,Not categorised,Electronics,3,0.3,10,True
+model,LVD-Remote-2.0,30 days,Not categorised,Mechanical,1,0.1,10,True
+model,LVD-Remote-2.0,30 days,Not categorised,Monitoring,1,0.1,10,True
+model,LVD-Remote-2.0,30 days,Not categorised,Not categorised,2,0.2,10,True
+model,LVD-Remote-2.0,30 days,Operator error,Door,1,0.25,4,True
+model,LVD-Remote-2.0,30 days,Operator error,Mechanical,1,0.25,4,True
+model,LVD-Remote-2.0,30 days,Operator error,No Trouble Found,1,0.25,4,True
+model,LVD-Remote-2.0,30 days,Operator error,Operator error,1,0.25,4,True
+model,LVD-Remote-2.0,30 days,Other,Electronics,6,0.6666666667,9,False
+model,LVD-Remote-2.0,30 days,Other,Mechanical,1,0.1111111111,9,True
+model,LVD-Remote-2.0,30 days,Other,No Trouble Found,1,0.1111111111,9,True
+model,LVD-Remote-2.0,30 days,Other,Other,1,0.1111111111,9,True
+model,LVD-Remote-2.0,30 days,Software,Door,2,0.5,4,True
+model,LVD-Remote-2.0,30 days,Software,Mechanical,1,0.25,4,True
+model,LVD-Remote-2.0,30 days,Software,Operator error,1,0.25,4,True
+model,LVD-Remote-2.0,7 days,Door,Door,11,0.3666666667,30,False
+model,LVD-Remote-2.0,7 days,Door,Electronics,2,0.06666666667,30,True
+model,LVD-Remote-2.0,7 days,Door,Mechanical,5,0.1666666667,30,False
+model,LVD-Remote-2.0,7 days,Door,Monitoring,8,0.2666666667,30,False
+model,LVD-Remote-2.0,7 days,Door,Network,1,0.03333333333,30,True
+model,LVD-Remote-2.0,7 days,Door,No Trouble Found,2,0.06666666667,30,True
+model,LVD-Remote-2.0,7 days,Door,Software,1,0.03333333333,30,True
+model,LVD-Remote-2.0,7 days,Electronics,Door,3,0.1111111111,27,True
+model,LVD-Remote-2.0,7 days,Electronics,Electronics,12,0.4444444444,27,False
+model,LVD-Remote-2.0,7 days,Electronics,Mechanical,4,0.1481481481,27,True
+model,LVD-Remote-2.0,7 days,Electronics,Monitoring,5,0.1851851852,27,False
+model,LVD-Remote-2.0,7 days,Electronics,Network,1,0.03703703704,27,True
+model,LVD-Remote-2.0,7 days,Electronics,No Trouble Found,2,0.07407407407,27,True
+model,LVD-Remote-2.0,7 days,Mechanical,Door,4,0.1025641026,39,True
+model,LVD-Remote-2.0,7 days,Mechanical,Electronics,3,0.07692307692,39,True
+model,LVD-Remote-2.0,7 days,Mechanical,Mechanical,25,0.641025641,39,False
+model,LVD-Remote-2.0,7 days,Mechanical,Monitoring,6,0.1538461538,39,False
+model,LVD-Remote-2.0,7 days,Mechanical,No Trouble Found,1,0.02564102564,39,True
+model,LVD-Remote-2.0,7 days,Monitoring,Door,3,0.375,8,True
+model,LVD-Remote-2.0,7 days,Monitoring,Electronics,2,0.25,8,True
+model,LVD-Remote-2.0,7 days,Monitoring,Mechanical,1,0.125,8,True
+model,LVD-Remote-2.0,7 days,Monitoring,Monitoring,1,0.125,8,True
+model,LVD-Remote-2.0,7 days,Monitoring,Network,1,0.125,8,True
+model,LVD-Remote-2.0,7 days,Network,Electronics,3,0.5,6,True
+model,LVD-Remote-2.0,7 days,Network,Network,1,0.1666666667,6,True
+model,LVD-Remote-2.0,7 days,Network,No Trouble Found,2,0.3333333333,6,True
+model,LVD-Remote-2.0,7 days,No Trouble Found,Door,1,0.08333333333,12,True
+model,LVD-Remote-2.0,7 days,No Trouble Found,Electronics,2,0.1666666667,12,True
+model,LVD-Remote-2.0,7 days,No Trouble Found,Mechanical,2,0.1666666667,12,True
+model,LVD-Remote-2.0,7 days,No Trouble Found,No Trouble Found,5,0.4166666667,12,False
+model,LVD-Remote-2.0,7 days,No Trouble Found,Operator error,1,0.08333333333,12,True
+model,LVD-Remote-2.0,7 days,No Trouble Found,Other,1,0.08333333333,12,True
+model,LVD-Remote-2.0,7 days,Not categorised,Door,2,0.2857142857,7,True
+model,LVD-Remote-2.0,7 days,Not categorised,Electronics,1,0.1428571429,7,True
+model,LVD-Remote-2.0,7 days,Not categorised,Mechanical,1,0.1428571429,7,True
+model,LVD-Remote-2.0,7 days,Not categorised,Monitoring,1,0.1428571429,7,True
+model,LVD-Remote-2.0,7 days,Not categorised,Not categorised,2,0.2857142857,7,True
+model,LVD-Remote-2.0,7 days,Operator error,No Trouble Found,1,0.5,2,True
+model,LVD-Remote-2.0,7 days,Operator error,Operator error,1,0.5,2,True
+model,LVD-Remote-2.0,7 days,Other,Electronics,2,0.4,5,True
+model,LVD-Remote-2.0,7 days,Other,Mechanical,1,0.2,5,True
+model,LVD-Remote-2.0,7 days,Other,No Trouble Found,1,0.2,5,True
+model,LVD-Remote-2.0,7 days,Other,Other,1,0.2,5,True
+model,LVD-Remote-2.0,7 days,Software,Door,1,1,1,True
+model,LVLR-WOP,30 days,Electronics,Electronics,1,1,1,True
+model,LVLR-WOP,7 days,Electronics,Electronics,1,1,1,True
+model,LVRR-WOP,30 days,Electronics,Operator error,1,1,1,True
+model,LVRR-WOP,30 days,Network,Door,1,0.5,2,True
+model,LVRR-WOP,30 days,Network,Network,1,0.5,2,True
+model,LVRR-WOP,30 days,No Trouble Found,Door,1,1,1,True
+model,LVRR-WOP,7 days,Electronics,Operator error,1,1,1,True
+model,LVRR-WOP,7 days,Network,Door,1,0.5,2,True
+model,LVRR-WOP,7 days,Network,Network,1,0.5,2,True
+model,LVRR-WOP,7 days,No Trouble Found,Door,1,1,1,True
+model,LVRR-WP,30 days,Door,Door,23,0.696969697,33,False
+model,LVRR-WP,30 days,Door,Electronics,5,0.1515151515,33,False
+model,LVRR-WP,30 days,Door,Monitoring,2,0.06060606061,33,True
+model,LVRR-WP,30 days,Door,Network,2,0.06060606061,33,True
+model,LVRR-WP,30 days,Door,Operator error,1,0.0303030303,33,True
+model,LVRR-WP,30 days,Electronics,Door,7,0.1944444444,36,False
+model,LVRR-WP,30 days,Electronics,Electronics,14,0.3888888889,36,False
+model,LVRR-WP,30 days,Electronics,Mechanical,2,0.05555555556,36,True
+model,LVRR-WP,30 days,Electronics,Monitoring,7,0.1944444444,36,False
+model,LVRR-WP,30 days,Electronics,Network,4,0.1111111111,36,True
+model,LVRR-WP,30 days,Electronics,Software,2,0.05555555556,36,True
+model,LVRR-WP,30 days,Mechanical,Door,1,0.07142857143,14,True
+model,LVRR-WP,30 days,Mechanical,Electronics,3,0.2142857143,14,True
+model,LVRR-WP,30 days,Mechanical,Mechanical,5,0.3571428571,14,False
+model,LVRR-WP,30 days,Mechanical,Monitoring,1,0.07142857143,14,True
+model,LVRR-WP,30 days,Mechanical,Network,1,0.07142857143,14,True
+model,LVRR-WP,30 days,Mechanical,No Trouble Found,1,0.07142857143,14,True
+model,LVRR-WP,30 days,Mechanical,Operator error,1,0.07142857143,14,True
+model,LVRR-WP,30 days,Mechanical,Other,1,0.07142857143,14,True
+model,LVRR-WP,30 days,Monitoring,Door,1,0.25,4,True
+model,LVRR-WP,30 days,Monitoring,Electronics,1,0.25,4,True
+model,LVRR-WP,30 days,Monitoring,Network,1,0.25,4,True
+model,LVRR-WP,30 days,Monitoring,Operator error,1,0.25,4,True
+model,LVRR-WP,30 days,Network,Electronics,4,0.4,10,True
+model,LVRR-WP,30 days,Network,Monitoring,2,0.2,10,True
+model,LVRR-WP,30 days,Network,Network,2,0.2,10,True
+model,LVRR-WP,30 days,Network,No Trouble Found,1,0.1,10,True
+model,LVRR-WP,30 days,Network,Not categorised,1,0.1,10,True
+model,LVRR-WP,30 days,No Trouble Found,Door,5,0.4545454545,11,False
+model,LVRR-WP,30 days,No Trouble Found,Electronics,2,0.1818181818,11,True
+model,LVRR-WP,30 days,No Trouble Found,Network,1,0.09090909091,11,True
+model,LVRR-WP,30 days,No Trouble Found,No Trouble Found,2,0.1818181818,11,True
+model,LVRR-WP,30 days,No Trouble Found,Operator error,1,0.09090909091,11,True
+model,LVRR-WP,30 days,Not categorised,Network,1,0.5,2,True
+model,LVRR-WP,30 days,Not categorised,Not categorised,1,0.5,2,True
+model,LVRR-WP,30 days,Operator error,Door,1,0.1666666667,6,True
+model,LVRR-WP,30 days,Operator error,Mechanical,2,0.3333333333,6,True
+model,LVRR-WP,30 days,Operator error,Network,1,0.1666666667,6,True
+model,LVRR-WP,30 days,Operator error,Operator error,2,0.3333333333,6,True
+model,LVRR-WP,30 days,Other,Electronics,1,1,1,True
+model,LVRR-WP,30 days,Software,No Trouble Found,1,1,1,True
+model,LVRR-WP,7 days,Door,Door,9,0.75,12,False
+model,LVRR-WP,7 days,Door,Electronics,1,0.08333333333,12,True
+model,LVRR-WP,7 days,Door,Monitoring,2,0.1666666667,12,True
+model,LVRR-WP,7 days,Electronics,Door,2,0.1428571429,14,True
+model,LVRR-WP,7 days,Electronics,Electronics,5,0.3571428571,14,False
+model,LVRR-WP,7 days,Electronics,Mechanical,1,0.07142857143,14,True
+model,LVRR-WP,7 days,Electronics,Monitoring,2,0.1428571429,14,True
+model,LVRR-WP,7 days,Electronics,Network,3,0.2142857143,14,True
+model,LVRR-WP,7 days,Electronics,Software,1,0.07142857143,14,True
+model,LVRR-WP,7 days,Mechanical,Electronics,1,0.1666666667,6,True
+model,LVRR-WP,7 days,Mechanical,Mechanical,4,0.6666666667,6,True
+model,LVRR-WP,7 days,Mechanical,Operator error,1,0.1666666667,6,True
+model,LVRR-WP,7 days,Monitoring,Network,1,1,1,True
+model,LVRR-WP,7 days,Network,Electronics,1,0.1666666667,6,True
+model,LVRR-WP,7 days,Network,Monitoring,2,0.3333333333,6,True
+model,LVRR-WP,7 days,Network,Network,1,0.1666666667,6,True
+model,LVRR-WP,7 days,Network,No Trouble Found,1,0.1666666667,6,True
+model,LVRR-WP,7 days,Network,Not categorised,1,0.1666666667,6,True
+model,LVRR-WP,7 days,No Trouble Found,Door,1,0.3333333333,3,True
+model,LVRR-WP,7 days,No Trouble Found,No Trouble Found,1,0.3333333333,3,True
+model,LVRR-WP,7 days,No Trouble Found,Operator error,1,0.3333333333,3,True
+model,LVRR-WP,7 days,Not categorised,Network,1,1,1,True
+model,LVRR-WP,7 days,Operator error,Mechanical,1,1,1,True
+model,LVRR-WP-2.0,30 days,Door,Door,94,0.6064516129,155,False
+model,LVRR-WP-2.0,30 days,Door,Electronics,16,0.1032258065,155,False
+model,LVRR-WP-2.0,30 days,Door,Mechanical,13,0.08387096774,155,False
+model,LVRR-WP-2.0,30 days,Door,Monitoring,16,0.1032258065,155,False
+model,LVRR-WP-2.0,30 days,Door,Network,4,0.02580645161,155,True
+model,LVRR-WP-2.0,30 days,Door,No Trouble Found,7,0.04516129032,155,False
+model,LVRR-WP-2.0,30 days,Door,Operator error,2,0.01290322581,155,True
+model,LVRR-WP-2.0,30 days,Door,Other,3,0.01935483871,155,True
+model,LVRR-WP-2.0,30 days,Electronics,Door,17,0.34,50,False
+model,LVRR-WP-2.0,30 days,Electronics,Electronics,21,0.42,50,False
+model,LVRR-WP-2.0,30 days,Electronics,Mechanical,2,0.04,50,True
+model,LVRR-WP-2.0,30 days,Electronics,Monitoring,5,0.1,50,False
+model,LVRR-WP-2.0,30 days,Electronics,Network,1,0.02,50,True
+model,LVRR-WP-2.0,30 days,Electronics,No Trouble Found,2,0.04,50,True
+model,LVRR-WP-2.0,30 days,Electronics,Not categorised,1,0.02,50,True
+model,LVRR-WP-2.0,30 days,Electronics,Other,1,0.02,50,True
+model,LVRR-WP-2.0,30 days,Mechanical,Door,7,0.4117647059,17,False
+model,LVRR-WP-2.0,30 days,Mechanical,Electronics,1,0.05882352941,17,True
+model,LVRR-WP-2.0,30 days,Mechanical,Mechanical,8,0.4705882353,17,False
+model,LVRR-WP-2.0,30 days,Mechanical,Monitoring,1,0.05882352941,17,True
+model,LVRR-WP-2.0,30 days,Monitoring,Door,6,0.75,8,False
+model,LVRR-WP-2.0,30 days,Monitoring,Electronics,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Monitoring,Mechanical,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Network,Door,1,0.25,4,True
+model,LVRR-WP-2.0,30 days,Network,Electronics,1,0.25,4,True
+model,LVRR-WP-2.0,30 days,Network,Network,2,0.5,4,True
+model,LVRR-WP-2.0,30 days,No Trouble Found,Door,3,0.2,15,True
+model,LVRR-WP-2.0,30 days,No Trouble Found,Electronics,6,0.4,15,False
+model,LVRR-WP-2.0,30 days,No Trouble Found,Mechanical,1,0.06666666667,15,True
+model,LVRR-WP-2.0,30 days,No Trouble Found,No Trouble Found,3,0.2,15,True
+model,LVRR-WP-2.0,30 days,No Trouble Found,Other,1,0.06666666667,15,True
+model,LVRR-WP-2.0,30 days,No Trouble Found,Software,1,0.06666666667,15,True
+model,LVRR-WP-2.0,30 days,Not categorised,Door,3,0.75,4,True
+model,LVRR-WP-2.0,30 days,Not categorised,No Trouble Found,1,0.25,4,True
+model,LVRR-WP-2.0,30 days,Operator error,Door,2,1,2,True
+model,LVRR-WP-2.0,30 days,Other,Door,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Other,Electronics,2,0.25,8,True
+model,LVRR-WP-2.0,30 days,Other,Mechanical,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Other,Monitoring,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Other,No Trouble Found,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Other,Not categorised,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Other,Operator error,1,0.125,8,True
+model,LVRR-WP-2.0,30 days,Software,Door,2,1,2,True
+model,LVRR-WP-2.0,7 days,Door,Door,39,0.5909090909,66,False
+model,LVRR-WP-2.0,7 days,Door,Electronics,5,0.07575757576,66,False
+model,LVRR-WP-2.0,7 days,Door,Mechanical,5,0.07575757576,66,False
+model,LVRR-WP-2.0,7 days,Door,Monitoring,11,0.1666666667,66,False
+model,LVRR-WP-2.0,7 days,Door,Network,2,0.0303030303,66,True
+model,LVRR-WP-2.0,7 days,Door,No Trouble Found,2,0.0303030303,66,True
+model,LVRR-WP-2.0,7 days,Door,Operator error,1,0.01515151515,66,True
+model,LVRR-WP-2.0,7 days,Door,Other,1,0.01515151515,66,True
+model,LVRR-WP-2.0,7 days,Electronics,Door,4,0.25,16,True
+model,LVRR-WP-2.0,7 days,Electronics,Electronics,7,0.4375,16,False
+model,LVRR-WP-2.0,7 days,Electronics,Monitoring,4,0.25,16,True
+model,LVRR-WP-2.0,7 days,Electronics,Other,1,0.0625,16,True
+model,LVRR-WP-2.0,7 days,Mechanical,Door,1,0.1428571429,7,True
+model,LVRR-WP-2.0,7 days,Mechanical,Electronics,1,0.1428571429,7,True
+model,LVRR-WP-2.0,7 days,Mechanical,Mechanical,4,0.5714285714,7,True
+model,LVRR-WP-2.0,7 days,Mechanical,Monitoring,1,0.1428571429,7,True
+model,LVRR-WP-2.0,7 days,Monitoring,Door,1,0.5,2,True
+model,LVRR-WP-2.0,7 days,Monitoring,Mechanical,1,0.5,2,True
+model,LVRR-WP-2.0,7 days,Network,Door,1,0.3333333333,3,True
+model,LVRR-WP-2.0,7 days,Network,Network,2,0.6666666667,3,True
+model,LVRR-WP-2.0,7 days,No Trouble Found,Electronics,2,0.4,5,True
+model,LVRR-WP-2.0,7 days,No Trouble Found,No Trouble Found,2,0.4,5,True
+model,LVRR-WP-2.0,7 days,No Trouble Found,Software,1,0.2,5,True
+model,LVRR-WP-2.0,7 days,Operator error,Door,1,1,1,True
+model,LVRR-WP-2.0,7 days,Other,Door,1,0.25,4,True
+model,LVRR-WP-2.0,7 days,Other,Monitoring,1,0.25,4,True
+model,LVRR-WP-2.0,7 days,Other,Not categorised,1,0.25,4,True
+model,LVRR-WP-2.0,7 days,Other,Operator error,1,0.25,4,True
+model,LX,30 days,Door,Mechanical,1,1,1,True
+model,LX,30 days,Mechanical,Mechanical,1,1,1,True
+model,LX,7 days,Mechanical,Mechanical,1,1,1,True
+model,MC-24,30 days,Electronics,Electronics,1,1,1,True
+model,MC-30,30 days,Door,Electronics,1,0.3333333333,3,True
+model,MC-30,30 days,Door,Monitoring,2,0.6666666667,3,True
+model,MC-30,30 days,Electronics,Door,1,0.5,2,True
+model,MC-30,30 days,Electronics,Network,1,0.5,2,True
+model,MC-30,30 days,Mechanical,Door,1,0.1666666667,6,True
+model,MC-30,30 days,Mechanical,Electronics,1,0.1666666667,6,True
+model,MC-30,30 days,Mechanical,Mechanical,4,0.6666666667,6,True
+model,MC-30,30 days,Monitoring,No Trouble Found,1,1,1,True
+model,MC-30,30 days,Network,Door,1,1,1,True
+model,MC-30,30 days,No Trouble Found,Monitoring,1,1,1,True
+model,MC-30,30 days,Software,Network,1,1,1,True
+model,MC-30,7 days,Door,Electronics,1,0.5,2,True
+model,MC-30,7 days,Door,Monitoring,1,0.5,2,True
+model,MC-30,7 days,Mechanical,Mechanical,1,1,1,True
+model,MC-30,7 days,Monitoring,No Trouble Found,1,1,1,True
+model,MC-30,7 days,Network,Door,1,1,1,True
+model,MC-30,7 days,No Trouble Found,Monitoring,1,1,1,True
+model,MC-30,7 days,Software,Network,1,1,1,True
+model,MV,30 days,Door,Door,7,0.3888888889,18,False
+model,MV,30 days,Door,Electronics,6,0.3333333333,18,False
+model,MV,30 days,Door,Mechanical,1,0.05555555556,18,True
+model,MV,30 days,Door,Monitoring,1,0.05555555556,18,True
+model,MV,30 days,Door,Network,2,0.1111111111,18,True
+model,MV,30 days,Door,No Trouble Found,1,0.05555555556,18,True
+model,MV,30 days,Electronics,Door,5,0.1351351351,37,False
+model,MV,30 days,Electronics,Electronics,19,0.5135135135,37,False
+model,MV,30 days,Electronics,Mechanical,1,0.02702702703,37,True
+model,MV,30 days,Electronics,Monitoring,4,0.1081081081,37,True
+model,MV,30 days,Electronics,Network,3,0.08108108108,37,True
+model,MV,30 days,Electronics,No Trouble Found,3,0.08108108108,37,True
+model,MV,30 days,Electronics,Not categorised,1,0.02702702703,37,True
+model,MV,30 days,Electronics,Software,1,0.02702702703,37,True
+model,MV,30 days,Mechanical,Door,3,0.375,8,True
+model,MV,30 days,Mechanical,Electronics,1,0.125,8,True
+model,MV,30 days,Mechanical,Mechanical,3,0.375,8,True
+model,MV,30 days,Mechanical,Monitoring,1,0.125,8,True
+model,MV,30 days,Network,Door,1,0.07142857143,14,True
+model,MV,30 days,Network,Electronics,1,0.07142857143,14,True
+model,MV,30 days,Network,Mechanical,1,0.07142857143,14,True
+model,MV,30 days,Network,Monitoring,2,0.1428571429,14,True
+model,MV,30 days,Network,Network,7,0.5,14,False
+model,MV,30 days,Network,No Trouble Found,1,0.07142857143,14,True
+model,MV,30 days,Network,Not categorised,1,0.07142857143,14,True
+model,MV,30 days,No Trouble Found,Door,2,0.2857142857,7,True
+model,MV,30 days,No Trouble Found,Electronics,2,0.2857142857,7,True
+model,MV,30 days,No Trouble Found,Mechanical,1,0.1428571429,7,True
+model,MV,30 days,No Trouble Found,Not categorised,1,0.1428571429,7,True
+model,MV,30 days,No Trouble Found,Other,1,0.1428571429,7,True
+model,MV,30 days,Not categorised,Electronics,1,0.3333333333,3,True
+model,MV,30 days,Not categorised,Network,2,0.6666666667,3,True
+model,MV,30 days,Operator error,Mechanical,1,1,1,True
+model,MV,30 days,Other,Door,1,0.25,4,True
+model,MV,30 days,Other,Electronics,1,0.25,4,True
+model,MV,30 days,Other,Mechanical,1,0.25,4,True
+model,MV,30 days,Other,Network,1,0.25,4,True
+model,MV,30 days,Software,Electronics,1,1,1,True
+model,MV,7 days,Door,Door,4,0.5714285714,7,True
+model,MV,7 days,Door,Monitoring,1,0.1428571429,7,True
+model,MV,7 days,Door,Network,1,0.1428571429,7,True
+model,MV,7 days,Door,No Trouble Found,1,0.1428571429,7,True
+model,MV,7 days,Electronics,Door,1,0.07142857143,14,True
+model,MV,7 days,Electronics,Electronics,9,0.6428571429,14,False
+model,MV,7 days,Electronics,Network,2,0.1428571429,14,True
+model,MV,7 days,Electronics,No Trouble Found,2,0.1428571429,14,True
+model,MV,7 days,Mechanical,Door,1,0.3333333333,3,True
+model,MV,7 days,Mechanical,Mechanical,1,0.3333333333,3,True
+model,MV,7 days,Mechanical,Monitoring,1,0.3333333333,3,True
+model,MV,7 days,Network,Door,1,0.1666666667,6,True
+model,MV,7 days,Network,Monitoring,1,0.1666666667,6,True
+model,MV,7 days,Network,Network,3,0.5,6,True
+model,MV,7 days,Network,No Trouble Found,1,0.1666666667,6,True
+model,MV,7 days,No Trouble Found,Door,1,0.25,4,True
+model,MV,7 days,No Trouble Found,Electronics,1,0.25,4,True
+model,MV,7 days,No Trouble Found,Mechanical,1,0.25,4,True
+model,MV,7 days,No Trouble Found,Not categorised,1,0.25,4,True
+model,MV,7 days,Not categorised,Electronics,1,0.5,2,True
+model,MV,7 days,Not categorised,Network,1,0.5,2,True
+model,MV,7 days,Other,Mechanical,1,0.5,2,True
+model,MV,7 days,Other,Network,1,0.5,2,True
+model,MV,7 days,Software,Electronics,1,1,1,True
+model,MV-2.0,30 days,Door,Door,22,0.4583333333,48,False
+model,MV-2.0,30 days,Door,Electronics,10,0.2083333333,48,False
+model,MV-2.0,30 days,Door,Mechanical,5,0.1041666667,48,False
+model,MV-2.0,30 days,Door,Monitoring,3,0.0625,48,True
+model,MV-2.0,30 days,Door,No Trouble Found,6,0.125,48,False
+model,MV-2.0,30 days,Door,Operator error,1,0.02083333333,48,True
+model,MV-2.0,30 days,Door,Other,1,0.02083333333,48,True
+model,MV-2.0,30 days,Electronics,Door,5,0.08928571429,56,False
+model,MV-2.0,30 days,Electronics,Electronics,32,0.5714285714,56,False
+model,MV-2.0,30 days,Electronics,Mechanical,4,0.07142857143,56,True
+model,MV-2.0,30 days,Electronics,Monitoring,3,0.05357142857,56,True
+model,MV-2.0,30 days,Electronics,Network,5,0.08928571429,56,False
+model,MV-2.0,30 days,Electronics,No Trouble Found,5,0.08928571429,56,False
+model,MV-2.0,30 days,Electronics,Operator error,2,0.03571428571,56,True
+model,MV-2.0,30 days,Mechanical,Door,3,0.1034482759,29,True
+model,MV-2.0,30 days,Mechanical,Electronics,5,0.1724137931,29,False
+model,MV-2.0,30 days,Mechanical,Mechanical,17,0.5862068966,29,False
+model,MV-2.0,30 days,Mechanical,Monitoring,3,0.1034482759,29,True
+model,MV-2.0,30 days,Mechanical,No Trouble Found,1,0.03448275862,29,True
+model,MV-2.0,30 days,Monitoring,Door,2,0.3333333333,6,True
+model,MV-2.0,30 days,Monitoring,Monitoring,1,0.1666666667,6,True
+model,MV-2.0,30 days,Monitoring,Network,3,0.5,6,True
+model,MV-2.0,30 days,Network,Door,1,0.05263157895,19,True
+model,MV-2.0,30 days,Network,Electronics,1,0.05263157895,19,True
+model,MV-2.0,30 days,Network,Monitoring,5,0.2631578947,19,False
+model,MV-2.0,30 days,Network,Network,9,0.4736842105,19,False
+model,MV-2.0,30 days,Network,No Trouble Found,1,0.05263157895,19,True
+model,MV-2.0,30 days,Network,Not categorised,2,0.1052631579,19,True
+model,MV-2.0,30 days,No Trouble Found,Door,5,0.3571428571,14,False
+model,MV-2.0,30 days,No Trouble Found,Electronics,2,0.1428571429,14,True
+model,MV-2.0,30 days,No Trouble Found,Mechanical,2,0.1428571429,14,True
+model,MV-2.0,30 days,No Trouble Found,No Trouble Found,4,0.2857142857,14,True
+model,MV-2.0,30 days,No Trouble Found,Not categorised,1,0.07142857143,14,True
+model,MV-2.0,30 days,Not categorised,Door,2,0.4,5,True
+model,MV-2.0,30 days,Not categorised,Electronics,1,0.2,5,True
+model,MV-2.0,30 days,Not categorised,Network,1,0.2,5,True
+model,MV-2.0,30 days,Not categorised,No Trouble Found,1,0.2,5,True
+model,MV-2.0,30 days,Operator error,Door,1,0.25,4,True
+model,MV-2.0,30 days,Operator error,Electronics,1,0.25,4,True
+model,MV-2.0,30 days,Operator error,Mechanical,2,0.5,4,True
+model,MV-2.0,30 days,Other,Electronics,1,0.5,2,True
+model,MV-2.0,30 days,Other,Other,1,0.5,2,True
+model,MV-2.0,7 days,Door,Door,9,0.4736842105,19,False
+model,MV-2.0,7 days,Door,Electronics,2,0.1052631579,19,True
+model,MV-2.0,7 days,Door,Mechanical,3,0.1578947368,19,True
+model,MV-2.0,7 days,Door,Monitoring,3,0.1578947368,19,True
+model,MV-2.0,7 days,Door,No Trouble Found,2,0.1052631579,19,True
+model,MV-2.0,7 days,Electronics,Electronics,16,0.8,20,False
+model,MV-2.0,7 days,Electronics,Monitoring,1,0.05,20,True
+model,MV-2.0,7 days,Electronics,Network,1,0.05,20,True
+model,MV-2.0,7 days,Electronics,No Trouble Found,1,0.05,20,True
+model,MV-2.0,7 days,Electronics,Operator error,1,0.05,20,True
+model,MV-2.0,7 days,Mechanical,Door,1,0.06666666667,15,True
+model,MV-2.0,7 days,Mechanical,Electronics,3,0.2,15,True
+model,MV-2.0,7 days,Mechanical,Mechanical,10,0.6666666667,15,False
+model,MV-2.0,7 days,Mechanical,Monitoring,1,0.06666666667,15,True
+model,MV-2.0,7 days,Monitoring,Door,1,0.25,4,True
+model,MV-2.0,7 days,Monitoring,Network,3,0.75,4,True
+model,MV-2.0,7 days,Network,Monitoring,3,0.3333333333,9,True
+model,MV-2.0,7 days,Network,Network,5,0.5555555556,9,False
+model,MV-2.0,7 days,Network,Not categorised,1,0.1111111111,9,True
+model,MV-2.0,7 days,No Trouble Found,Door,3,0.6,5,True
+model,MV-2.0,7 days,No Trouble Found,Electronics,1,0.2,5,True
+model,MV-2.0,7 days,No Trouble Found,Not categorised,1,0.2,5,True
+model,MV-2.0,7 days,Not categorised,Door,1,0.25,4,True
+model,MV-2.0,7 days,Not categorised,Electronics,1,0.25,4,True
+model,MV-2.0,7 days,Not categorised,Network,1,0.25,4,True
+model,MV-2.0,7 days,Not categorised,No Trouble Found,1,0.25,4,True
+model,MV-2.0,7 days,Other,Other,1,1,1,True
+model,SD-64,30 days,Door,Mechanical,1,1,1,True
+model,SD-64,30 days,Electronics,Electronics,4,1,4,True
+model,SD-64,30 days,Mechanical,Door,1,0.1111111111,9,True
+model,SD-64,30 days,Mechanical,Electronics,2,0.2222222222,9,True
+model,SD-64,30 days,Mechanical,Mechanical,4,0.4444444444,9,True
+model,SD-64,30 days,Mechanical,Network,1,0.1111111111,9,True
+model,SD-64,30 days,Mechanical,No Trouble Found,1,0.1111111111,9,True
+model,SD-64,30 days,Network,Electronics,2,0.6666666667,3,True
+model,SD-64,30 days,Network,Mechanical,1,0.3333333333,3,True
+model,SD-64,30 days,No Trouble Found,Electronics,2,0.3333333333,6,True
+model,SD-64,30 days,No Trouble Found,Mechanical,2,0.3333333333,6,True
+model,SD-64,30 days,No Trouble Found,No Trouble Found,1,0.1666666667,6,True
+model,SD-64,30 days,No Trouble Found,Software,1,0.1666666667,6,True
+model,SD-64,30 days,Other,No Trouble Found,1,1,1,True
+model,SD-64,30 days,Software,Other,1,1,1,True
+model,SD-64,7 days,Electronics,Electronics,1,1,1,True
+model,SD-64,7 days,Mechanical,Electronics,1,0.25,4,True
+model,SD-64,7 days,Mechanical,Mechanical,2,0.5,4,True
+model,SD-64,7 days,Mechanical,Network,1,0.25,4,True
+model,SD-64,7 days,No Trouble Found,No Trouble Found,1,1,1,True
+model,SD-64,7 days,Other,No Trouble Found,1,1,1,True
+model,SV-48,30 days,Door,Electronics,1,0.5,2,True
+model,SV-48,30 days,Door,Mechanical,1,0.5,2,True
+model,SV-48,30 days,Electronics,Door,1,0.1,10,True
+model,SV-48,30 days,Electronics,Electronics,4,0.4,10,True
+model,SV-48,30 days,Electronics,Monitoring,2,0.2,10,True
+model,SV-48,30 days,Electronics,Not categorised,2,0.2,10,True
+model,SV-48,30 days,Electronics,Other,1,0.1,10,True
+model,SV-48,30 days,Monitoring,Electronics,3,1,3,True
+model,SV-48,30 days,Network,Electronics,1,1,1,True
+model,SV-48,30 days,No Trouble Found,Door,1,0.5,2,True
+model,SV-48,30 days,No Trouble Found,No Trouble Found,1,0.5,2,True
+model,SV-48,30 days,Not categorised,Electronics,1,0.5,2,True
+model,SV-48,30 days,Not categorised,Other,1,0.5,2,True
+model,SV-48,30 days,Other,Monitoring,1,1,1,True
+model,SV-48,7 days,Electronics,Electronics,2,0.2857142857,7,True
+model,SV-48,7 days,Electronics,Monitoring,2,0.2857142857,7,True
+model,SV-48,7 days,Electronics,Not categorised,2,0.2857142857,7,True
+model,SV-48,7 days,Electronics,Other,1,0.1428571429,7,True
+model,SV-48,7 days,Monitoring,Electronics,3,1,3,True
+model,SV-48,7 days,Network,Electronics,1,1,1,True
+model,SV-48,7 days,Other,Monitoring,1,1,1,True
+model,SV-48-2.0,30 days,Door,Door,1,0.2,5,True
+model,SV-48-2.0,30 days,Door,Electronics,2,0.4,5,True
+model,SV-48-2.0,30 days,Door,No Trouble Found,1,0.2,5,True
+model,SV-48-2.0,30 days,Door,Other,1,0.2,5,True
+model,SV-48-2.0,30 days,Electronics,Door,3,0.375,8,True
+model,SV-48-2.0,30 days,Electronics,Electronics,3,0.375,8,True
+model,SV-48-2.0,30 days,Electronics,Mechanical,1,0.125,8,True
+model,SV-48-2.0,30 days,Electronics,Other,1,0.125,8,True
+model,SV-48-2.0,30 days,Mechanical,Door,1,0.5,2,True
+model,SV-48-2.0,30 days,Mechanical,Mechanical,1,0.5,2,True
+model,SV-48-2.0,30 days,No Trouble Found,Mechanical,1,1,1,True
+model,SV-48-2.0,30 days,Operator error,Mechanical,1,1,1,True
+model,SV-48-2.0,30 days,Other,Electronics,1,1,1,True
+model,SV-48-2.0,7 days,Door,Door,1,0.5,2,True
+model,SV-48-2.0,7 days,Door,No Trouble Found,1,0.5,2,True
+model,SV-48-2.0,7 days,Electronics,Door,1,0.3333333333,3,True
+model,SV-48-2.0,7 days,Electronics,Electronics,2,0.6666666667,3,True
+model,alEx LC-D,30 days,Door,Door,1,0.125,8,True
+model,alEx LC-D,30 days,Door,Electronics,1,0.125,8,True
+model,alEx LC-D,30 days,Door,Mechanical,3,0.375,8,True
+model,alEx LC-D,30 days,Door,Monitoring,2,0.25,8,True
+model,alEx LC-D,30 days,Door,No Trouble Found,1,0.125,8,True
+model,alEx LC-D,30 days,Electronics,Electronics,4,0.3076923077,13,True
+model,alEx LC-D,30 days,Electronics,Mechanical,4,0.3076923077,13,True
+model,alEx LC-D,30 days,Electronics,Monitoring,2,0.1538461538,13,True
+model,alEx LC-D,30 days,Electronics,Other,3,0.2307692308,13,True
+model,alEx LC-D,30 days,Mechanical,Door,8,0.08695652174,92,False
+model,alEx LC-D,30 days,Mechanical,Electronics,6,0.0652173913,92,False
+model,alEx LC-D,30 days,Mechanical,Mechanical,63,0.6847826087,92,False
+model,alEx LC-D,30 days,Mechanical,Monitoring,9,0.09782608696,92,False
+model,alEx LC-D,30 days,Mechanical,No Trouble Found,3,0.03260869565,92,True
+model,alEx LC-D,30 days,Mechanical,Not categorised,1,0.01086956522,92,True
+model,alEx LC-D,30 days,Mechanical,Operator error,2,0.02173913043,92,True
+model,alEx LC-D,30 days,Monitoring,Door,1,0.1,10,True
+model,alEx LC-D,30 days,Monitoring,Electronics,2,0.2,10,True
+model,alEx LC-D,30 days,Monitoring,Mechanical,3,0.3,10,True
+model,alEx LC-D,30 days,Monitoring,No Trouble Found,2,0.2,10,True
+model,alEx LC-D,30 days,Monitoring,Not categorised,1,0.1,10,True
+model,alEx LC-D,30 days,Monitoring,Other,1,0.1,10,True
+model,alEx LC-D,30 days,Network,Electronics,3,0.2,15,True
+model,alEx LC-D,30 days,Network,Mechanical,3,0.2,15,True
+model,alEx LC-D,30 days,Network,Network,5,0.3333333333,15,False
+model,alEx LC-D,30 days,Network,No Trouble Found,4,0.2666666667,15,True
+model,alEx LC-D,30 days,No Trouble Found,Electronics,1,0.1111111111,9,True
+model,alEx LC-D,30 days,No Trouble Found,Mechanical,4,0.4444444444,9,True
+model,alEx LC-D,30 days,No Trouble Found,Network,1,0.1111111111,9,True
+model,alEx LC-D,30 days,No Trouble Found,No Trouble Found,1,0.1111111111,9,True
+model,alEx LC-D,30 days,No Trouble Found,Operator error,1,0.1111111111,9,True
+model,alEx LC-D,30 days,No Trouble Found,Software,1,0.1111111111,9,True
+model,alEx LC-D,30 days,Not categorised,Mechanical,2,1,2,True
+model,alEx LC-D,30 days,Operator error,Electronics,2,0.4,5,True
+model,alEx LC-D,30 days,Operator error,Mechanical,2,0.4,5,True
+model,alEx LC-D,30 days,Operator error,Network,1,0.2,5,True
+model,alEx LC-D,30 days,Other,Electronics,1,0.1666666667,6,True
+model,alEx LC-D,30 days,Other,Mechanical,1,0.1666666667,6,True
+model,alEx LC-D,30 days,Other,Network,1,0.1666666667,6,True
+model,alEx LC-D,30 days,Other,No Trouble Found,1,0.1666666667,6,True
+model,alEx LC-D,30 days,Other,Other,2,0.3333333333,6,True
+model,alEx LC-D,7 days,Door,Door,1,0.1666666667,6,True
+model,alEx LC-D,7 days,Door,Electronics,1,0.1666666667,6,True
+model,alEx LC-D,7 days,Door,Mechanical,2,0.3333333333,6,True
+model,alEx LC-D,7 days,Door,Monitoring,1,0.1666666667,6,True
+model,alEx LC-D,7 days,Door,No Trouble Found,1,0.1666666667,6,True
+model,alEx LC-D,7 days,Electronics,Mechanical,2,0.5,4,True
+model,alEx LC-D,7 days,Electronics,Monitoring,1,0.25,4,True
+model,alEx LC-D,7 days,Electronics,Other,1,0.25,4,True
+model,alEx LC-D,7 days,Mechanical,Door,2,0.0625,32,True
+model,alEx LC-D,7 days,Mechanical,Electronics,2,0.0625,32,True
+model,alEx LC-D,7 days,Mechanical,Mechanical,20,0.625,32,False
+model,alEx LC-D,7 days,Mechanical,Monitoring,7,0.21875,32,False
+model,alEx LC-D,7 days,Mechanical,Operator error,1,0.03125,32,True
+model,alEx LC-D,7 days,Monitoring,Door,1,0.2,5,True
+model,alEx LC-D,7 days,Monitoring,Electronics,2,0.4,5,True
+model,alEx LC-D,7 days,Monitoring,No Trouble Found,2,0.4,5,True
+model,alEx LC-D,7 days,Network,Electronics,3,0.5,6,True
+model,alEx LC-D,7 days,Network,Mechanical,2,0.3333333333,6,True
+model,alEx LC-D,7 days,Network,No Trouble Found,1,0.1666666667,6,True
+model,alEx LC-D,7 days,No Trouble Found,Electronics,1,0.1428571429,7,True
+model,alEx LC-D,7 days,No Trouble Found,Mechanical,3,0.4285714286,7,True
+model,alEx LC-D,7 days,No Trouble Found,Network,1,0.1428571429,7,True
+model,alEx LC-D,7 days,No Trouble Found,Operator error,1,0.1428571429,7,True
+model,alEx LC-D,7 days,No Trouble Found,Software,1,0.1428571429,7,True
+model,alEx LC-D,7 days,Not categorised,Mechanical,1,1,1,True
+model,alEx LC-D,7 days,Operator error,Mechanical,1,0.5,2,True
+model,alEx LC-D,7 days,Operator error,Network,1,0.5,2,True
+model,alEx LC-D,7 days,Other,Mechanical,1,0.3333333333,3,True
+model,alEx LC-D,7 days,Other,Network,1,0.3333333333,3,True
+model,alEx LC-D,7 days,Other,Other,1,0.3333333333,3,True
+model,alEx LC-S,30 days,Door,Electronics,1,0.5,2,True
+model,alEx LC-S,30 days,Door,Mechanical,1,0.5,2,True
+model,alEx LC-S,30 days,Electronics,Door,1,1,1,True
+model,alEx LC-S,30 days,Mechanical,Electronics,1,0.1111111111,9,True
+model,alEx LC-S,30 days,Mechanical,Mechanical,7,0.7777777778,9,False
+model,alEx LC-S,30 days,Mechanical,Other,1,0.1111111111,9,True
+model,alEx LC-S,30 days,Network,Network,3,1,3,True
+model,alEx LC-S,30 days,Software,Mechanical,1,0.5,2,True
+model,alEx LC-S,30 days,Software,Operator error,1,0.5,2,True
+model,alEx LC-S,7 days,Door,Electronics,1,1,1,True
+model,alEx LC-S,7 days,Electronics,Door,1,1,1,True
+model,alEx LC-S,7 days,Mechanical,Mechanical,2,1,2,True
+model,alEx LC-S,7 days,Network,Network,1,1,1,True
+model,alEx LC-S,7 days,Software,Operator error,1,1,1,True
+model,alEx MC-D,30 days,Electronics,Mechanical,1,0.5,2,True
+model,alEx MC-D,30 days,Electronics,Monitoring,1,0.5,2,True
+model,alEx MC-D,30 days,Mechanical,Door,1,0.03125,32,True
+model,alEx MC-D,30 days,Mechanical,Electronics,4,0.125,32,True
+model,alEx MC-D,30 days,Mechanical,Mechanical,20,0.625,32,False
+model,alEx MC-D,30 days,Mechanical,Network,2,0.0625,32,True
+model,alEx MC-D,30 days,Mechanical,No Trouble Found,3,0.09375,32,True
+model,alEx MC-D,30 days,Mechanical,Operator error,1,0.03125,32,True
+model,alEx MC-D,30 days,Mechanical,Other,1,0.03125,32,True
+model,alEx MC-D,30 days,Network,Mechanical,2,0.5,4,True
+model,alEx MC-D,30 days,Network,Network,1,0.25,4,True
+model,alEx MC-D,30 days,Network,No Trouble Found,1,0.25,4,True
+model,alEx MC-D,30 days,No Trouble Found,Mechanical,2,0.6666666667,3,True
+model,alEx MC-D,30 days,No Trouble Found,No Trouble Found,1,0.3333333333,3,True
+model,alEx MC-D,30 days,Operator error,Mechanical,2,1,2,True
+model,alEx MC-D,30 days,Software,Operator error,1,1,1,True
+model,alEx MC-D,7 days,Electronics,Monitoring,1,1,1,True
+model,alEx MC-D,7 days,Mechanical,Door,1,0.1111111111,9,True
+model,alEx MC-D,7 days,Mechanical,Electronics,1,0.1111111111,9,True
+model,alEx MC-D,7 days,Mechanical,Mechanical,5,0.5555555556,9,False
+model,alEx MC-D,7 days,Mechanical,Network,1,0.1111111111,9,True
+model,alEx MC-D,7 days,Mechanical,No Trouble Found,1,0.1111111111,9,True
+model,alEx MC-D,7 days,Network,Network,1,1,1,True
+model,alEx MC-D,7 days,No Trouble Found,No Trouble Found,1,1,1,True
+model,alEx MC-D,7 days,Software,Operator error,1,1,1,True
+model,alEx MC-S,30 days,Electronics,Electronics,2,1,2,True
+model,alEx MC-S,30 days,Mechanical,Door,2,0.25,8,True
+model,alEx MC-S,30 days,Mechanical,Mechanical,6,0.75,8,False
+model,alEx MC-S,30 days,No Trouble Found,Mechanical,1,0.5,2,True
+model,alEx MC-S,30 days,No Trouble Found,Network,1,0.5,2,True
+model,alEx MC-S,30 days,Not categorised,Not categorised,1,1,1,True
+model,alEx MC-S,30 days,Software,Operator error,1,1,1,True
+model,alEx MC-S,7 days,Mechanical,Door,1,0.5,2,True
+model,alEx MC-S,7 days,Mechanical,Mechanical,1,0.5,2,True
+model,alEx MC-S,7 days,No Trouble Found,Network,1,1,1,True
+model,alEx MC-S,7 days,Software,Operator error,1,1,1,True
+model,alEx SD 2.0,30 days,Door,Door,3,0.375,8,True
+model,alEx SD 2.0,30 days,Door,Mechanical,4,0.5,8,True
+model,alEx SD 2.0,30 days,Door,Monitoring,1,0.125,8,True
+model,alEx SD 2.0,30 days,Mechanical,Door,3,0.125,24,True
+model,alEx SD 2.0,30 days,Mechanical,Electronics,1,0.04166666667,24,True
+model,alEx SD 2.0,30 days,Mechanical,Mechanical,14,0.5833333333,24,False
+model,alEx SD 2.0,30 days,Mechanical,Monitoring,3,0.125,24,True
+model,alEx SD 2.0,30 days,Mechanical,Network,1,0.04166666667,24,True
+model,alEx SD 2.0,30 days,Mechanical,Not categorised,1,0.04166666667,24,True
+model,alEx SD 2.0,30 days,Mechanical,Other,1,0.04166666667,24,True
+model,alEx SD 2.0,30 days,Monitoring,Monitoring,1,1,1,True
+model,alEx SD 2.0,30 days,Network,Door,1,0.5,2,True
+model,alEx SD 2.0,30 days,Network,Network,1,0.5,2,True
+model,alEx SD 2.0,30 days,No Trouble Found,Door,1,0.3333333333,3,True
+model,alEx SD 2.0,30 days,No Trouble Found,Mechanical,2,0.6666666667,3,True
+model,alEx SD 2.0,30 days,Operator error,Mechanical,1,1,1,True
+model,alEx SD 2.0,30 days,Other,Monitoring,1,0.5,2,True
+model,alEx SD 2.0,30 days,Other,Other,1,0.5,2,True
+model,alEx SD 2.0,7 days,Door,Door,1,0.3333333333,3,True
+model,alEx SD 2.0,7 days,Door,Mechanical,1,0.3333333333,3,True
+model,alEx SD 2.0,7 days,Door,Monitoring,1,0.3333333333,3,True
+model,alEx SD 2.0,7 days,Mechanical,Mechanical,4,0.5,8,True
+model,alEx SD 2.0,7 days,Mechanical,Monitoring,2,0.25,8,True
+model,alEx SD 2.0,7 days,Mechanical,Network,1,0.125,8,True
+model,alEx SD 2.0,7 days,Mechanical,Not categorised,1,0.125,8,True
+model,alEx SD 2.0,7 days,No Trouble Found,Mechanical,1,1,1,True
+model,alEx SD 2.0,7 days,Operator error,Mechanical,1,1,1,True
+model,alEx SD 2.0,7 days,Other,Monitoring,1,0.5,2,True
+model,alEx SD 2.0,7 days,Other,Other,1,0.5,2,True
+model,scrubBank 480,30 days,Door,Door,9,0.3913043478,23,False
+model,scrubBank 480,30 days,Door,Electronics,3,0.1304347826,23,True
+model,scrubBank 480,30 days,Door,Mechanical,3,0.1304347826,23,True
+model,scrubBank 480,30 days,Door,Monitoring,2,0.08695652174,23,True
+model,scrubBank 480,30 days,Door,Network,1,0.04347826087,23,True
+model,scrubBank 480,30 days,Door,No Trouble Found,4,0.1739130435,23,True
+model,scrubBank 480,30 days,Door,Not categorised,1,0.04347826087,23,True
+model,scrubBank 480,30 days,Electronics,Door,2,0.2857142857,7,True
+model,scrubBank 480,30 days,Electronics,Electronics,3,0.4285714286,7,True
+model,scrubBank 480,30 days,Electronics,Monitoring,1,0.1428571429,7,True
+model,scrubBank 480,30 days,Electronics,Operator error,1,0.1428571429,7,True
+model,scrubBank 480,30 days,Mechanical,Door,2,0.6666666667,3,True
+model,scrubBank 480,30 days,Mechanical,Software,1,0.3333333333,3,True
+model,scrubBank 480,30 days,Monitoring,Not categorised,2,1,2,True
+model,scrubBank 480,30 days,Network,Door,1,1,1,True
+model,scrubBank 480,30 days,No Trouble Found,Electronics,1,0.1666666667,6,True
+model,scrubBank 480,30 days,No Trouble Found,Mechanical,1,0.1666666667,6,True
+model,scrubBank 480,30 days,No Trouble Found,Monitoring,1,0.1666666667,6,True
+model,scrubBank 480,30 days,No Trouble Found,No Trouble Found,3,0.5,6,True
+model,scrubBank 480,30 days,Not categorised,Monitoring,1,0.5,2,True
+model,scrubBank 480,30 days,Not categorised,Not categorised,1,0.5,2,True
+model,scrubBank 480,30 days,Operator error,Electronics,1,0.5,2,True
+model,scrubBank 480,30 days,Operator error,Operator error,1,0.5,2,True
+model,scrubBank 480,30 days,Other,Door,1,1,1,True
+model,scrubBank 480,30 days,Software,No Trouble Found,1,1,1,True
+model,scrubBank 480,7 days,Door,Door,2,0.5,4,True
+model,scrubBank 480,7 days,Door,Monitoring,1,0.25,4,True
+model,scrubBank 480,7 days,Door,Not categorised,1,0.25,4,True
+model,scrubBank 480,7 days,Electronics,Monitoring,1,1,1,True
+model,scrubBank 480,7 days,Mechanical,Door,1,1,1,True
+model,scrubBank 480,7 days,Monitoring,Not categorised,2,1,2,True
+model,scrubBank 480,7 days,No Trouble Found,No Trouble Found,2,1,2,True
+model,scrubBank 480,7 days,Not categorised,Not categorised,1,1,1,True
+model,scrubBank 480,7 days,Operator error,Electronics,1,0.5,2,True
+model,scrubBank 480,7 days,Operator error,Operator error,1,0.5,2,True
+model,scrubXchange LX,30 days,Door,Door,1,0.3333333333,3,True
+model,scrubXchange LX,30 days,Door,Other,1,0.3333333333,3,True
+model,scrubXchange LX,30 days,Door,Software,1,0.3333333333,3,True
+model,scrubXchange LX,30 days,Electronics,Door,1,0.25,4,True
+model,scrubXchange LX,30 days,Electronics,Electronics,3,0.75,4,True
+model,scrubXchange LX,30 days,Not categorised,Door,1,1,1,True
+model,scrubXchange LX,30 days,Other,Electronics,1,1,1,True
+model,scrubXchange LX,30 days,Software,Not categorised,1,1,1,True
+model,scrubXchange LX,7 days,Electronics,Electronics,1,1,1,True
+model,scrubXchange LX,7 days,Other,Electronics,1,1,1,True
+model,scrubXchange LX,7 days,Software,Not categorised,1,1,1,True
+model,scrubXchange MX,30 days,Operator error,Door,1,1,1,True
+telemetry type,No device match,30 days,Door,Door,42,0.5915492958,71,False
+telemetry type,No device match,30 days,Door,Electronics,7,0.0985915493,71,False
+telemetry type,No device match,30 days,Door,Mechanical,6,0.08450704225,71,False
+telemetry type,No device match,30 days,Door,Monitoring,5,0.07042253521,71,False
+telemetry type,No device match,30 days,Door,Network,3,0.04225352113,71,True
+telemetry type,No device match,30 days,Door,No Trouble Found,5,0.07042253521,71,False
+telemetry type,No device match,30 days,Door,Not categorised,1,0.01408450704,71,True
+telemetry type,No device match,30 days,Door,Other,1,0.01408450704,71,True
+telemetry type,No device match,30 days,Door,Software,1,0.01408450704,71,True
+telemetry type,No device match,30 days,Electronics,Door,14,0.1728395062,81,False
+telemetry type,No device match,30 days,Electronics,Electronics,37,0.4567901235,81,False
+telemetry type,No device match,30 days,Electronics,Mechanical,5,0.06172839506,81,False
+telemetry type,No device match,30 days,Electronics,Monitoring,6,0.07407407407,81,False
+telemetry type,No device match,30 days,Electronics,Network,7,0.08641975309,81,False
+telemetry type,No device match,30 days,Electronics,No Trouble Found,3,0.03703703704,81,True
+telemetry type,No device match,30 days,Electronics,Not categorised,3,0.03703703704,81,True
+telemetry type,No device match,30 days,Electronics,Operator error,1,0.01234567901,81,True
+telemetry type,No device match,30 days,Electronics,Other,2,0.02469135802,81,True
+telemetry type,No device match,30 days,Electronics,Software,3,0.03703703704,81,True
+telemetry type,No device match,30 days,Mechanical,Door,6,0.2,30,False
+telemetry type,No device match,30 days,Mechanical,Electronics,2,0.06666666667,30,True
+telemetry type,No device match,30 days,Mechanical,Mechanical,17,0.5666666667,30,False
+telemetry type,No device match,30 days,Mechanical,Monitoring,4,0.1333333333,30,True
+telemetry type,No device match,30 days,Mechanical,Software,1,0.03333333333,30,True
+telemetry type,No device match,30 days,Monitoring,Electronics,4,0.4444444444,9,True
+telemetry type,No device match,30 days,Monitoring,Network,1,0.1111111111,9,True
+telemetry type,No device match,30 days,Monitoring,Not categorised,3,0.3333333333,9,True
+telemetry type,No device match,30 days,Monitoring,Operator error,1,0.1111111111,9,True
+telemetry type,No device match,30 days,Network,Door,1,0.04347826087,23,True
+telemetry type,No device match,30 days,Network,Electronics,6,0.2608695652,23,False
+telemetry type,No device match,30 days,Network,Monitoring,2,0.08695652174,23,True
+telemetry type,No device match,30 days,Network,Network,10,0.4347826087,23,False
+telemetry type,No device match,30 days,Network,No Trouble Found,1,0.04347826087,23,True
+telemetry type,No device match,30 days,Network,Not categorised,2,0.08695652174,23,True
+telemetry type,No device match,30 days,Network,Software,1,0.04347826087,23,True
+telemetry type,No device match,30 days,No Trouble Found,Door,6,0.25,24,False
+telemetry type,No device match,30 days,No Trouble Found,Electronics,4,0.1666666667,24,True
+telemetry type,No device match,30 days,No Trouble Found,Mechanical,6,0.25,24,False
+telemetry type,No device match,30 days,No Trouble Found,Monitoring,1,0.04166666667,24,True
+telemetry type,No device match,30 days,No Trouble Found,No Trouble Found,4,0.1666666667,24,True
+telemetry type,No device match,30 days,No Trouble Found,Operator error,1,0.04166666667,24,True
+telemetry type,No device match,30 days,No Trouble Found,Other,1,0.04166666667,24,True
+telemetry type,No device match,30 days,No Trouble Found,Software,1,0.04166666667,24,True
+telemetry type,No device match,30 days,Not categorised,Door,2,0.125,16,True
+telemetry type,No device match,30 days,Not categorised,Electronics,2,0.125,16,True
+telemetry type,No device match,30 days,Not categorised,Mechanical,3,0.1875,16,True
+telemetry type,No device match,30 days,Not categorised,Monitoring,2,0.125,16,True
+telemetry type,No device match,30 days,Not categorised,Network,3,0.1875,16,True
+telemetry type,No device match,30 days,Not categorised,Not categorised,3,0.1875,16,True
+telemetry type,No device match,30 days,Not categorised,Other,1,0.0625,16,True
+telemetry type,No device match,30 days,Operator error,Door,2,0.25,8,True
+telemetry type,No device match,30 days,Operator error,Electronics,1,0.125,8,True
+telemetry type,No device match,30 days,Operator error,Mechanical,1,0.125,8,True
+telemetry type,No device match,30 days,Operator error,Network,1,0.125,8,True
+telemetry type,No device match,30 days,Operator error,Operator error,3,0.375,8,True
+telemetry type,No device match,30 days,Other,Electronics,5,0.5555555556,9,False
+telemetry type,No device match,30 days,Other,Monitoring,1,0.1111111111,9,True
+telemetry type,No device match,30 days,Other,No Trouble Found,1,0.1111111111,9,True
+telemetry type,No device match,30 days,Other,Other,2,0.2222222222,9,True
+telemetry type,No device match,30 days,Software,Electronics,1,0.2,5,True
+telemetry type,No device match,30 days,Software,No Trouble Found,1,0.2,5,True
+telemetry type,No device match,30 days,Software,Not categorised,1,0.2,5,True
+telemetry type,No device match,30 days,Software,Other,2,0.4,5,True
+telemetry type,No device match,7 days,Door,Door,17,0.5666666667,30,False
+telemetry type,No device match,7 days,Door,Electronics,1,0.03333333333,30,True
+telemetry type,No device match,7 days,Door,Mechanical,3,0.1,30,True
+telemetry type,No device match,7 days,Door,Monitoring,4,0.1333333333,30,True
+telemetry type,No device match,7 days,Door,Network,1,0.03333333333,30,True
+telemetry type,No device match,7 days,Door,No Trouble Found,3,0.1,30,True
+telemetry type,No device match,7 days,Door,Not categorised,1,0.03333333333,30,True
+telemetry type,No device match,7 days,Electronics,Door,6,0.1818181818,33,False
+telemetry type,No device match,7 days,Electronics,Electronics,13,0.3939393939,33,False
+telemetry type,No device match,7 days,Electronics,Mechanical,2,0.06060606061,33,True
+telemetry type,No device match,7 days,Electronics,Monitoring,3,0.09090909091,33,True
+telemetry type,No device match,7 days,Electronics,Network,3,0.09090909091,33,True
+telemetry type,No device match,7 days,Electronics,No Trouble Found,2,0.06060606061,33,True
+telemetry type,No device match,7 days,Electronics,Not categorised,2,0.06060606061,33,True
+telemetry type,No device match,7 days,Electronics,Other,2,0.06060606061,33,True
+telemetry type,No device match,7 days,Mechanical,Door,3,0.1875,16,True
+telemetry type,No device match,7 days,Mechanical,Electronics,1,0.0625,16,True
+telemetry type,No device match,7 days,Mechanical,Mechanical,10,0.625,16,False
+telemetry type,No device match,7 days,Mechanical,Monitoring,1,0.0625,16,True
+telemetry type,No device match,7 days,Mechanical,Software,1,0.0625,16,True
+telemetry type,No device match,7 days,Monitoring,Electronics,4,0.6666666667,6,True
+telemetry type,No device match,7 days,Monitoring,Not categorised,2,0.3333333333,6,True
+telemetry type,No device match,7 days,Network,Door,1,0.06666666667,15,True
+telemetry type,No device match,7 days,Network,Electronics,3,0.2,15,True
+telemetry type,No device match,7 days,Network,Monitoring,1,0.06666666667,15,True
+telemetry type,No device match,7 days,Network,Network,7,0.4666666667,15,False
+telemetry type,No device match,7 days,Network,No Trouble Found,1,0.06666666667,15,True
+telemetry type,No device match,7 days,Network,Not categorised,1,0.06666666667,15,True
+telemetry type,No device match,7 days,Network,Software,1,0.06666666667,15,True
+telemetry type,No device match,7 days,No Trouble Found,Door,2,0.2857142857,7,True
+telemetry type,No device match,7 days,No Trouble Found,Mechanical,1,0.1428571429,7,True
+telemetry type,No device match,7 days,No Trouble Found,No Trouble Found,3,0.4285714286,7,True
+telemetry type,No device match,7 days,No Trouble Found,Operator error,1,0.1428571429,7,True
+telemetry type,No device match,7 days,Not categorised,Electronics,1,0.1111111111,9,True
+telemetry type,No device match,7 days,Not categorised,Mechanical,2,0.2222222222,9,True
+telemetry type,No device match,7 days,Not categorised,Monitoring,1,0.1111111111,9,True
+telemetry type,No device match,7 days,Not categorised,Network,2,0.2222222222,9,True
+telemetry type,No device match,7 days,Not categorised,Not categorised,3,0.3333333333,9,True
+telemetry type,No device match,7 days,Operator error,Electronics,1,0.5,2,True
+telemetry type,No device match,7 days,Operator error,Operator error,1,0.5,2,True
+telemetry type,No device match,7 days,Other,Electronics,2,0.4,5,True
+telemetry type,No device match,7 days,Other,Monitoring,1,0.2,5,True
+telemetry type,No device match,7 days,Other,No Trouble Found,1,0.2,5,True
+telemetry type,No device match,7 days,Other,Other,1,0.2,5,True
+telemetry type,No device match,7 days,Software,Electronics,1,0.3333333333,3,True
+telemetry type,No device match,7 days,Software,Not categorised,1,0.3333333333,3,True
+telemetry type,No device match,7 days,Software,Other,1,0.3333333333,3,True
+telemetry type,Unknown,30 days,Door,Door,3,1,3,True
+telemetry type,Unknown,30 days,Electronics,Electronics,1,1,1,True
+telemetry type,Unknown,30 days,Mechanical,Door,3,0.5,6,True
+telemetry type,Unknown,30 days,Mechanical,Electronics,1,0.1666666667,6,True
+telemetry type,Unknown,30 days,Mechanical,Mechanical,1,0.1666666667,6,True
+telemetry type,Unknown,30 days,Mechanical,No Trouble Found,1,0.1666666667,6,True
+telemetry type,Unknown,30 days,No Trouble Found,Network,2,1,2,True
+telemetry type,Unknown,7 days,Electronics,Electronics,1,1,1,True
+telemetry type,Unknown,7 days,Mechanical,No Trouble Found,1,1,1,True
+telemetry type,alex2.0-0,30 days,No Trouble Found,Mechanical,1,1,1,True
+telemetry type,alex2.0-1,30 days,Door,Door,1,0.25,4,True
+telemetry type,alex2.0-1,30 days,Door,Mechanical,2,0.5,4,True
+telemetry type,alex2.0-1,30 days,Door,Monitoring,1,0.25,4,True
+telemetry type,alex2.0-1,30 days,Electronics,Electronics,3,0.6,5,True
+telemetry type,alex2.0-1,30 days,Electronics,Mechanical,2,0.4,5,True
+telemetry type,alex2.0-1,30 days,Mechanical,Door,6,0.1276595745,47,False
+telemetry type,alex2.0-1,30 days,Mechanical,Electronics,3,0.06382978723,47,True
+telemetry type,alex2.0-1,30 days,Mechanical,Mechanical,34,0.7234042553,47,False
+telemetry type,alex2.0-1,30 days,Mechanical,Monitoring,1,0.02127659574,47,True
+telemetry type,alex2.0-1,30 days,Mechanical,No Trouble Found,1,0.02127659574,47,True
+telemetry type,alex2.0-1,30 days,Mechanical,Not categorised,1,0.02127659574,47,True
+telemetry type,alex2.0-1,30 days,Mechanical,Other,1,0.02127659574,47,True
+telemetry type,alex2.0-1,30 days,Monitoring,No Trouble Found,1,1,1,True
+telemetry type,alex2.0-1,30 days,Network,Mechanical,1,0.3333333333,3,True
+telemetry type,alex2.0-1,30 days,Network,Network,1,0.3333333333,3,True
+telemetry type,alex2.0-1,30 days,Network,No Trouble Found,1,0.3333333333,3,True
+telemetry type,alex2.0-1,30 days,No Trouble Found,Network,1,0.3333333333,3,True
+telemetry type,alex2.0-1,30 days,No Trouble Found,No Trouble Found,2,0.6666666667,3,True
+telemetry type,alex2.0-1,30 days,Operator error,Electronics,1,0.5,2,True
+telemetry type,alex2.0-1,30 days,Operator error,Network,1,0.5,2,True
+telemetry type,alex2.0-1,30 days,Other,No Trouble Found,1,1,1,True
+telemetry type,alex2.0-1,30 days,Software,Mechanical,1,0.3333333333,3,True
+telemetry type,alex2.0-1,30 days,Software,Operator error,2,0.6666666667,3,True
+telemetry type,alex2.0-1,7 days,Door,Door,1,0.5,2,True
+telemetry type,alex2.0-1,7 days,Door,Mechanical,1,0.5,2,True
+telemetry type,alex2.0-1,7 days,Electronics,Mechanical,1,1,1,True
+telemetry type,alex2.0-1,7 days,Mechanical,Door,3,0.2307692308,13,True
+telemetry type,alex2.0-1,7 days,Mechanical,Electronics,1,0.07692307692,13,True
+telemetry type,alex2.0-1,7 days,Mechanical,Mechanical,9,0.6923076923,13,False
+telemetry type,alex2.0-1,7 days,Monitoring,No Trouble Found,1,1,1,True
+telemetry type,alex2.0-1,7 days,Network,Mechanical,1,1,1,True
+telemetry type,alex2.0-1,7 days,No Trouble Found,Network,1,0.5,2,True
+telemetry type,alex2.0-1,7 days,No Trouble Found,No Trouble Found,1,0.5,2,True
+telemetry type,alex2.0-1,7 days,Operator error,Network,1,1,1,True
+telemetry type,alex2.0-1,7 days,Software,Operator error,2,1,2,True
+telemetry type,alex2.0-2,30 days,Door,Mechanical,1,1,1,True
+telemetry type,alex2.0-2,30 days,Mechanical,Mechanical,2,1,2,True
+telemetry type,alex2.0-3,30 days,Door,Electronics,2,0.4,5,True
+telemetry type,alex2.0-3,30 days,Door,Mechanical,1,0.2,5,True
+telemetry type,alex2.0-3,30 days,Door,Monitoring,1,0.2,5,True
+telemetry type,alex2.0-3,30 days,Door,No Trouble Found,1,0.2,5,True
+telemetry type,alex2.0-3,30 days,Electronics,Door,1,0.1111111111,9,True
+telemetry type,alex2.0-3,30 days,Electronics,Electronics,2,0.2222222222,9,True
+telemetry type,alex2.0-3,30 days,Electronics,Mechanical,2,0.2222222222,9,True
+telemetry type,alex2.0-3,30 days,Electronics,Monitoring,2,0.2222222222,9,True
+telemetry type,alex2.0-3,30 days,Electronics,Other,2,0.2222222222,9,True
+telemetry type,alex2.0-3,30 days,Mechanical,Door,4,0.04597701149,87,True
+telemetry type,alex2.0-3,30 days,Mechanical,Electronics,7,0.08045977011,87,False
+telemetry type,alex2.0-3,30 days,Mechanical,Mechanical,59,0.6781609195,87,False
+telemetry type,alex2.0-3,30 days,Mechanical,Monitoring,7,0.08045977011,87,False
+telemetry type,alex2.0-3,30 days,Mechanical,Network,2,0.02298850575,87,True
+telemetry type,alex2.0-3,30 days,Mechanical,No Trouble Found,4,0.04597701149,87,True
+telemetry type,alex2.0-3,30 days,Mechanical,Operator error,3,0.03448275862,87,True
+telemetry type,alex2.0-3,30 days,Mechanical,Other,1,0.01149425287,87,True
+telemetry type,alex2.0-3,30 days,Monitoring,Door,1,0.1428571429,7,True
+telemetry type,alex2.0-3,30 days,Monitoring,Electronics,1,0.1428571429,7,True
+telemetry type,alex2.0-3,30 days,Monitoring,Mechanical,3,0.4285714286,7,True
+telemetry type,alex2.0-3,30 days,Monitoring,No Trouble Found,1,0.1428571429,7,True
+telemetry type,alex2.0-3,30 days,Monitoring,Other,1,0.1428571429,7,True
+telemetry type,alex2.0-3,30 days,Network,Electronics,1,0.05882352941,17,True
+telemetry type,alex2.0-3,30 days,Network,Mechanical,4,0.2352941176,17,True
+telemetry type,alex2.0-3,30 days,Network,Network,8,0.4705882353,17,False
+telemetry type,alex2.0-3,30 days,Network,No Trouble Found,4,0.2352941176,17,True
+telemetry type,alex2.0-3,30 days,No Trouble Found,Electronics,1,0.1111111111,9,True
+telemetry type,alex2.0-3,30 days,No Trouble Found,Mechanical,5,0.5555555556,9,False
+telemetry type,alex2.0-3,30 days,No Trouble Found,Network,1,0.1111111111,9,True
+telemetry type,alex2.0-3,30 days,No Trouble Found,Operator error,1,0.1111111111,9,True
+telemetry type,alex2.0-3,30 days,No Trouble Found,Software,1,0.1111111111,9,True
+telemetry type,alex2.0-3,30 days,Not categorised,Mechanical,1,1,1,True
+telemetry type,alex2.0-3,30 days,Operator error,Electronics,1,0.2,5,True
+telemetry type,alex2.0-3,30 days,Operator error,Mechanical,4,0.8,5,True
+telemetry type,alex2.0-3,30 days,Other,Mechanical,1,0.5,2,True
+telemetry type,alex2.0-3,30 days,Other,Network,1,0.5,2,True
+telemetry type,alex2.0-3,7 days,Door,Electronics,2,0.4,5,True
+telemetry type,alex2.0-3,7 days,Door,Mechanical,1,0.2,5,True
+telemetry type,alex2.0-3,7 days,Door,Monitoring,1,0.2,5,True
+telemetry type,alex2.0-3,7 days,Door,No Trouble Found,1,0.2,5,True
+telemetry type,alex2.0-3,7 days,Electronics,Door,1,0.3333333333,3,True
+telemetry type,alex2.0-3,7 days,Electronics,Monitoring,2,0.6666666667,3,True
+telemetry type,alex2.0-3,7 days,Mechanical,Door,1,0.03333333333,30,True
+telemetry type,alex2.0-3,7 days,Mechanical,Electronics,2,0.06666666667,30,True
+telemetry type,alex2.0-3,7 days,Mechanical,Mechanical,19,0.6333333333,30,False
+telemetry type,alex2.0-3,7 days,Mechanical,Monitoring,6,0.2,30,False
+telemetry type,alex2.0-3,7 days,Mechanical,Network,1,0.03333333333,30,True
+telemetry type,alex2.0-3,7 days,Mechanical,Operator error,1,0.03333333333,30,True
+telemetry type,alex2.0-3,7 days,Monitoring,Door,1,0.3333333333,3,True
+telemetry type,alex2.0-3,7 days,Monitoring,Electronics,1,0.3333333333,3,True
+telemetry type,alex2.0-3,7 days,Monitoring,No Trouble Found,1,0.3333333333,3,True
+telemetry type,alex2.0-3,7 days,Network,Electronics,1,0.2,5,True
+telemetry type,alex2.0-3,7 days,Network,Mechanical,1,0.2,5,True
+telemetry type,alex2.0-3,7 days,Network,Network,2,0.4,5,True
+telemetry type,alex2.0-3,7 days,Network,No Trouble Found,1,0.2,5,True
+telemetry type,alex2.0-3,7 days,No Trouble Found,Electronics,1,0.1428571429,7,True
+telemetry type,alex2.0-3,7 days,No Trouble Found,Mechanical,3,0.4285714286,7,True
+telemetry type,alex2.0-3,7 days,No Trouble Found,Network,1,0.1428571429,7,True
+telemetry type,alex2.0-3,7 days,No Trouble Found,Operator error,1,0.1428571429,7,True
+telemetry type,alex2.0-3,7 days,No Trouble Found,Software,1,0.1428571429,7,True
+telemetry type,alex2.0-3,7 days,Operator error,Mechanical,1,1,1,True
+telemetry type,alex2.0-3,7 days,Other,Mechanical,1,0.5,2,True
+telemetry type,alex2.0-3,7 days,Other,Network,1,0.5,2,True
+telemetry type,alex2.0-4,30 days,Not categorised,Not categorised,1,1,1,True
+telemetry type,alex2.0-4,30 days,Software,Operator error,1,1,1,True
+telemetry type,alex2.0-4,7 days,Software,Operator error,1,1,1,True
+telemetry type,alexsd-49,30 days,Mechanical,Door,1,0.2,5,True
+telemetry type,alexsd-49,30 days,Mechanical,Mechanical,2,0.4,5,True
+telemetry type,alexsd-49,30 days,Mechanical,Network,1,0.2,5,True
+telemetry type,alexsd-49,30 days,Mechanical,No Trouble Found,1,0.2,5,True
+telemetry type,alexsd-49,30 days,Network,Mechanical,1,1,1,True
+telemetry type,alexsd-49,30 days,No Trouble Found,Mechanical,1,1,1,True
+telemetry type,alexsd-49,7 days,Mechanical,Mechanical,2,0.6666666667,3,True
+telemetry type,alexsd-49,7 days,Mechanical,Network,1,0.3333333333,3,True
+telemetry type,mlc-1,30 days,Door,Door,4,0.2,20,True
+telemetry type,mlc-1,30 days,Door,Electronics,2,0.1,20,True
+telemetry type,mlc-1,30 days,Door,Mechanical,11,0.55,20,False
+telemetry type,mlc-1,30 days,Door,Monitoring,3,0.15,20,True
+telemetry type,mlc-1,30 days,Electronics,Door,2,0.1666666667,12,True
+telemetry type,mlc-1,30 days,Electronics,Electronics,5,0.4166666667,12,False
+telemetry type,mlc-1,30 days,Electronics,Mechanical,3,0.25,12,True
+telemetry type,mlc-1,30 days,Electronics,Network,1,0.08333333333,12,True
+telemetry type,mlc-1,30 days,Electronics,Not categorised,1,0.08333333333,12,True
+telemetry type,mlc-1,30 days,Mechanical,Door,4,0.2352941176,17,True
+telemetry type,mlc-1,30 days,Mechanical,Electronics,4,0.2352941176,17,True
+telemetry type,mlc-1,30 days,Mechanical,Mechanical,8,0.4705882353,17,False
+telemetry type,mlc-1,30 days,Mechanical,No Trouble Found,1,0.05882352941,17,True
+telemetry type,mlc-1,30 days,Monitoring,Mechanical,1,0.5,2,True
+telemetry type,mlc-1,30 days,Monitoring,No Trouble Found,1,0.5,2,True
+telemetry type,mlc-1,30 days,Network,Door,1,0.3333333333,3,True
+telemetry type,mlc-1,30 days,Network,Electronics,1,0.3333333333,3,True
+telemetry type,mlc-1,30 days,Network,Network,1,0.3333333333,3,True
+telemetry type,mlc-1,30 days,No Trouble Found,Electronics,1,0.5,2,True
+telemetry type,mlc-1,30 days,No Trouble Found,Monitoring,1,0.5,2,True
+telemetry type,mlc-1,30 days,Software,Network,1,1,1,True
+telemetry type,mlc-1,7 days,Door,Door,2,0.2857142857,7,True
+telemetry type,mlc-1,7 days,Door,Electronics,2,0.2857142857,7,True
+telemetry type,mlc-1,7 days,Door,Mechanical,2,0.2857142857,7,True
+telemetry type,mlc-1,7 days,Door,Monitoring,1,0.1428571429,7,True
+telemetry type,mlc-1,7 days,Electronics,Electronics,1,0.3333333333,3,True
+telemetry type,mlc-1,7 days,Electronics,Mechanical,1,0.3333333333,3,True
+telemetry type,mlc-1,7 days,Electronics,Not categorised,1,0.3333333333,3,True
+telemetry type,mlc-1,7 days,Mechanical,Mechanical,2,1,2,True
+telemetry type,mlc-1,7 days,Monitoring,No Trouble Found,1,1,1,True
+telemetry type,mlc-1,7 days,Network,Door,1,0.3333333333,3,True
+telemetry type,mlc-1,7 days,Network,Electronics,1,0.3333333333,3,True
+telemetry type,mlc-1,7 days,Network,Network,1,0.3333333333,3,True
+telemetry type,mlc-1,7 days,No Trouble Found,Monitoring,1,1,1,True
+telemetry type,mlc-1,7 days,Software,Network,1,1,1,True
+telemetry type,sbsx-51,30 days,Door,Door,6,0.3529411765,17,False
+telemetry type,sbsx-51,30 days,Door,Electronics,1,0.05882352941,17,True
+telemetry type,sbsx-51,30 days,Door,Mechanical,3,0.1764705882,17,True
+telemetry type,sbsx-51,30 days,Door,Monitoring,2,0.1176470588,17,True
+telemetry type,sbsx-51,30 days,Door,Network,1,0.05882352941,17,True
+telemetry type,sbsx-51,30 days,Door,No Trouble Found,4,0.2352941176,17,True
+telemetry type,sbsx-51,30 days,Mechanical,Door,2,0.6666666667,3,True
+telemetry type,sbsx-51,30 days,Mechanical,Software,1,0.3333333333,3,True
+telemetry type,sbsx-51,30 days,Network,Door,1,1,1,True
+telemetry type,sbsx-51,30 days,No Trouble Found,Mechanical,1,0.2,5,True
+telemetry type,sbsx-51,30 days,No Trouble Found,Monitoring,1,0.2,5,True
+telemetry type,sbsx-51,30 days,No Trouble Found,No Trouble Found,3,0.6,5,True
+telemetry type,sbsx-51,30 days,Operator error,Operator error,1,1,1,True
+telemetry type,sbsx-51,30 days,Other,Door,1,1,1,True
+telemetry type,sbsx-51,30 days,Software,No Trouble Found,1,1,1,True
+telemetry type,sbsx-51,7 days,Door,Door,2,0.6666666667,3,True
+telemetry type,sbsx-51,7 days,Door,Monitoring,1,0.3333333333,3,True
+telemetry type,sbsx-51,7 days,Mechanical,Door,1,1,1,True
+telemetry type,sbsx-51,7 days,No Trouble Found,No Trouble Found,2,1,2,True
+telemetry type,sbsx-51,7 days,Operator error,Operator error,1,1,1,True
+telemetry type,scrubex-1,30 days,Electronics,Electronics,6,0.4615384615,13,False
+telemetry type,scrubex-1,30 days,Electronics,Mechanical,1,0.07692307692,13,True
+telemetry type,scrubex-1,30 days,Electronics,Monitoring,3,0.2307692308,13,True
+telemetry type,scrubex-1,30 days,Electronics,Network,1,0.07692307692,13,True
+telemetry type,scrubex-1,30 days,Electronics,No Trouble Found,1,0.07692307692,13,True
+telemetry type,scrubex-1,30 days,Electronics,Software,1,0.07692307692,13,True
+telemetry type,scrubex-1,30 days,Mechanical,Electronics,1,1,1,True
+telemetry type,scrubex-1,30 days,Network,Electronics,1,0.3333333333,3,True
+telemetry type,scrubex-1,30 days,Network,Monitoring,1,0.3333333333,3,True
+telemetry type,scrubex-1,30 days,Network,Network,1,0.3333333333,3,True
+telemetry type,scrubex-1,30 days,No Trouble Found,Electronics,2,0.6666666667,3,True
+telemetry type,scrubex-1,30 days,No Trouble Found,Other,1,0.3333333333,3,True
+telemetry type,scrubex-1,30 days,Other,Mechanical,1,1,1,True
+telemetry type,scrubex-1,30 days,Software,Electronics,1,0.5,2,True
+telemetry type,scrubex-1,30 days,Software,No Trouble Found,1,0.5,2,True
+telemetry type,scrubex-1,7 days,Electronics,Electronics,4,0.8,5,True
+telemetry type,scrubex-1,7 days,Electronics,Mechanical,1,0.2,5,True
+telemetry type,scrubex-1,7 days,Other,Mechanical,1,1,1,True
+telemetry type,scrubex-1,7 days,Software,Electronics,1,1,1,True
+telemetry type,scrubex-2,30 days,Door,Door,8,0.380952381,21,False
+telemetry type,scrubex-2,30 days,Door,Electronics,2,0.09523809524,21,True
+telemetry type,scrubex-2,30 days,Door,Mechanical,6,0.2857142857,21,False
+telemetry type,scrubex-2,30 days,Door,Monitoring,2,0.09523809524,21,True
+telemetry type,scrubex-2,30 days,Door,Network,1,0.04761904762,21,True
+telemetry type,scrubex-2,30 days,Door,No Trouble Found,1,0.04761904762,21,True
+telemetry type,scrubex-2,30 days,Door,Not categorised,1,0.04761904762,21,True
+telemetry type,scrubex-2,30 days,Electronics,Door,4,0.2,20,True
+telemetry type,scrubex-2,30 days,Electronics,Electronics,8,0.4,20,False
+telemetry type,scrubex-2,30 days,Electronics,Mechanical,3,0.15,20,True
+telemetry type,scrubex-2,30 days,Electronics,Network,2,0.1,20,True
+telemetry type,scrubex-2,30 days,Electronics,No Trouble Found,2,0.1,20,True
+telemetry type,scrubex-2,30 days,Electronics,Software,1,0.05,20,True
+telemetry type,scrubex-2,30 days,Mechanical,Door,4,0.1666666667,24,True
+telemetry type,scrubex-2,30 days,Mechanical,Electronics,5,0.2083333333,24,False
+telemetry type,scrubex-2,30 days,Mechanical,Mechanical,10,0.4166666667,24,False
+telemetry type,scrubex-2,30 days,Mechanical,Monitoring,1,0.04166666667,24,True
+telemetry type,scrubex-2,30 days,Mechanical,No Trouble Found,2,0.08333333333,24,True
+telemetry type,scrubex-2,30 days,Mechanical,Not categorised,2,0.08333333333,24,True
+telemetry type,scrubex-2,30 days,Monitoring,Door,1,1,1,True
+telemetry type,scrubex-2,30 days,Network,Door,3,0.25,12,True
+telemetry type,scrubex-2,30 days,Network,Network,5,0.4166666667,12,False
+telemetry type,scrubex-2,30 days,Network,No Trouble Found,1,0.08333333333,12,True
+telemetry type,scrubex-2,30 days,Network,Not categorised,1,0.08333333333,12,True
+telemetry type,scrubex-2,30 days,Network,Operator error,2,0.1666666667,12,True
+telemetry type,scrubex-2,30 days,No Trouble Found,Door,5,0.5,10,False
+telemetry type,scrubex-2,30 days,No Trouble Found,Electronics,2,0.2,10,True
+telemetry type,scrubex-2,30 days,No Trouble Found,Mechanical,1,0.1,10,True
+telemetry type,scrubex-2,30 days,No Trouble Found,Network,1,0.1,10,True
+telemetry type,scrubex-2,30 days,No Trouble Found,No Trouble Found,1,0.1,10,True
+telemetry type,scrubex-2,30 days,Not categorised,Door,2,0.4,5,True
+telemetry type,scrubex-2,30 days,Not categorised,Electronics,1,0.2,5,True
+telemetry type,scrubex-2,30 days,Not categorised,Network,1,0.2,5,True
+telemetry type,scrubex-2,30 days,Not categorised,Software,1,0.2,5,True
+telemetry type,scrubex-2,30 days,Operator error,Electronics,1,1,1,True
+telemetry type,scrubex-2,30 days,Other,Network,2,1,2,True
+telemetry type,scrubex-2,7 days,Door,Door,2,0.2222222222,9,True
+telemetry type,scrubex-2,7 days,Door,Mechanical,3,0.3333333333,9,True
+telemetry type,scrubex-2,7 days,Door,Monitoring,2,0.2222222222,9,True
+telemetry type,scrubex-2,7 days,Door,Network,1,0.1111111111,9,True
+telemetry type,scrubex-2,7 days,Door,No Trouble Found,1,0.1111111111,9,True
+telemetry type,scrubex-2,7 days,Electronics,Door,3,0.375,8,True
+telemetry type,scrubex-2,7 days,Electronics,Electronics,1,0.125,8,True
+telemetry type,scrubex-2,7 days,Electronics,Mechanical,2,0.25,8,True
+telemetry type,scrubex-2,7 days,Electronics,Network,1,0.125,8,True
+telemetry type,scrubex-2,7 days,Electronics,No Trouble Found,1,0.125,8,True
+telemetry type,scrubex-2,7 days,Mechanical,Door,1,0.09090909091,11,True
+telemetry type,scrubex-2,7 days,Mechanical,Electronics,2,0.1818181818,11,True
+telemetry type,scrubex-2,7 days,Mechanical,Mechanical,5,0.4545454545,11,False
+telemetry type,scrubex-2,7 days,Mechanical,Monitoring,1,0.09090909091,11,True
+telemetry type,scrubex-2,7 days,Mechanical,Not categorised,2,0.1818181818,11,True
+telemetry type,scrubex-2,7 days,Network,Door,1,0.25,4,True
+telemetry type,scrubex-2,7 days,Network,Network,2,0.5,4,True
+telemetry type,scrubex-2,7 days,Network,Not categorised,1,0.25,4,True
+telemetry type,scrubex-2,7 days,No Trouble Found,Door,2,0.5,4,True
+telemetry type,scrubex-2,7 days,No Trouble Found,Electronics,1,0.25,4,True
+telemetry type,scrubex-2,7 days,No Trouble Found,Network,1,0.25,4,True
+telemetry type,scrubex-2,7 days,Not categorised,Door,1,0.5,2,True
+telemetry type,scrubex-2,7 days,Not categorised,Electronics,1,0.5,2,True
+telemetry type,scrubex-3,30 days,Door,Door,10,0.5882352941,17,False
+telemetry type,scrubex-3,30 days,Door,Electronics,3,0.1764705882,17,True
+telemetry type,scrubex-3,30 days,Door,Monitoring,2,0.1176470588,17,True
+telemetry type,scrubex-3,30 days,Door,Network,1,0.05882352941,17,True
+telemetry type,scrubex-3,30 days,Door,Operator error,1,0.05882352941,17,True
+telemetry type,scrubex-3,30 days,Electronics,Door,5,0.3571428571,14,False
+telemetry type,scrubex-3,30 days,Electronics,Electronics,3,0.2142857143,14,True
+telemetry type,scrubex-3,30 days,Electronics,Mechanical,1,0.07142857143,14,True
+telemetry type,scrubex-3,30 days,Electronics,Monitoring,1,0.07142857143,14,True
+telemetry type,scrubex-3,30 days,Electronics,Network,2,0.1428571429,14,True
+telemetry type,scrubex-3,30 days,Electronics,Operator error,1,0.07142857143,14,True
+telemetry type,scrubex-3,30 days,Electronics,Software,1,0.07142857143,14,True
+telemetry type,scrubex-3,30 days,Mechanical,Door,1,0.125,8,True
+telemetry type,scrubex-3,30 days,Mechanical,Electronics,1,0.125,8,True
+telemetry type,scrubex-3,30 days,Mechanical,Mechanical,2,0.25,8,True
+telemetry type,scrubex-3,30 days,Mechanical,Network,1,0.125,8,True
+telemetry type,scrubex-3,30 days,Mechanical,No Trouble Found,1,0.125,8,True
+telemetry type,scrubex-3,30 days,Mechanical,Operator error,1,0.125,8,True
+telemetry type,scrubex-3,30 days,Mechanical,Other,1,0.125,8,True
+telemetry type,scrubex-3,30 days,Network,Door,1,0.2,5,True
+telemetry type,scrubex-3,30 days,Network,Electronics,2,0.4,5,True
+telemetry type,scrubex-3,30 days,Network,Network,1,0.2,5,True
+telemetry type,scrubex-3,30 days,Network,No Trouble Found,1,0.2,5,True
+telemetry type,scrubex-3,30 days,No Trouble Found,Door,3,0.6,5,True
+telemetry type,scrubex-3,30 days,No Trouble Found,No Trouble Found,2,0.4,5,True
+telemetry type,scrubex-3,30 days,Not categorised,Not categorised,1,1,1,True
+telemetry type,scrubex-3,30 days,Operator error,Door,1,0.5,2,True
+telemetry type,scrubex-3,30 days,Operator error,Mechanical,1,0.5,2,True
+telemetry type,scrubex-3,30 days,Other,Electronics,1,1,1,True
+telemetry type,scrubex-3,7 days,Door,Door,2,0.5,4,True
+telemetry type,scrubex-3,7 days,Door,Monitoring,2,0.5,4,True
+telemetry type,scrubex-3,7 days,Electronics,Network,1,0.5,2,True
+telemetry type,scrubex-3,7 days,Electronics,Operator error,1,0.5,2,True
+telemetry type,scrubex-3,7 days,Mechanical,Mechanical,1,0.5,2,True
+telemetry type,scrubex-3,7 days,Mechanical,Operator error,1,0.5,2,True
+telemetry type,scrubex-3,7 days,Network,Door,1,0.3333333333,3,True
+telemetry type,scrubex-3,7 days,Network,Network,1,0.3333333333,3,True
+telemetry type,scrubex-3,7 days,Network,No Trouble Found,1,0.3333333333,3,True
+telemetry type,scrubex-3,7 days,No Trouble Found,No Trouble Found,1,1,1,True
+telemetry type,scrubex-3,7 days,Operator error,Mechanical,1,1,1,True
+telemetry type,scrubex-4,30 days,Door,Door,6,0.4285714286,14,False
+telemetry type,scrubex-4,30 days,Door,Electronics,5,0.3571428571,14,False
+telemetry type,scrubex-4,30 days,Door,Mechanical,1,0.07142857143,14,True
+telemetry type,scrubex-4,30 days,Door,Network,1,0.07142857143,14,True
+telemetry type,scrubex-4,30 days,Door,No Trouble Found,1,0.07142857143,14,True
+telemetry type,scrubex-4,30 days,Electronics,Door,4,0.2352941176,17,True
+telemetry type,scrubex-4,30 days,Electronics,Electronics,8,0.4705882353,17,False
+telemetry type,scrubex-4,30 days,Electronics,Monitoring,2,0.1176470588,17,True
+telemetry type,scrubex-4,30 days,Electronics,Network,2,0.1176470588,17,True
+telemetry type,scrubex-4,30 days,Electronics,No Trouble Found,1,0.05882352941,17,True
+telemetry type,scrubex-4,30 days,Mechanical,Door,1,0.2,5,True
+telemetry type,scrubex-4,30 days,Mechanical,Mechanical,3,0.6,5,True
+telemetry type,scrubex-4,30 days,Mechanical,Monitoring,1,0.2,5,True
+telemetry type,scrubex-4,30 days,Network,Mechanical,1,0.5,2,True
+telemetry type,scrubex-4,30 days,Network,No Trouble Found,1,0.5,2,True
+telemetry type,scrubex-4,30 days,No Trouble Found,Door,2,0.4,5,True
+telemetry type,scrubex-4,30 days,No Trouble Found,Electronics,2,0.4,5,True
+telemetry type,scrubex-4,30 days,No Trouble Found,Not categorised,1,0.2,5,True
+telemetry type,scrubex-4,30 days,Operator error,Mechanical,1,1,1,True
+telemetry type,scrubex-4,30 days,Other,Door,1,0.5,2,True
+telemetry type,scrubex-4,30 days,Other,Electronics,1,0.5,2,True
+telemetry type,scrubex-4,7 days,Door,Door,4,0.6666666667,6,True
+telemetry type,scrubex-4,7 days,Door,Network,1,0.1666666667,6,True
+telemetry type,scrubex-4,7 days,Door,No Trouble Found,1,0.1666666667,6,True
+telemetry type,scrubex-4,7 days,Electronics,Door,1,0.1666666667,6,True
+telemetry type,scrubex-4,7 days,Electronics,Electronics,2,0.3333333333,6,True
+telemetry type,scrubex-4,7 days,Electronics,Network,2,0.3333333333,6,True
+telemetry type,scrubex-4,7 days,Electronics,No Trouble Found,1,0.1666666667,6,True
+telemetry type,scrubex-4,7 days,Mechanical,Mechanical,1,0.5,2,True
+telemetry type,scrubex-4,7 days,Mechanical,Monitoring,1,0.5,2,True
+telemetry type,scrubex-4,7 days,Network,No Trouble Found,1,1,1,True
+telemetry type,scrubex-4,7 days,No Trouble Found,Door,1,0.3333333333,3,True
+telemetry type,scrubex-4,7 days,No Trouble Found,Electronics,1,0.3333333333,3,True
+telemetry type,scrubex-4,7 days,No Trouble Found,Not categorised,1,0.3333333333,3,True
+telemetry type,scrubex-5,30 days,Door,Mechanical,1,1,1,True
+telemetry type,scrubex-5,30 days,Electronics,Electronics,3,1,3,True
+telemetry type,scrubex-5,30 days,Network,Electronics,1,0.3333333333,3,True
+telemetry type,scrubex-5,30 days,Network,Monitoring,1,0.3333333333,3,True
+telemetry type,scrubex-5,30 days,Network,Network,1,0.3333333333,3,True
+telemetry type,scrubex-5,30 days,Other,Network,1,1,1,True
+telemetry type,scrubex-5,7 days,Electronics,Electronics,1,1,1,True
+telemetry type,scrubex-5,7 days,Network,Electronics,1,0.5,2,True
+telemetry type,scrubex-5,7 days,Network,Monitoring,1,0.5,2,True
+telemetry type,scrubex-5,7 days,Other,Network,1,1,1,True
+telemetry type,scrubex-7,30 days,Door,Door,7,0.7777777778,9,False
+telemetry type,scrubex-7,30 days,Door,Electronics,1,0.1111111111,9,True
+telemetry type,scrubex-7,30 days,Door,Network,1,0.1111111111,9,True
+telemetry type,scrubex-7,30 days,Electronics,Door,1,0.08333333333,12,True
+telemetry type,scrubex-7,30 days,Electronics,Electronics,5,0.4166666667,12,False
+telemetry type,scrubex-7,30 days,Electronics,Monitoring,4,0.3333333333,12,True
+telemetry type,scrubex-7,30 days,Electronics,Network,1,0.08333333333,12,True
+telemetry type,scrubex-7,30 days,Electronics,Software,1,0.08333333333,12,True
+telemetry type,scrubex-7,30 days,Mechanical,Electronics,1,1,1,True
+telemetry type,scrubex-7,30 days,Monitoring,Door,1,0.3333333333,3,True
+telemetry type,scrubex-7,30 days,Monitoring,Electronics,1,0.3333333333,3,True
+telemetry type,scrubex-7,30 days,Monitoring,Network,1,0.3333333333,3,True
+telemetry type,scrubex-7,30 days,Network,Electronics,2,0.4,5,True
+telemetry type,scrubex-7,30 days,Network,Monitoring,1,0.2,5,True
+telemetry type,scrubex-7,30 days,Network,Network,2,0.4,5,True
+telemetry type,scrubex-7,30 days,No Trouble Found,Electronics,1,1,1,True
+telemetry type,scrubex-7,7 days,Door,Door,4,1,4,True
+telemetry type,scrubex-7,7 days,Electronics,Door,1,0.125,8,True
+telemetry type,scrubex-7,7 days,Electronics,Electronics,3,0.375,8,True
+telemetry type,scrubex-7,7 days,Electronics,Monitoring,2,0.25,8,True
+telemetry type,scrubex-7,7 days,Electronics,Network,1,0.125,8,True
+telemetry type,scrubex-7,7 days,Electronics,Software,1,0.125,8,True
+telemetry type,scrubex-7,7 days,Monitoring,Network,1,1,1,True
+telemetry type,scrubex-7,7 days,Network,Electronics,1,0.3333333333,3,True
+telemetry type,scrubex-7,7 days,Network,Monitoring,1,0.3333333333,3,True
+telemetry type,scrubex-7,7 days,Network,Network,1,0.3333333333,3,True
+telemetry type,scrubex2.0-2,30 days,Door,Door,26,0.4482758621,58,False
+telemetry type,scrubex2.0-2,30 days,Door,Electronics,7,0.1206896552,58,False
+telemetry type,scrubex2.0-2,30 days,Door,Mechanical,8,0.1379310345,58,False
+telemetry type,scrubex2.0-2,30 days,Door,Monitoring,9,0.1551724138,58,False
+telemetry type,scrubex2.0-2,30 days,Door,Network,4,0.06896551724,58,True
+telemetry type,scrubex2.0-2,30 days,Door,No Trouble Found,1,0.01724137931,58,True
+telemetry type,scrubex2.0-2,30 days,Door,Operator error,2,0.03448275862,58,True
+telemetry type,scrubex2.0-2,30 days,Door,Software,1,0.01724137931,58,True
+telemetry type,scrubex2.0-2,30 days,Electronics,Door,5,0.07246376812,69,False
+telemetry type,scrubex2.0-2,30 days,Electronics,Electronics,31,0.4492753623,69,False
+telemetry type,scrubex2.0-2,30 days,Electronics,Mechanical,9,0.1304347826,69,False
+telemetry type,scrubex2.0-2,30 days,Electronics,Monitoring,8,0.115942029,69,False
+telemetry type,scrubex2.0-2,30 days,Electronics,Network,4,0.05797101449,69,True
+telemetry type,scrubex2.0-2,30 days,Electronics,No Trouble Found,8,0.115942029,69,False
+telemetry type,scrubex2.0-2,30 days,Electronics,Operator error,3,0.04347826087,69,True
+telemetry type,scrubex2.0-2,30 days,Electronics,Software,1,0.01449275362,69,True
+telemetry type,scrubex2.0-2,30 days,Mechanical,Door,10,0.1351351351,74,False
+telemetry type,scrubex2.0-2,30 days,Mechanical,Electronics,7,0.09459459459,74,False
+telemetry type,scrubex2.0-2,30 days,Mechanical,Mechanical,39,0.527027027,74,False
+telemetry type,scrubex2.0-2,30 days,Mechanical,Monitoring,11,0.1486486486,74,False
+telemetry type,scrubex2.0-2,30 days,Mechanical,No Trouble Found,3,0.04054054054,74,True
+telemetry type,scrubex2.0-2,30 days,Mechanical,Operator error,3,0.04054054054,74,True
+telemetry type,scrubex2.0-2,30 days,Mechanical,Other,1,0.01351351351,74,True
+telemetry type,scrubex2.0-2,30 days,Monitoring,Door,3,0.3,10,True
+telemetry type,scrubex2.0-2,30 days,Monitoring,Electronics,2,0.2,10,True
+telemetry type,scrubex2.0-2,30 days,Monitoring,Mechanical,2,0.2,10,True
+telemetry type,scrubex2.0-2,30 days,Monitoring,Monitoring,1,0.1,10,True
+telemetry type,scrubex2.0-2,30 days,Monitoring,Network,2,0.2,10,True
+telemetry type,scrubex2.0-2,30 days,Network,Electronics,5,0.5555555556,9,False
+telemetry type,scrubex2.0-2,30 days,Network,Network,2,0.2222222222,9,True
+telemetry type,scrubex2.0-2,30 days,Network,No Trouble Found,1,0.1111111111,9,True
+telemetry type,scrubex2.0-2,30 days,Network,Other,1,0.1111111111,9,True
+telemetry type,scrubex2.0-2,30 days,No Trouble Found,Door,3,0.15,20,True
+telemetry type,scrubex2.0-2,30 days,No Trouble Found,Electronics,7,0.35,20,False
+telemetry type,scrubex2.0-2,30 days,No Trouble Found,Mechanical,4,0.2,20,True
+telemetry type,scrubex2.0-2,30 days,No Trouble Found,No Trouble Found,4,0.2,20,True
+telemetry type,scrubex2.0-2,30 days,No Trouble Found,Operator error,1,0.05,20,True
+telemetry type,scrubex2.0-2,30 days,No Trouble Found,Other,1,0.05,20,True
+telemetry type,scrubex2.0-2,30 days,Not categorised,Door,3,0.375,8,True
+telemetry type,scrubex2.0-2,30 days,Not categorised,Electronics,3,0.375,8,True
+telemetry type,scrubex2.0-2,30 days,Not categorised,Not categorised,2,0.25,8,True
+telemetry type,scrubex2.0-2,30 days,Operator error,Mechanical,1,0.5,2,True
+telemetry type,scrubex2.0-2,30 days,Operator error,No Trouble Found,1,0.5,2,True
+telemetry type,scrubex2.0-2,30 days,Other,Electronics,5,0.625,8,False
+telemetry type,scrubex2.0-2,30 days,Other,Mechanical,1,0.125,8,True
+telemetry type,scrubex2.0-2,30 days,Other,No Trouble Found,1,0.125,8,True
+telemetry type,scrubex2.0-2,30 days,Other,Other,1,0.125,8,True
+telemetry type,scrubex2.0-2,30 days,Software,Door,2,0.5,4,True
+telemetry type,scrubex2.0-2,30 days,Software,Mechanical,1,0.25,4,True
+telemetry type,scrubex2.0-2,30 days,Software,Operator error,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,Door,Door,10,0.3703703704,27,False
+telemetry type,scrubex2.0-2,7 days,Door,Electronics,2,0.07407407407,27,True
+telemetry type,scrubex2.0-2,7 days,Door,Mechanical,5,0.1851851852,27,False
+telemetry type,scrubex2.0-2,7 days,Door,Monitoring,8,0.2962962963,27,False
+telemetry type,scrubex2.0-2,7 days,Door,Network,1,0.03703703704,27,True
+telemetry type,scrubex2.0-2,7 days,Door,Software,1,0.03703703704,27,True
+telemetry type,scrubex2.0-2,7 days,Electronics,Door,1,0.04166666667,24,True
+telemetry type,scrubex2.0-2,7 days,Electronics,Electronics,11,0.4583333333,24,False
+telemetry type,scrubex2.0-2,7 days,Electronics,Mechanical,4,0.1666666667,24,True
+telemetry type,scrubex2.0-2,7 days,Electronics,Monitoring,5,0.2083333333,24,False
+telemetry type,scrubex2.0-2,7 days,Electronics,Network,1,0.04166666667,24,True
+telemetry type,scrubex2.0-2,7 days,Electronics,No Trouble Found,2,0.08333333333,24,True
+telemetry type,scrubex2.0-2,7 days,Mechanical,Door,4,0.1111111111,36,True
+telemetry type,scrubex2.0-2,7 days,Mechanical,Electronics,3,0.08333333333,36,True
+telemetry type,scrubex2.0-2,7 days,Mechanical,Mechanical,22,0.6111111111,36,False
+telemetry type,scrubex2.0-2,7 days,Mechanical,Monitoring,6,0.1666666667,36,False
+telemetry type,scrubex2.0-2,7 days,Mechanical,No Trouble Found,1,0.02777777778,36,True
+telemetry type,scrubex2.0-2,7 days,Monitoring,Door,3,0.375,8,True
+telemetry type,scrubex2.0-2,7 days,Monitoring,Electronics,2,0.25,8,True
+telemetry type,scrubex2.0-2,7 days,Monitoring,Mechanical,1,0.125,8,True
+telemetry type,scrubex2.0-2,7 days,Monitoring,Monitoring,1,0.125,8,True
+telemetry type,scrubex2.0-2,7 days,Monitoring,Network,1,0.125,8,True
+telemetry type,scrubex2.0-2,7 days,Network,Electronics,2,0.5,4,True
+telemetry type,scrubex2.0-2,7 days,Network,Network,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,Network,No Trouble Found,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,No Trouble Found,Door,1,0.1,10,True
+telemetry type,scrubex2.0-2,7 days,No Trouble Found,Electronics,2,0.2,10,True
+telemetry type,scrubex2.0-2,7 days,No Trouble Found,Mechanical,2,0.2,10,True
+telemetry type,scrubex2.0-2,7 days,No Trouble Found,No Trouble Found,3,0.3,10,True
+telemetry type,scrubex2.0-2,7 days,No Trouble Found,Operator error,1,0.1,10,True
+telemetry type,scrubex2.0-2,7 days,No Trouble Found,Other,1,0.1,10,True
+telemetry type,scrubex2.0-2,7 days,Not categorised,Door,2,0.4,5,True
+telemetry type,scrubex2.0-2,7 days,Not categorised,Electronics,1,0.2,5,True
+telemetry type,scrubex2.0-2,7 days,Not categorised,Not categorised,2,0.4,5,True
+telemetry type,scrubex2.0-2,7 days,Operator error,No Trouble Found,1,1,1,True
+telemetry type,scrubex2.0-2,7 days,Other,Electronics,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,Other,Mechanical,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,Other,No Trouble Found,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,Other,Other,1,0.25,4,True
+telemetry type,scrubex2.0-2,7 days,Software,Door,1,1,1,True
+telemetry type,scrubex2.0-3,30 days,Door,Door,73,0.5748031496,127,False
+telemetry type,scrubex2.0-3,30 days,Door,Electronics,15,0.1181102362,127,False
+telemetry type,scrubex2.0-3,30 days,Door,Mechanical,12,0.09448818898,127,False
+telemetry type,scrubex2.0-3,30 days,Door,Monitoring,13,0.1023622047,127,False
+telemetry type,scrubex2.0-3,30 days,Door,Network,3,0.02362204724,127,True
+telemetry type,scrubex2.0-3,30 days,Door,No Trouble Found,6,0.04724409449,127,False
+telemetry type,scrubex2.0-3,30 days,Door,Operator error,2,0.0157480315,127,True
+telemetry type,scrubex2.0-3,30 days,Door,Other,3,0.02362204724,127,True
+telemetry type,scrubex2.0-3,30 days,Electronics,Door,14,0.3333333333,42,False
+telemetry type,scrubex2.0-3,30 days,Electronics,Electronics,18,0.4285714286,42,False
+telemetry type,scrubex2.0-3,30 days,Electronics,Mechanical,1,0.02380952381,42,True
+telemetry type,scrubex2.0-3,30 days,Electronics,Monitoring,5,0.119047619,42,False
+telemetry type,scrubex2.0-3,30 days,Electronics,Network,1,0.02380952381,42,True
+telemetry type,scrubex2.0-3,30 days,Electronics,No Trouble Found,1,0.02380952381,42,True
+telemetry type,scrubex2.0-3,30 days,Electronics,Not categorised,1,0.02380952381,42,True
+telemetry type,scrubex2.0-3,30 days,Electronics,Other,1,0.02380952381,42,True
+telemetry type,scrubex2.0-3,30 days,Mechanical,Door,5,0.3571428571,14,False
+telemetry type,scrubex2.0-3,30 days,Mechanical,Electronics,1,0.07142857143,14,True
+telemetry type,scrubex2.0-3,30 days,Mechanical,Mechanical,7,0.5,14,False
+telemetry type,scrubex2.0-3,30 days,Mechanical,Monitoring,1,0.07142857143,14,True
+telemetry type,scrubex2.0-3,30 days,Monitoring,Door,6,0.75,8,False
+telemetry type,scrubex2.0-3,30 days,Monitoring,Electronics,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Monitoring,Mechanical,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Network,Door,1,0.3333333333,3,True
+telemetry type,scrubex2.0-3,30 days,Network,Network,2,0.6666666667,3,True
+telemetry type,scrubex2.0-3,30 days,No Trouble Found,Door,3,0.25,12,True
+telemetry type,scrubex2.0-3,30 days,No Trouble Found,Electronics,5,0.4166666667,12,False
+telemetry type,scrubex2.0-3,30 days,No Trouble Found,Mechanical,1,0.08333333333,12,True
+telemetry type,scrubex2.0-3,30 days,No Trouble Found,No Trouble Found,2,0.1666666667,12,True
+telemetry type,scrubex2.0-3,30 days,No Trouble Found,Software,1,0.08333333333,12,True
+telemetry type,scrubex2.0-3,30 days,Not categorised,Door,2,0.6666666667,3,True
+telemetry type,scrubex2.0-3,30 days,Not categorised,No Trouble Found,1,0.3333333333,3,True
+telemetry type,scrubex2.0-3,30 days,Operator error,Door,2,1,2,True
+telemetry type,scrubex2.0-3,30 days,Other,Door,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Other,Electronics,2,0.25,8,True
+telemetry type,scrubex2.0-3,30 days,Other,Mechanical,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Other,Monitoring,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Other,No Trouble Found,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Other,Not categorised,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Other,Operator error,1,0.125,8,True
+telemetry type,scrubex2.0-3,30 days,Software,Door,2,1,2,True
+telemetry type,scrubex2.0-3,7 days,Door,Door,30,0.5660377358,53,False
+telemetry type,scrubex2.0-3,7 days,Door,Electronics,5,0.09433962264,53,False
+telemetry type,scrubex2.0-3,7 days,Door,Mechanical,4,0.07547169811,53,True
+telemetry type,scrubex2.0-3,7 days,Door,Monitoring,9,0.1698113208,53,False
+telemetry type,scrubex2.0-3,7 days,Door,Network,1,0.01886792453,53,True
+telemetry type,scrubex2.0-3,7 days,Door,No Trouble Found,2,0.03773584906,53,True
+telemetry type,scrubex2.0-3,7 days,Door,Operator error,1,0.01886792453,53,True
+telemetry type,scrubex2.0-3,7 days,Door,Other,1,0.01886792453,53,True
+telemetry type,scrubex2.0-3,7 days,Electronics,Door,2,0.1666666667,12,True
+telemetry type,scrubex2.0-3,7 days,Electronics,Electronics,5,0.4166666667,12,False
+telemetry type,scrubex2.0-3,7 days,Electronics,Monitoring,4,0.3333333333,12,True
+telemetry type,scrubex2.0-3,7 days,Electronics,Other,1,0.08333333333,12,True
+telemetry type,scrubex2.0-3,7 days,Mechanical,Electronics,1,0.2,5,True
+telemetry type,scrubex2.0-3,7 days,Mechanical,Mechanical,3,0.6,5,True
+telemetry type,scrubex2.0-3,7 days,Mechanical,Monitoring,1,0.2,5,True
+telemetry type,scrubex2.0-3,7 days,Monitoring,Door,1,0.5,2,True
+telemetry type,scrubex2.0-3,7 days,Monitoring,Mechanical,1,0.5,2,True
+telemetry type,scrubex2.0-3,7 days,Network,Door,1,0.3333333333,3,True
+telemetry type,scrubex2.0-3,7 days,Network,Network,2,0.6666666667,3,True
+telemetry type,scrubex2.0-3,7 days,No Trouble Found,Electronics,2,0.5,4,True
+telemetry type,scrubex2.0-3,7 days,No Trouble Found,No Trouble Found,1,0.25,4,True
+telemetry type,scrubex2.0-3,7 days,No Trouble Found,Software,1,0.25,4,True
+telemetry type,scrubex2.0-3,7 days,Operator error,Door,1,1,1,True
+telemetry type,scrubex2.0-3,7 days,Other,Door,1,0.25,4,True
+telemetry type,scrubex2.0-3,7 days,Other,Monitoring,1,0.25,4,True
+telemetry type,scrubex2.0-3,7 days,Other,Not categorised,1,0.25,4,True
+telemetry type,scrubex2.0-3,7 days,Other,Operator error,1,0.25,4,True
+telemetry type,scrubex2.0-4,30 days,Door,Door,22,0.4583333333,48,False
+telemetry type,scrubex2.0-4,30 days,Door,Electronics,10,0.2083333333,48,False
+telemetry type,scrubex2.0-4,30 days,Door,Mechanical,5,0.1041666667,48,False
+telemetry type,scrubex2.0-4,30 days,Door,Monitoring,3,0.0625,48,True
+telemetry type,scrubex2.0-4,30 days,Door,No Trouble Found,6,0.125,48,False
+telemetry type,scrubex2.0-4,30 days,Door,Operator error,1,0.02083333333,48,True
+telemetry type,scrubex2.0-4,30 days,Door,Other,1,0.02083333333,48,True
+telemetry type,scrubex2.0-4,30 days,Electronics,Door,5,0.1086956522,46,False
+telemetry type,scrubex2.0-4,30 days,Electronics,Electronics,25,0.5434782609,46,False
+telemetry type,scrubex2.0-4,30 days,Electronics,Mechanical,4,0.08695652174,46,True
+telemetry type,scrubex2.0-4,30 days,Electronics,Monitoring,2,0.04347826087,46,True
+telemetry type,scrubex2.0-4,30 days,Electronics,Network,3,0.0652173913,46,True
+telemetry type,scrubex2.0-4,30 days,Electronics,No Trouble Found,5,0.1086956522,46,False
+telemetry type,scrubex2.0-4,30 days,Electronics,Operator error,2,0.04347826087,46,True
+telemetry type,scrubex2.0-4,30 days,Mechanical,Door,3,0.1034482759,29,True
+telemetry type,scrubex2.0-4,30 days,Mechanical,Electronics,5,0.1724137931,29,False
+telemetry type,scrubex2.0-4,30 days,Mechanical,Mechanical,17,0.5862068966,29,False
+telemetry type,scrubex2.0-4,30 days,Mechanical,Monitoring,3,0.1034482759,29,True
+telemetry type,scrubex2.0-4,30 days,Mechanical,No Trouble Found,1,0.03448275862,29,True
+telemetry type,scrubex2.0-4,30 days,Monitoring,Door,2,0.3333333333,6,True
+telemetry type,scrubex2.0-4,30 days,Monitoring,Monitoring,1,0.1666666667,6,True
+telemetry type,scrubex2.0-4,30 days,Monitoring,Network,3,0.5,6,True
+telemetry type,scrubex2.0-4,30 days,Network,Door,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,30 days,Network,Electronics,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,30 days,Network,Monitoring,5,0.2941176471,17,False
+telemetry type,scrubex2.0-4,30 days,Network,Network,7,0.4117647059,17,False
+telemetry type,scrubex2.0-4,30 days,Network,No Trouble Found,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,30 days,Network,Not categorised,2,0.1176470588,17,True
+telemetry type,scrubex2.0-4,30 days,No Trouble Found,Door,5,0.3846153846,13,False
+telemetry type,scrubex2.0-4,30 days,No Trouble Found,Electronics,2,0.1538461538,13,True
+telemetry type,scrubex2.0-4,30 days,No Trouble Found,Mechanical,1,0.07692307692,13,True
+telemetry type,scrubex2.0-4,30 days,No Trouble Found,No Trouble Found,4,0.3076923077,13,True
+telemetry type,scrubex2.0-4,30 days,No Trouble Found,Not categorised,1,0.07692307692,13,True
+telemetry type,scrubex2.0-4,30 days,Not categorised,Door,2,0.4,5,True
+telemetry type,scrubex2.0-4,30 days,Not categorised,Electronics,1,0.2,5,True
+telemetry type,scrubex2.0-4,30 days,Not categorised,Network,1,0.2,5,True
+telemetry type,scrubex2.0-4,30 days,Not categorised,No Trouble Found,1,0.2,5,True
+telemetry type,scrubex2.0-4,30 days,Operator error,Door,1,0.25,4,True
+telemetry type,scrubex2.0-4,30 days,Operator error,Electronics,1,0.25,4,True
+telemetry type,scrubex2.0-4,30 days,Operator error,Mechanical,2,0.5,4,True
+telemetry type,scrubex2.0-4,30 days,Other,Electronics,1,0.5,2,True
+telemetry type,scrubex2.0-4,30 days,Other,Other,1,0.5,2,True
+telemetry type,scrubex2.0-4,7 days,Door,Door,9,0.45,20,False
+telemetry type,scrubex2.0-4,7 days,Door,Electronics,2,0.1,20,True
+telemetry type,scrubex2.0-4,7 days,Door,Mechanical,3,0.15,20,True
+telemetry type,scrubex2.0-4,7 days,Door,Monitoring,3,0.15,20,True
+telemetry type,scrubex2.0-4,7 days,Door,No Trouble Found,3,0.15,20,True
+telemetry type,scrubex2.0-4,7 days,Electronics,Electronics,13,0.7647058824,17,False
+telemetry type,scrubex2.0-4,7 days,Electronics,Monitoring,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,7 days,Electronics,Network,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,7 days,Electronics,No Trouble Found,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,7 days,Electronics,Operator error,1,0.05882352941,17,True
+telemetry type,scrubex2.0-4,7 days,Mechanical,Door,1,0.06666666667,15,True
+telemetry type,scrubex2.0-4,7 days,Mechanical,Electronics,3,0.2,15,True
+telemetry type,scrubex2.0-4,7 days,Mechanical,Mechanical,10,0.6666666667,15,False
+telemetry type,scrubex2.0-4,7 days,Mechanical,Monitoring,1,0.06666666667,15,True
+telemetry type,scrubex2.0-4,7 days,Monitoring,Door,1,0.25,4,True
+telemetry type,scrubex2.0-4,7 days,Monitoring,Network,3,0.75,4,True
+telemetry type,scrubex2.0-4,7 days,Network,Monitoring,3,0.375,8,True
+telemetry type,scrubex2.0-4,7 days,Network,Network,4,0.5,8,True
+telemetry type,scrubex2.0-4,7 days,Network,Not categorised,1,0.125,8,True
+telemetry type,scrubex2.0-4,7 days,No Trouble Found,Door,3,0.6,5,True
+telemetry type,scrubex2.0-4,7 days,No Trouble Found,Electronics,1,0.2,5,True
+telemetry type,scrubex2.0-4,7 days,No Trouble Found,Not categorised,1,0.2,5,True
+telemetry type,scrubex2.0-4,7 days,Not categorised,Door,1,0.25,4,True
+telemetry type,scrubex2.0-4,7 days,Not categorised,Electronics,1,0.25,4,True
+telemetry type,scrubex2.0-4,7 days,Not categorised,Network,1,0.25,4,True
+telemetry type,scrubex2.0-4,7 days,Not categorised,No Trouble Found,1,0.25,4,True
+telemetry type,scrubex2.0-4,7 days,Other,Other,1,1,1,True
+telemetry type,scrubex2.0-5,30 days,Door,Door,1,0.25,4,True
+telemetry type,scrubex2.0-5,30 days,Door,Electronics,2,0.5,4,True
+telemetry type,scrubex2.0-5,30 days,Door,Other,1,0.25,4,True
+telemetry type,scrubex2.0-5,30 days,Electronics,Door,2,0.2857142857,7,True
+telemetry type,scrubex2.0-5,30 days,Electronics,Electronics,3,0.4285714286,7,True
+telemetry type,scrubex2.0-5,30 days,Electronics,Mechanical,1,0.1428571429,7,True
+telemetry type,scrubex2.0-5,30 days,Electronics,Other,1,0.1428571429,7,True
+telemetry type,scrubex2.0-5,30 days,Mechanical,Door,1,0.5,2,True
+telemetry type,scrubex2.0-5,30 days,Mechanical,Mechanical,1,0.5,2,True
+telemetry type,scrubex2.0-5,30 days,No Trouble Found,Mechanical,1,1,1,True
+telemetry type,scrubex2.0-5,30 days,Operator error,Mechanical,1,1,1,True
+telemetry type,scrubex2.0-5,30 days,Other,Electronics,1,1,1,True
+telemetry type,scrubex2.0-5,7 days,Door,Door,1,1,1,True
+telemetry type,scrubex2.0-5,7 days,Electronics,Door,1,0.3333333333,3,True
+telemetry type,scrubex2.0-5,7 days,Electronics,Electronics,2,0.6666666667,3,True
+telemetry type,sd-49,30 days,Door,Mechanical,1,1,1,True
+telemetry type,sd-49,30 days,Electronics,Electronics,4,1,4,True
+telemetry type,sd-49,30 days,Mechanical,Electronics,1,0.3333333333,3,True
+telemetry type,sd-49,30 days,Mechanical,Mechanical,2,0.6666666667,3,True
+telemetry type,sd-49,30 days,Network,Electronics,2,1,2,True
+telemetry type,sd-49,30 days,No Trouble Found,Electronics,2,0.6666666667,3,True
+telemetry type,sd-49,30 days,No Trouble Found,No Trouble Found,1,0.3333333333,3,True
+telemetry type,sd-49,7 days,Electronics,Electronics,1,1,1,True
+telemetry type,sd-49,7 days,Mechanical,Electronics,1,1,1,True
+telemetry type,sd-49,7 days,No Trouble Found,No Trouble Found,1,1,1,True
+telemetry type,sd2.0-49,30 days,Door,Door,3,0.375,8,True
+telemetry type,sd2.0-49,30 days,Door,Mechanical,4,0.5,8,True
+telemetry type,sd2.0-49,30 days,Door,Monitoring,1,0.125,8,True
+telemetry type,sd2.0-49,30 days,Mechanical,Door,2,0.09523809524,21,True
+telemetry type,sd2.0-49,30 days,Mechanical,Electronics,1,0.04761904762,21,True
+telemetry type,sd2.0-49,30 days,Mechanical,Mechanical,12,0.5714285714,21,False
+telemetry type,sd2.0-49,30 days,Mechanical,Monitoring,3,0.1428571429,21,True
+telemetry type,sd2.0-49,30 days,Mechanical,Network,1,0.04761904762,21,True
+telemetry type,sd2.0-49,30 days,Mechanical,Not categorised,1,0.04761904762,21,True
+telemetry type,sd2.0-49,30 days,Mechanical,Other,1,0.04761904762,21,True
+telemetry type,sd2.0-49,30 days,Monitoring,Monitoring,1,1,1,True
+telemetry type,sd2.0-49,30 days,Network,Door,1,0.5,2,True
+telemetry type,sd2.0-49,30 days,Network,Network,1,0.5,2,True
+telemetry type,sd2.0-49,30 days,No Trouble Found,Mechanical,2,1,2,True
+telemetry type,sd2.0-49,30 days,Operator error,Mechanical,1,1,1,True
+telemetry type,sd2.0-49,30 days,Other,Monitoring,1,0.5,2,True
+telemetry type,sd2.0-49,30 days,Other,Other,1,0.5,2,True
+telemetry type,sd2.0-49,7 days,Door,Door,1,0.3333333333,3,True
+telemetry type,sd2.0-49,7 days,Door,Mechanical,1,0.3333333333,3,True
+telemetry type,sd2.0-49,7 days,Door,Monitoring,1,0.3333333333,3,True
+telemetry type,sd2.0-49,7 days,Mechanical,Mechanical,3,0.4285714286,7,True
+telemetry type,sd2.0-49,7 days,Mechanical,Monitoring,2,0.2857142857,7,True
+telemetry type,sd2.0-49,7 days,Mechanical,Network,1,0.1428571429,7,True
+telemetry type,sd2.0-49,7 days,Mechanical,Not categorised,1,0.1428571429,7,True
+telemetry type,sd2.0-49,7 days,No Trouble Found,Mechanical,1,1,1,True
+telemetry type,sd2.0-49,7 days,Operator error,Mechanical,1,1,1,True
+telemetry type,sd2.0-49,7 days,Other,Monitoring,1,0.5,2,True
+telemetry type,sd2.0-49,7 days,Other,Other,1,0.5,2,True

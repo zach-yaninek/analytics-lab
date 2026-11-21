@@ -1,0 +1,16 @@
+case_id,zone,season,recency_rank,code,hours_before_recorded_open,kept_if_case_Eastern_tel_UTC,kept_if_case_Eastern_tel_machine_local,kept_if_case_Central_tel_UTC,kept_if_case_Central_tel_machine_local
+T00705,Eastern,DST (EDT),1,43,15.73,True,True,True,True
+T00705,Eastern,DST (EDT),2,11,63.63,True,True,True,True
+T00705,Eastern,DST (EDT),3,03,88.51,True,True,True,True
+T00705,Eastern,DST (EDT),4,34,103.96,True,True,True,True
+T00705,Eastern,DST (EDT),5,25,109.11,True,True,True,True
+T00783,Eastern,DST (EDT),1,03,2.34,True,True,True,True
+T00783,Eastern,DST (EDT),2,77,27.15,True,True,True,True
+T00783,Eastern,DST (EDT),3,32,29.17,True,True,True,True
+T00783,Eastern,DST (EDT),4,17,29.17,True,True,True,True
+T00783,Eastern,DST (EDT),5,11,197.45,True,True,True,True
+T00951,Eastern,DST (EDT),1,19,13.5,True,True,True,True
+T00951,Eastern,DST (EDT),2,20,15.92,True,True,True,True
+T00951,Eastern,DST (EDT),3,01,24.75,True,True,True,True
+T00951,Eastern,DST (EDT),4,04,24.85,True,True,True,True
+T00951,Eastern,DST (EDT),5,79,214.26,True,True,True,True

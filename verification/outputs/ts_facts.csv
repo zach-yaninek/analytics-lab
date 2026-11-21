@@ -1,0 +1,95 @@
+section,item,value
+load,workbook_sha256_prefix,f060f5810dc8
+load,rows,7471
+load,first_opened,2025-08-01 07:22:00
+load,last_opened,2026-08-31 17:45:00
+load,latest_timestamp_any_column (export ran at/after),2026-09-01 08:05:00
+A1,unparsed_locations,0
+A1,country_vs_state_conflicts,0
+A1,tickets_by_zone,"{'Eastern': 5463, 'Central': 1060, 'Pacific': 702, 'Mountain': 170, 'Arizona (no DST)': 51, 'Hawaii (no DST)': 14, 'Newfoundland': 11}"
+A1,zip_rule_hits,"{'IN split-zone ZIP3 rule -> Central': 26, 'TX split-zone ZIP3 rule -> Mountain': 22, 'TN split-zone ZIP3 rule -> Eastern': 11}"
+A1,eastern_dst_boundaries_in_data,"DST tickets 5073, standard 2398; standard period 2025-11-03 00:48:00 .. 2026-03-07 17:08:00"
+A2,subset_sizes,"{'all': 7471, 'weekday_reactive': 7167, 'monitoring_template': 140, 'planned_work': 23}"
+A3,tickets_on_2025-11-02,0 (earliest None)
+A3,tickets_on_2025-11-03,24 (earliest 0.8)
+A3,tickets_on_2026-03-08,1 (earliest 13.066666666666666)
+A3,tickets_on_2026-03-09,46 (earliest 7.033333333333333)
+A3,tickets_in_ambiguous_hour_2025-11-02_01h,0
+A3,tickets_in_nonexistent_hour_2026-03-08_02h,0
+A5,weekend_tickets,142
+A5,weekend_share,0.019
+A5,weekday_tickets_before_07,3
+A5,all_tickets_before_07,4
+A5,opened_seconds_nonzero,0
+A5,opened_minute_00_share,0.0182
+A5,opened_minute_heaping_00_15_30_45_share,0.0655
+A5,distinct_owners,23
+B,closed_value_types,"{'datetime': 7383, 'NoneType': 87, 'str': 1}"
+B,closed_text_values,{'T02209': '11/21/2025 7:11 AM'}
+B,closed_text_value_status,['Trouble Closed']
+B,closed_missing_by_status,"{'Dispatch': 64, 'Ricoh-Closed': 11, 'Closed': 7, 'Case Closed': 5}"
+B,status_counts,"{'Trouble Closed': 7384, 'Dispatch': 64, 'Ricoh-Closed': 11, 'Closed': 7, 'Case Closed': 5}"
+B,closed_present_by_status,{'Trouble Closed': 7384}
+B,closed_seconds_nonzero,0
+B,durations_n,7384
+B,durations_negative,0
+B,durations_zero,16
+B,durations_under_1h_positive,106
+B,zero_duration_by_service_group,"{'Other recorded issue': 11, 'Planned work': 5}"
+B,zero_duration_by_record_type,"{'General Case': 8, 'Install Case': 5, 'scrubEx / SD Case': 2, 'ScrubBank': 1}"
+B,zero_duration_by_category,"{'User Access': 6, '[NULL]': 2, 'Network Intermittent': 2, 'IP/Reprogramming': 1, 'User Door': 1, 'Network Settings': 1, 'SAM': 1, 'Touchscreen': 1, 'Main Door': 1}"
+B,distinct_close_minutes,6984
+B,close_minutes_shared_by_2plus,382
+B,tickets_in_shared_close_minutes,782
+B,max_tickets_one_close_minute,4
+B,open_minutes_shared_by_2plus (baseline),169
+B,tickets_in_shared_open_minutes (baseline),342
+B,shared_close_groups_same_machine,0
+B,shared_close_groups_same_customer,60
+B,shared_close_groups_also_same_open_minute,7
+B,shared_close_groups_spanning_2plus_customers,322
+B,close_days_top5,"{'2026-03-09': 53, '2026-02-19': 48, '2026-06-25': 47, '2026-01-02': 46, '2026-07-16': 44}"
+B,close_per_day_median,25.0
+B,closed_after_last_opened_ticket,9
+B,closed_weekend_share,0.0165
+B,closed_before_07_share,0.0038
+B,eta_stamps_parsed,699
+C,other_closed_statuses_by_month,"{'Ricoh-Closed': {'2026-08': 11}, 'Closed': {'2025-11': 1, '2025-12': 1, '2026-01': 1, '2026-02': 1, '2026-04': 1, '2026-05': 1, '2026-08': 1}, 'Case Closed': {'2025-08': 1, '2026-08': 4}}"
+C,record_type_open_vs_recent_trouble_closed (<20d),"{'open': {'scrubEx / SD Case': 52, 'alEx Case': 11, 'ScrubBank': 1}, 'trouble_closed_lt20d': {'scrubEx / SD Case': 246, 'alEx Case': 44, 'General Case': 3, 'ScrubBank': 2}}"
+C,owner_10_months,{'2026-08': 31}
+C,open_ticket_age_days_quantiles,"{0: 0.6, 0.25: 0.9, 0.5: 3.9, 0.75: 6.1, 1: 19.7}"
+C,open_tickets_by_month,{'2026-08': 64}
+C,open_tickets_record_type,"{'scrubEx / SD Case': 52, 'alEx Case': 11, 'ScrubBank': 1}"
+C,open_tickets_with_trouble_code,1
+C,trouble_closed_without_trouble_code,17
+C,open_ticket_owners,"{'Owner 10': 18, 'Owner 05': 15, 'Owner 02': 13, 'Owner 03': 10, 'Owner 07': 4, 'Owner 01': 4}"
+C,open_owners_never_on_closed_tickets,[]
+C,dispatch_present_on_tickets_opened_last_24h_by_status,"{'Dispatch': {False: 1, True: 23}, 'Trouble Closed': {False: 0, True: 3}}"
+C,dispatch_absent_trouble_closed_by_record_type,"{'scrubEx / SD Case': 504, 'General Case': 246, 'alEx Case': 114, 'Install Case': 16, 'ScrubBank': 12}"
+C,notes_present,4793
+C,notes_with_any_parsed_stamp,4540
+C,notes_any_date_after_open_incl_full_dates_non_eta,4071
+C,notes_present_but_no_entry_stamp,257
+C,notes_entry_stamp_delta_days_distribution_latest,"{-5.0: 7, -1.0: 2, 0.0: 459, 1.0: 1143, 2.0: 347, 3.0: 508, 4.0: 369, 5.0: 303, 6.0: 288, 7.0: 326, 8.0: 157, 9.0: 82, 10.0: 69, 11.0: 60, 12.0: 51}"
+C,trouble_reported_length_median_open_vs_closed,"(86.0, 75.0)"
+C,trouble_reported_with_date_mentions,39
+C,trouble_reported_with_date_after_open_date,9
+D,monitoring_template_tickets,140
+D,telemetry_ui_mention_tickets,849
+D,template_or_ui_mention,869
+D,template_and_ui_mention,120
+D,ui_mention_without_template,729
+D,code_reference_tickets,350
+D,code_reference_not_template_or_ui,109
+D,device_fw_suffix_tickets,2765
+D,sibling_proactive_definition_tickets,132
+D,sibling_vs_template_overlap,132
+D,mon_class_counts,"{'A monitoring template': 140, 'B telemetry UI + code number': 235, 'C telemetry UI mention': 494, 'D code number only': 109, 'E customer/other': 6493}"
+D,markers_on_open_tickets,"{'monitoring template': 0.0, 'mentions clearView': 0.0, 'mentions clariFy': 0.094, 'mentions Canopy': 0.0, 'numeric code reference': 0.125, 'Device FW suffix': 0.594, 'FCR': 0.719, 'pipe-delimited': 0.0}"
+D,first_month_device_fw,2025-12-12
+E,pilot_zones,"{'Eastern': 27, 'Central': 2, 'Arizona (no DST)': 1}"
+E,pilot_seasons,"{'DST (EDT)': 23, 'Standard (EST)': 7}"
+E,pilot_max_abs_correction_h,6.0
+E,population_correction_range_case_Eastern_tel_local,"(-6.0, 1.5)"
+E,population_correction_range_case_Eastern_tel_UTC,"(4.0, 5.0)"
+E,max_abs_correction_any_hypothesis_h,6.0

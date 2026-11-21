@@ -1,0 +1,18 @@
+measure,value
+customers (accounts with >=1 ticket; accounts with zero tickets are invisible),845.0
+customers with naive rate >= 1.0 (true by construction),845.0
+customers with naive rate exactly 1.0 (every ticketed machine had one ticket),230.0
+naive rate: minimum,1.0
+naive rate: median,1.625
+naive rate: mean of customers,1.892
+naive rate: maximum,11.0
+customers with 1 ticketed machine,213.0
+customers with 1 ticket,134.0
+customers with >=2 ticketed machines (only these can span >1 host),632.0
+"Spearman rho(tickets, naive rate)",0.647
+"Spearman rho(ticketed machines, naive rate)",0.291
+pooled tickets / ticketed machines (all cases),1.98
+customers with zero unplanned (service) tickets,13.0
+top-10 customers by tickets: median naive rate,2.369
+top-50 customers by tickets: median naive rate,2.452
+customers outside top-50: median naive rate,1.5

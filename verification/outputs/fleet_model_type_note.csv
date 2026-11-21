@@ -1,0 +1,6 @@
+model,types_in_zac_first_15_rows,why_counted_as_multi_type,note
+A-LC,alc-1 + Unknown,Unknown only,"Zac maps NULL machine_type to the string Unknown before COUNT(DISTINCT), so Unknown makes a model ""multi-type""; only the first 15 rows were printed, so the full 16 cannot be checked here"
+LC-24,mlc-1,single type (in shown rows),"Zac maps NULL machine_type to the string Unknown before COUNT(DISTINCT), so Unknown makes a model ""multi-type""; only the first 15 rows were printed, so the full 16 cannot be checked here"
+LC-30,mlc-1 + Unknown,Unknown only,"Zac maps NULL machine_type to the string Unknown before COUNT(DISTINCT), so Unknown makes a model ""multi-type""; only the first 15 rows were printed, so the full 16 cannot be checked here"
+LVD-Remote,scrubex-2 + scrubex-1 + Unknown,genuine second type (16 machines),"Zac maps NULL machine_type to the string Unknown before COUNT(DISTINCT), so Unknown makes a model ""multi-type""; only the first 15 rows were printed, so the full 16 cannot be checked here"
+LVD-Remote-2.0,scrubex2.0-2 + Unknown + scrubex2.0-3 + sd2.0-49,two 1-machine anomalies + Unknown,"Zac maps NULL machine_type to the string Unknown before COUNT(DISTINCT), so Unknown makes a model ""multi-type""; only the first 15 rows were printed, so the full 16 cannot be checked here"

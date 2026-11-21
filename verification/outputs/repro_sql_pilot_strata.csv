@@ -1,0 +1,12 @@
+stratum,date_eligible_tickets,zac_picks,max_round,skipped_between_picks,implied_ineligible_tail,implied_no_device_total
+Electro/Mechanical,3271,3,2,2,0,2
+Electronics,1449,3,2,0,0,0
+Miscellaneous,972,3,2,1,0,1
+Network,414,3,2,0,0,0
+Operator Error,142,3,2,1,0,1
+Software,77,3,2,0,0,0
+Missing,22,3,2,1,0,1
+Preventative Maintenance,5,2,1,3,0,3
+Installation,3,3,2,0,0,0
+Repair/Investigate,3,3,2,0,0,0
+Canopy,2,1,0,0,1,1

@@ -1,0 +1,11 @@
+host_class,hosts,devices,devices_with_tickets,share_of_fleet_pct,transacting_devices,share_of_transacting_pct,account_rule
+Multi-account,82,1956,916,27.23,1907,27.43,host_class
+No host (NULL),1,151,34,2.1,101,1.45,host_class
+No tickets,126,385,0,5.36,370,5.32,host_class
+Shared internal host,1,411,17,5.72,391,5.63,host_class
+Single-account,486,4280,2074,59.59,4182,60.16,host_class
+Multi-account,82,1956,916,27.23,1907,27.43,host_class_modal_account
+No host (NULL),1,151,34,2.1,101,1.45,host_class_modal_account
+No tickets,126,385,0,5.36,370,5.32,host_class_modal_account
+Shared internal host,1,411,17,5.72,391,5.63,host_class_modal_account
+Single-account,486,4280,2074,59.59,4182,60.16,host_class_modal_account

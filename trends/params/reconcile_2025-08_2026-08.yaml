@@ -1,0 +1,6 @@
+# For the MIT team: reconcile the engine with the numbers IPA has seen, on the ORIGINAL two files.
+#   ipa-trends reconcile --params params/reconcile_2025-08_2026-08.yaml        (add --deep in the MIT repository)
+# Paths are read from the trends folder; in the MIT repository the raw files live in ../data/raw/.
+CASE_EXPORTS: "../data/raw/IPA_CaseHistory_Aug 2025-Aug2026.xlsx"
+EQUIPMENT_LISTS: ../data/raw/IPA_Active_Equipment_list_2026-10-19.xlsx
+OUTPUT_DIR: data/output

@@ -1,0 +1,8 @@
+type,name,tbl_name,sql
+index,ix_ev_code,transaction_events,CREATE INDEX ix_ev_code ON transaction_events(transaction_code)
+index,ix_ev_device_date,transaction_events,"CREATE INDEX ix_ev_device_date ON transaction_events(external_device_id, transaction_date_local)"
+index,sqlite_autoindex_transaction_codes_1,transaction_codes,
+table,devices,devices,"CREATE TABLE devices (device_uuid TEXT, external_device_id TEXT, device_status TEXT, location_name TEXT, city TEXT, state TEXT, country TEXT, ip_address TEXT, subnet_mask TEXT, cpu_firmware TEXT, machine_type TEXT, clearview_url TEXT)"
+table,sqlite_stat1,sqlite_stat1,"CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+table,transaction_codes,transaction_codes,"CREATE TABLE transaction_codes (transaction_code TEXT PRIMARY KEY, transaction_description TEXT, is_success INTEGER)"
+table,transaction_events,transaction_events,"CREATE TABLE transaction_events (external_device_id TEXT, event_time_utc TEXT, transaction_time_utc TEXT, transaction_time_local TEXT, transaction_date_local TEXT, event_time_offset REAL, transaction_code TEXT)"

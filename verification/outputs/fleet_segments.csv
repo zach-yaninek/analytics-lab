@@ -1,0 +1,7 @@
+segment,accounts,systems,tickets,ticketed_machines
+academic_research,2,2,8,3
+federal_military,16,1,87,63
+federal_other,2,2,5,4
+federal_veterans,82,1,354,213
+healthcare_provider,733,306,6950,3465
+industry_lab,10,8,67,33

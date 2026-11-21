@@ -1,0 +1,54 @@
+model,age_group,machines,ticketed_machines,accounts,months,tickets,family_tickets,in_support,shown_by_model
+A-EC,4+,2,0,2,26.02053388,0,0,False,False
+A-LC,Under 4,86,8,15,1118.882957,11,10,True,False
+A-LC,4+,259,19,47,3369.659138,28,28,True,False
+A-MC,Under 4,32,1,7,416.3285421,1,1,True,False
+A-MC,4+,80,1,23,1040.821355,2,2,True,False
+A-SC,Under 4,11,2,5,143.1129363,5,5,True,False
+A-SC,4+,35,4,15,455.3593429,5,5,True,False
+LC-24,4+,56,16,25,728.5749487,24,22,False,False
+LC-30,4+,324,139,58,4215.326489,269,266,False,False
+LVD-LOCAL,4+,6,2,5,78.06160164,6,6,False,False
+LVD-Remote,Under 4,8,4,3,104.0821355,7,7,True,False
+LVD-Remote,4+,824,334,330,10720.45996,608,584,True,False
+LVD-Remote-2.0,Under 4,1000,492,412,11364.69815,1014,986,True,True
+LVD-Remote-2.0,4+,452,206,215,5880.640657,367,357,True,True
+LVLR-WOP,4+,2,2,1,26.02053388,4,3,False,False
+LVLR-WP,Under 4,1,0,1,2.726899384,0,0,False,False
+LVLR-WP,4+,2,0,2,26.02053388,0,0,False,False
+LVRR-WOP,4+,34,8,20,442.349076,17,16,False,False
+LVRR-WP,Under 4,50,26,17,640.4928131,63,63,True,True
+LVRR-WP,4+,823,240,345,10707.44969,432,420,True,True
+LVRR-WP-2.0,Under 4,900,454,401,10137.56057,958,926,True,True
+LVRR-WP-2.0,4+,405,135,209,5269.158111,235,229,True,True
+LX,4+,29,6,3,377.2977413,11,11,False,False
+MC-24,4+,38,8,16,494.3901437,11,11,False,False
+MC-30,4+,86,36,24,1118.882957,65,64,False,False
+MV,Under 4,2,1,2,26.02053388,1,1,False,False
+MV,4+,600,197,290,7806.160164,379,365,False,False
+MV-2.0,Under 4,787,369,354,8983.359343,694,683,True,True
+MV-2.0,4+,364,112,170,4735.737166,189,181,True,True
+SC-24,4+,37,9,20,481.3798768,11,10,False,False
+SC-30,4+,18,1,8,234.1848049,1,1,False,False
+SD-64,4+,89,36,80,1157.913758,86,84,False,False
+SV-32,4+,2,0,2,26.02053388,0,0,False,False
+SV-48,Under 4,2,1,2,15.11293634,1,1,False,False
+SV-48,4+,127,28,85,1652.303901,54,53,False,False
+SV-48-2.0,Under 4,118,53,79,1338.546201,86,86,True,True
+SV-48-2.0,4+,77,25,49,1001.790554,37,36,True,True
+alEx LC-D,Under 4,490,186,85,5052.4846,387,375,True,True
+alEx LC-D,4+,61,34,21,793.6262834,79,77,True,True
+alEx LC-S,Under 4,80,30,33,909.3716632,53,49,False,False
+alEx LC-S,4+,6,4,2,78.06160164,16,16,False,False
+alEx MC-D,Under 4,185,52,55,2062.324435,116,112,True,False
+alEx MC-D,4+,28,13,13,364.2874743,23,23,True,False
+alEx MC-S,Under 4,125,40,42,1493.552361,70,67,True,False
+alEx MC-S,4+,11,3,6,143.1129363,5,5,True,False
+alEx SD 2.0,Under 4,74,44,72,846.9158111,132,127,True,False
+alEx SD 2.0,4+,24,13,20,312.2464066,18,17,True,False
+scrubBank 240,Under 4,15,5,9,185.1334702,6,6,True,False
+scrubBank 240,4+,13,9,7,169.1334702,16,15,True,False
+scrubBank 480,Under 4,21,10,11,262.6694045,24,24,True,False
+scrubBank 480,4+,37,32,20,481.3798768,98,94,True,False
+scrubXchange LX,4+,5,4,3,65.0513347,21,20,False,False
+scrubXchange MX,4+,3,3,2,39.03080082,4,4,False,False

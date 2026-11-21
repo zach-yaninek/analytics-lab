@@ -1,0 +1,3039 @@
+{
+ "a6_categories": [
+  "Deposit Door",
+  "Touchscreen",
+  "Computer Board"
+ ],
+ "age_rates": [
+  {
+   "accounts": 272,
+   "ci_hi": 9.52911680449575,
+   "ci_lo": 7.408115977668493,
+   "ci_method": "cluster bootstrap",
+   "machines": 1497,
+   "months": 12707.811088295688,
+   "rate_per_100": 8.427887325036066,
+   "stratum": "<1",
+   "tickets": 1071.0
+  },
+  {
+   "accounts": 206,
+   "ci_hi": 9.011134801321315,
+   "ci_lo": 6.797790744607574,
+   "ci_method": "cluster bootstrap",
+   "machines": 866,
+   "months": 11266.891170431212,
+   "rate_per_100": 7.828246378332983,
+   "stratum": "1-2",
+   "tickets": 882.0
+  },
+  {
+   "accounts": 305,
+   "ci_hi": 8.885502513693547,
+   "ci_lo": 7.018954760212087,
+   "ci_method": "cluster bootstrap",
+   "machines": 1624,
+   "months": 21128.67351129364,
+   "rate_per_100": 7.932348422650146,
+   "stratum": "2-4",
+   "tickets": 1676.0
+  },
+  {
+   "accounts": 366,
+   "ci_hi": 5.688599016373838,
+   "ci_lo": 4.345112425183682,
+   "ci_method": "cluster bootstrap",
+   "machines": 1731,
+   "months": 22520.772073921973,
+   "rate_per_100": 4.995388241163804,
+   "stratum": "4-6",
+   "tickets": 1125.0
+  },
+  {
+   "accounts": 303,
+   "ci_hi": 6.201644437257552,
+   "ci_lo": 4.727392271446493,
+   "ci_method": "cluster bootstrap",
+   "machines": 1458,
+   "months": 18968.96919917865,
+   "rate_per_100": 5.47209492039739,
+   "stratum": "6-8",
+   "tickets": 1038.0
+  },
+  {
+   "accounts": 204,
+   "ci_hi": 6.908536029224846,
+   "ci_lo": 4.418161824118918,
+   "ci_method": "cluster bootstrap",
+   "machines": 939,
+   "months": 12216.64065708419,
+   "rate_per_100": 5.5989205150547,
+   "stratum": "8-10",
+   "tickets": 684.0
+  },
+  {
+   "accounts": 192,
+   "ci_hi": 3.2640618640785943,
+   "ci_lo": 1.904442168431308,
+   "ci_method": "cluster bootstrap",
+   "machines": 831,
+   "months": 10811.5318275154,
+   "rate_per_100": 2.534330975215452,
+   "stratum": "10+",
+   "tickets": 274.0
+  }
+ ],
+ "band_rates": [
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 3.218492919,
+   "share": 0.3818860878,
+   "tickets": 409,
+   "type": "Door"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 1.526620113,
+   "share": 0.1811391223,
+   "tickets": 194,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 1.471535882,
+   "share": 0.1746031746,
+   "tickets": 187,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.542973133,
+   "share": 0.06442577031,
+   "tickets": 69,
+   "type": "Network"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.08656093424,
+   "share": 0.01027077498,
+   "tickets": 11,
+   "type": "Software"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.2124677477,
+   "share": 0.02521008403,
+   "tickets": 27,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.2911595061,
+   "share": 0.03454715219,
+   "tickets": 37,
+   "type": "Other"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.5980573639,
+   "share": 0.07096171802,
+   "tickets": 76,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.2832903303,
+   "share": 0.03361344538,
+   "tickets": 36,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 0.196729396,
+   "share": 0.0233426704,
+   "tickets": 25,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "<1",
+   "machines": 1497,
+   "months": 12707.81109,
+   "rate_per_100": 8.427887325,
+   "share": 1.0,
+   "tickets": 1071,
+   "type": "All unplanned tickets"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 2.875682343,
+   "share": 0.3673469388,
+   "tickets": 324,
+   "type": "Door"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 1.677481367,
+   "share": 0.2142857143,
+   "tickets": 189,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 1.597601302,
+   "share": 0.2040816327,
+   "tickets": 180,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.3017691348,
+   "share": 0.03854875283,
+   "tickets": 34,
+   "type": "Network"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.03550225115,
+   "share": 0.004535147392,
+   "tickets": 4,
+   "type": "Software"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.168635693,
+   "share": 0.02154195011,
+   "tickets": 19,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.1597601302,
+   "share": 0.02040816327,
+   "tickets": 18,
+   "type": "Other"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.6035382695,
+   "share": 0.07709750567,
+   "tickets": 68,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.168635693,
+   "share": 0.02154195011,
+   "tickets": 19,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 0.2396401953,
+   "share": 0.0306122449,
+   "tickets": 27,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "1-2",
+   "machines": 866,
+   "months": 11266.89117,
+   "rate_per_100": 7.828246378,
+   "share": 1.0,
+   "tickets": 882,
+   "type": "All unplanned tickets"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 2.177136202,
+   "share": 0.2744630072,
+   "tickets": 460,
+   "type": "Door"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 1.566591484,
+   "share": 0.1974940334,
+   "tickets": 331,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 2.404315632,
+   "share": 0.3031026253,
+   "tickets": 508,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.4259614308,
+   "share": 0.05369928401,
+   "tickets": 90,
+   "type": "Network"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.1230555245,
+   "share": 0.01551312649,
+   "tickets": 26,
+   "type": "Software"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.1798503819,
+   "share": 0.02267303103,
+   "tickets": 38,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.1372542388,
+   "share": 0.01730310263,
+   "tickets": 29,
+   "type": "Other"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.5726814792,
+   "share": 0.07219570406,
+   "tickets": 121,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.1183226197,
+   "share": 0.01491646778,
+   "tickets": 25,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 0.2271794298,
+   "share": 0.02863961814,
+   "tickets": 48,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "2-4",
+   "machines": 1624,
+   "months": 21128.67351,
+   "rate_per_100": 7.932348423,
+   "share": 1.0,
+   "tickets": 1676,
+   "type": "All unplanned tickets"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 1.647368033,
+   "share": 0.3297777778,
+   "tickets": 371,
+   "type": "Door"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 1.30546146,
+   "share": 0.2613333333,
+   "tickets": 294,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.8791883304,
+   "share": 0.176,
+   "tickets": 198,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.3241451925,
+   "share": 0.06488888889,
+   "tickets": 73,
+   "type": "Network"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.09768759227,
+   "share": 0.01955555556,
+   "tickets": 22,
+   "type": "Software"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.1243296629,
+   "share": 0.02488888889,
+   "tickets": 28,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.08436655696,
+   "share": 0.01688888889,
+   "tickets": 19,
+   "type": "Other"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.3152645023,
+   "share": 0.06311111111,
+   "tickets": 71,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.07992621186,
+   "share": 0.016,
+   "tickets": 18,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 0.1376506982,
+   "share": 0.02755555556,
+   "tickets": 31,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "4-6",
+   "machines": 1731,
+   "months": 22520.77207,
+   "rate_per_100": 4.995388241,
+   "share": 1.0,
+   "tickets": 1125,
+   "type": "All unplanned tickets"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 1.744955124,
+   "share": 0.3188824663,
+   "tickets": 331,
+   "type": "Door"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.8540263749,
+   "share": 0.1560693642,
+   "tickets": 162,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 1.386474917,
+   "share": 0.253371869,
+   "tickets": 263,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.5166332391,
+   "share": 0.09441233141,
+   "tickets": 98,
+   "type": "Network"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.08962005168,
+   "share": 0.01637764933,
+   "tickets": 17,
+   "type": "Software"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.1107071227,
+   "share": 0.02023121387,
+   "tickets": 21,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.1212506582,
+   "share": 0.02215799615,
+   "tickets": 23,
+   "type": "Other"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.4533720262,
+   "share": 0.08285163776,
+   "tickets": 86,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.04217414197,
+   "share": 0.007707129094,
+   "tickets": 8,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 0.1528812646,
+   "share": 0.02793834297,
+   "tickets": 29,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "6-8",
+   "machines": 1458,
+   "months": 18968.9692,
+   "rate_per_100": 5.47209492,
+   "share": 1.0,
+   "tickets": 1038,
+   "type": "All unplanned tickets"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 1.587997924,
+   "share": 0.283625731,
+   "tickets": 194,
+   "type": "Door"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 1.145977883,
+   "share": 0.2046783626,
+   "tickets": 140,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 1.587997924,
+   "share": 0.283625731,
+   "tickets": 194,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.4338344844,
+   "share": 0.07748538012,
+   "tickets": 53,
+   "type": "Network"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.04911333785,
+   "share": 0.008771929825,
+   "tickets": 6,
+   "type": "Software"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.08185556309,
+   "share": 0.01461988304,
+   "tickets": 10,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.0982266757,
+   "share": 0.01754385965,
+   "tickets": 12,
+   "type": "Other"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.3847211465,
+   "share": 0.06871345029,
+   "tickets": 47,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.07367000678,
+   "share": 0.01315789474,
+   "tickets": 9,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 0.1555255699,
+   "share": 0.02777777778,
+   "tickets": 19,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "8-10",
+   "machines": 939,
+   "months": 12216.64066,
+   "rate_per_100": 5.598920515,
+   "share": 1.0,
+   "tickets": 684,
+   "type": "All unplanned tickets"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.841693864,
+   "share": 0.3321167883,
+   "tickets": 91,
+   "type": "Door"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.2497333443,
+   "share": 0.09854014599,
+   "tickets": 27,
+   "type": "Mechanical"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.6937037341,
+   "share": 0.2737226277,
+   "tickets": 75,
+   "type": "Electronics"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.2404839612,
+   "share": 0.09489051095,
+   "tickets": 26,
+   "type": "Network"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.01849876624,
+   "share": 0.007299270073,
+   "tickets": 2,
+   "type": "Software"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.01849876624,
+   "share": 0.007299270073,
+   "tickets": 2,
+   "type": "Operator error"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.05549629873,
+   "share": 0.02189781022,
+   "tickets": 6,
+   "type": "Other"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.2404839612,
+   "share": 0.09489051095,
+   "tickets": 26,
+   "type": "No Trouble Found"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.01849876624,
+   "share": 0.007299270073,
+   "tickets": 2,
+   "type": "Monitoring"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 0.1572395131,
+   "share": 0.06204379562,
+   "tickets": 17,
+   "type": "Not categorised"
+  },
+  {
+   "age_band": "10+",
+   "machines": 831,
+   "months": 10811.53183,
+   "rate_per_100": 2.534330975,
+   "share": 1.0,
+   "tickets": 274,
+   "type": "All unplanned tickets"
+  }
+ ],
+ "case_monthly": [
+  {
+   "all_tickets": 567,
+   "month": "2025-08",
+   "unplanned_tickets": 552
+  },
+  {
+   "all_tickets": 581,
+   "month": "2025-09",
+   "unplanned_tickets": 550
+  },
+  {
+   "all_tickets": 663,
+   "month": "2025-10",
+   "unplanned_tickets": 629
+  },
+  {
+   "all_tickets": 504,
+   "month": "2025-11",
+   "unplanned_tickets": 477
+  },
+  {
+   "all_tickets": 596,
+   "month": "2025-12",
+   "unplanned_tickets": 570
+  },
+  {
+   "all_tickets": 601,
+   "month": "2026-01",
+   "unplanned_tickets": 586
+  },
+  {
+   "all_tickets": 552,
+   "month": "2026-02",
+   "unplanned_tickets": 534
+  },
+  {
+   "all_tickets": 613,
+   "month": "2026-03",
+   "unplanned_tickets": 601
+  },
+  {
+   "all_tickets": 557,
+   "month": "2026-04",
+   "unplanned_tickets": 542
+  },
+  {
+   "all_tickets": 515,
+   "month": "2026-05",
+   "unplanned_tickets": 485
+  },
+  {
+   "all_tickets": 632,
+   "month": "2026-06",
+   "unplanned_tickets": 604
+  },
+  {
+   "all_tickets": 549,
+   "month": "2026-07",
+   "unplanned_tickets": 534
+  },
+  {
+   "all_tickets": 541,
+   "month": "2026-08",
+   "unplanned_tickets": 522
+  }
+ ],
+ "definitions": {
+  "monitoring_all_rows": 138,
+  "request_types_hash": "88b71f3ce487a0f9d6d2aada2e29f24e54f198ae141498ffcba278a8cca85080",
+  "unmapped_tickets": 0
+ },
+ "family_rates": [
+  {
+   "accounts": 988,
+   "ci_hi": 6.757124397468477,
+   "ci_lo": 5.973234364090532,
+   "ci_method": "cluster bootstrap",
+   "machines": 6559,
+   "months": 80643.51540041067,
+   "rate_per_100": 6.350169600833053,
+   "stratum": "scrubEx",
+   "tickets": 5121.0
+  },
+  {
+   "accounts": 260,
+   "ci_hi": 6.1788390167470775,
+   "ci_lo": 4.256858456447498,
+   "ci_method": "cluster bootstrap",
+   "machines": 2266,
+   "months": 27434.11909650924,
+   "rate_per_100": 5.208842299521213,
+   "stratum": "alEx",
+   "tickets": 1429.0
+  },
+  {
+   "accounts": 31,
+   "ci_hi": 16.170830509615268,
+   "ci_lo": 9.093607880504868,
+   "ci_method": "cluster bootstrap",
+   "machines": 112,
+   "months": 1426.5626283367556,
+   "rate_per_100": 12.267249717878446,
+   "stratum": "scrubBank",
+   "tickets": 175.0
+  },
+  {
+   "accounts": 4,
+   "ci_hi": 53.80366161616163,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 8,
+   "months": 104.08213552361396,
+   "rate_per_100": 24.01949179292929,
+   "stratum": "scrubXchange",
+   "tickets": 25.0
+  },
+  {
+   "accounts": 1,
+   "ci_hi": 28.19320991438872,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 1,
+   "months": 13.010266940451745,
+   "rate_per_100": 0.0,
+   "stratum": "scrubEx 1.0",
+   "tickets": 0.0
+  }
+ ],
+ "fleet": {
+  "accounts": 1065,
+  "machines": 9055,
+  "machines_exposed": 8946,
+  "machines_with_ticket": 3457,
+  "machines_zero_months": 109,
+  "months": 109621.28952772074,
+  "rate_h1": 6.2763088396464255,
+  "rate_h2": 6.045921897768625,
+  "rate_per_100": 6.157563032765709,
+  "tickets": 6750,
+  "tickets_h1": 3334,
+  "tickets_h2": 3416
+ },
+ "inputs": {
+  "case_export_file": "IPA_CaseHistory_Aug 2025-Aug2026.xlsx",
+  "case_export_sha256": "f060f5810dc8cec283d8e85fdaa1b2ccaf898ecb6e1f73fc9781e5a76c19646f",
+  "equipment_date": "2026-10-19",
+  "equipment_file": "IPA_Active_Equipment_list_2026-10-19.xlsx"
+ },
+ "install_pooled": [
+  {
+   "category": "Deposit Door",
+   "install": "2006",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2007",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2008",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2009",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2010",
+   "machines": 29,
+   "months": 377.2977413,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2011",
+   "machines": 15,
+   "months": 195.1540041,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2012",
+   "machines": 41,
+   "months": 533.4209446,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2013",
+   "machines": 94,
+   "months": 1222.965092,
+   "rate_per_100": 0.3270739308,
+   "tickets": 4,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2014",
+   "machines": 105,
+   "months": 1366.078029,
+   "rate_per_100": 0.5124158249,
+   "tickets": 7,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2015",
+   "machines": 137,
+   "months": 1782.406571,
+   "rate_per_100": 0.2805196122,
+   "tickets": 5,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2016",
+   "machines": 282,
+   "months": 3668.895277,
+   "rate_per_100": 0.4360985744,
+   "tickets": 16,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2017",
+   "machines": 269,
+   "months": 3499.761807,
+   "rate_per_100": 0.3143071045,
+   "tickets": 11,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2018",
+   "machines": 452,
+   "months": 5880.640657,
+   "rate_per_100": 0.7992326473,
+   "tickets": 47,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2019",
+   "machines": 421,
+   "months": 5477.322382,
+   "rate_per_100": 0.3833990139,
+   "tickets": 21,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2020",
+   "machines": 647,
+   "months": 8417.64271,
+   "rate_per_100": 0.5583510921,
+   "tickets": 47,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2021",
+   "machines": 903,
+   "months": 11748.27105,
+   "rate_per_100": 0.7830939517,
+   "tickets": 92,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2022",
+   "machines": 731,
+   "months": 9510.505133,
+   "rate_per_100": 1.640291423,
+   "tickets": 156,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2023",
+   "machines": 868,
+   "months": 11292.9117,
+   "rate_per_100": 1.106889023,
+   "tickets": 125,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2024",
+   "machines": 840,
+   "months": 10928.62423,
+   "rate_per_100": 1.866657648,
+   "tickets": 204,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2025",
+   "machines": 980,
+   "months": 11365.25667,
+   "rate_per_100": 2.199686353,
+   "tickets": 250,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2026",
+   "machines": 557,
+   "months": 2015.605749,
+   "rate_per_100": 3.175224124,
+   "tickets": 64,
+   "unit": "year"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2016-18",
+   "machines": 1003,
+   "months": 13049.29774,
+   "rate_per_100": 0.5670803247,
+   "tickets": 74,
+   "unit": "cohort"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2019-21",
+   "machines": 1971,
+   "months": 25643.23614,
+   "rate_per_100": 0.6239462099,
+   "tickets": 160,
+   "unit": "cohort"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2022-23",
+   "machines": 1599,
+   "months": 20803.41684,
+   "rate_per_100": 1.350739651,
+   "tickets": 281,
+   "unit": "cohort"
+  },
+  {
+   "category": "Deposit Door",
+   "install": "2024-26",
+   "machines": 2377,
+   "months": 24309.48665,
+   "rate_per_100": 2.130855363,
+   "tickets": 518,
+   "unit": "cohort"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2006",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2007",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2008",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2009",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2010",
+   "machines": 29,
+   "months": 377.2977413,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2011",
+   "machines": 15,
+   "months": 195.1540041,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2012",
+   "machines": 41,
+   "months": 533.4209446,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2013",
+   "machines": 94,
+   "months": 1222.965092,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2014",
+   "machines": 105,
+   "months": 1366.078029,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2015",
+   "machines": 137,
+   "months": 1782.406571,
+   "rate_per_100": 0.05610392244,
+   "tickets": 1,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2016",
+   "machines": 282,
+   "months": 3668.895277,
+   "rate_per_100": 0.1362808045,
+   "tickets": 5,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2017",
+   "machines": 269,
+   "months": 3499.761807,
+   "rate_per_100": 0.200013612,
+   "tickets": 7,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2018",
+   "machines": 452,
+   "months": 5880.640657,
+   "rate_per_100": 0.2550742491,
+   "tickets": 15,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2019",
+   "machines": 421,
+   "months": 5477.322382,
+   "rate_per_100": 0.1643138631,
+   "tickets": 9,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2020",
+   "machines": 647,
+   "months": 8417.64271,
+   "rate_per_100": 0.380153935,
+   "tickets": 32,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2021",
+   "machines": 903,
+   "months": 11748.27105,
+   "rate_per_100": 0.229821051,
+   "tickets": 27,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2022",
+   "machines": 731,
+   "months": 9510.505133,
+   "rate_per_100": 1.219703879,
+   "tickets": 116,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2023",
+   "machines": 868,
+   "months": 11292.9117,
+   "rate_per_100": 1.806442885,
+   "tickets": 204,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2024",
+   "machines": 840,
+   "months": 10928.62423,
+   "rate_per_100": 0.5032655423,
+   "tickets": 55,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2025",
+   "machines": 980,
+   "months": 11365.25667,
+   "rate_per_100": 0.3079560894,
+   "tickets": 35,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2026",
+   "machines": 557,
+   "months": 2015.605749,
+   "rate_per_100": 0.2976772616,
+   "tickets": 6,
+   "unit": "year"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2016-18",
+   "machines": 1003,
+   "months": 13049.29774,
+   "rate_per_100": 0.206907686,
+   "tickets": 27,
+   "unit": "cohort"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2019-21",
+   "machines": 1971,
+   "months": 25643.23614,
+   "rate_per_100": 0.2651771392,
+   "tickets": 68,
+   "unit": "cohort"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2022-23",
+   "machines": 1599,
+   "months": 20803.41684,
+   "rate_per_100": 1.538208855,
+   "tickets": 320,
+   "unit": "cohort"
+  },
+  {
+   "category": "Touchscreen",
+   "install": "2024-26",
+   "machines": 2377,
+   "months": 24309.48665,
+   "rate_per_100": 0.3949075576,
+   "tickets": 96,
+   "unit": "cohort"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2006",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2007",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2008",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2009",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2010",
+   "machines": 29,
+   "months": 377.2977413,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2011",
+   "machines": 15,
+   "months": 195.1540041,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2012",
+   "machines": 41,
+   "months": 533.4209446,
+   "rate_per_100": 0.1874692042,
+   "tickets": 1,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2013",
+   "machines": 94,
+   "months": 1222.965092,
+   "rate_per_100": 0.2453054481,
+   "tickets": 3,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2014",
+   "machines": 105,
+   "months": 1366.078029,
+   "rate_per_100": 0.2928090428,
+   "tickets": 4,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2015",
+   "machines": 137,
+   "months": 1782.406571,
+   "rate_per_100": 0.1683117673,
+   "tickets": 3,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2016",
+   "machines": 282,
+   "months": 3668.895277,
+   "rate_per_100": 0.6268917007,
+   "tickets": 23,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2017",
+   "machines": 269,
+   "months": 3499.761807,
+   "rate_per_100": 1.057214806,
+   "tickets": 37,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2018",
+   "machines": 452,
+   "months": 5880.640657,
+   "rate_per_100": 1.071311846,
+   "tickets": 63,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2019",
+   "machines": 421,
+   "months": 5477.322382,
+   "rate_per_100": 0.4746844934,
+   "tickets": 26,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2020",
+   "machines": 647,
+   "months": 8417.64271,
+   "rate_per_100": 0.4514327978,
+   "tickets": 38,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2021",
+   "machines": 903,
+   "months": 11748.27105,
+   "rate_per_100": 0.348987522,
+   "tickets": 41,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2022",
+   "machines": 731,
+   "months": 9510.505133,
+   "rate_per_100": 0.5152197419,
+   "tickets": 49,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2023",
+   "machines": 868,
+   "months": 11292.9117,
+   "rate_per_100": 0.4781760578,
+   "tickets": 54,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2024",
+   "machines": 840,
+   "months": 10928.62423,
+   "rate_per_100": 0.6771209115,
+   "tickets": 74,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2025",
+   "machines": 980,
+   "months": 11365.25667,
+   "rate_per_100": 0.642308415,
+   "tickets": 73,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2026",
+   "machines": 557,
+   "months": 2015.605749,
+   "rate_per_100": 0.5457416463,
+   "tickets": 11,
+   "unit": "year"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2016-18",
+   "machines": 1003,
+   "months": 13049.29774,
+   "rate_per_100": 0.9425794586,
+   "tickets": 123,
+   "unit": "cohort"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2019-21",
+   "machines": 1971,
+   "months": 25643.23614,
+   "rate_per_100": 0.4094647003,
+   "tickets": 105,
+   "unit": "cohort"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2022-23",
+   "machines": 1599,
+   "months": 20803.41684,
+   "rate_per_100": 0.4951109753,
+   "tickets": 103,
+   "unit": "cohort"
+  },
+  {
+   "category": "Computer Board",
+   "install": "2024-26",
+   "machines": 2377,
+   "months": 24309.48665,
+   "rate_per_100": 0.6499520218,
+   "tickets": 158,
+   "unit": "cohort"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2006",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2007",
+   "machines": 1,
+   "months": 13.01026694,
+   "rate_per_100": 0.0,
+   "tickets": 0,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2008",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 3.493744261,
+   "tickets": 5,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2009",
+   "machines": 11,
+   "months": 143.1129363,
+   "rate_per_100": 1.397497704,
+   "tickets": 2,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2010",
+   "machines": 29,
+   "months": 377.2977413,
+   "rate_per_100": 1.060170672,
+   "tickets": 4,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2011",
+   "machines": 15,
+   "months": 195.1540041,
+   "rate_per_100": 0.5124158249,
+   "tickets": 1,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2012",
+   "machines": 41,
+   "months": 533.4209446,
+   "rate_per_100": 1.124815225,
+   "tickets": 6,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2013",
+   "machines": 94,
+   "months": 1222.965092,
+   "rate_per_100": 2.371285998,
+   "tickets": 29,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2014",
+   "machines": 105,
+   "months": 1366.078029,
+   "rate_per_100": 2.488876864,
+   "tickets": 34,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2015",
+   "machines": 137,
+   "months": 1782.406571,
+   "rate_per_100": 2.188052975,
+   "tickets": 39,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2016",
+   "machines": 282,
+   "months": 3668.895277,
+   "rate_per_100": 4.442754227,
+   "tickets": 163,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2017",
+   "machines": 269,
+   "months": 3499.761807,
+   "rate_per_100": 4.800326687,
+   "tickets": 168,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2018",
+   "machines": 452,
+   "months": 5880.640657,
+   "rate_per_100": 6.631930477,
+   "tickets": 390,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2019",
+   "machines": 421,
+   "months": 5477.322382,
+   "rate_per_100": 4.235646249,
+   "tickets": 232,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2020",
+   "machines": 647,
+   "months": 8417.64271,
+   "rate_per_100": 4.122294233,
+   "tickets": 347,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2021",
+   "machines": 903,
+   "months": 11748.27105,
+   "rate_per_100": 5.481657662,
+   "tickets": 644,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2022",
+   "machines": 731,
+   "months": 9510.505133,
+   "rate_per_100": 7.48645829,
+   "tickets": 712,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2023",
+   "machines": 868,
+   "months": 11292.9117,
+   "rate_per_100": 8.155558319,
+   "tickets": 921,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2024",
+   "machines": 840,
+   "months": 10928.62423,
+   "rate_per_100": 7.85094246,
+   "tickets": 858,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2025",
+   "machines": 980,
+   "months": 11365.25667,
+   "rate_per_100": 8.534783049,
+   "tickets": 970,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2026",
+   "machines": 557,
+   "months": 2015.605749,
+   "rate_per_100": 9.476059495,
+   "tickets": 191,
+   "unit": "year"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2016-18",
+   "machines": 1003,
+   "months": 13049.29774,
+   "rate_per_100": 5.525201542,
+   "tickets": 721,
+   "unit": "cohort"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2019-21",
+   "machines": 1971,
+   "months": 25643.23614,
+   "rate_per_100": 4.769288842,
+   "tickets": 1223,
+   "unit": "cohort"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2022-23",
+   "machines": 1599,
+   "months": 20803.41684,
+   "rate_per_100": 7.849672065,
+   "tickets": 1633,
+   "unit": "cohort"
+  },
+  {
+   "category": "All unplanned tickets",
+   "install": "2024-26",
+   "machines": 2377,
+   "months": 24309.48665,
+   "rate_per_100": 8.30539957,
+   "tickets": 2019,
+   "unit": "cohort"
+  }
+ ],
+ "match": {
+  "case_rows": 7471,
+  "listed_machines": 9294,
+  "machines_start_at_pre_install_ticket": 4,
+  "tickets_before_install": 7,
+  "tickets_on_listed": 6753,
+  "unlisted_serials": 226,
+  "unlisted_tickets": 433,
+  "unplanned_in_window": 7186
+ },
+ "model_rates": [
+  {
+   "accounts": 570,
+   "ci_hi": 8.905175781848628,
+   "ci_lo": 7.254991074777404,
+   "ci_method": "cluster bootstrap",
+   "machines": 1452,
+   "months": 17245.338809034904,
+   "rate_per_100": 8.007960964364981,
+   "stratum": "LVD-Remote-2.0",
+   "tickets": 1381.0
+  },
+  {
+   "accounts": 555,
+   "ci_hi": 8.63021125484974,
+   "ci_lo": 6.881042022608009,
+   "ci_method": "cluster bootstrap",
+   "machines": 1305,
+   "months": 15406.718685831622,
+   "rate_per_100": 7.743374980274746,
+   "stratum": "LVRR-WP-2.0",
+   "tickets": 1193.0
+  },
+  {
+   "accounts": 485,
+   "ci_hi": 7.231875591744892,
+   "ci_lo": 5.711685020442481,
+   "ci_method": "cluster bootstrap",
+   "machines": 1151,
+   "months": 13719.096509240246,
+   "rate_per_100": 6.436283901095612,
+   "stratum": "MV-2.0",
+   "tickets": 883.0
+  },
+  {
+   "accounts": 332,
+   "ci_hi": 6.43614216243132,
+   "ci_lo": 4.923666953415903,
+   "ci_method": "cluster bootstrap",
+   "machines": 832,
+   "months": 10824.542094455852,
+   "rate_per_100": 5.681533635635199,
+   "stratum": "LVD-Remote",
+   "tickets": 615.0
+  },
+  {
+   "accounts": 356,
+   "ci_hi": 5.13506225974145,
+   "ci_lo": 3.657253708514638,
+   "ci_method": "cluster bootstrap",
+   "machines": 873,
+   "months": 11347.94250513347,
+   "rate_per_100": 4.362024215192109,
+   "stratum": "LVRR-WP",
+   "tickets": 495.0
+  },
+  {
+   "accounts": 100,
+   "ci_hi": 9.918877324266177,
+   "ci_lo": 6.328275376974807,
+   "ci_method": "cluster bootstrap",
+   "machines": 551,
+   "months": 5846.110882956878,
+   "rate_per_100": 7.971111211019384,
+   "stratum": "alEx LC-D",
+   "tickets": 466.0
+  },
+  {
+   "accounts": 292,
+   "ci_hi": 5.856910178475429,
+   "ci_lo": 3.8919282587687167,
+   "ci_method": "cluster bootstrap",
+   "machines": 602,
+   "months": 7832.180698151951,
+   "rate_per_100": 4.851777744219604,
+   "stratum": "MV",
+   "tickets": 380.0
+  },
+  {
+   "accounts": 58,
+   "ci_hi": 8.266673413362087,
+   "ci_lo": 4.078942995263757,
+   "ci_method": "cluster bootstrap",
+   "machines": 324,
+   "months": 4215.326488706365,
+   "rate_per_100": 6.381474856590598,
+   "stratum": "LC-30",
+   "tickets": 269.0
+  },
+  {
+   "accounts": 91,
+   "ci_hi": 16.93120889121014,
+   "ci_lo": 9.379381992315375,
+   "ci_method": "cluster bootstrap",
+   "machines": 98,
+   "months": 1159.1622176591377,
+   "rate_per_100": 12.940380363924948,
+   "stratum": "alEx SD 2.0",
+   "tickets": 150.0
+  },
+  {
+   "accounts": 67,
+   "ci_hi": 7.935036862912224,
+   "ci_lo": 3.824856427239175,
+   "ci_method": "cluster bootstrap",
+   "machines": 213,
+   "months": 2426.611909650924,
+   "rate_per_100": 5.728151232060655,
+   "stratum": "alEx MC-D",
+   "tickets": 139.0
+  },
+  {
+   "accounts": 126,
+   "ci_hi": 6.666617037045326,
+   "ci_lo": 3.951172582920568,
+   "ci_method": "cluster bootstrap",
+   "machines": 195,
+   "months": 2340.336755646817,
+   "rate_per_100": 5.255653901226942,
+   "stratum": "SV-48-2.0",
+   "tickets": 123.0
+  },
+  {
+   "accounts": 28,
+   "ci_hi": 22.512117299571333,
+   "ci_lo": 11.326559569637745,
+   "ci_method": "cluster bootstrap",
+   "machines": 58,
+   "months": 744.0492813141684,
+   "rate_per_100": 16.39676336821654,
+   "stratum": "scrubBank 480",
+   "tickets": 122.0
+  },
+  {
+   "accounts": 80,
+   "ci_hi": 10.416971580365905,
+   "ci_lo": 4.905955646054965,
+   "ci_method": "cluster bootstrap",
+   "machines": 89,
+   "months": 1157.9137577002057,
+   "rate_per_100": 7.427150720690046,
+   "stratum": "SD-64",
+   "tickets": 86.0
+  },
+  {
+   "accounts": 45,
+   "ci_hi": 6.2012275840034,
+   "ci_lo": 2.950581935034496,
+   "ci_method": "cluster bootstrap",
+   "machines": 136,
+   "months": 1636.665297741273,
+   "rate_per_100": 4.582488557893047,
+   "stratum": "alEx MC-S",
+   "tickets": 75.0
+  },
+  {
+   "accounts": 34,
+   "ci_hi": 9.820468638224506,
+   "ci_lo": 3.952345728285687,
+   "ci_method": "cluster bootstrap",
+   "machines": 86,
+   "months": 987.4332648870636,
+   "rate_per_100": 6.987814007652636,
+   "stratum": "alEx LC-S",
+   "tickets": 69.0
+  },
+  {
+   "accounts": 24,
+   "ci_hi": 8.532624521849481,
+   "ci_lo": 2.956245143745144,
+   "ci_method": "cluster bootstrap",
+   "machines": 86,
+   "months": 1118.88295687885,
+   "rate_per_100": 5.809365456894526,
+   "stratum": "MC-30",
+   "tickets": 65.0
+  },
+  {
+   "accounts": 86,
+   "ci_hi": 5.040892247368659,
+   "ci_lo": 1.869510746751096,
+   "ci_method": "cluster bootstrap",
+   "machines": 129,
+   "months": 1667.4168377823407,
+   "rate_per_100": 3.298515329445145,
+   "stratum": "SV-48",
+   "tickets": 55.0
+  },
+  {
+   "accounts": 59,
+   "ci_hi": 1.399813628759029,
+   "ci_lo": 0.3649564716324864,
+   "ci_method": "cluster bootstrap",
+   "machines": 345,
+   "months": 4488.542094455852,
+   "rate_per_100": 0.868879007465964,
+   "stratum": "A-LC",
+   "tickets": 39.0
+  },
+  {
+   "accounts": 25,
+   "ci_hi": 5.469581416847039,
+   "ci_lo": 1.3563948306595366,
+   "ci_method": "cluster bootstrap",
+   "machines": 56,
+   "months": 728.5749486652977,
+   "rate_per_100": 3.294101731601732,
+   "stratum": "LC-24",
+   "tickets": 24.0
+  },
+  {
+   "accounts": 15,
+   "ci_hi": 8.475927011578484,
+   "ci_lo": 3.701343500432799,
+   "ci_method": "cluster bootstrap",
+   "machines": 28,
+   "months": 354.26694045174537,
+   "rate_per_100": 6.2100064916998985,
+   "stratum": "scrubBank 240",
+   "tickets": 22.0
+  },
+  {
+   "accounts": 3,
+   "ci_hi": 53.80366161616163,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 5,
+   "months": 65.05133470225873,
+   "rate_per_100": 32.28219696969697,
+   "stratum": "scrubXchange LX",
+   "tickets": 21.0
+  },
+  {
+   "accounts": 20,
+   "ci_hi": 7.511956410030514,
+   "ci_lo": 0.9600518083295072,
+   "ci_method": "cluster bootstrap",
+   "machines": 34,
+   "months": 442.34907597535937,
+   "rate_per_100": 3.843118686868687,
+   "stratum": "LVRR-WOP",
+   "tickets": 17.0
+  },
+  {
+   "accounts": 3,
+   "ci_hi": 10.56857638888889,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 29,
+   "months": 377.2977412731006,
+   "rate_per_100": 2.915469348659004,
+   "stratum": "LX",
+   "tickets": 11.0
+  },
+  {
+   "accounts": 16,
+   "ci_hi": 4.542045791284832,
+   "ci_lo": 0.6587035342022043,
+   "ci_method": "cluster bootstrap",
+   "machines": 38,
+   "months": 494.3901437371664,
+   "rate_per_100": 2.2249634502923974,
+   "stratum": "MC-24",
+   "tickets": 11.0
+  },
+  {
+   "accounts": 20,
+   "ci_hi": 4.163378577441078,
+   "ci_lo": 0.9373460211874846,
+   "ci_method": "cluster bootstrap",
+   "machines": 37,
+   "months": 481.3798767967146,
+   "rate_per_100": 2.2850975975975976,
+   "stratum": "SC-24",
+   "tickets": 11.0
+  },
+  {
+   "accounts": 19,
+   "ci_hi": 3.9968434343434343,
+   "ci_lo": 0.2844212837702421,
+   "ci_method": "cluster bootstrap",
+   "machines": 46,
+   "months": 598.4722792607803,
+   "rate_per_100": 1.670921168203777,
+   "stratum": "A-SC",
+   "tickets": 10.0
+  },
+  {
+   "accounts": 5,
+   "ci_hi": 18.4469696969697,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 6,
+   "months": 78.06160164271047,
+   "rate_per_100": 7.686237373737374,
+   "stratum": "LVD-LOCAL",
+   "tickets": 6.0
+  },
+  {
+   "accounts": 1,
+   "ci_hi": 39.356428433555976,
+   "ci_lo": 4.1357736939657945,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 2,
+   "months": 26.02053388090349,
+   "rate_per_100": 15.37247474747475,
+   "stratum": "LVLR-WOP",
+   "tickets": 4.0
+  },
+  {
+   "accounts": 2,
+   "ci_hi": 26.237618955703983,
+   "ci_lo": 2.757182462643863,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 3,
+   "months": 39.03080082135524,
+   "rate_per_100": 10.248316498316498,
+   "stratum": "scrubXchange MX",
+   "tickets": 4.0
+  },
+  {
+   "accounts": 29,
+   "ci_hi": 0.6274479488765203,
+   "ci_lo": 0.0,
+   "ci_method": "cluster bootstrap",
+   "machines": 112,
+   "months": 1457.1498973305954,
+   "rate_per_100": 0.2058813582251082,
+   "stratum": "A-MC",
+   "tickets": 3.0
+  },
+  {
+   "accounts": 8,
+   "ci_hi": 2.562079124579125,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 18,
+   "months": 234.1848049281314,
+   "rate_per_100": 0.4270131874298541,
+   "stratum": "SC-30",
+   "tickets": 1.0
+  },
+  {
+   "accounts": 2,
+   "ci_hi": 14.09660495719436,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 2,
+   "months": 26.02053388090349,
+   "rate_per_100": 0.0,
+   "stratum": "A-EC",
+   "tickets": 0.0
+  },
+  {
+   "accounts": 3,
+   "ci_hi": 12.759441286969064,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 3,
+   "months": 28.747433264887064,
+   "rate_per_100": 0.0,
+   "stratum": "LVLR-WP",
+   "tickets": 0.0
+  },
+  {
+   "accounts": 2,
+   "ci_hi": 14.09660495719436,
+   "ci_lo": 0.0,
+   "ci_method": "wider of bootstrap and Byar",
+   "machines": 2,
+   "months": 26.02053388090349,
+   "rate_per_100": 0.0,
+   "stratum": "SV-32",
+   "tickets": 0.0
+  }
+ ],
+ "source": "verification/outputs (fleet_exposure.py, followups.py, reproduce_sql.py)",
+ "split": "2026-02-15",
+ "support_models": [
+  "A-LC",
+  "A-MC",
+  "A-SC",
+  "LVD-Remote",
+  "LVD-Remote-2.0",
+  "LVRR-WP",
+  "LVRR-WP-2.0",
+  "MV-2.0",
+  "SV-48-2.0",
+  "alEx LC-D",
+  "alEx MC-D",
+  "alEx MC-S",
+  "alEx SD 2.0",
+  "scrubBank 240",
+  "scrubBank 480"
+ ],
+ "third_party": {
+  "accounts": 1,
+  "machines": 239,
+  "months": 2997.6837782340867,
+  "tickets": 3
+ },
+ "type_rates": [
+  {
+   "group": "Door",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 1.703144224,
+   "plus4_rate_lo": 1.365554158,
+   "plus4_rate_per_100": 1.529807681,
+   "plus4_tickets": 987,
+   "type": "Door",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 2.955198139,
+   "under4_rate_lo": 2.346685373,
+   "under4_rate_per_100": 2.645034833,
+   "under4_tickets": 1193
+  },
+  {
+   "group": "Mechanical",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 1.173954615,
+   "plus4_rate_lo": 0.7847518081,
+   "plus4_rate_per_100": 0.9656232877,
+   "plus4_tickets": 623,
+   "type": "Mechanical",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 1.856357174,
+   "under4_rate_lo": 1.328714101,
+   "under4_rate_per_100": 1.583030068,
+   "under4_tickets": 714
+  },
+  {
+   "group": "Electronics",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 1.293808745,
+   "plus4_rate_lo": 0.9793749657,
+   "plus4_rate_per_100": 1.1314687,
+   "plus4_tickets": 730,
+   "type": "Electronics",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 2.213140045,
+   "under4_rate_lo": 1.714963807,
+   "under4_rate_per_100": 1.939987828,
+   "under4_tickets": 875
+  },
+  {
+   "group": "Network",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.4584212549,
+   "plus4_rate_lo": 0.3196913739,
+   "plus4_rate_per_100": 0.3874892808,
+   "plus4_tickets": 250,
+   "type": "Network",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.5241946295,
+   "under4_rate_lo": 0.3366119601,
+   "under4_rate_per_100": 0.4279058867,
+   "under4_tickets": 193
+  },
+  {
+   "group": "Software",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.1022026157,
+   "plus4_rate_lo": 0.04593952757,
+   "plus4_rate_per_100": 0.07284798479,
+   "plus4_tickets": 47,
+   "type": "Software",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.1341335067,
+   "under4_rate_lo": 0.05471124087,
+   "under4_rate_per_100": 0.0909022868,
+   "under4_tickets": 41
+  },
+  {
+   "group": "Operator error",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.12422672,
+   "plus4_rate_lo": 0.06736860083,
+   "plus4_rate_per_100": 0.09454738451,
+   "plus4_tickets": 61,
+   "type": "Operator error",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.2412376078,
+   "under4_rate_lo": 0.1387085777,
+   "under4_rate_per_100": 0.1862388315,
+   "under4_tickets": 84
+  },
+  {
+   "group": "Other",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.1215680361,
+   "plus4_rate_lo": 0.0667227575,
+   "plus4_rate_per_100": 0.09299742739,
+   "plus4_tickets": 60,
+   "type": "Other",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.249587132,
+   "under4_rate_lo": 0.1308540411,
+   "under4_rate_per_100": 0.1862388315,
+   "under4_tickets": 84
+  },
+  {
+   "group": "No Trouble Found",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.4186642642,
+   "plus4_rate_lo": 0.2996619299,
+   "plus4_rate_per_100": 0.3564901383,
+   "plus4_tickets": 230,
+   "type": "No Trouble Found",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.6871727586,
+   "under4_rate_lo": 0.4951346484,
+   "under4_rate_per_100": 0.5875391708,
+   "under4_tickets": 265
+  },
+  {
+   "group": "Monitoring",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.07817022948,
+   "plus4_rate_lo": 0.03728814336,
+   "plus4_rate_per_100": 0.05734841356,
+   "plus4_tickets": 37,
+   "type": "Monitoring",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.2319055538,
+   "under4_rate_lo": 0.1280383747,
+   "under4_rate_per_100": 0.1773703157,
+   "under4_tickets": 80
+  },
+  {
+   "group": "Not categorised",
+   "level": "group",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.1824935396,
+   "plus4_rate_lo": 0.1181456665,
+   "plus4_rate_per_100": 0.1487958838,
+   "plus4_tickets": 96,
+   "type": "Not categorised",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.2742209355,
+   "under4_rate_lo": 0.1747263945,
+   "under4_rate_per_100": 0.2217128946,
+   "under4_tickets": 100
+  },
+  {
+   "group": "Door",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.5984787831,
+   "plus4_rate_lo": 0.415158623,
+   "plus4_rate_per_100": 0.5021861079,
+   "plus4_tickets": 324,
+   "type": "Deposit Door",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 1.953204855,
+   "under4_rate_lo": 1.486416888,
+   "under4_rate_per_100": 1.713840676,
+   "under4_tickets": 773
+  },
+  {
+   "group": "Door",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.6164226704,
+   "plus4_rate_lo": 0.4015335219,
+   "plus4_rate_per_100": 0.5021861079,
+   "plus4_tickets": 324,
+   "type": "Main Door",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.5250285245,
+   "under4_rate_lo": 0.3726618575,
+   "under4_rate_per_100": 0.4500771761,
+   "under4_tickets": 203
+  },
+  {
+   "group": "Door",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.5329694683,
+   "plus4_rate_lo": 0.3956578867,
+   "plus4_rate_per_100": 0.4634371798,
+   "plus4_tickets": 299,
+   "type": "User Door",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.5032132214,
+   "under4_rate_lo": 0.3401964224,
+   "under4_rate_per_100": 0.4168202419,
+   "under4_tickets": 188
+  },
+  {
+   "group": "Door",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.08732568941,
+   "plus4_rate_lo": 0.04081697574,
+   "plus4_rate_per_100": 0.06199828493,
+   "plus4_tickets": 40,
+   "type": "Service Door",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.0972234703,
+   "under4_rate_lo": 0.03645782976,
+   "under4_rate_per_100": 0.06429673945,
+   "under4_tickets": 29
+  },
+  {
+   "group": "Mechanical",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.4932442691,
+   "plus4_rate_lo": 0.3495599374,
+   "plus4_rate_per_100": 0.4184884233,
+   "plus4_tickets": 270,
+   "type": "SAM",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.769387259,
+   "under4_rate_lo": 0.5360484934,
+   "under4_rate_per_100": 0.6451845234,
+   "under4_tickets": 291
+  },
+  {
+   "group": "Mechanical",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.3390298206,
+   "plus4_rate_lo": 0.1328676806,
+   "plus4_rate_per_100": 0.2278436971,
+   "plus4_tickets": 147,
+   "type": "Curtain",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.9249856043,
+   "under4_rate_lo": 0.4373756387,
+   "under4_rate_per_100": 0.6651386839,
+   "under4_tickets": 300
+  },
+  {
+   "group": "Mechanical",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.2195674244,
+   "plus4_rate_lo": 0.1331709832,
+   "plus4_rate_per_100": 0.1751451549,
+   "plus4_tickets": 113,
+   "type": "Packer",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.2789164715,
+   "under4_rate_lo": 0.1630958222,
+   "under4_rate_per_100": 0.2172786367,
+   "under4_tickets": 98
+  },
+  {
+   "group": "Mechanical",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.2208863458,
+   "plus4_rate_lo": 0.05610741492,
+   "plus4_rate_per_100": 0.1301963983,
+   "plus4_tickets": 84,
+   "type": "Counterweight System",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.06992730641,
+   "under4_rate_lo": 0.01858826794,
+   "under4_rate_per_100": 0.04212544998,
+   "under4_tickets": 19
+  },
+  {
+   "group": "Mechanical",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.02529851425,
+   "plus4_rate_lo": 0.004854414632,
+   "plus4_rate_per_100": 0.01394961411,
+   "plus4_tickets": 9,
+   "type": "Drawers",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.02415977245,
+   "under4_rate_lo": 0.004406672547,
+   "under4_rate_per_100": 0.01330277368,
+   "under4_tickets": 6
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.7047080149,
+   "plus4_rate_lo": 0.4956854396,
+   "plus4_rate_per_100": 0.5936335782,
+   "plus4_tickets": 383,
+   "type": "Computer Board",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.712800145,
+   "under4_rate_lo": 0.4565469329,
+   "under4_rate_per_100": 0.5742363971,
+   "under4_tickets": 259
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.2624909263,
+   "plus4_rate_lo": 0.1717264248,
+   "plus4_rate_per_100": 0.2154440401,
+   "plus4_tickets": 139,
+   "type": "Touchscreen",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 1.082612091,
+   "under4_rate_lo": 0.7589386869,
+   "under4_rate_per_100": 0.911239997,
+   "under4_tickets": 411
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.2079856166,
+   "plus4_rate_lo": 0.1243237422,
+   "plus4_rate_per_100": 0.1642954551,
+   "plus4_tickets": 106,
+   "type": "Power Supply",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.255836827,
+   "under4_rate_lo": 0.1238228589,
+   "under4_rate_per_100": 0.1840217026,
+   "under4_tickets": 83
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.100756476,
+   "plus4_rate_lo": 0.05160451982,
+   "plus4_rate_per_100": 0.07594789903,
+   "plus4_tickets": 49,
+   "type": "Badge Reader",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.1715483958,
+   "under4_rate_lo": 0.09685145084,
+   "under4_rate_per_100": 0.1330277368,
+   "under4_tickets": 60
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.04339187456,
+   "plus4_rate_lo": 0.01633458877,
+   "plus4_rate_per_100": 0.02944918534,
+   "plus4_tickets": 19,
+   "type": "Loader Board",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.07837244069,
+   "under4_rate_lo": 0.03051677932,
+   "under4_rate_per_100": 0.05321109471,
+   "under4_tickets": 24
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.04018792007,
+   "plus4_rate_lo": 0.01214100447,
+   "plus4_rate_per_100": 0.02479931397,
+   "plus4_tickets": 16,
+   "type": "Camera",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.06277701006,
+   "under4_rate_lo": 0.02037658036,
+   "under4_rate_per_100": 0.03990832104,
+   "under4_tickets": 18
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.01430160259,
+   "plus4_rate_lo": 0.0,
+   "plus4_rate_per_100": 0.006199828493,
+   "plus4_tickets": 4,
+   "type": "Decoder",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.05143503214,
+   "under4_rate_lo": 0.0138271427,
+   "under4_rate_per_100": 0.03103980525,
+   "under4_tickets": 14
+  },
+  {
+   "group": "Electronics",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.03446166499,
+   "plus4_rate_lo": 0.003127617562,
+   "plus4_rate_per_100": 0.01549957123,
+   "plus4_tickets": 10,
+   "type": "Weight Scale",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.0335468242,
+   "under4_rate_lo": 0.0,
+   "under4_rate_per_100": 0.01108564473,
+   "under4_tickets": 5
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.170843354,
+   "plus4_rate_lo": 0.09456078934,
+   "plus4_rate_per_100": 0.1301963983,
+   "plus4_tickets": 84,
+   "type": "Network Settings",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.1679650354,
+   "under4_rate_lo": 0.0915052696,
+   "under4_rate_per_100": 0.1285934789,
+   "under4_tickets": 58
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.1306343365,
+   "plus4_rate_lo": 0.07034628905,
+   "plus4_rate_per_100": 0.09919725588,
+   "plus4_tickets": 64,
+   "type": "Network Intermittent",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.1334384673,
+   "under4_rate_lo": 0.0674755931,
+   "under4_rate_per_100": 0.09977080259,
+   "under4_tickets": 45
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.07512541862,
+   "plus4_rate_lo": 0.03070732846,
+   "plus4_rate_per_100": 0.05114858506,
+   "plus4_tickets": 33,
+   "type": "IP/Reprogramming",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.08385330812,
+   "under4_rate_lo": 0.02900078108,
+   "under4_rate_per_100": 0.05542822366,
+   "under4_tickets": 25
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.07225480545,
+   "plus4_rate_lo": 0.02924827788,
+   "plus4_rate_per_100": 0.04959862794,
+   "plus4_tickets": 32,
+   "type": "Dead Data Jack",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.07911646598,
+   "under4_rate_lo": 0.03132680506,
+   "under4_rate_per_100": 0.05321109471,
+   "under4_tickets": 24
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.04379422926,
+   "plus4_rate_lo": 0.01404007198,
+   "plus4_rate_per_100": 0.02789922822,
+   "plus4_tickets": 18,
+   "type": "Cable disconnected/Loose",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.08883640086,
+   "under4_rate_lo": 0.03920965533,
+   "under4_rate_per_100": 0.0620796105,
+   "under4_tickets": 28
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.03646980177,
+   "plus4_rate_lo": 0.01089997983,
+   "plus4_rate_per_100": 0.02324935685,
+   "plus4_tickets": 15,
+   "type": "Firewall",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.04111972486,
+   "under4_rate_lo": 0.01098415342,
+   "under4_rate_per_100": 0.02438841841,
+   "under4_tickets": 11
+  },
+  {
+   "group": "Network",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.005685261124,
+   "plus4_rate_lo": 0.0,
+   "plus4_rate_per_100": 0.0,
+   "plus4_tickets": 0,
+   "type": "Security Updates",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.007177070318,
+   "under4_rate_lo": 0.0,
+   "under4_rate_per_100": 0.002217128946,
+   "under4_tickets": 1
+  },
+  {
+   "group": "Software",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.06044762038,
+   "plus4_rate_lo": 0.02018465468,
+   "plus4_rate_per_100": 0.03874892808,
+   "plus4_tickets": 25,
+   "type": "Issue",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.05746222059,
+   "under4_rate_lo": 0.01925679094,
+   "under4_rate_per_100": 0.03769119209,
+   "under4_tickets": 17
+  },
+  {
+   "group": "Software",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.0290130337,
+   "plus4_rate_lo": 0.006175701163,
+   "plus4_rate_per_100": 0.01704952835,
+   "plus4_tickets": 11,
+   "type": "User Access",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.06781376599,
+   "under4_rate_lo": 0.007113556591,
+   "under4_rate_per_100": 0.03103980525,
+   "under4_tickets": 14
+  },
+  {
+   "group": "Software",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.02268235686,
+   "plus4_rate_lo": 0.001651321774,
+   "plus4_rate_per_100": 0.01084969986,
+   "plus4_tickets": 7,
+   "type": "Credit Issues",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.0185180133,
+   "under4_rate_lo": 0.002077317613,
+   "under4_rate_per_100": 0.008868515786,
+   "under4_tickets": 4
+  },
+  {
+   "group": "Software",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.01035448476,
+   "plus4_rate_lo": 0.0,
+   "plus4_rate_per_100": 0.004649871369,
+   "plus4_tickets": 3,
+   "type": "Training",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.01822853331,
+   "under4_rate_lo": 0.002134634513,
+   "under4_rate_per_100": 0.008868515786,
+   "under4_tickets": 4
+  },
+  {
+   "group": "Software",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.005685261124,
+   "plus4_rate_lo": 0.0,
+   "plus4_rate_per_100": 0.0,
+   "plus4_tickets": 0,
+   "type": "Vendex Issues",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.007137513193,
+   "under4_rate_lo": 0.0,
+   "under4_rate_per_100": 0.002217128946,
+   "under4_tickets": 1
+  },
+  {
+   "group": "Operator error",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.09762788611,
+   "plus4_rate_lo": 0.04945245031,
+   "plus4_rate_per_100": 0.07129802767,
+   "plus4_tickets": 46,
+   "type": "Loading Error",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.1926197587,
+   "under4_rate_lo": 0.09608405473,
+   "under4_rate_per_100": 0.1396791236,
+   "under4_tickets": 63
+  },
+  {
+   "group": "Operator error",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.03319097864,
+   "plus4_rate_lo": 0.01151052997,
+   "plus4_rate_per_100": 0.02169939972,
+   "plus4_tickets": 14,
+   "type": "Improper Use",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.07100840556,
+   "under4_rate_lo": 0.02576558129,
+   "under4_rate_per_100": 0.04655970787,
+   "under4_tickets": 21
+  },
+  {
+   "group": "Other",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.07701708771,
+   "plus4_rate_lo": 0.0369025974,
+   "plus4_rate_per_100": 0.05579845643,
+   "plus4_tickets": 36,
+   "type": "Power",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.1852937725,
+   "under4_rate_lo": 0.07890282729,
+   "under4_rate_per_100": 0.1263763499,
+   "under4_tickets": 57
+  },
+  {
+   "group": "Other",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.03572120246,
+   "plus4_rate_lo": 0.01195824607,
+   "plus4_rate_per_100": 0.02324935685,
+   "plus4_tickets": 15,
+   "type": "Parts Order",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.03946891455,
+   "under4_rate_lo": 0.008279249089,
+   "under4_rate_per_100": 0.02217128946,
+   "under4_tickets": 10
+  },
+  {
+   "group": "Other",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.01926797878,
+   "plus4_rate_lo": 0.001591815843,
+   "plus4_rate_per_100": 0.009299742739,
+   "plus4_tickets": 6,
+   "type": "Physical Damage",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.05084519559,
+   "under4_rate_lo": 0.01388088816,
+   "under4_rate_per_100": 0.03103980525,
+   "under4_tickets": 14
+  },
+  {
+   "group": "Other",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.008137417149,
+   "plus4_rate_lo": 0.0,
+   "plus4_rate_per_100": 0.003099914246,
+   "plus4_tickets": 2,
+   "type": "Device Not Found",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.01169690482,
+   "under4_rate_lo": 0.0,
+   "under4_rate_per_100": 0.004434257893,
+   "under4_tickets": 2
+  },
+  {
+   "group": "Other",
+   "level": "category",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 0.004999506158,
+   "plus4_rate_lo": 0.0,
+   "plus4_rate_per_100": 0.001549957123,
+   "plus4_tickets": 1,
+   "type": "Troubleshooting",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 0.007004851234,
+   "under4_rate_lo": 0.0,
+   "under4_rate_per_100": 0.002217128946,
+   "under4_tickets": 1
+  },
+  {
+   "group": "All unplanned tickets",
+   "level": "all",
+   "plus4_months": 64517.91376,
+   "plus4_rate_hi": 5.321709059,
+   "plus4_rate_lo": 4.37673485,
+   "plus4_rate_per_100": 4.837416181,
+   "plus4_tickets": 3121,
+   "type": "All unplanned tickets",
+   "under4_months": 45103.37577,
+   "under4_rate_hi": 8.663689236,
+   "under4_rate_lo": 7.46549115,
+   "under4_rate_per_100": 8.045960946,
+   "under4_tickets": 3629
+  }
+ ],
+ "unlisted_by_month": [
+  {
+   "month": "2025-08",
+   "tickets": 552,
+   "unlisted": 61,
+   "unlisted_share": 0.1105072463768116
+  },
+  {
+   "month": "2025-09",
+   "tickets": 550,
+   "unlisted": 47,
+   "unlisted_share": 0.0854545454545454
+  },
+  {
+   "month": "2025-10",
+   "tickets": 629,
+   "unlisted": 46,
+   "unlisted_share": 0.0731319554848966
+  },
+  {
+   "month": "2025-11",
+   "tickets": 477,
+   "unlisted": 52,
+   "unlisted_share": 0.1090146750524109
+  },
+  {
+   "month": "2025-12",
+   "tickets": 570,
+   "unlisted": 38,
+   "unlisted_share": 0.0666666666666666
+  },
+  {
+   "month": "2026-01",
+   "tickets": 586,
+   "unlisted": 45,
+   "unlisted_share": 0.0767918088737201
+  },
+  {
+   "month": "2026-02",
+   "tickets": 534,
+   "unlisted": 35,
+   "unlisted_share": 0.0655430711610486
+  },
+  {
+   "month": "2026-03",
+   "tickets": 601,
+   "unlisted": 29,
+   "unlisted_share": 0.0482529118136439
+  },
+  {
+   "month": "2026-04",
+   "tickets": 542,
+   "unlisted": 27,
+   "unlisted_share": 0.0498154981549815
+  },
+  {
+   "month": "2026-05",
+   "tickets": 485,
+   "unlisted": 12,
+   "unlisted_share": 0.0247422680412371
+  },
+  {
+   "month": "2026-06",
+   "tickets": 604,
+   "unlisted": 21,
+   "unlisted_share": 0.0347682119205298
+  },
+  {
+   "month": "2026-07",
+   "tickets": 534,
+   "unlisted": 15,
+   "unlisted_share": 0.0280898876404494
+  },
+  {
+   "month": "2026-08",
+   "tickets": 522,
+   "unlisted": 5,
+   "unlisted_share": 0.0095785440613026
+  }
+ ],
+ "unlisted_halves": {
+  "tickets": 433,
+  "tickets_h1": 302,
+  "tickets_h2": 131
+ },
+ "window": [
+  "2025-08-01",
+  "2026-08-31"
+ ]
+}

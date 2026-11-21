@@ -1,0 +1,8 @@
+relationship,rule_class,serials
+"different system, different state",E. Cross-system move; firmware regresses (possible wrong serial or redeployment),1
+"same system, different site",A. Data-entry error noted on a switched ticket,1
+"same system, different site","C. Probable transfer/re-assignment within system (clean time split, >=2 tickets each side)",1
+"same system, different site","D. Within system, ambiguous (<2 tickets on one side)",1
+"same system, same campus (ZIP5)",A. Data-entry error noted on a switched ticket,1
+"same system, same campus (ZIP5)","B. Same machine, inconsistent account (repeat of same fault noted)",1
+"same system, same campus (ZIP5)","D. Within system, ambiguous (<2 tickets on one side)",2

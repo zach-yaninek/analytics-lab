@@ -1,0 +1,14 @@
+measure,value
+tickets,7471
+"tickets with a ""Device FW: x.y.z"" string in Trouble Reported",2739
+serials with >=2 tickets carrying a firmware string,597
+... of which firmware decreases between consecutive tickets,11
+... of which the MAJOR firmware version decreases,5
+tickets whose notes/resolution state a wrong machine/serial/site/location was used,39
+... distinct serials affected,39
+... coded No Trouble Found,14
+... coded Cancelled Request,7
+... category missing,2
+... coded with a component/fault category (label may describe another machine),16
+serials with >1 Model # across their tickets,0
+serials with >1 Account Name across their tickets,8

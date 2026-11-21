@@ -1,0 +1,11 @@
+date,holiday,tickets,median_weekday_tickets
+2025-09-01,Labor Day,3,27.0
+2025-11-27,Thanksgiving,0,27.0
+2025-11-28,Day after Thanksgiving,3,27.0
+2025-12-24,Christmas Eve,12,27.0
+2025-12-25,Christmas,4,27.0
+2026-01-01,New Year,1,27.0
+2026-01-19,MLK Day,13,27.0
+2026-02-16,Presidents Day,19,27.0
+2026-05-25,Memorial Day,2,27.0
+2026-07-03,Independence Day (observed),4,27.0
