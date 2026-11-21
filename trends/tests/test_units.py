@@ -349,6 +349,231 @@ def test_day_factors():
     assert f[1] > f[0]                                 # February (no holiday weekdays lost) vs January (2 holidays)
 
 
+# ------------------------------------------------------------------------------------------------ report wording
+def _report_change(dim, stratum, key, issue, status, ratio, lo, hi, q, used, sustained=False, previous=''):
+    return {'stratum_dim': dim, 'stratum': stratum, 'issue_key': key, 'issue': issue,
+            'issue_level': 'all' if key == 'all' else ('group' if key.startswith('group|') else 'category'),
+            'status': status, 'eligible': status != 'not_tested', 'change_ratio': ratio, 'ci_lo': lo, 'ci_hi': hi,
+            'q_value': q, 'rate_latest': 2.0 * ratio, 'rate_baseline': 2.0, 'baseline_periods_used': used,
+            'sustained': sustained, 'previous_status': previous, 'survivor_note': '', 'not_tested_reason': ''}
+
+
+def _report_run(changes, contrasts=None, history=None, latest=4, label_ok=None, dq=None, **params):
+    """A report _Run on hand-made tables: the 11 quarters 2025 Q1 (position 0) to 2027 Q3 (in progress), with the
+    four quarters before `latest` as its baseline."""
+    import types
+    from ipa_trends import report as REP
+    P = CFG.resolve({'HISTORY_MONTHS': history, **params})
+    grid = CAD.period_grid(CAD.Cadence(3), T('2025-01-01'), T('2027-10-01'))
+    grid['status'] = ['final'] * (len(grid) - 1) + ['in_progress']
+    grid['status_reason'] = [''] * (len(grid) - 1) + ['the data end inside it']
+    grid['role'] = ['baseline' if latest - 4 <= i < latest else ('latest' if i == latest else '')
+                    for i in range(len(grid))]
+    grid['label_ok'] = label_ok if label_ok is not None else [True] * len(grid)
+    base = [grid.label[i] for i in range(latest - 4, latest)]
+    summary = {'latest_label': grid.label[latest], 'baseline_labels': base, 'tested': int(sum(
+        r['status'] != 'not_tested' for r in changes)), 'cohort_window': f'{base[1]} to {grid.label[latest]}'}
+    facts = {'cohorts': {'window': base[1:] + [grid.label[latest]]}, 'blank_category_limit': 0.083}
+    result = types.SimpleNamespace(summary=summary, facts=facts, warnings=[])
+    tables = {'periods': grid, 'changes': pd.DataFrame(changes), 'cohort_contrasts': contrasts}
+    if dq is not None:
+        tables['data_quality'] = dq
+    return REP._Run(result, tables, P, 'run'), REP
+
+
+def test_report_baseline_phrase():
+    """Each change row is worded from its own baseline: issue-level rows leave out baseline periods whose Category
+    labels are incomplete, and say so instead of naming the run's full baseline."""
+    from ipa_trends.report import _baseline_phrase as bp
+    q, m = CAD.Cadence(3), CAD.Cadence(1)
+    assert bp(q, 4, 4) == 'the previous four quarters' and bp(q, 1, 1) == 'the previous quarter'
+    assert bp(q, 3, 4) == 'three of the previous four quarters (those with complete Category labels)'
+    assert bp(q, 0, 4) == 'no baseline' and bp(m, 12, 12) == 'the previous 12 months'
+    assert bp(m, 11, 12) == '11 of the previous 12 months (those with complete Category labels)'
+    rows = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'higher', 1.3, 1.1, 1.5, 0.01, 4,
+                           True, 'watch_higher'),
+            _report_change('fleet', 'Fleet', 'group|Door', 'Door', 'higher', 1.5, 1.2, 1.9, 0.001, 3, True, 'higher'),
+            _report_change('model', 'MV-2.0', 'group|Door', 'Door', 'watch_higher', 1.4, 1.05, 1.9, 0.1, 3, True,
+                           'watch_higher')]
+    R, REP = _report_run(rows, label_ok=[False] + [True] * 10)
+    assert R.dropped == ['2025 Q1'] and 'leave out 2025 Q1 (Category labels incomplete)' in R.defs(issues=True)[2]
+    assert '2025 Q1 is left out of issue-level baselines (Category labels incomplete).' in R.data_notes()
+    door = R.flags[R.flags.issue_key == 'group|Door'].iloc[0]
+    item = R.change_item(door)
+    assert 'three of the previous four quarters (those with complete Category labels)' in item, item
+    assert item.endswith('; also flagged last quarter.'), item
+    line = R.fleet_line()
+    assert '30% above the previous four quarters' in line and line.endswith('also on the watch list last quarter.')
+    rows_html, own = REP._change_rows(R, R.flags)                  # Door first (smaller q-value), then the fleet
+    assert own and rows_html[1][5] == 'the previous four quarters' and rows_html[1][-1] == \
+        'yes, also on the watch list last quarter'
+    assert rows_html[0][5].startswith('three of the previous four')
+    assert rows_html[0][-1] == 'yes, also flagged last quarter'
+    watch, _ = REP._change_rows(R, R.watch, watch=True)
+    assert watch[0][-1] == 'could still be chance; also on the watch list last quarter'
+    assert R.baseline_summary(R.changes) == ('the previous four quarters for all unplanned tickets; three of the '
+                                             'previous four quarters (those with complete Category labels) for issues')
+    assert ('1 more change is on the watch list: reported, not flagged, because it could still be chance.'
+            in R.key_messages())
+    full, _ = _report_run([dict(r, baseline_periods_used=4) for r in rows])     # labels complete: no extra column
+    plain, own = REP._change_rows(full, full.flags)
+    assert not own and len(plain[0]) == len(rows_html[0]) - 1 and full.dropped == []
+    assert full.flags.iloc[0].issue == 'Door'
+    assert 'above the previous four quarters' in full.change_item(full.flags.iloc[0])
+    assert full.baseline_summary(None) == full.previous
+
+
+def test_report_not_flagged_wording():
+    """'No change was beyond normal variation' only when every tested interval includes no change; otherwise the
+    report says nothing was flagged and how many changes with intervals excluding no change could still be chance."""
+    calm = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'no_clear_change', 1.05, 0.9, 1.2, 0.8, 4),
+            _report_change('fleet', 'Fleet', 'group|Door', 'Door', 'no_clear_change', 0.95, 0.8, 1.1, 0.8, 4)]
+    R, _ = _report_run(calm)
+    assert R.none_flagged() == ('No change in 2026 Q1 was beyond normal quarter-to-quarter variation (2 issue and '
+                                'breakdown cells tested).')
+    many = calm + [_report_change('fleet', 'Fleet', 'group|Electronics', 'Electronics', 'no_clear_change', 0.7, 0.55,
+                                  0.9, 0.24, 4),
+                   _report_change('family', 'alEx', 'group|Door', 'Door', 'no_clear_change', 0.88, 0.8, 0.97, 0.3, 4)]
+    R, _ = _report_run(many)
+    assert R.beyond() == (1, 1, 0)
+    text = R.none_flagged()
+    assert text.startswith('No change in 2026 Q1 was flagged (a flag needs a q-value below 0.05 after correcting for 4 '
+                           'tested cells, and a change of at least 20%); 1 change with an interval excluding no change '
+                           'could still be chance;'), text
+    assert 'beyond normal variation' not in text and 'was under the 20% practical threshold' in text
+
+
+def test_report_not_flagged_charts():
+    """With no flag but changes whose intervals exclude no change, the chart titles say nothing was flagged and name
+    what could still be chance; the changes chart's legend says 'Not flagged' and its subtitle counts the cells it
+    leaves out."""
+    from ipa_trends import style as STYLE
+    S = STYLE.load()
+    if S is None:
+        return
+    rows = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'no_clear_change', 1.05, 0.9, 1.2, 0.8, 4),
+            _report_change('fleet', 'Fleet', 'group|Electronics', 'Electronics', 'no_clear_change', 0.7, 0.55, 0.9,
+                           0.24, 4),
+            _report_change('model', 'MV-2.0', 'group|Door', 'Door', 'no_clear_change', 1.5, 1.1, 2.0, 0.3, 4)]
+    R, REP = _report_run(rows)
+    import contextlib
+    import io
+    with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(io.StringIO()):    # save() prints the path
+        groups = REP.chart_group_trends(S, R, Path(d) / 'groups.png')
+        changes = REP.chart_changes(S, R, Path(d) / 'changes.png')
+    assert groups == 'No request group was flagged in 2026 Q1; Electronics (-30%) could still be chance', groups
+    assert changes == 'No change in 2026 Q1 was flagged; 2 changes could still be chance', changes
+    texts = [t for drawn in S.TEXTS.values() for t in drawn]
+    assert 'Not flagged' in texts and not any('No clear change' in t for t in texts)
+    assert any('1 of the 2 changes that could still be chance is in a cell not drawn here' in t for t in texts)
+
+
+def test_report_forest_rows():
+    """The changes chart lists fleet-level flags first and keeps a row of each flagged direction its title counts."""
+    head = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'no_clear_change', 1.0, 0.9, 1.1, 0.9, 4)]
+    up = [_report_change('install_cohort', str(2010 + i), 'group|Door', 'Door', 'higher', 1.6, 1.3, 2.0,
+                         0.001 * (i + 1), 4) for i in range(16)]
+    fleet_down = _report_change('fleet', 'Fleet', 'cat|Electronics|Computer Board', 'Computer Board', 'lower', 0.5,
+                                0.35, 0.75, 0.04, 4)
+    R, REP = _report_run(head + up + [fleet_down])
+    h, extra, hidden = REP._forest_rows(R)
+    assert len(h) == 1 and len(extra) == REP.MAX_FOREST_ROWS - 1 and hidden == 17 - len(extra)
+    assert extra.iloc[0].issue == 'Computer Board'                 # fleet-level first, though its q-value is larger
+    assert extra.attrs['forced'] == []                             # ... so it is among the strongest rows anyway
+    far_down = dict(fleet_down, stratum_dim='model', stratum='MV-2.0', q_value=0.049)
+    R, REP = _report_run(head + up + [far_down])
+    _, extra, hidden = REP._forest_rows(R)
+    assert len(extra) == REP.MAX_FOREST_ROWS - 1 and 'lower' in set(extra.status) and hidden == 3
+    assert list(extra.q_value) == sorted(extra.q_value)            # still strongest first
+    assert extra.attrs['forced'] == ['lower']                      # kept for the title, not for its strength
+
+
+def test_report_history_and_cohort_rule():
+    """HISTORY_MONTHS limits the time charts' axis but always keeps the baseline and latest periods; the cohort rule
+    text follows the parameters and never claims that a peak rules out every age effect."""
+    rows = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'no_clear_change', 1.0, 0.9, 1.1, 0.9, 4)]
+    R, _ = _report_run(rows, history=None, latest=9)               # default 24 months: 2025 Q4 to 2027 Q3
+    assert R.labels[0] == '2025 Q4' and len(R.labels) == 8 and R.hidden_periods == 3
+    assert R.labels[R.latest_pos] == '2027 Q2' and [R.labels[i] for i in R.baseline_pos][0] == '2026 Q2'
+    assert R.history_note() == 'Quarters before 2025 Q4 are not shown (HISTORY_MONTHS); rates.csv holds every quarter.'
+    R, _ = _report_run(rows, history=12, latest=6)                 # 12 months, but the baseline starts in 2025 Q3
+    assert R.labels[0] == '2025 Q3' and R.hidden_periods == 2 and R.baseline_pos == [0, 1, 2, 3]
+    assert R.labels[R.latest_pos] == '2026 Q3' and R.status[-1] == 'in_progress'
+    assert len(R.series('fleet', 'all')) == len(R.labels) == 9 and len(R.series('fleet', 'all', every=True)) == 11
+    assert 'ok' not in R.series('fleet', 'all').columns and list(R.series('fleet', 'all').label) == R.labels
+    R, _ = _report_run(rows, history=60)
+    assert R.hidden_periods == 0 and R.history_note() == ''
+    for form in ('full', 'definition', 'lede', 'short'):
+        text = R.cohort_rule(form)
+        assert '1.5x the rest of the fleet' in text and '1.25x both newer and older installs' in text, form
+        assert 'cannot produce' not in text and 'same age' in text and '0.05' in text, form
+        assert 'Benjamini-Hochberg-corrected largest' in text, form
+    full = R.cohort_rule('full')
+    assert 'rises or falls steadily with machine age' in full and 'wear-out window' in full and '24 months' in full
+    assert 'still filling up' in full and 'largest p-value' in full and '12 months of final quarters' in full
+    R6, _ = _report_run(rows, MIN_CONTRAST=0.6, Q_CUT=0.01, WATCH_Q=0.1)
+    assert '1.6x the rest of the fleet and at least 1.3x both' in R6.cohort_rule('full')
+    assert 'below 0.01' in R6.cohort_rule('lede')
+    assert 'for the fleet and by install cohort only, the Categories' in R.method_items()[0]
+    assert 'nine analysed groups' in R.group_definition() and 'Not categorised' in R.group_definition()
+
+
+def test_report_same_age_note():
+    """The cohort section says whether this run's final history is long enough for the same-age check, for all
+    unplanned tickets and for issues (whose periods need complete Category labels)."""
+    rows = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'no_clear_change', 1.0, 0.9, 1.1, 0.9, 4)]
+    cc = pd.DataFrame({'issue_key': ['all', 'group|Door'], 'issue_level': ['all', 'group'],
+                       'issue': ['All unplanned tickets', 'Door'], 'install_cohort': ['2022', '2022'],
+                       'status': ['no_clear_difference'] * 2, 'eligible': [True, True], 'crude_ratio': [1.1, 1.2],
+                       'window_periods': [4, 4]})
+    R, REP = _report_run(rows, cc)                                 # 15 months: 2025 Q1 to 2026 Q1
+    assert R.history_months() == {'all': 15, 'labels': 15}
+    assert R.same_age_note() == R.same_age_note(gaps_only=True) == (
+        'This run has only 15 months of final history, so the same-age check does not apply yet: a peak could still '
+        'reflect machine age (a wear-out window).')
+    R, _ = _report_run(rows, cc, latest=9)                         # 30 months: 2025 Q1 to 2027 Q2
+    assert R.same_age_note() == 'This run has 30 months of final history, so the same-age check applies.'
+    assert R.same_age_note(gaps_only=True) == '' and REP.SAME_AGE_HISTORY_MONTHS == 24
+    R, _ = _report_run(rows, cc, latest=9, label_ok=[False] * 3 + [True] * 8)
+    assert R.history_months() == {'all': 30, 'labels': 21}
+    assert R.same_age_note().startswith('This run has 30 months of final history, but only 21 with complete Category '
+                                        'labels, so for issues the same-age check does not apply yet')
+    R.facts['cohorts']['history_months'] = {'all': 33, 'labels': 30}    # the cohorts' own figures come first
+    assert R.same_age_note() == 'This run has 33 months of final history, so the same-age check applies.'
+    R, _ = _report_run(rows, cc.iloc[:1], latest=9, label_ok=[False] * 3 + [True] * 8)   # no issue rows
+    assert R.same_age_note(gaps_only=True) == ''
+    # a cohort item names the row's own window: the engine's sentence when it does, else the same facts
+    row = {'issue': 'Touchscreen', 'install_cohort': '2023', 'rate_per_100': 1.64, 'crude_ratio': 2.8,
+           'newer_ratio': 2.75, 'older_ratio': 2.8, 'same_age_ratio': 2.0, 'position': 'interior',
+           'window_label': '2026 Q1 to 2026 Q3', 'sentence': 'Touchscreen, 2023 installs: over 2025 Q4 to 2026 Q3.'}
+    item = next(pd.DataFrame([row]).itertuples())
+    assert R.cohort_item(item) == ('Touchscreen, 2023 installs: 1.64 per 100 installed machine-months over 2026 Q1 '
+                                   'to 2026 Q3, 2.8x the rest of the fleet (2.8x newer installs, 2.8x older installs).')
+    item = next(pd.DataFrame([dict(row, sentence='Touchscreen over 2026 Q1 to 2026 Q3.')]).itertuples())
+    assert R.cohort_item(item) == 'Touchscreen over 2026 Q1 to 2026 Q3.'
+
+
+def test_report_data_quality_gate():
+    """The data-quality chart draws and counts the run's own Category gate (label_ok), not MAX_BLANK_CATEGORY_SHARE."""
+    from ipa_trends import style as STYLE
+    S = STYLE.load()
+    if S is None:
+        return
+    rows = [_report_change('fleet', 'Fleet', 'all', 'All unplanned tickets', 'no_clear_change', 1.0, 0.9, 1.1, 0.9, 4)]
+    blank = [0.06, 0.07, 0.04, 0.03, 0.065, 0.12, 0.04, 0.03, 0.04, 0.03, 0.30]     # above 5% but under 8.3% in five
+    ok = [b <= 0.083 for b in blank]
+    R, REP = _report_run(rows, label_ok=ok, history=60)
+    R.dq = pd.DataFrame({'period_key': list(R.periods.period_key), 'open_share': 0.0, 'blank_category_share': blank,
+                         'unlisted_share': 0.01, 'label_ok': ok})
+    import contextlib
+    import io
+    with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(io.StringIO()):    # save() prints the path
+        title = REP.chart_data_quality(S, R, Path(d) / 'dq.png')
+    assert title == '1 quarter had too many blank Categories for issue-level tests', title     # the in-progress one
+    texts = [t for drawn in S.TEXTS.values() for t in drawn]                                 # is not counted
+    assert any('5% or twice the typical share (8.3% in this run)' in t for t in texts), texts
+
+
 # ------------------------------------------------------------------------------------------------ inputs
 def _workbook(path, header, rows, sheet='ipa_repair cases', title_rows=()):
     wb = openpyxl.Workbook()

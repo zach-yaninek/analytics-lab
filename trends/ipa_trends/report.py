@@ -8,7 +8,8 @@ so the scan covers all of it. Only the public aggregate tables are read: period 
 family names, issue names and numbers.
 
   charts/*.png         IPA style (ipa_trends/style, copied from viz/style), 150 dpi; titles state the finding and
-                       the footers carry the definitions
+                       the footers carry the definitions; the time charts show the last HISTORY_MONTHS months (always
+                       with the baseline and latest periods), while the tables and texts keep every period
   report.html          self-contained: inline CSS, charts as data URIs, no JavaScript, every value escaped
   report.pdf           matplotlib only: text summary pages (US Letter landscape), one page per chart, definitions
   email_summary.txt    at most 15 lines to paste into a message; email_summary.html is the same with inline styles
@@ -32,6 +33,8 @@ import numpy as np
 import pandas as pd
 
 from . import METHOD_VERSION, __version__
+from . import cadence as CAD
+from . import cohorts as COH
 from . import style as STYLE
 from .definitions import followups_copy as FU
 from .inputs import UNKNOWN, UNMAPPED
@@ -47,6 +50,8 @@ UNLISTED_NOTE = 0.05        # an unlisted share above this is mentioned in the e
 MAX_FOREST_ROWS = 15
 MAX_EMAIL_LINES = 15
 PAGE = (11.0, 8.5)          # US Letter landscape, inches
+# months of final history an interior cohort's same-age check needs: the cohort rule's own constant
+SAME_AGE_HISTORY_MONTHS = getattr(COH, 'SAME_AGE_HISTORY_MONTHS', 24)
 
 
 class _Skip(Exception):
@@ -146,10 +151,35 @@ def _cap(text):
     return text[:1].upper() + text[1:]
 
 
+def _and(items):
+    """'A', 'A and B', 'A, B and C'."""
+    items = [str(i) for i in items]
+    return ' and '.join(items) if len(items) <= 2 else ', '.join(items[:-1]) + ' and ' + items[-1]
+
+
 def _kind(cadence):
     """'Monthly report', 'Quarterly report', 'Report every 5 months'."""
     adj = str(cadence.adjective)
     return f'Report {adj}' if ' ' in adj else f'{adj[:1].upper()}{adj[1:]} report'
+
+
+def _baseline_phrase(cadence, used, intended):
+    """The baseline a cell was compared with: 'the previous four quarters', or 'three of the previous four quarters
+    (those with complete Category labels)' when the cell's baseline left out periods whose Category labels are
+    incomplete. `used`: the cell's baseline_periods_used; `intended`: the run's full baseline (its final periods).
+    Behaves exactly like compare.baseline_phrase."""
+    used, intended = int(used), int(intended)
+    if used <= 0:
+        return 'no baseline'
+    if used >= intended:
+        return cadence.previous(used)
+    word = CAD.NUMBER_WORDS[used] if used < len(CAD.NUMBER_WORDS) else str(used)
+    return f'{word} of {cadence.previous(intended)} (those with complete Category labels)'
+
+
+def _x(v):
+    """A ratio threshold: 1.5 -> '1.5x', 1.25 -> '1.25x', 0.667 -> '0.67x', 0.8 -> '0.8x'."""
+    return f'{float(v):.2f}'.rstrip('0').rstrip('.') + 'x'
 
 
 def _issue_noun(issue):
@@ -177,15 +207,26 @@ class _Run:
         self.defs_hash = next((str(df.definitions_hash.iloc[0]) for df in (tables or {}).values()
                                if isinstance(df, pd.DataFrame) and len(df) and 'definitions_hash' in df), '')
         p = self.periods
-        self.labels = [str(v) for v in p.label] if len(p) else []
-        self.status = [str(v) for v in p.status] if len(p) else []
-        roles = [str(v) for v in p.role] if len(p) and 'role' in p else [''] * len(self.labels)
-        self.latest_pos = roles.index('latest') if 'latest' in roles else None
-        self.baseline_pos = [i for i, r in enumerate(roles) if r == 'baseline']
+        labels = [str(v) for v in p.label] if len(p) else []
+        status = [str(v) for v in p.status] if len(p) else []
+        roles = [str(v) for v in p.role] if len(p) and 'role' in p else [''] * len(labels)
+        latest = roles.index('latest') if 'latest' in roles else None
+        baseline = [i for i, r in enumerate(roles) if r == 'baseline']
+        # the time charts' period axis (labels, status and positions below refer to it): the last HISTORY_MONTHS
+        # months, always with the baseline and latest periods; tables and texts keep every period
+        self.view = self._history(baseline + ([latest] if latest is not None else []))
+        self.hidden_periods = len(labels) - len(self.view)
+        self.labels = [labels[i] for i in self.view]
+        self.status = [status[i] for i in self.view]
+        self.view_keys = [str(p.period_key.iloc[i]) for i in self.view]
+        self.latest_pos = self.view.index(latest) if latest is not None else None
+        self.baseline_pos = [self.view.index(i) for i in baseline]
         src = self.rates if len(self.rates) else (self.changes if len(self.changes) else self.contrasts)
         self.issue_order = {k: i for i, k in enumerate(dict.fromkeys(src.issue_key))} if len(src) else {}
         self.k = len(self.s.get('baseline_labels') or [])
         self.previous = self.cad.previous(self.k) if self.k else 'the baseline'
+        # baseline periods left out of issue-level comparisons because their Category labels are incomplete
+        self.dropped = [labels[i] for i in baseline if 'label_ok' in p and p.label_ok.iloc[i] in (False, 'False')]
         self.window = self.s.get('cohort_window') or ''
         self.window_n = len((self.facts.get('cohorts') or {}).get('window') or [])
         self.fleet = self.change_row('fleet', 'all')
@@ -193,6 +234,40 @@ class _Run:
         self.watch = self._sorted_changes(WATCH)
         self.stands = self._stands()
         self.window_text = self.window or 'the cohort window'
+        self.window_note = self._window_note()
+
+    def _history(self, keep):
+        """Positions of the periods on the time charts' axis: those starting in the last HISTORY_MONTHS months of the
+        grid, extended back to the earliest period in `keep` (the baseline and the latest period)."""
+        p = self.periods
+        if p.empty:
+            return []
+        months = getattr(self.P, 'history_months', None)
+        if not months or 'period_start' not in p or 'period_end' not in p:
+            return list(range(len(p)))
+        start = pd.to_datetime(p.period_start)
+        cut = pd.to_datetime(p.period_end).max() - pd.DateOffset(months=int(months))
+        first = min([i for i in range(len(p)) if start.iloc[i] >= cut] + list(keep) + [len(p) - 1])
+        return list(range(first, len(p)))
+
+    def _window_note(self):
+        """'' or 'for issues, only the 3 final quarters with complete Category labels' when the issue-level cohort
+        rows were compared over fewer window periods than all tickets (their own window_label, when it differs, is
+        added)."""
+        cc = self.contrasts
+        if cc.empty or not self.window_n or not {'issue_level', 'window_periods'} <= set(cc.columns):
+            return ''
+        short = cc[(cc.issue_level != 'all') & (cc.window_periods.astype(float) < self.window_n)]
+        if short.empty:
+            return ''
+        r = short.iloc[0]
+        own = self.row_window(r)
+        k = int(r.window_periods) if _finite(r.window_periods) else 0
+        if k == 0:
+            return f'issues are not compared: no final {self.noun} in the window has complete Category labels'
+        named = own.replace(' (incomplete Category labels)', '')         # 'A to B except C' says it once
+        return (f'for issues, only the {_n(k, "final " + self.noun, "final " + self.plural)} with complete Category '
+                f'labels' + (f': {named}' if own != self.window_text else ''))
 
     def _order(self, df):
         """Catalog order of each row's issue (the public tables carry no order column; the rates table lists
@@ -227,10 +302,13 @@ class _Run:
         st['_o'] = self._order(st)
         return st.sort_values(['_strength', '_o'], kind='mergesort').drop(columns=['_strength', '_o'])
 
-    def series(self, dim, key, stratum=None):
-        """Rates of one cell for every period, in period order (NaN where the period has no row)."""
+    def series(self, dim, key, stratum=None, every=False):
+        """Rates of one cell for each period of the time charts' axis (every period with every=True), in period
+        order (NaN where the period has no row)."""
         out = self.periods[['period_key', 'label', 'status']].copy()
         out['role'] = self.periods.role if 'role' in self.periods else ''
+        if not every:
+            out = out.iloc[self.view]
         rt = self.rates
         sub = rt[(rt.stratum_dim == dim) & (rt.issue_key == key)] if len(rt) else rt
         if stratum is not None and len(sub):
@@ -239,7 +317,6 @@ class _Run:
         for col, src in (('rate', 'rate_per_100'), ('lo', 'ci_lo'), ('hi', 'ci_hi'), ('months', 'machine_months'),
                          ('tickets', 'tickets')):
             out[col] = out.period_key.map(sub[src]).astype(float) if len(sub) else np.nan
-        out['ok'] = out.period_key.map(sub['meets_min_exposure']).eq(True) if len(sub) else False
         return out.reset_index(drop=True)
 
     def cohort_order(self):
@@ -317,6 +394,60 @@ class _Run:
             return f'level with {previous}'
         return f'{abs(p):.0f}% {"above" if p > 0 else "below"} {previous}'
 
+    def baseline_text(self, r):
+        """The baseline one change row was compared with, from its own baseline_periods_used: issue-level rows leave
+        out baseline periods whose Category labels are incomplete."""
+        used = getattr(r, 'baseline_periods_used', None)
+        return _baseline_phrase(self.cad, used, self.k) if _finite(used) else self.previous
+
+    def baseline_summary(self, rows):
+        """The baselines of these change rows: one phrase, or one for all unplanned tickets and one for issues."""
+        rows = rows if rows is not None else self.changes
+        phrases = {}
+        for r in rows.itertuples():
+            phrases.setdefault('all' if r.issue_key == 'all' else 'issues', self.baseline_text(r))
+        distinct = list(dict.fromkeys(phrases.values()))
+        if len(distinct) <= 1:
+            return distinct[0] if distinct else self.previous
+        return f'{phrases["all"]} for all unplanned tickets; {phrases["issues"]} for issues'
+
+    def sustained_text(self, r):
+        """'' or 'also flagged last quarter' / 'also on the watch list last quarter': a sustained cell was flagged
+        or on the watch list in the same direction in the previous period (its previous_status says which)."""
+        s = getattr(r, 'sustained', False)
+        if not (isinstance(s, (bool, np.bool_)) and bool(s)):
+            return ''
+        prev = _text(getattr(r, 'previous_status', None))
+        if prev in FLAGGED:
+            return f'also flagged last {self.noun}'
+        if prev in WATCH:
+            return f'also on the watch list last {self.noun}'
+        return f'also flagged or on the watch list last {self.noun}'
+
+    def beyond(self, rows=None):
+        """Tested cells left unflagged although their interval excludes no change, as (many, small, watch): over the
+        practical threshold but not after the correction for testing many cells; under the threshold; on the watch
+        list."""
+        rows = self.changes if rows is None else rows
+        many = small = watch = 0
+        for r in rows.itertuples() if len(rows) else ():
+            if r.status in FLAGGED or r.status == 'not_tested' or self.quiet(r) == 'normal':
+                continue
+            if r.status in WATCH:
+                watch += 1
+            elif self.quiet(r) == 'many':
+                many += 1
+            else:
+                small += 1
+        return many, small, watch
+
+    def history_note(self, source='rates.csv'):
+        """'' or a note that the chart leaves out the periods before its axis starts (HISTORY_MONTHS)."""
+        if not self.hidden_periods or not self.labels:
+            return ''
+        return (f'{_cap(self.plural)} before {self.labels[0]} are not shown (HISTORY_MONTHS); {source} holds every '
+                f'{self.noun}.')
+
     def quiet(self, r):
         """Why a tested cell was not flagged: 'normal' (its interval includes no change), 'small' (clearly
         changed but under the practical threshold) or 'many' (over the threshold, but not after the correction for
@@ -333,15 +464,27 @@ class _Run:
             return f'under the {100 * self.P.MIN_CHANGE:g}% practical threshold, so not flagged'
         return 'not flagged: with this many cells tested, it could still be chance'
 
-    def defs(self, baseline=True):
+    def defs(self, baseline=True, issues=False):
         out = [("Installed machine-month: one machine on IPA's equipment list for 30.4 days (365.25/12); machines "
                "count from their install date (or first ticket) until the data end or removal."),
                ('Unplanned ticket: every case except planned work (preventative maintenance, installation), cancelled '
                'requests and duplicates.')]
         if baseline:
             latest = self.latest or f'the latest final {self.noun}'
-            out.append(f'Baseline: the final {self.plural} in the {self.P.baseline_months} months before {latest}.')
+            out.append(f'Baseline: the final {self.plural} in the {self.P.baseline_months} months before {latest}'
+                       + (self.dropped_note() if issues else '') + '.')
         return out
+
+    def dropped_note(self):
+        """'' or '; issue-level comparisons leave out 2024 Q1 (Category labels incomplete)'."""
+        if not self.dropped:
+            return ''
+        return f'; issue-level comparisons leave out {_and(self.dropped)} (Category labels incomplete)'
+
+    def dropped_text(self):
+        """'2024 Q1 is left out of issue-level baselines (Category labels incomplete)'."""
+        verb = 'is' if len(self.dropped) == 1 else 'are'
+        return f'{_and(self.dropped)} {verb} left out of issue-level baselines (Category labels incomplete)'
 
     def hollow_note(self):
         return (f'Hollow markers: {self.plural} that are not final yet (provisional, in progress or partial); their '
@@ -377,30 +520,65 @@ class _Run:
             verdict = 'larger than usual, but it could still be chance (watch list)'
         else:
             verdict = self.quiet_text(r)
-        extra = f'; also flagged last {self.noun}' if bool(getattr(r, 'sustained', False)) else ''
-        return f'Fleet: {rate}, {self.vs(r.change_ratio)} ({ci}), {verdict}{extra}.'
+        extra = self.sustained_text(r)
+        return (f'Fleet: {rate}, {self.vs(r.change_ratio, self.baseline_text(r))} ({ci}), {verdict}'
+                + (f'; {extra}' if extra else '') + '.')
 
     def none_flagged(self):
-        """The sentence for a run with no flag: nothing beyond normal variation, or nothing could be tested."""
+        """The sentence for a run with no flag: nothing beyond normal variation; nothing flagged although some
+        intervals exclude no change; or nothing could be tested."""
         tested = int(self.s.get('tested', 0) or 0)
         if tested == 0:
             why = _text(self.fleet.not_tested_reason if self.fleet is not None else None, 'too little final history')
             return f'No change could be tested in {self.latest}: {why}.'
-        return (f'No change in {self.latest} was beyond normal {self.cad.variation} '
-                f'({_n(tested, "issue and breakdown cell")} tested).')
+        many, small, watch = self.beyond()
+        if not (many or small or watch):
+            return (f'No change in {self.latest} was beyond normal {self.cad.variation} '
+                    f'({_n(tested, "issue and breakdown cell")} tested).')
+        thr = f'{100 * self.P.MIN_CHANGE:g}%'
+        parts = [f'No change in {self.latest} was flagged (a flag needs a q-value below {self.P.Q_CUT:g} after '
+                 f'correcting for {_n(tested, "tested cell")}, and a change of at least {thr})']
+        if many:
+            parts.append(f'{_n(many, "change")} with {"an interval" if many == 1 else "intervals"} excluding no change '
+                         'could still be chance')
+        if small:
+            parts.append(f'{_n(small, "change")} beyond normal {self.cad.variation} {"was" if small == 1 else "were"} '
+                         f'under the {thr} practical threshold')
+        return '; '.join(parts) + '.'
 
     def change_item(self, r):
         """A flagged or watch-list cell in one line (email, PDF)."""
-        extra = f'; also flagged last {self.noun}' if bool(getattr(r, 'sustained', False)) else ''
+        extra = self.sustained_text(r)
+        base = self.baseline_text(r)
+        ci = f'95% interval {_interval(r.ci_lo, r.ci_hi)}'
         return (f'{r.issue}{self.stratum_text(r)}: {r.rate_latest:.2f} per 100 installed machine-months, '
-                f'{self.vs(r.change_ratio)} (95% interval {_interval(r.ci_lo, r.ci_hi)}){extra}.')
+                f'{self.vs(r.change_ratio, base)}' + (f'; {ci}' if base.endswith(')') else f' ({ci})')
+                + (f'; {extra}' if extra else '') + '.')
+
+    def row_window(self, r):
+        """The cohort window one contrast row was compared over (its own window_label), else the run's."""
+        return _text(getattr(r, 'window_label', None), self.window_text)
+
+    def window_phrase(self):
+        """The run's cohort window, with the issue-level window when it is shorter: '2025 Q4 to 2026 Q3' or
+        '2024 Q1 to 2024 Q4 (for issues, only the 3 final quarters with complete Category labels)'."""
+        return self.window_text + (f' ({self.window_note})' if self.window_note else '')
 
     def cohort_item(self, r):
+        """A cohort call-out in one line, over the row's own window (window_label): the engine's sentence when it
+        names that window, else the same facts written here."""
         s = getattr(r, 'sentence', None)
-        if isinstance(s, str) and s:
+        own = self.row_window(r)
+        if isinstance(s, str) and s and own in s:
             return s
-        return (f'{r.issue}, {_cohort_phrase(r.install_cohort)}: {r.rate_per_100:.2f} per 100 installed '
-                f'machine-months, {r.crude_ratio:.1f}x the rest of the fleet.')
+        text = (f'{r.issue}, {_cohort_phrase(r.install_cohort)}: {r.rate_per_100:.2f} per 100 installed '
+                f'machine-months over {own}, {r.crude_ratio:.1f}x the rest of the fleet')
+        newer, older, same = (getattr(r, k, None) for k in ('newer_ratio', 'older_ratio', 'same_age_ratio'))
+        if getattr(r, 'position', '') == 'newest':
+            text += f' and {same:.1f}x earlier installs at the same age' if _finite(same) else ''
+        elif _finite(newer) and _finite(older):
+            text += f' ({newer:.1f}x newer installs, {older:.1f}x older installs)'
+        return text + '.'
 
     def not_final(self):
         """[(label, status, reason)] for the periods that are not final."""
@@ -427,6 +605,8 @@ class _Run:
         notes = []
         if self.not_final():
             notes.append(_cap(self.not_final_text()) + '.')
+        if self.latest is not None and self.dropped:
+            notes.append(self.dropped_text() + '.')
         u = self.s.get('latest_unlisted_share')
         if self.latest is not None and _finite(u) and u > UNLISTED_NOTE:
             notes.append(f'{_share(u)} of {self.latest} tickets were on machines missing from the equipment list, '
@@ -458,33 +638,140 @@ class _Run:
         else:
             out.append(self.none_flagged())
         if len(self.stands):
-            top = self.stands.iloc[0]
+            top = self.cohort_item(self.stands.iloc[0])         # the item names its own window
             n = len(self.stands)
             if n > 1:
-                out.append(f'{n} install-cohort call-outs over {self.window_text}. The strongest: {top.sentence}')
+                out.append(f'{n} install-cohort call-outs. The strongest: {top}')
             else:
-                out.append(f'One install-cohort call-out over {self.window_text}: {top.sentence}')
+                out.append(f'One install-cohort call-out: {top}')
         elif len(self.contrasts):
-            out.append(f'No install cohort stands out from the rest of the fleet over {self.window_text}.')
+            out.append(f'No install cohort stands out from the rest of the fleet over {self.window_phrase()}.')
         if len(self.watch):
-            out.append(f'{_n(len(self.watch), "more change")} {"is" if len(self.watch) == 1 else "are"} on the '
-                       'watch list: reported, not flagged, because they could still be chance.')
+            one = len(self.watch) == 1
+            out.append(f'{_n(len(self.watch), "more change")} {"is" if one else "are"} on the watch list: reported, '
+                       f'not flagged, because {"it" if one else "they"} could still be chance.')
         notes = self.data_notes()
         if notes:
             out.append('Data caveats: ' + ' '.join(notes))
         return out[:6]
 
+    def category_scope(self):
+        """Where Category-level rates exist (CATEGORY_DIMS): 'for the fleet and by install cohort', or ''."""
+        dims = list(getattr(self.P, 'CATEGORY_DIMS', None) or [])
+        others = [DIM_LABEL.get(d, d).lower() for d in dims if d != 'fleet']
+        parts = (['for the fleet'] if 'fleet' in dims else []) + ([f'by {_and(others)}'] if others else [])
+        return ' and '.join(parts)
+
+    def group_definition(self):
+        """What a request group is: one of the analysed groups, or one of the two never-tested groups."""
+        n = len(FU.PRIMARY)
+        nine = CAD.NUMBER_WORDS[n] if n < len(CAD.NUMBER_WORDS) else str(n)
+        return (f"the ticket's Trouble Code and Category mapped by the project's request-type reference to one of "
+                f'{nine} analysed groups. Tickets with a blank Category form a separate group, {FU.NO_CAT}, and '
+                f'combinations missing from the reference an {UNMAPPED} group; neither is tested.')
+
+    def cohort_rule(self, form='full'):
+        """The install-cohort call-out rule in words, with this run's thresholds (cohorts.contrasts applies it):
+        'full' (method), 'definition', 'lede' (the report's cohort section) or 'short' (chart footer)."""
+        P = self.P
+        hi, side = 1 + P.MIN_CONTRAST, 1 + P.MIN_CONTRAST / 2
+        months = SAME_AGE_HISTORY_MONTHS
+        peak = f'at least {_x(hi)} the rest of the fleet and at least {_x(side)} both newer and older installs'
+        same_age = (f'when at least {months} months of final history exist and the same-age ratio can be estimated, '
+                    f'the cohort must also be at least {_x(side)} machines of the same age in other cohorts')
+        newest = (f'the newest cohort with at least {P.MIN_EXPECTED:g} tickets expected is compared with the rest of '
+                  f'the fleet and with earlier installs at the same age (at least {_x(hi)} each); newer cohorts are '
+                  'still filling up and are shown but not compared')
+        together = (f'All the comparisons a call-out needs must hold together: its q-value (the Benjamini-Hochberg-'
+                    f'corrected largest p-value of those comparisons) must be below {P.Q_CUT:g}.')
+        mirror = f"'Lower' is the mirror image (at most {_x(1 / hi)} and {_x(1 / side)})."
+        if form == 'short':
+            return (f'Install cohort: machines grouped by install date. A cohort stands out when it is {peak} (a peak; '
+                    f'with at least {months} months of final history, also at least {_x(side)} machines of the same '
+                    f'age elsewhere); the newest cohort with enough expected tickets needs at least {_x(hi)} both the '
+                    'rest of the fleet and earlier installs at the same age. The q-value (the Benjamini-Hochberg-'
+                    f'corrected largest p-value of those comparisons) must be below {P.Q_CUT:g}.')
+        if form == 'definition':
+            return (f'A cohort with newer and older installs: {peak} (a peak in the install-date profile) and, when at '
+                    f'least {months} months of final history exist and the same-age ratio can be estimated, at least '
+                    f'{_x(side)} machines of the same age in other cohorts. The newest cohort with at least '
+                    f'{P.MIN_EXPECTED:g} tickets expected: at least {_x(hi)} both the rest of the fleet and earlier '
+                    'installs at the same age (newer cohorts are still filling up and are not compared). All the '
+                    'comparisons must hold together: the q-value (the '
+                    f'Benjamini-Hochberg-corrected largest of their p-values) is below {P.Q_CUT:g}. {mirror}')
+        if form == 'lede':
+            return (f'A cohort stands out when its rate is {peak}: a peak in the install-date profile. A peak rules '
+                    'out an age effect that rises or falls steadily with machine age, but a rise confined to certain '
+                    f'ages (a wear-out window) could still produce one; the same-age check rules that out: {same_age}. '
+                    f'{_cap(newest)}. {together}')
+        return (f"Install cohorts: each cohort's rate over the last {P.CONTRAST_MONTHS} months of final {self.plural} "
+                'is compared with the rest of the fleet and with all newer and all older installs, and, over the '
+                'whole final history, with machines of the same age in other cohorts. A cohort with both newer and '
+                f'older installs stands out when it is {peak}: a peak in the install-date profile. A peak rules out an '
+                'age effect that rises or falls steadily with machine age, but not a rise confined to certain ages (a '
+                f'wear-out window); the same-age check rules that out: {same_age}. {_cap(newest)}. The oldest, pooled '
+                f'cohort and machines with an unknown install date are never called out. {together} {mirror}')
+
+    def history_months(self):
+        """{'all': months, 'labels': months}: the span of the final periods up to the latest one, behind the cohort
+        comparison of all unplanned tickets and of issues (whose periods need complete Category labels). The
+        cohorts' own figures when the engine reports them, else counted from the periods table; {} without a latest
+        final period."""
+        info = (self.facts.get('cohorts') or {}).get('history_months')
+        if isinstance(info, dict) and info and all(_finite(v) for v in info.values()):
+            return {str(k): int(v) for k, v in info.items()}
+        p = self.periods
+        if self.latest is None or p.empty or not {'period_start', 'period_end', 'status', 'role'} <= set(p.columns):
+            return {}
+        roles = [str(v) for v in p.role]
+        if 'latest' not in roles:
+            return {}
+        final = (np.arange(len(p)) <= roles.index('latest')) & (p.status.astype(str) == 'final').to_numpy()
+        sets = {'all': final}
+        if 'label_ok' in p:
+            sets['labels'] = final & p.label_ok.isin([True, 'True']).to_numpy()
+        out = {}
+        for name, m in sets.items():
+            idx = np.flatnonzero(m)
+            if len(idx):            # whole months from the first period's start to the last one's (exclusive) end
+                a, b = pd.Timestamp(p.period_start.iloc[idx[0]]), pd.Timestamp(p.period_end.iloc[idx[-1]])
+                out[name] = int((b.year - a.year) * 12 + b.month - a.month - (b.day < a.day))
+        return out
+
+    def same_age_note(self, gaps_only=False):
+        """'' or whether this run's final history is long enough for the same-age check of cohorts with newer and
+        older installs (gaps_only: only when it is not, for all unplanned tickets or for issues)."""
+        h = self.history_months()
+        if self.contrasts.empty or not h:
+            return ''
+        need = SAME_AGE_HISTORY_MONTHS
+        m_all = h.get('all', min(h.values()))
+        issues = 'issue_level' in self.contrasts and (self.contrasts.issue_level != 'all').any()
+        m_lab = h.get('labels', m_all) if issues else m_all
+        if min(m_all, m_lab) >= need:
+            return '' if gaps_only else f'This run has {m_all} months of final history, so the same-age check applies.'
+        if m_all >= need:
+            return (f'This run has {m_all} months of final history, but only {m_lab} with complete Category labels, '
+                    'so for issues the same-age check does not apply yet: a peak in an issue could still reflect '
+                    'machine age (a wear-out window).')
+        return (f'This run has only {m_all} months of final history, so the same-age check does not apply yet: a '
+                'peak could still reflect machine age (a wear-out window).')
+
     def method_items(self):
         P = self.P
         thr = f'{100 * P.MIN_CHANGE:g}%'
-        hi = 1 + P.MIN_CONTRAST
         dims = ', '.join(DIM_LABEL.get(d, d).lower() for d in P.STRATIFY_BY)
+        scope = self.category_scope()
+        issues = ('issues are all unplanned tickets, the request groups and, '
+                  f'{scope} only, the Categories under them' if scope else
+                  'issues are all unplanned tickets and the request groups')
         return [
             (f'Rates: unplanned tickets per 100 installed machine-months for every {self.noun}, for the fleet and by '
-             f'{dims}; issues are all unplanned tickets, nine request groups and the Categories under them.'),
+             f'{dims}; {issues}.'),
             (f'Changes: the latest final {self.noun} against its baseline (the final {self.plural} in the '
-             f'{P.baseline_months} months before it) as a crude rate ratio, adjusted only for the mix of business '
-             'days (not standardised for age or model mix).'),
+             f'{P.baseline_months} months before it; issue-level comparisons use only those with complete Category '
+             'labels) as a crude rate ratio, adjusted only for the mix of business days (not standardised for age or '
+             'model mix).'),
             (f"Uncertainty: a paired account bootstrap ({P.N_BOOT:,} resamples of IPA's accounts) plus the "
              f'between-{self.noun} variance estimated from the history, which gives 95% intervals.'),
             (f'Flags: one Benjamini-Hochberg correction over every tested cell in the run; a change is flagged when '
@@ -494,12 +781,7 @@ class _Run:
              f'{P.MIN_ACCOUNTS:g} accounts.'),
             ('Survivorship check: an increase is flagged only if it remains after adding back the tickets on machines '
              'missing from the equipment list; otherwise it goes on the watch list.'),
-            (f'Install cohorts: over the last {P.CONTRAST_MONTHS} months of final {self.plural}, each cohort is '
-             'compared with the rest of the fleet (crude ratio, Benjamini-Hochberg corrected) and with all newer and '
-             f'all older installs. It stands out only when its rate is at least {hi:.1f}x the rest of the fleet (or '
-             f'at most {1 / hi:.2f}x) with a q-value below {P.Q_CUT:g}, and is above (or below) both newer and '
-             'older installs: a peak in the install-date profile, which a steady age effect cannot produce. The '
-             'newest cohort is compared instead with earlier installs at the same age.'),
+            self.cohort_rule('full'),
             (f'Only final {self.plural} are compared: a {self.noun} is final once it has ended, {P.LABEL_LAG_DAYS} '
              f'days have passed for its labels to settle, and no more than {_share(P.MAX_OPEN_SHARE)} of its tickets '
              'were still open when exported.'),
@@ -507,7 +789,7 @@ class _Run:
 
     def definition_items(self):
         P = self.P
-        hi = 1 + P.MIN_CONTRAST
+        thr = f'{100 * P.MIN_CHANGE:g}%'
         cohorts = ('Machines grouped by install date at the INSTALL_COHORT_EDGES dates, oldest first.'
                    if P.INSTALL_COHORT_EDGES is not None else
                    f'Machines grouped by install date, one {P.cohort_width.noun} per cohort, oldest first.')
@@ -519,26 +801,30 @@ class _Run:
                                   'requests and duplicates.')),
             ('Rate', 'Unplanned tickets per 100 installed machine-months.'),
             ('Baseline', (f'The final {self.plural} in the {P.baseline_months} months before the latest final '
-                          f'{self.noun}.')),
+                          f'{self.noun}; issue-level comparisons use only those with complete Category labels'
+                          + (f' (this run leaves out {_and(self.dropped)})' if self.dropped else '') + '.')),
             ('Final, provisional, in progress, partial',
              (f'Final: the {self.noun} has ended, its labels have had {P.LABEL_LAG_DAYS} days to settle and few '
               'tickets were still open when exported. Provisional: ended but not settled. In progress: the data end '
               'inside it. Partial: it starts before the data.')),
-            ('Flagged (higher or lower)', (f'A change from the baseline beyond normal {self.cad.variation}: a '
-                                           'screening flag for follow-up, not proof of a problem.')),
-            ('Watch list', ('A change of the same size with weaker evidence; reported only, because it could still '
-                            'be chance.')),
-            ('Request group', ("The ticket's Trouble Code and Category mapped to one of nine groups by the project's "
-                               'request-type reference.')),
+            ('Flagged (higher or lower)', (f'A change from the baseline of at least {thr}, beyond normal '
+                                           f'{self.cad.variation} after the correction for testing many cells '
+                                           f'(q-value below {P.Q_CUT:g}): a screening flag for follow-up, not proof '
+                                           'of a problem.')),
+            ('Watch list', (f'A change of at least {thr} with weaker evidence (q-value below {P.WATCH_Q:g}); reported '
+                            'only, because it could still be chance.')),
+            ('Sustained', (f'Flagged, or on the watch list, in the same direction in the previous {self.noun} too; '
+                           'the report says which.')),
+            ('Request group', _cap(self.group_definition())),
             ('Install cohort', cohorts),
             ('Crude ratio', "A cohort's rate over the rest of the fleet's rate in the same months."),
             ('Newer / older installs', ("A cohort's rate over the rate of all cohorts installed after it / "
                                         'before it.')),
             ('Same-age ratio', ("A cohort's tickets over those expected from machines of the same age in other "
-                                'cohorts, over the whole history (context; it decides only for the newest cohort).')),
-            ('Stands out', (f'Crude ratio at least {hi:.1f}x (or at most {1 / hi:.2f}x) after the '
-                            'Benjamini-Hochberg correction, and above (or below) both newer and older installs; '
-                            'for the newest cohort, also against earlier installs at the same age.')),
+                                'cohorts, over the whole final history. It decides for the newest cohort with enough '
+                                f'expected tickets, and for the other cohorts once at least {SAME_AGE_HISTORY_MONTHS} '
+                                'months of final history exist.')),
+            ('Stands out', self.cohort_rule('definition')),
             ('Unlisted tickets', ('Tickets on machines missing from every equipment list. They are not in the rates; '
                                   'the survivorship check puts them back for increases.')),
             ('95% interval', 'The range of rates or changes compatible with the data, from the account bootstrap.'),
@@ -727,25 +1013,26 @@ def _fleet_titles(R):
         return [f'Fleet ticket rate in {R.latest}: {_r(r.rate_latest)} per 100 installed machine-months', neutral]
     p = _pct(r.change_ratio)
     word = 'above' if p > 0 else 'below'
+    prev = R.baseline_text(r)
     if r.status in FLAGGED:
-        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {R.previous}',
+        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {prev}',
                 f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} its baseline']
     if r.status in WATCH:
-        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {R.previous}; this could still be chance',
+        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {prev}; this could still be chance',
                 f'Fleet ticket rate in {R.latest}: {abs(p):.0f}% {word} its baseline, possibly chance']
     why = R.quiet(r)
     if why == 'normal' and abs(p) < 50 * R.P.MIN_CHANGE:
-        return [f'Fleet ticket rate in {R.latest} was in line with {R.previous}',
+        return [f'Fleet ticket rate in {R.latest} was in line with {prev}',
                 f'Fleet ticket rate in {R.latest} was in line with its baseline']
     if why == 'small':
         thr = f'{100 * R.P.MIN_CHANGE:g}%'
-        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {R.previous}, under the {thr} threshold',
+        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {prev}, under the {thr} threshold',
                 f'Fleet ticket rate in {R.latest}: {abs(p):.0f}% {word} its baseline, under the {thr} threshold',
                 f'Fleet ticket rate in {R.latest}: {abs(p):.0f}% {word} its baseline, not flagged']
     if why == 'many':
-        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {R.previous}, possibly chance',
+        return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {prev}, possibly chance',
                 f'Fleet ticket rate in {R.latest}: {abs(p):.0f}% {word} its baseline, possibly chance']
-    return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {R.previous}, within normal variation',
+    return [f'Fleet ticket rate in {R.latest} was {abs(p):.0f}% {word} {prev}, within normal variation',
             f'Fleet ticket rate in {R.latest}: {abs(p):.0f}% {word} its baseline, within normal variation']
 
 
@@ -777,8 +1064,12 @@ def chart_fleet_trend(S, R, path):
         if fr is not None and _finite(fr.rate_baseline) and base:
             rb = float(fr.rate_baseline)
             ax.hlines(rb, base[0] - 0.45, base[-1] + 0.45, colors=S.INK2, linestyles=(0, (4, 3)), lw=1.3, zorder=4)
-            near = rate[base[0]:min(base[0] + 2, n)]
-            below = bool(np.nanmean(near) > rb) if np.isfinite(near).any() else False
+            # the label starts just before the first baseline marker and covers it (and the next one when periods
+            # are narrow): put it on the side of the dashed line where fewer of those markers are
+            near = rate[base[0]:min(base[0] + (1 if n <= 12 else 2), n)]
+            near = near[np.isfinite(near)]
+            up, down = int((near > rb).sum()), int((near <= rb).sum())
+            below = bool(up > down or (up == down and len(near) and near[0] > rb))
             ax.annotate(f'Baseline {_r(rb)}', (base[0] - 0.4, rb), xytext=(0, -5 if below else 5),
                         textcoords='offset points', ha='left', va='top' if below else 'bottom', fontsize=9.5,
                         color=S.INK2, zorder=2.5)
@@ -793,8 +1084,8 @@ def chart_fleet_trend(S, R, path):
                f'baseline and the dashed line is the baseline rate.')
     else:
         sub = f'{head} No {R.noun} is final yet, so nothing is compared and every rate can still change.'
-    notes = [R.hollow_note() if (~final).any() else '', R.ci_note(), 'Source: rates.csv (fleet, All unplanned '
-             'tickets)' + (' and changes.csv.' if li is not None else '.')]
+    notes = [R.hollow_note() if (~final).any() else '', R.ci_note(), R.history_note(),
+             'Source: rates.csv (fleet, All unplanned tickets)' + (' and changes.csv.' if li is not None else '.')]
     _frame(S, fig, title, sub, notes, R.defs(baseline=li is not None))
     _period_ticks(ax, R.labels)
     S.save(fig, path)
@@ -854,11 +1145,19 @@ def chart_group_trends(S, R, path):
     L = R.latest
     group_rows = [R.change_row('fleet', f'group|{g}') for g in groups]
     tested = [r for r in group_rows if r is not None and r.status != 'not_tested']
+    many, small, watch = R.beyond(pd.DataFrame(tested)) if tested else (0, 0, 0)
+    chance = [r for r in tested if r.status not in FLAGGED + WATCH and R.quiet(r) == 'many']
     if L is None:
         cands = [f'Unplanned tickets by request group, {_span_text(R)}']
     elif not tested:
         cands = [f'Unplanned tickets by request group: {L} could not be compared yet',
                  f'Unplanned tickets by request group, {_span_text(R)}']
+    elif not flagged and (many or small or watch):     # some interval excludes no change: say 'not flagged'
+        named = (f'{chance[0].issue} ({_pct(chance[0].change_ratio):+.0f}%)' if len(chance) == 1
+                 else _n(many, 'change'))
+        cands = ([f'No request group was flagged in {L}; {named} could still be chance',
+                  f'No request group was flagged in {L}; {_n(many, "change")} could still be chance'] if many else
+                 []) + [f'No request group was flagged for follow-up in {L}', f'No request group was flagged in {L}']
     elif not flagged:
         cands = [f'No request group changed beyond normal {R.cad.variation} in {L}',
                  f'No request group changed beyond normal variation in {L}']
@@ -866,7 +1165,7 @@ def chart_group_trends(S, R, path):
         g, r = flagged[0]
         p = _pct(r.change_ratio)
         word = 'above' if p > 0 else 'below'
-        cands = [f'{g} tickets in {L} were {abs(p):.0f}% {word} {R.previous}',
+        cands = [f'{g} tickets in {L} were {abs(p):.0f}% {word} {R.baseline_text(r)}',
                  f'{g} tickets in {L} were {abs(p):.0f}% {word} their baseline']
     else:
         cands = [f'{len(flagged)} request groups changed beyond normal {R.cad.variation} in {L}',
@@ -883,11 +1182,10 @@ def chart_group_trends(S, R, path):
         notes.append(f'Flagged: beyond normal {R.cad.variation} (a screening flag for follow-up, not proof of a '
                      'problem); watch: could still be chance; not tested: too few tickets or accounts, or labels '
                      'incomplete.')
-    notes += [R.hollow_note() if hollow else '', R.ci_note(),
+    notes += [R.hollow_note() if hollow else '', R.ci_note(), R.history_note(),
               'Source: rates.csv and changes.csv (fleet).' if L is not None else 'Source: rates.csv (fleet).']
-    group_def = ("Request group: the ticket's Trouble Code and Category mapped to one of nine groups by the "
-                 "project's request-type reference.")
-    defs = R.defs(baseline=L is not None) + [group_def]
+    group_def = f'Request group: {R.group_definition()}'
+    defs = R.defs(baseline=L is not None, issues=True) + [group_def]
     _frame(S, fig, title, sub, notes, defs)
     _period_ticks(axes[-1, 0], R.labels, fontsize=8.5, axes=tuple(axes[-1, 1:]))
     S.save(fig, path)
@@ -991,7 +1289,7 @@ def chart_cohort_profile(S, R, path):
         ax.set_ylabel('per 100', fontsize=9)
     from matplotlib.lines import Line2D
     names = [('stands_out_higher', 'Stands out higher'), ('stands_out_lower', 'Stands out lower'),
-             ('eligible', 'No clear difference'), ('not_tested', 'Not tested')]
+             ('eligible', 'Not called out'), ('not_tested', 'Not tested')]
     handles = [Line2D([], [], marker='o', ls='-', color=_status_colour(S, k) if k in STANDS else
                       (S.GRAY if k == 'eligible' else S.GRAY_LIGHT), markersize=6, lw=1.6) for k, _ in names
                if k in present]
@@ -1001,21 +1299,20 @@ def chart_cohort_profile(S, R, path):
                    borderaxespad=0, frameon=False)
     title = _pick_title(S, fig, _cohort_titles(R))
     sub = (f'Unplanned tickets per 100 installed machine-months by install cohort over {R.window_text} '
-           f'({_n(R.window_n, "final " + R.noun, "final " + R.plural)}), with 95% intervals; the dashed line is the '
-           'whole fleet.')
+           f'({_n(R.window_n, "final " + R.noun, "final " + R.plural)}'
+           + (f'; {R.window_note}' if R.window_note else '') + '), with 95% intervals; the dashed line is the whole '
+           'fleet.')
     others = R.stands.iloc[1:4] if len(R.stands) > 1 else R.stands.iloc[0:0]
     if len(others):
         sub += ' Also standing out: ' + '; '.join(f'{r.issue} on {_cohort_phrase(r.install_cohort)} '
                                                   f'({r.crude_ratio:.1f}x)' for r in others.itertuples()) + '.'
-    hi_ = 1 + R.P.MIN_CONTRAST
-    defs = R.defs(baseline=False) + [
-        (f'Install cohort: machines grouped by install date. A cohort stands out when its rate is at least '
-         f'{hi_:.1f}x the rest of the fleet (or at most {1 / hi_:.2f}x) after the Benjamini-Hochberg correction and '
-         'above (or below) both newer and older installs; the newest cohort is compared with earlier installs at '
-         'the same age.')]
+    defs = R.defs(baseline=False) + [R.cohort_rule('short')]
+    drawn = cc[cc.issue_key.isin(keys)]
+    too_new = 'position' in drawn and drawn.position.eq('too_new').any()
     notes = [('Labels at the markers: the cohort rate over the rest of the fleet. ' if 'stands_out_higher' in present
               or 'stands_out_lower' in present else '') + 'Not tested: too few tickets, machines or accounts, or too '
-             'few machines to compare with.', R.ci_note(), 'Source: cohort_contrasts.csv.']
+             'few machines to compare with' + ('; the newest cohorts are still filling up and are not compared.'
+                                                if too_new else '.'), R.ci_note(), 'Source: cohort_contrasts.csv.']
     _frame(S, fig, title, sub, notes, defs)
     _cohort_ticks(shown[0], order, axes=tuple(shown[1:]))
     S.save(fig, path)
@@ -1034,7 +1331,7 @@ def chart_cohort_map(S, R, path):
     keys = R.cohort_issues(5)[:4]
     if not keys:
         keys = ['all']
-    pk = list(R.periods.period_key)
+    pk = list(R.view_keys)
     final = np.array([s == 'final' for s in R.status])
     order = [c for c in R.cohort_order() if c in set(rt.stratum.astype(str))]
     panels = []
@@ -1106,10 +1403,10 @@ def chart_cohort_map(S, R, path):
     cands.append(f'{issue} ticket rates by install cohort and {R.noun}')
     title = _pick_title(S, fig, cands)
     sub = (f'Unplanned tickets per 100 installed machine-months by install cohort (rows, oldest at the top) and '
-           f'{R.noun} (columns); darker means a higher rate, each panel on its own scale.')
+           f'{R.noun} (columns), {_span_text(R)}; darker means a higher rate, each panel on its own scale.')
     notes = [(f'Plain light cells: under {R.P.MIN_CELL_MONTHS:g} installed machine-months, too few for a rate; '
              f'hatched columns: {R.plural} not final yet. The title counts final {R.plural} with at least two '
-              'cohorts shown.'), 'Source: rates.csv (install cohort).']
+              'cohorts shown.'), R.history_note(), 'Source: rates.csv (install cohort).']
     _frame(S, fig, title, sub, notes, R.defs(baseline=False))
     step = max(_period_step(ax, R.labels, 8.5) for ax in axes.flat[:n])     # the same labels on every panel
     for ax in axes.flat[:n]:
@@ -1120,6 +1417,9 @@ def chart_cohort_map(S, R, path):
 
 # ------------------------------------------------------------------------------------------------ 5 changes
 def _forest_rows(R):
+    """Rows of the changes chart: the fleet and its request groups (those tested), then the other flagged and
+    watch-list cells, fleet-level first and strongest first (as in the report), cut to MAX_FOREST_ROWS but keeping at
+    least one row of each flagged direction the title counts. Returns (head, extra, number of cells left out)."""
     c = R.changes
     head_keys = ['all'] + [f'group|{g}' for g in FU.PRIMARY]
     fleet = c[(c.stratum_dim == 'fleet') & c.issue_key.isin(head_keys)]
@@ -1127,11 +1427,19 @@ def _forest_rows(R):
     head = fleet[(fleet.status != 'not_tested') & np.isfinite(fleet.change_ratio.astype(float))]
     is_head = (c.stratum_dim == 'fleet') & c.issue_key.isin(head_keys)
     extra = c[c.status.isin(FLAGGED + WATCH) & ~is_head].copy()
+    extra['_f'] = (extra.stratum_dim != 'fleet').astype(int)
     extra['_w'] = extra.status.isin(WATCH).astype(int)
     extra['_o'] = R._order(extra)
-    extra = extra.sort_values(['_w', 'q_value', '_o'], kind='mergesort').drop(columns=['_w', '_o'])
+    extra = extra.sort_values(['_f', '_w', 'q_value', '_o'], kind='mergesort').drop(columns=['_f', '_w', '_o'])
     room = max(0, MAX_FOREST_ROWS - len(head))
-    return head, extra.head(room), max(0, len(extra) - room)
+    must = [extra.index[extra.status == st][0] for st in FLAGGED
+            if (extra.status == st).any() and not (head.status == st).any()]
+    rest = [i for i in extra.index if i not in must]
+    keep = set(must[:room] + rest[:max(0, room - len(must))])
+    shown = extra[extra.index.isin(keep)].copy()
+    top = set(extra.index[:room])
+    shown.attrs['forced'] = [str(extra.status.loc[i]) for i in must[:room] if i not in top]   # kept for the title
+    return head, shown, len(extra) - len(shown)
 
 
 def chart_changes(S, R, path):
@@ -1181,7 +1489,7 @@ def chart_changes(S, R, path):
     thr = f'{100 * R.P.MIN_CHANGE:g}%'
     order = ['higher', 'lower', 'watch_higher', 'watch_lower', 'no_clear_change']
     names = {'higher': 'Flagged higher', 'lower': 'Flagged lower', 'watch_higher': 'Watch, higher',
-             'watch_lower': 'Watch, lower', 'no_clear_change': 'No clear change'}
+             'watch_lower': 'Watch, lower', 'no_clear_change': 'Not flagged'}
     from matplotlib.patches import Patch
     handles = [Line2D([], [], marker='o', color=_status_colour(S, s), lw=2.2, markersize=6) for s in order
                if s in present] + [Patch(color=S.ZERO_CELL, lw=0)]
@@ -1189,7 +1497,11 @@ def chart_changes(S, R, path):
     _legend_above(ax, handles, names_shown, points=8)
     nflag = int((R.changes.status.isin(FLAGGED)).sum())
     nwatch = int((R.changes.status.isin(WATCH)).sum())
-    if nflag == 0:
+    many, small, watch = R.beyond()
+    if nflag == 0 and (many or small or watch):        # some interval excludes no change: say 'not flagged'
+        cands = ([f'No change in {R.latest} was flagged; {_n(many, "change")} could still be chance'] if many
+                 else []) + [f'No change in {R.latest} was flagged for follow-up', f'No change flagged in {R.latest}']
+    elif nflag == 0:
         cands = [f'No change in {R.latest} was beyond normal {R.cad.variation}',
                  f'No change in {R.latest} was beyond normal variation', f'No change flagged in {R.latest}']
     else:
@@ -1202,16 +1514,32 @@ def chart_changes(S, R, path):
                  f'({parts})'), f'{_n(nflag, "change")} flagged for follow-up in {R.latest}']
     title = _pick_title(S, fig, cands)
     tested = int(R.s.get('tested', 0) or 0)
-    sub = (f'Change in the rate from the baseline ({R.previous}), adjusted for business days, with 95% intervals: '
-           f'the fleet and its request groups, then every flagged or watch-list cell in other breakdowns. '
-           f'{_n(tested, "cell")} tested; {nwatch} on the watch list.')
+    base = R.baseline_summary(pd.concat([head, extra]))
+    forced = extra.attrs.get('forced') or []        # directions kept although weaker than the cells left out
+    if not hidden:
+        which = 'the fleet and its request groups' + (', then every other flagged or watch-list cell' if len(extra)
+                                                      else '')
+    elif not forced:
+        which = (f'the fleet and its request groups, then the {len(extra)} strongest other flagged or watch-list '
+                 f'cells, fleet-wide first; {hidden} more are in the report')
+    else:
+        kept = _and(f'one flagged {"increase" if st == "higher" else "decrease"}' for st in forced)
+        which = (f'the fleet and its request groups, then {len(extra)} other flagged or watch-list cells (fleet-wide '
+                 f'first, then the strongest, with at least {kept}); {hidden} more are in the report')
+    lead = ('Change in the rate from the baseline' + (f' ({base})' if '(' not in base else '')
+            + f', adjusted for business days, with 95% intervals: {which}.')
+    sub = (lead + (f' Baseline: {base}.' if '(' in base else '')
+           + f' {_n(tested, "cell")} tested; {nwatch} on the watch list.')
+    out = many - R.beyond(head)[0] if nflag == 0 else 0      # unflagged larger changes in cells not drawn
+    if out > 0:
+        who = f'The {_n(many, "change")}' if out == many else f'{out} of the {_n(many, "change")}'
+        where = 'is in a cell' if out == 1 else 'are in cells'
+        sub += f' {who} that could still be chance {where} not drawn here (changes.csv).'
     notes = [(f'Flagged: q-value below {R.P.Q_CUT:g} after one Benjamini-Hochberg correction over every tested cell, '
              f'and a change of at least {thr} (shaded band); a screening flag for follow-up, not proof of a problem. '
               f'Watch: q-value below {R.P.WATCH_Q:g}; could still be chance.'),
-             R.ci_note(change=True),
-             (f'{hidden} more flagged or watch-list cells are listed in the report. ' if hidden else '')
-             + 'Source: changes.csv.']
-    _frame(S, fig, title, sub, notes, R.defs())
+             R.ci_note(change=True), 'Source: changes.csv.']
+    _frame(S, fig, title, sub, notes, R.defs(issues=True))
     _log_ticks(ax, xmin, xmax, FixedLocator)
     S.save(fig, path)
     return title
@@ -1242,25 +1570,30 @@ def chart_data_quality(S, R, path):
     dq = R.dq
     if dq.empty:
         raise _Skip('there is no data-quality table')
-    dq = dq.set_index('period_key').reindex(list(R.periods.period_key))
+    dq = dq.set_index('period_key').reindex(list(R.view_keys))
     n = len(dq)
     x = np.arange(n)
     final = np.array([s == 'final' for s in R.status])
     P = R.P
+    # the engine's own Category gate: MAX_BLANK_CATEGORY_SHARE or twice the typical share, whichever is higher
+    blank = R.facts.get('blank_category_limit')
+    blank = float(blank) if _finite(blank) else P.MAX_BLANK_CATEGORY_SHARE
     panels = [('open_share', 'Tickets still open when exported', P.MAX_OPEN_SHARE,
                f'{_share(P.MAX_OPEN_SHARE)} limit; above it a {R.noun} stays provisional'),
-              ('blank_category_share', 'Blank Category (unplanned tickets, excluding Monitoring)',
-               P.MAX_BLANK_CATEGORY_SHARE, (f'{_share(P.MAX_BLANK_CATEGORY_SHARE)} limit; above it, issue-level '
-                                            'tests are skipped')),
+              ('blank_category_share', 'Blank Category (unplanned tickets, excluding Monitoring)', blank,
+               f'{_share(P.MAX_BLANK_CATEGORY_SHARE)} or twice the typical share ({_share(blank)} in this run)'),
               ('unlisted_share', 'Tickets on machines missing from the equipment list', UNLISTED_NOTE,
                f'{_share(UNLISTED_NOTE)}; above it the email mentions the share')]
     fig, axes = _figure(S, 11, 7.9, 3, 1, sharex=True)
-    over = {}
+    over, late = {}, {}
     ended = np.array([s in ('final', 'provisional') for s in R.status])     # in-progress periods are open anyway
     for ax, (col, name, limit, label) in zip(axes[:, 0], panels):
         v = 100 * dq[col].astype(float).fillna(0).to_numpy()
         bad = v > 100 * limit + 1e-9
+        if col == 'blank_category_share' and 'label_ok' in dq:      # the periods the gate actually left out
+            bad = dq.label_ok.isin([False, 'False']).to_numpy()
         over[col] = int((bad & ended).sum())
+        late[col] = int((bad & ~ended).sum())
         colours = np.where(bad, S.BLUE, S.GRAY_LIGHT)
         for i in range(n):
             if final[i]:
@@ -1289,14 +1622,19 @@ def chart_data_quality(S, R, path):
         cands = [f'{_share(u)} of {R.latest} tickets were on machines missing from the equipment list',
                  f'{_share(u)} of {R.latest} tickets were on unlisted machines']
     else:
-        cands = [f'Open-ticket and blank-Category shares were within limits in every {R.noun}',
+        ended_only = late['open_share'] or late['blank_category_share']      # only an unfinished period is above
+        every = f'every {"ended " if ended_only else ""}{R.noun}' + (' shown' if R.hidden_periods else '')
+        cands = [f'Open-ticket and blank-Category shares were within limits in {every}',
+                 f'Open and blank-Category shares were within limits in {every}',
+                 f'Open and blank-Category shares within limits in {every}',
                  'Open-ticket and blank-Category shares were within limits']
     title = _pick_title(S, fig, cands)
     sub = (f'Share of each {R.noun}\'s unplanned tickets, {_span_text(R)}. Highlighted bars are above the dashed '
            f'line; hollow bars are {R.plural} not final yet.')
-    notes = [('Open tickets: still open when the case export was taken; labels may still change. Unlisted tickets '
-             'are not in the rates; the survivorship check puts them back before an increase is flagged.'),
-             'Source: data_quality.csv.']
+    notes = [('Open tickets: still open when the case export was taken; labels may still change. Blank Category: above '
+              f'the dashed line, issue-level tests skip the {R.noun}. Unlisted tickets are not in the rates; the '
+              'survivorship check puts them back before an increase is flagged.'),
+             R.history_note('data_quality.csv'), 'Source: data_quality.csv.']
     _frame(S, fig, title, sub, notes, R.defs(baseline=False)[1:])
     _period_ticks(axes[-1, 0], R.labels)
     S.save(fig, path)
@@ -1312,8 +1650,8 @@ CHARTS = (
      lambda R: f'Rates by install cohort over {R.window_text}, against the whole fleet.'),
     ('cohort_map', chart_cohort_map, lambda R: f'Rates by install cohort and {R.noun} for the selected issues.'),
     ('changes', chart_changes,
-     lambda R: 'Change from the baseline for the fleet and its request groups, and every flagged or watch-list '
-               'cell.'),
+     lambda R: 'Change from the baseline for the fleet and its request groups, and the other flagged or watch-list '
+               'cells.'),
     ('data_quality', chart_data_quality,
      lambda R: f'Open, blank-Category and unlisted shares per {R.noun}, with their limits.'),
 )
@@ -1385,16 +1723,28 @@ def _chip(status):
 
 
 def _change_rows(R, df, watch=False):
+    """Rows of the flags or watch-list table, and whether they carry a 'Baseline' column: each row's own baseline,
+    added only when some row's baseline left out periods (issue-level rows skip baseline periods whose Category
+    labels are incomplete)."""
+    phrases = [R.baseline_text(r) for r in df.itertuples()]
+    own = any(p != R.previous for p in phrases)
     rows = []
-    for r in df.itertuples():
-        sustained = (f'yes, also flagged last {R.noun}' if bool(getattr(r, 'sustained', False))
-                     else ('no' if not watch else ''))
+    for r, phrase in zip(df.itertuples(), phrases):
+        extra = R.sustained_text(r)
+        sustained = f'yes, {extra}' if extra else ('no' if not watch else '')
         survivor = _text(getattr(r, 'survivor_note', ''))
-        note = 'could still be chance' + (f'; {survivor}' if survivor else '')
+        note = '; '.join(['could still be chance'] + [t for t in (survivor, extra) if t])
         rows.append([_chip(r.status), r.issue, R.stratum_text(r, style='label'), f'{r.rate_latest:.2f}',
-                     f'{r.rate_baseline:.2f}', f'{_pct(r.change_ratio):+.0f}%', _interval(r.ci_lo, r.ci_hi),
-                     note if watch else sustained])
-    return rows
+                     f'{r.rate_baseline:.2f}'] + ([phrase] if own else [])
+                    + [f'{_pct(r.change_ratio):+.0f}%', _interval(r.ci_lo, r.ci_hi), note if watch else sustained])
+    return rows, own
+
+
+def _change_table(R, df, watch=False):
+    rows, own = _change_rows(R, df, watch)
+    heads = (['Status', 'Issue', 'Breakdown', f'Rate in {R.latest}', 'Baseline rate'] + (['Baseline'] if own else [])
+             + ['Change', '95% interval', 'Note' if watch else 'Sustained'])
+    return _html_table(heads, rows, num=(3, 4, 6, 7) if own else (3, 4, 5, 6))
 
 
 def _write_html(R, charts, path):
@@ -1411,6 +1761,8 @@ def _write_html(R, charts, path):
         if R.k:
             meta.append(f'baseline {s["baseline_labels"][0]} to {s["baseline_labels"][-1]} '
                         f'({_n(R.k, "final " + R.noun, "final " + R.plural)})')
+        if R.dropped:
+            meta.append(f'{_and(R.dropped)} left out of issue-level comparisons (Category labels incomplete)')
     parts += ['<header>', f'<p class="kicker">{_e(_kind(R.cad))}</p>', f'<h1>{_e(title)}</h1>',
               f'<p class="meta">{_e(_cap("; ".join(meta)))}.</p>', '</header>']
     parts += ['<section id="key-messages">', '<h2>Key messages</h2>', '<ul class="key">']
@@ -1421,7 +1773,7 @@ def _write_html(R, charts, path):
         parts += ['<section id="rates">', f'<h2>Fleet rate by {_e(R.noun)}</h2>',
                   (f'<p class="notice">No reporting {_e(R.noun)} is final yet, so nothing is compared and there are no '
                   'call-outs. The rates below can still change.</p>')]
-        d = R.series('fleet', 'all')
+        d = R.series('fleet', 'all', every=True)
         rows = [[r.label, str(r.status).replace('_', ' '), f'{r.tickets:,.0f}' if _finite(r.tickets) else '',
                  f'{r.months:,.0f}' if _finite(r.months) else '', _r(r.rate) if _finite(r.rate) else '',
                  f'{_r(r.lo)} to {_r(r.hi)}' if _finite(r.lo) else ''] for r in d.itertuples()]
@@ -1432,38 +1784,36 @@ def _write_html(R, charts, path):
         parts += ['<section id="call-outs">', '<h2>Call-outs</h2>',
                   (f'<p class="lede">Changes from the baseline beyond normal {_e(R.cad.variation)}. These are '
                    'screening flags for follow-up, not proof of a problem.</p>')]
-        heads = ['Status', 'Issue', 'Breakdown', f'Rate in {L}', 'Baseline rate', 'Change', '95% interval',
-                 'Sustained']
+        rates_note = ('<p class="muted">Rates are unplanned tickets per 100 installed machine-months; the change is '
+                      'adjusted for business days.</p>')
         if len(R.flags):
-            parts.append(_html_table(heads, _change_rows(R, R.flags), num=(3, 4, 5, 6)))
-            parts.append('<p class="muted">Rates are unplanned tickets per 100 installed machine-months; the change '
-                         'is adjusted for business days.</p>')
+            parts += [_change_table(R, R.flags), rates_note]
         else:
             parts.append(f'<p>{_e(R.none_flagged())}</p>')
         parts.append('</section>')
         # cohorts
-        hi = 1 + P.MIN_CONTRAST
         parts += ['<section id="cohorts">', '<h2>Install cohorts that stand out</h2>',
-                  (f'<p class="lede">Over {_e(R.window_text)}. A cohort stands out only when its rate is at least '
-                   f'{hi:.1f}x the rest of the fleet (or at most {1 / hi:.2f}x) and above (or below) both newer and '
-                   'older installs: a peak in the install-date profile, which a steady age effect cannot produce. '
-                   'The newest cohort is compared with earlier installs at the same age.</p>')]
+                  f'<p class="lede">Over {_e(R.window_phrase())}. {_e(R.cohort_rule("lede"))}'
+                  + (f' {_e(R.same_age_note())}' if R.same_age_note() else '') + '</p>']
         if len(R.stands):
             rows = []
+            own = any(R.row_window(r) != R.window_text for r in R.stands.itertuples())   # a shorter issue window
             for r in R.stands.itertuples():
                 def _r(v, a, b):
                     return f'{v:.1f}x ({a:.1f} to {b:.1f})' if _finite(v) else 'n/a'
-                rows.append([r.issue, r.install_cohort, f'{r.rate_per_100:.2f}', f'{r.rate_rest:.2f}',
-                             _r(r.crude_ratio, r.crude_lo, r.crude_hi), _r(r.newer_ratio, r.newer_lo, r.newer_hi),
-                             _r(r.older_ratio, r.older_lo, r.older_hi),
-                             _r(r.same_age_ratio, r.same_age_lo, r.same_age_hi),
-                             f'{int(r.machines):,}' if _finite(r.machines) else '', _text(r.top_models),
-                             'yes' if bool(r.persisting) else 'no'])
-            parts.append(_html_table(['Issue', 'Install cohort', 'Rate', 'Rest of fleet', 'vs rest (95%)',
-                                      'vs newer installs', 'vs older installs', 'Same age (context)', 'Machines',
-                                      'Main models', 'Also last window'], rows, num=(2, 3, 8)))
+                rows.append([r.issue, r.install_cohort] + ([R.row_window(r)] if own else [])
+                            + [f'{r.rate_per_100:.2f}', f'{r.rate_rest:.2f}',
+                               _r(r.crude_ratio, r.crude_lo, r.crude_hi), _r(r.newer_ratio, r.newer_lo, r.newer_hi),
+                               _r(r.older_ratio, r.older_lo, r.older_hi),
+                               _r(r.same_age_ratio, r.same_age_lo, r.same_age_hi),
+                               f'{int(r.machines):,}' if _finite(r.machines) else '', _text(r.top_models),
+                               'yes' if bool(r.persisting) else 'no'])
+            parts.append(_html_table(['Issue', 'Install cohort'] + (['Window'] if own else [])
+                                     + ['Rate', 'Rest of fleet', 'vs rest (95%)', 'vs newer installs',
+                                        'vs older installs', 'Same age', 'Machines', 'Main models', 'Also last window'],
+                                     rows, num=(3, 4, 9) if own else (2, 3, 8)))
         elif len(R.contrasts):
-            parts.append(f'<p>No install cohort stands out over {_e(R.window_text)}.</p>')
+            parts.append(f'<p>No install cohort stands out over {_e(R.window_phrase())}.</p>')
         else:
             parts.append('<p>Install cohorts were not compared.</p>')
         parts.append('</section>')
@@ -1472,8 +1822,7 @@ def _write_html(R, charts, path):
                   (f'<p class="lede">Changes of at least {100 * P.MIN_CHANGE:g}% with weaker evidence (q-value below '
                    f'{P.WATCH_Q:g}). Reported only: these could still be chance.</p>')]
         if len(R.watch):
-            heads_w = heads[:-1] + ['Note']
-            parts.append(_html_table(heads_w, _change_rows(R, R.watch, watch=True), num=(3, 4, 5, 6)))
+            parts += [_change_table(R, R.watch, watch=True), rates_note]
         else:
             parts.append('<p>Nothing is on the watch list.</p>')
         parts.append('</section>')
@@ -1520,6 +1869,14 @@ def _write_html(R, charts, path):
                   _html_table([R.noun.capitalize(), 'Status', 'Unplanned tickets', 'Open at export',
                                'Blank Category', 'Unlisted', 'Installed machine-months', 'Machines (average)'],
                               rows, num=(2, 3, 4, 5, 6, 7))]
+        limit = R.facts.get('blank_category_limit')
+        if _finite(limit):
+            gated = [str(r.period_label) for r in R.dq.itertuples()      # final periods: the others are not compared
+                     if getattr(r, 'label_ok', True) in (False, 'False') and str(r.status) == 'final']
+            which = (f' ({_and(gated)})' if len(gated) <= 6 else f' ({len(gated)} {R.plural})') if gated else ''
+            parts.append(f'<p class="muted">A {_e(R.noun)} whose blank-Category share is above {_e(_share(limit))} '
+                         f'({_e(_share(P.MAX_BLANK_CATEGORY_SHARE))} or twice the typical share, whichever is higher) '
+                         f'is left out of issue-level comparisons{_e(which)}.</p>')
     parts.append('</section>')
 
     # definitions and method
@@ -1656,9 +2013,13 @@ def _write_pdf(S, R, charts, path):
                 pg.para(R.none_flagged(), before=0.05)
             pg.para(f'Install cohorts that stand out ({R.window_text})', size=12.5, color=S.INK, weight='bold',
                     before=0.22, keep=0.3)
+            if R.window_note:
+                pg.para(f'{_cap(R.window_note)}.', before=0.05)
+            if len(R.stands) and R.same_age_note(gaps_only=True):
+                pg.para(R.same_age_note(gaps_only=True), before=0.05)
             if len(R.stands):
                 for r in R.stands.itertuples():
-                    pg.para(str(r.sentence), bullet=True, before=0.05)
+                    pg.para(R.cohort_item(r), bullet=True, before=0.05)
             else:
                 pg.para('No install cohort stands out from the rest of the fleet.', before=0.05)
             if len(R.watch):
@@ -1733,16 +2094,18 @@ def _email_lines(R, pdf):
             out.append(('p', R.none_flagged()))
         if len(R.stands):
             shown = R.stands.head(3)
-            head = f'Install cohorts that stand out over {R.window_text}'
+            head = f'Install cohorts that stand out over {R.window_phrase()}'
             if len(R.stands) > 3:
-                head += f' ({len(R.stands)} in all, the first 3 shown)'
+                head += f'; {len(R.stands)} in all, the first 3 shown'
             out.append(('head', head + ':'))
             out += [('item', R.cohort_item(r)) for r in shown.itertuples()]
         elif len(R.contrasts):
-            out.append(('p', f'No install cohort stands out over {R.window_text}.'))
+            out.append(('p', f'No install cohort stands out over {R.window_phrase()}.'))
         if len(R.watch):
             out.append(('p', f'Watch list: {len(R.watch)} more could still be chance (see the report).'))
     notes = [R.not_final_text()] if R.not_final() else []
+    if L is not None and R.dropped:
+        notes.append(R.dropped_text())
     u = R.s.get('latest_unlisted_share')
     if L is not None and _finite(u) and u > UNLISTED_NOTE:
         notes.append(f'{_share(u)} of {L} tickets were on machines missing from the equipment list')
