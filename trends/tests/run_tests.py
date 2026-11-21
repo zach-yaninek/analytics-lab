@@ -12,6 +12,9 @@
      HISTORY_MONTHS changes no number
   4. planted effects: the Deposit Door rise and the alEx Computer Board fall in 2026 Q3 are flagged; the Touchscreen
      2022-23 install cohort stands out; a null fixture's false alarms are counted
+  4b. install cohorts: Touchscreen x3 on 2025 installs stands out in the 2026 Q1 back-run and the default run while
+     the 2026 cohort is still filling up; a pure age effect (Touchscreen x3 at age 3-5 years) makes no cohort stand out;
+     in a 2024 Q4 back-run each row names its own window and the short history skips the interior same-age check
   5. publishing: files, manifest, privacy scan, byte-identical reruns, a planted leak stops publication and is
      recorded in failed/; a file locked in latest/ stops the swap (E30) and leaves latest/ whole
   6. export drift: title rows, another sheet name, a renamed header, a split Category, a renamed Trouble Code, a
@@ -154,19 +157,44 @@ def planted(fx, truth, runs, null_fx):
        status('family', 'alEx', 'Computer Board'))
     k = r.tables['cohort_contrasts']
     ts = k[(k.issue == 'Touchscreen')].set_index('install_cohort')
-    # the two planted x3 cohorts are adjacent, so each sits in the other's 'newer' or 'older' comparator; at half size
-    # (quick) only one of them may clear the bar, which is the conservative rule working as intended
+    for y in ('2022', '2023'):
+        if y in ts.index:
+            t = ts.loc[y]
+            print(f'      Touchscreen {y}: {t.status}, crude {t.crude_ratio:.2f}, newer {t.newer_ratio:.2f}, older '
+                  f'{t.older_ratio:.2f}, same age {t.same_age_ratio:.2f} ({t.same_age_lo:.2f}-{t.same_age_hi:.2f}), '
+                  f'q {t.q_call:.2g}')
+    # Both planted x3 cohorts pass every margin of the rule: at least 1.5x the rest of the fleet and 1.25x newer
+    # installs, older installs and machines of the same age. Whether each is also beyond chance after the correction
+    # depends on the fleet's size: the two cohorts are adjacent, so each sits in the other's 'newer' or 'older'
+    # comparator. At full size both stand out (on seeds 7 and 11; on seed 3 only 2023 does). At half size (quick) only
+    # one of them clears the bar (2023 on seeds 3, 7 and 11), which is the conservative rule working as intended.
+    mc = r.params['MIN_CONTRAST']
+    pr = ts.loc[[y for y in ('2022', '2023') if y in ts.index]]
+    ok('Touchscreen 2022 and 2023 installs pass every margin of the rule (crude, newer, older, same age)',
+       len(pr) == 2 and ((pr.crude_ratio >= 1 + mc) & (pr.newer_ratio >= 1 + mc / 2) & (pr.older_ratio >= 1 + mc / 2)
+                         & (pr.same_age_ratio >= 1 + mc / 2)).all(),
+       str(pr[['crude_ratio', 'newer_ratio', 'older_ratio', 'same_age_ratio']].round(2).to_dict('index')))
     if QUICK['on']:
-        either = [y for y in ('2022', '2023') if ts.status.get(y) == 'stands_out_higher']
-        ok('Touchscreen 2022 or 2023 installs stand out', bool(either),
+        ok('Touchscreen 2022 or 2023 installs stand out',
+           any(ts.status.get(y) == 'stands_out_higher' for y in ('2022', '2023')),
            f"2022 {ts.status.get('2022')}, 2023 {ts.status.get('2023')}")
     else:
         ok('Touchscreen 2022 installs stand out', ts.status.get('2022') == 'stands_out_higher', ts.status.get('2022'))
         ok('Touchscreen 2023 installs stand out', ts.status.get('2023') == 'stands_out_higher', ts.status.get('2023'))
+    # (seed 7 at both sizes; at half size seed 3 also calls 2026 installs out on Door, as before the per-issue rule:
+    # the newest cohort's months sit at the end of the window, where the planted Deposit Door rise is)
     others = k[k.status.str.startswith('stands_out') & ~(k.issue.isin(['Touchscreen', 'Electronics'])
                                                           & k.install_cohort.isin(['2022', '2023']))]
     ok('no other install cohort stands out on the planted fixture', others.empty,
        str(list(zip(others.install_cohort, others.issue))[:6]))
+    # each row is worded over its own window; a row that was not tested states only its rate and the reason
+    nt = k[k.status == 'not_tested']
+    ok('cohort sentences: no nan or inf, and not-tested rows carry no ratio',
+       not k.sentence.str.contains(r'\b(?:nan|inf)x?\b', regex=True).any()
+       and not nt.sentence.str.contains('the rest of the fleet').any()
+       and nt.sentence.str.contains('; not tested (', regex=False).all())
+    ok('cohort sentences use the window of their own rows',
+       all(s.endswith('.') and f' over {w}' in s for s, w in zip(k.sentence, k.window_label)))
     flags = c[c.status.isin(['higher', 'lower'])]
     # the Deposit Door rise is fleet-wide, so it shows in every stratum's Door and Deposit Door; the alEx Computer
     # Board fall shows in the fleet, in alEx and in its models
@@ -191,6 +219,77 @@ def planted(fx, truth, runs, null_fx):
     ok(f'null fixture: at most one false flag ({nflags} flags of {int(nf.eligible.sum())} tested)', nflags <= 1)
     ok(f'null fixture: no install cohort stands out ({ncoh})', ncoh == 0)
     return r
+
+
+def cohort_rule(base_fx, quick):
+    print("4b. Install cohorts: the newest testable cohort, an age effect, each row's own window")
+    # Touchscreen x3 on 2025 installs: in a 2026 Q1 back-run the 2026 cohort holds a handful of machine-months, and
+    # in the default run (2026 Q3) it is still filling up; 2025 is then the newest testable cohort, compared on the
+    # same-age ratio instead of with a near-empty 'newer installs' group. Full size even in quick mode: at half size
+    # the 2025 cohort expects fewer than 10 Touchscreen tickets in the 2026 Q1 window, so it is too new to test itself.
+    fx, _ = fixture('v_cohort_2025', variant='cohort_2025', scale=1.0)
+    for latest in ('2026 Q1', None):
+        r = run(params(fx, **({'LATEST_PERIOD': latest} if latest else {})))
+        k = r.tables['cohort_contrasts']
+        ts = k[k.issue == 'Touchscreen'].set_index('install_cohort')
+        lab = r.summary.get('latest_label')
+        t = ts.loc['2025'] if '2025' in ts.index else None
+        detail = 'missing' if t is None else (f'{t.position}, {t.status}, crude {t.crude_ratio:.2f}, same age '
+                                              f'{t.same_age_ratio:.2f}, q {t.q_call:.2g}')
+        print(f'      cohort_2025, {lab}: Touchscreen 2025 {detail}; 2026 {ts.position.get("2026")}')
+        ok(f'cohort_2025, {lab}: Touchscreen 2025 installs stand out as the newest testable cohort',
+           t is not None and t.status == 'stands_out_higher' and t.position == 'newest', detail)
+        ok(f'cohort_2025, {lab}: the 2026 cohort is too new to compare',
+           ts.position.get('2026') == 'too_new' and ts.status.get('2026') == 'not_tested'
+           and 'too new' in str(ts.not_tested_reason.get('2026')), f"{ts.position.get('2026')}")
+        others = k[k.status.str.startswith('stands_out') & ~(k.issue.isin(['Touchscreen', 'Electronics'])
+                                                              & (k.install_cohort == '2025'))]
+        ok(f'cohort_2025, {lab}: no other install cohort stands out', others.empty,
+           str(list(zip(others.install_cohort, others.issue))[:6]))
+    # Touchscreen x3 while a machine is 3-5 years old, the same for every install year: the cohorts at that age in the
+    # window peak against newer and older installs, but match machines of the same age in other cohorts (no call-out
+    # on seeds 3, 7 and 11 at full size; at half size seed 3 has the 2026 Door call-out noted in planted())
+    hx, _ = fixture('v_age_hump', variant='age_hump', scale=0.5 if quick else 1.0)
+    r = run(params(hx))
+    k = r.tables['cohort_contrasts']
+    st = k[k.status.str.startswith('stands_out')]
+    ok('age_hump: no install cohort stands out (an age effect, not a cohort difference)', st.empty,
+       str(list(zip(st.install_cohort, st.issue, st.q_call.round(4)))[:6]))
+    ok('age_hump: the interior same-age check runs (at least 24 months of final history)',
+       r.facts['cohorts'].get('same_age_check_interior') == {'all': True, 'labels': True},
+       str(r.facts['cohorts'].get('history_months')))
+    t = k[(k.issue == 'Touchscreen') & (k.install_cohort == '2022')]
+    detail = 'missing' if t.empty else (f'crude {t.crude_ratio.iloc[0]:.2f}, newer {t.newer_ratio.iloc[0]:.2f}, older '
+                                        f'{t.older_ratio.iloc[0]:.2f}, same age {t.same_age_ratio.iloc[0]:.2f}: '
+                                        f'{t.not_tested_reason.iloc[0]}')
+    print(f'      age_hump, Touchscreen 2022 installs: {detail}')
+    ok('age_hump: Touchscreen 2022 installs peak against newer and older installs, and the note puts it down to age',
+       len(t) == 1 and t.crude_ratio.iloc[0] >= 1.5 and t.newer_ratio.iloc[0] >= 1.25 and t.older_ratio.iloc[0] >= 1.25
+       and t.not_tested_reason.iloc[0].startswith('in line with machines of the same age'), detail)
+    # Each row is worded over the window of its own set of periods. In a 2024 Q4 back-run, 2024 Q1 (15% blank
+    # Category in Jan-Feb 2024) is in the all-ticket window but not in the issue-level one. Its 12 months of final
+    # history are too few for the interior same-age check, so an interior call-out's basis says so.
+    from ipa_trends import cohorts as COH
+    r = run(params(base_fx, LATEST_PERIOD='2024 Q4', OUTPUT_DIR=str(TMP / 'out' / 'cohort_back_run')), publish=True)
+    k, info = r.tables['cohort_contrasts'], r.facts['cohorts']
+    issue = k.issue_level != 'all'
+    labels = {'all': sorted(set(k.window_label[~issue])), 'issue': sorted(set(k.window_label[issue]))}
+    ok('2024 Q4 back-run: all-ticket rows cover 2024 Q1 to Q4, issue-level rows only Q2 to Q4 (complete labels)',
+       labels == {'all': ['2024 Q1 to 2024 Q4'], 'issue': ['2024 Q2 to 2024 Q4']}
+       and set(k.window_periods[issue]) == {3} and set(k.window_periods[~issue]) == {4}, str(labels))
+    ok('2024 Q4 back-run: every sentence names its own window',
+       all(f' over {w}' in s for s, w in zip(k.sentence, k.window_label)))
+    pub = pd.read_csv(Path(r.paths['run_dir']) / 'cohort_contrasts.csv', dtype=str)
+    key = ['install_cohort', 'issue_key']
+    ok("2024 Q4 back-run: the published table keeps each row's window",
+       pub.set_index(key).window_label.to_dict() == k.set_index(key).window_label.to_dict(),
+       str(pub.groupby('window_label').size().to_dict()))
+    called = k[k.status.str.startswith('stands_out') & (k.position == 'interior')]
+    print(f'      2024 Q4 back-run: history {info.get("history_months")} months; interior call-outs {len(called)}')
+    ok('2024 Q4 back-run: with 12 months of history the interior same-age check is skipped, and the basis says so',
+       info.get('same_age_check_interior') == {'all': False, 'labels': False}
+       and called.basis.str.contains(f'needs {COH.SAME_AGE_HISTORY_MONTHS} months of final history').all(),
+       str(list(called.basis)[:3]))
 
 
 def publishing(fx, truth):
@@ -550,6 +649,7 @@ def main(argv=None):
     null_fx, _ = fixture('null', null=True, scale=scale)
     runs = cadences(fx, a.quick)
     planted(fx, truth, runs, null_fx)
+    cohort_rule(fx, a.quick)
     publishing(fx, truth)
     variants(runs, a.quick)
     if not a.no_notebook:

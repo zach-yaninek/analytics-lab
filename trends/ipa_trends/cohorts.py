@@ -12,23 +12,37 @@ For each install cohort x issue:
                   cohorts. Bands where the other cohorts have fewer than 100 machine-months are left out of both
                   sides; the ratio is not estimable when that drops more than 25% of the cohort's tickets.
 
-All ratios get paired account-bootstrap intervals and p-values. A cohort 'stands out' (higher) when at least
-MIN_EXPECTED tickets are expected, the window's labels are complete, and:
+All ratios get paired account-bootstrap intervals and p-values.
 
-  - a cohort with both older and newer installs is at least 1 + MIN_CONTRAST times the rest of the fleet and at least
-    1 + MIN_CONTRAST / 2 times both the newer and the older installs: a peak in the install-date profile, which no
-    steady age effect (rates rising, or falling, with machine age) can produce. Two neighbouring cohorts can both
-    stand out, since each is compared with all newer and all older installs;
-  - the newest cohort, which has no newer installs, is at least 1 + MIN_CONTRAST times both the rest of the fleet and
-    earlier installs observed at the same age;
+Each cohort x issue has a position, chosen per issue. The 'newest' cohort is the newest testable one: the newest
+dated cohort (other than the oldest) with at least MIN_EXPECTED tickets expected in the window. Dated cohorts
+installed after it are 'too_new' (usually because they are still filling up: machines were still being installed
+during the window): they are shown but never compared or called out. Comparing the cohort before them with a
+near-empty 'newer installs' group would hide a real difference for as long as the newest cohort fills up. The
+oldest, pooled cohort ('Before ...') is 'oldest' and 'Unknown' is 'undated': both are shown but never called out.
+The cohorts in between are 'interior'. When no cohort after the oldest is testable for an issue, the newest dated
+cohort is 'newest' and none is 'too_new'.
+
+A cohort 'stands out' (higher) when at least MIN_EXPECTED tickets are expected, the window's labels are complete, and:
+
+  - an interior cohort is at least 1 + MIN_CONTRAST times the rest of the fleet and at least 1 + MIN_CONTRAST / 2
+    times both the newer and the older installs: a peak in the install-date profile. A peak rules out an age effect
+    that rises or falls steadily with machine age (a cohort in the middle of such a trend lies between its newer and
+    older neighbours), but not a wear-out window: rates that are high only at some ages make the cohorts at those
+    ages peak. So when the final history behind the window spans at least SAME_AGE_HISTORY_MONTHS (24) months and
+    the same-age ratio is estimable, an interior cohort must also be at least 1 + MIN_CONTRAST / 2 times machines of
+    the same age in other cohorts. With a shorter history, machines of the same age come mostly from the
+    neighbouring install years (docs/10) and that check is skipped: the basis says so. Two neighbouring cohorts can
+    both stand out, since each is compared with all newer and all older installs;
+  - the newest cohort, which has no testable newer installs, is at least 1 + MIN_CONTRAST times both the rest of the
+    fleet and machines of the same age in other cohorts;
   - and every one of those comparisons is beyond chance together: the call-out's p-value is the largest of their
-    p-values (an intersection-union test), and one Benjamini-Hochberg correction runs over every cohort x issue cell
-    (q below Q_CUT).
+    p-values (an intersection-union test), and one Benjamini-Hochberg correction runs over every eligible cohort x
+    issue cell (q below Q_CUT).
 
-The oldest, pooled cohort ('Before ...') and 'Unknown' are shown but never called out. 'Lower' is the mirror image.
-Within one year of data a pure same-age comparison cannot separate neighbouring install years from machine age
-(docs/10), which is why the call-out rests on the peak; the same-age ratio is reported for context. 'persisting'
-marks a cohort that also stood out in the window ending one period earlier.
+'Lower' is the mirror image. 'persisting' marks a cohort that also stood out in the window ending one period
+earlier. Each row carries the window label of its own set of periods: all-ticket rows use every final period of the
+window, issue-level rows only those with complete Category labels (and the same-age history likewise).
 """
 import warnings
 
@@ -45,6 +59,7 @@ from .inputs import UNKNOWN, UNMAPPED
 MIN_COMPARATOR_MONTHS = 100
 KEY_CHUNK = 8
 MAX_DROPPED = 0.25
+SAME_AGE_HISTORY_MONTHS = 24        # final history an interior cohort's same-age check needs
 
 
 def same_age_table(O, M, min_comparator=MIN_COMPARATOR_MONTHS):
@@ -99,6 +114,77 @@ def history(grid, latest_pos, mask=None):
     if mask is not None:
         ok &= np.asarray(mask, bool)
     return [int(i) for i in grid.index[ok]]
+
+
+def history_months(grid, positions):
+    """Whole months from the start of the first period at `positions` to the end of the last (0 when empty)."""
+    if not positions:
+        return 0
+    a, b = grid.period_start[positions[0]], grid.period_end[positions[-1]]
+    return int((b.year - a.year) * 12 + b.month - a.month - (b.day < a.day))
+
+
+def _join(items):
+    items = list(items)
+    return items[0] if len(items) == 1 else f'{", ".join(items[:-1])} and {items[-1]}'
+
+
+def window_label(grid, positions, full=()):
+    """'<first> to <last>' (or one label) for the periods at `positions`. Periods of `full` (the window of every final
+    period) that fall between the first and the last but are not in `positions` (issue-level windows leave out periods
+    with incomplete Category labels) are named: '<first> to <last> except <label> (incomplete Category labels)'."""
+    if not positions:
+        return ''
+    first, last = grid.label[positions[0]], grid.label[positions[-1]]
+    text = first if len(positions) == 1 else f'{first} to {last}'
+    gaps = [grid.label[p] for p in full if positions[0] < p < positions[-1] and p not in set(positions)]
+    if gaps:
+        text += f' except {_join(gaps)} (incomplete Category labels)'
+    return text
+
+
+def positions(c, dated, min_expected):
+    """Position of every cohort x issue row, chosen per issue: 'undated' (Unknown), 'oldest' (the first dated cohort,
+    pooled), 'newest' (the newest testable cohort: the newest dated cohort after the oldest with at least
+    `min_expected` tickets expected), 'too_new' (dated cohorts installed after it) or 'interior'. When no cohort after
+    the oldest is testable for an issue, the newest dated cohort is 'newest' and none is 'too_new'.
+
+    c: rows with install_cohort, issue_key and expected_crude; dated: the dated cohorts in install order."""
+    rank = c.install_cohort.map({k: j for j, k in enumerate(dated)}).astype(float)
+    testable = (rank > 0) & (c.expected_crude.fillna(0) >= min_expected)
+    newest = rank.where(testable).groupby(c.issue_key).transform('max').fillna(len(dated) - 1)
+    return pd.Series(np.select([rank.isna(), rank == 0, rank == newest, rank > newest],
+                               ['undated', 'oldest', 'newest', 'too_new'], 'interior'), index=c.index, dtype=object)
+
+
+def call_rule(c, min_contrast, same_age_check):
+    """The call-out rule for every row (see the module docstring). Returns (up, down, p_call, age_like) as arrays:
+    candidate higher / lower (by the practical margins), the intersection-union p-value of the comparisons the
+    candidate needs (1 for non-candidates), and interior rows that peak against newer and older installs but are in
+    line with machines of the same age in other cohorts (only the same-age condition fails).
+
+    c: rows with position, crude / newer / older / same_age ratios, their p-values and same_age_dropped_share;
+    same_age_check: per row, whether an interior row must pass the same-age condition (history long enough and the
+    same-age ratio estimable). A missing p-value counts as 1."""
+    hi, lo = 1 + min_contrast, 1 / (1 + min_contrast)
+    side_hi, side_lo = 1 + min_contrast / 2, 1 / (1 + min_contrast / 2)
+    interior, newest = (c.position == 'interior').to_numpy(), (c.position == 'newest').to_numpy()
+    check = interior & np.asarray(same_age_check, bool)
+    sa_ok = (c.same_age_dropped_share <= MAX_DROPPED).to_numpy()
+    crude, newer, older, same = (c[f'{k}_ratio'].to_numpy(float) for k in ('crude', 'newer', 'older', 'same_age'))
+    p = {k: c[f'p_{k}'].fillna(1.0).to_numpy(float) for k in ('crude', 'newer', 'older', 'same_age')}
+    with np.errstate(invalid='ignore'):
+        peak_up = (crude >= hi) & (newer >= side_hi) & (older >= side_hi)
+        peak_down = (crude <= lo) & (newer <= side_lo) & (older <= side_lo)
+        sa_up, sa_down = same >= side_hi, same <= side_lo
+        up = np.where(interior, peak_up & (~check | sa_up), newest & sa_ok & (crude >= hi) & (same >= hi))
+        down = np.where(interior, peak_down & (~check | sa_down), newest & sa_ok & (crude <= lo) & (same <= lo))
+    p_int = np.maximum(p['crude'], np.maximum(p['newer'], p['older']))
+    p_int = np.where(check, np.maximum(p_int, p['same_age']), p_int)
+    p_new = np.maximum(p['crude'], p['same_age'])
+    p_call = np.where(up | down, np.where(interior, p_int, p_new), 1.0)
+    age_like = check & ((peak_up & ~sa_up) | (peak_down & ~sa_down))
+    return up, down, p_call, age_like
 
 
 def window_machines(mp, positions, keys):
@@ -229,23 +315,37 @@ def contrasts(ctx, latest_pos, months=None):
             rows += _chunk_rows(ctx, cohorts, order, bands, kk_all[k0:k0 + KEY_CHUNK], win, hist, set_name)
     c = pd.DataFrame(rows)
     c = c.merge(ctx.catalog[['issue_key', 'issue_level', 'issue_group', 'issue', 'order']], on='issue_key')
+    # each row carries the window of its own set of periods, and whether its same-age history is long enough
+    sets = {'all': (win_all, hist_all), 'labels': (win_lab, hist_lab)}
+    labels = {s: window_label(grid, w, win_all) for s, (w, _) in sets.items()}
+    span = {s: history_months(grid, h) for s, (_, h) in sets.items()}
+    long_history = {s: m >= SAME_AGE_HISTORY_MONTHS for s, m in span.items()}
+    c['window_label'] = c.window_set.map(labels)
     c['p_crude'] = stats.two_sided_p(c.z_crude)
     with np.errstate(invalid='ignore', divide='ignore'):
         c['rate_per_100'] = 100 * c.tickets / c.machine_months
         c['rate_rest'] = 100 * c.rest_tickets / c.rest_months
     dated = [cohorts[i] for i in order]
-    oldest, newest = (dated[0], dated[-1]) if dated else (None, None)
-    c['position'] = np.select([c.install_cohort == UNKNOWN, c.install_cohort == newest, c.install_cohort == oldest],
-                              ['undated', 'newest', 'oldest'], 'interior')
+    c['position'] = positions(c, dated, P.MIN_EXPECTED)
+    # cohorts with machines installed during the window are still filling up
+    pop = getattr(ctx, 'pop', None)
+    filling = {s: (set(dated) if pop is None or not w else
+                   set(pop.loc[pop.install_date >= grid.period_start[w[0]], 'install_cohort'].astype(str)))
+               for s, (w, _) in sets.items()}
 
     reason = pd.Series('', index=c.index, dtype=object)
 
     def block(mask, why):
-        reason[(reason == '') & mask] = why
+        m = (reason == '') & mask
+        reason[m] = why[m] if isinstance(why, pd.Series) else why
     block(c.position == 'undated', 'install date unknown')
     block(c.issue.isin((FU.NO_CAT, UNMAPPED)), 'not an issue (no Category / unmapped)')
     block((c.window_set == 'labels') & (c.window_periods < max(1, len(win_all) // 2)),
           'Category labels incomplete in too many window periods')
+    block((c.position == 'too_new') & pd.Series([k in filling[s] for k, s in zip(c.install_cohort, c.window_set)],
+                                                index=c.index),
+          c.expected_crude.map(lambda e: f'too new: still filling up ({np.floor(e * 10 + 1e-9) / 10:.1f} expected '
+                                         'tickets)' if _finite(e) else 'too new: still filling up'))  # 9.98 -> 9.9
     block(c.expected_crude.fillna(0) < P.MIN_EXPECTED, f'fewer than {P.MIN_EXPECTED:g} tickets expected')
     block(c.accounts_with_tickets < 2, 'tickets from fewer than 2 accounts')
     block(~np.isfinite(c.z_crude), 'not estimable')
@@ -253,18 +353,13 @@ def contrasts(ctx, latest_pos, months=None):
     for col in ('newer', 'older', 'same_age'):
         c[f'p_{col}'] = stats.two_sided_p(c[f'z_{col}'])
     hi, lo = 1 + P.MIN_CONTRAST, 1 / (1 + P.MIN_CONTRAST)
-    side_hi, side_lo = 1 + P.MIN_CONTRAST / 2, 1 / (1 + P.MIN_CONTRAST / 2)
     interior, newest = c.position == 'interior', c.position == 'newest'
     sa_ok = c.same_age_dropped_share <= MAX_DROPPED
-    # a candidate points the same way on every comparison it needs, by at least the practical margins
-    up = np.where(interior, (c.crude_ratio >= hi) & (c.newer_ratio >= side_hi) & (c.older_ratio >= side_hi),
-                  newest & sa_ok & (c.crude_ratio >= hi) & (c.same_age_ratio >= hi))
-    down = np.where(interior, (c.crude_ratio <= lo) & (c.newer_ratio <= side_lo) & (c.older_ratio <= side_lo),
-                    newest & sa_ok & (c.crude_ratio <= lo) & (c.same_age_ratio <= lo))
-    # intersection-union test: every comparison must hold, so the call-out's p-value is the largest of theirs
-    p_int = np.fmax(c.p_crude, np.fmax(c.p_newer, c.p_older))
-    p_new = np.fmax(c.p_crude, c.p_same_age)
-    c['p_call'] = np.where(up | down, np.where(interior, p_int, p_new), 1.0)
+    long_enough = c.window_set.map(long_history).astype(bool)
+    # the same-age comparison is part of the rule for the newest cohort, and for an interior one with enough history
+    c['same_age_check'] = newest | (interior & long_enough & sa_ok)
+    up, down, p_call, age_like = call_rule(c, P.MIN_CONTRAST, c.same_age_check)
+    c['p_call'] = p_call
     q = np.full(len(c), np.nan)
     if c.eligible.any():
         q[c.eligible.to_numpy()] = FX.bh_q(c.p_call[c.eligible].fillna(1.0).to_numpy())
@@ -272,16 +367,25 @@ def contrasts(ctx, latest_pos, months=None):
     called = c.eligible & (c.q_call < P.Q_CUT)
     c['status'] = np.select([called & up, called & down, c.eligible],
                             ['stands_out_higher', 'stands_out_lower', 'no_clear_difference'], 'not_tested')
-    c['basis'] = np.select([c.status.str.startswith('stands_out') & interior,
-                            c.status.str.startswith('stands_out') & newest],
-                           ['above (or below) both newer and older installs',
-                            'against earlier installs at the same age'], '')
-    big = c.eligible & ((c.crude_ratio >= hi) | (c.crude_ratio <= lo)) & ~c.status.str.startswith('stands_out')
-    note = np.select([big & (c.position == 'oldest'), big & interior & ~(up | down),
-                      big & newest & ~(up | down), big],
+    stands = c.status.str.startswith('stands_out')
+    side = pd.Series(np.where(c.status == 'stands_out_lower', 'below', 'above'), index=c.index)
+    short = c.window_set.map(span).map(
+        lambda m: f'; the same-age check needs {SAME_AGE_HISTORY_MONTHS} months of final history ({m} available)')
+    c['basis'] = np.select(
+        [stands & interior & c.same_age_check, stands & interior & ~long_enough, stands & interior, stands & newest],
+        [side + ' both newer and older installs and other cohorts at the same age',
+         side + ' both newer and older installs' + short,
+         side + ' both newer and older installs; the same-age ratio could not be estimated',
+         'newest testable cohort: ' + side + ' the rest of the fleet and other cohorts at the same age'], '')
+    big = c.eligible & ((c.crude_ratio >= hi) | (c.crude_ratio <= lo)) & ~stands
+    note = np.select([big & (c.position == 'oldest'), big & age_like & (c.crude_ratio >= hi), big & age_like,
+                      big & interior & ~(up | down), big & newest & ~sa_ok, big & newest & ~(up | down), big],
                      ['oldest pooled cohort: no older installs to compare with',
+                      'in line with machines of the same age in other cohorts: may be an age (wear-out) effect',
+                      'in line with machines of the same age in other cohorts: may be an age effect',
                       'in line with newer or older installs: may be an age effect',
-                      'not different from earlier installs at the same age',
+                      'no same-age comparison: too few machines of the same age in other cohorts',
+                      'in line with machines of the same age in other cohorts: may be an age effect',
                       'could still be chance'], '')
     c['not_tested_reason'] = np.where(reason != '', reason, note)
 
@@ -309,10 +413,10 @@ def contrasts(ctx, latest_pos, months=None):
     order_of = {str(k): i for i, k in enumerate(mp.install_cohort.cat.categories)}
     c['cohort_order'] = c.install_cohort.map(order_of)
     c = c.sort_values(['order', 'cohort_order']).reset_index(drop=True)
-    info = {'window': [grid.label[p] for p in win_all],
-            'window_label': grid.label[win_all[0]] if len(win_all) == 1
-            else f'{grid.label[win_all[0]]} to {grid.label[win_all[-1]]}',
-            'window_positions': win_all, 'window_label_positions': win_lab, 'history_periods': len(hist_all)}
+    info = {'window': [grid.label[p] for p in win_all], 'window_label': labels['all'],
+            'window_label_issue_level': labels['labels'],
+            'window_positions': win_all, 'window_label_positions': win_lab, 'history_periods': len(hist_all),
+            'history_months': span, 'same_age_check_interior': long_history}
     return c, info
 
 
@@ -326,14 +430,47 @@ def add_persisting(c, prev):
     return c
 
 
-def sentence(r, window_label):
-    """Executive wording for one cohort x issue."""
-    text = (f'{r.issue}, {r.install_cohort} installs: {r.rate_per_100:.2f} per 100 installed machine-months over '
-            f'{window_label}, {r.crude_ratio:.1f}x the rest of the fleet')
+def _phrase(label):
+    """'2022 installs', 'installs before 2016', 'installs from Jan 2025', 'installs with no install date'."""
+    s = str(label)
+    if s.startswith('Before '):
+        return f'installs before {s[7:]}'
+    if s.startswith('From '):
+        return f'installs from {s[5:]}'
+    return 'installs with no install date' if s == UNKNOWN else f'{s} installs'
+
+
+def _finite(v):
+    try:
+        return bool(np.isfinite(float(v)))
+    except (TypeError, ValueError):
+        return False
+
+
+def sentence(r, window_label=None):
+    """Executive wording for one cohort x issue, over the row's own window (`r.window_label`; `window_label` is only
+    the fallback for a row without one). A row that was not tested states its rate and why, with no ratios; a ratio
+    is written only when it is finite."""
+    window = getattr(r, 'window_label', None)
+    window = window if isinstance(window, str) and window else (window_label or 'the cohort window')
+    rate = (f'{r.rate_per_100:.2f} per 100 installed machine-months' if _finite(r.rate_per_100)
+            else 'no installed machine-months')
+    text = f'{r.issue}, {_phrase(r.install_cohort)}: {rate} over {window}'
+    if getattr(r, 'status', '') == 'not_tested':
+        why = getattr(r, 'not_tested_reason', '')
+        return f'{text}; not tested ({why if isinstance(why, str) and why.strip() else "not estimable"}).'
+    if _finite(r.crude_ratio):
+        text += f', {r.crude_ratio:.1f}x the rest of the fleet'
+    same = (f'{r.same_age_ratio:.1f}x other cohorts at the same age over the whole history'
+            if _finite(r.same_age_ratio) else '')
     if r.position == 'newest':
-        text += f' and {r.same_age_ratio:.1f}x earlier installs at the same age'
-    elif np.isfinite(r.newer_ratio) and np.isfinite(r.older_ratio):
-        text += f' ({r.newer_ratio:.1f}x newer installs, {r.older_ratio:.1f}x older installs)'
+        if same:
+            text += f' and {same}'
+    elif _finite(r.newer_ratio) and _finite(r.older_ratio):
+        sides = [f'{r.newer_ratio:.1f}x newer installs', f'{r.older_ratio:.1f}x older installs']
+        if same and getattr(r, 'same_age_check', False):
+            sides.append(same)
+        text += f' ({", ".join(sides)})'
     if getattr(r, 'persisting', False):
         text += '; it stood out in the previous window too'
     return text + '.'

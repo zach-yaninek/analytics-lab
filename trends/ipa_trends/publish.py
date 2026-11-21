@@ -96,7 +96,7 @@ def prepare_tables(result, run_id, defs_hash):
                        for k, src in (('all', 'baseline_positions'), ('labels', 'baseline_label_positions'))}
                 df['baseline_labels'] = df.baseline_set.map(own).fillna(df.baseline_labels)
         if name == 'cohort_contrasts' and len(df):
-            df['window_label'] = s.get('cohort_window')
+            df['window_label'] = df['window_label'] if 'window_label' in df else s.get('cohort_window')
         if name in COLUMNS and len(df):
             df = df[[c for c in COLUMNS[name] if c in df.columns]]
         for c in df.columns:

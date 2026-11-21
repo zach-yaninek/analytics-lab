@@ -527,6 +527,88 @@ def test_same_age_ratio():
     assert close(e[0], 20, 1e-12) and close(o[0], 30, 1e-12) and close(dropped[0], 20 / 50, 1e-12)
 
 
+def test_cohort_positions_per_issue():
+    """The newest testable cohort of each issue is 'newest'; newer, still-filling cohorts are 'too_new'."""
+    dated = ['Before 2016', '2016', '2017', '2018']
+    exp = {'a': [50, 20, 30, 3],          # 2018 still filling up: 2017 is the newest testable cohort
+           'b': [50, 20, 4, 3],           # 2017 and 2018 too small: 2016 is the newest testable cohort
+           'c': [50, 2, 4, 3],            # nothing after the oldest is testable: no 'too_new', 2018 is 'newest'
+           'd': [50, 20, 30, 40]}         # the usual case
+    c = pd.DataFrame([{'install_cohort': k, 'issue_key': i, 'expected_crude': e}
+                      for i, es in exp.items() for k, e in zip(dated + ['Unknown'], es + [12])])
+    pos = COH.positions(c, dated, 10).groupby([c.issue_key, c.install_cohort]).first()
+    assert [pos['a', k] for k in dated + ['Unknown']] == ['oldest', 'interior', 'newest', 'too_new', 'undated']
+    assert [pos['b', k] for k in dated] == ['oldest', 'newest', 'too_new', 'too_new']
+    assert [pos['c', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']
+    assert [pos['d', k] for k in dated] == ['oldest', 'interior', 'interior', 'newest']
+
+
+def test_cohort_call_rule():
+    """Interior: a peak (1.5x the rest, 1.25x newer and older) and, with enough history, 1.25x the same age; newest:
+    1.5x the rest and 1.5x the same age. The p-value is the largest of the comparisons the rule uses."""
+    def row(pos, crude, newer, older, same, dropped=0.0, p=(1e-6, 2e-5, 3e-4, 4e-3)):
+        return {'position': pos, 'crude_ratio': crude, 'newer_ratio': newer, 'older_ratio': older,
+                'same_age_ratio': same, 'same_age_dropped_share': dropped, 'p_crude': p[0], 'p_newer': p[1],
+                'p_older': p[2], 'p_same_age': p[3]}
+    c = pd.DataFrame([row('interior', 2.8, 1.9, 3.8, 1.6),                 # 0 peak, and above the same age
+                      row('interior', 2.6, 2.3, 2.8, 1.0),                 # 1 peak, in line with the same age
+                      row('interior', 2.6, 2.3, 2.8, 1.0),                 # 2 the same, history too short
+                      row('interior', 2.0, 1.1, 2.4, 1.6),                 # 3 no peak (in line with newer installs)
+                      row('newest', 3.3, np.nan, 3.3, 2.9),                # 4 newest
+                      row('newest', 3.3, np.nan, 3.3, 1.2),                # 5 newest, in line with the same age
+                      row('newest', 3.3, np.nan, 3.3, 2.9, dropped=0.5),   # 6 same age not estimable
+                      row('too_new', 9.0, np.nan, 9.0, 9.0),               # 7 never called
+                      row('interior', 0.5, 0.7, 0.6, 0.7),                 # 8 lower: the mirror image
+                      row('interior', 2.8, 1.9, 3.8, 1.6, p=(1e-6, 2e-5, 3e-4, np.nan)),   # 9 missing p counts as 1
+                      row('oldest', 3.0, 3.0, np.nan, 3.0)])               # 10 never called
+    check = [True, True, False, True, True, True, False, False, True, True, False]
+    up, down, p_call, age_like = COH.call_rule(c, 0.5, check)
+    assert list(up) == [True, False, True, False, True, False, False, False, False, True, False]
+    assert list(down) == [False] * 8 + [True, False, False]
+    assert close(p_call[0], 4e-3) and close(p_call[2], 3e-4) and close(p_call[4], 4e-3) and close(p_call[8], 4e-3)
+    assert close(p_call[9], 1.0) and all(close(p_call[i], 1.0) for i in (1, 3, 5, 6, 7, 10))
+    assert list(age_like) == [False, True] + [False] * 9
+
+
+def test_cohort_window_labels_and_history():
+    grid = CAD.period_grid(CAD.Cadence(3), T('2024-01-01'), T('2026-10-01'))
+    full = [7, 8, 9, 10]
+    assert COH.window_label(grid, full) == '2025 Q4 to 2026 Q3'
+    assert COH.window_label(grid, [8, 9, 10], full) == '2026 Q1 to 2026 Q3'
+    assert COH.window_label(grid, [7, 9, 10], full) == '2025 Q4 to 2026 Q3 except 2026 Q1 (incomplete Category labels)'
+    assert COH.window_label(grid, [10], full) == '2026 Q3' and COH.window_label(grid, []) == ''
+    assert COH.history_months(grid, list(range(11))) == 33 and COH.history_months(grid, list(range(1, 8))) == 21
+    assert COH.history_months(grid, []) == 0
+
+
+def test_cohort_sentences():
+    """Not-tested rows state the rate and the reason, with no ratios; ratios are written only when finite; each row
+    uses its own window label."""
+    base = {'issue': 'Touchscreen', 'install_cohort': '2026', 'rate_per_100': 0.6612,
+            'window_label': '2026 Q1 to 2026 Q3', 'status': 'not_tested',
+            'not_tested_reason': 'too new: still filling up (8.7 expected tickets)',
+            'position': 'too_new', 'crude_ratio': np.inf, 'newer_ratio': np.nan, 'older_ratio': 0.9,
+            'same_age_ratio': np.nan, 'same_age_check': False, 'persisting': False}
+    r = pd.Series(base)
+    assert COH.sentence(r, 'ignored') == ('Touchscreen, 2026 installs: 0.66 per 100 installed machine-months over '
+                                          '2026 Q1 to 2026 Q3; not tested (too new: still filling up (8.7 expected '
+                                          'tickets)).')
+    r = pd.Series({**base, 'install_cohort': 'Before 2016', 'status': 'no_clear_difference', 'position': 'oldest'})
+    s = COH.sentence(r)
+    assert s.startswith('Touchscreen, installs before 2016: 0.66 per 100') and 'inf' not in s and 'nan' not in s
+    r = pd.Series({**base, 'install_cohort': '2022', 'status': 'stands_out_higher', 'position': 'interior',
+                   'crude_ratio': 2.75, 'newer_ratio': 1.85, 'older_ratio': 3.78, 'same_age_ratio': 1.65,
+                   'same_age_check': True, 'persisting': True})
+    assert COH.sentence(r).endswith('2.8x the rest of the fleet (1.9x newer installs, 3.8x older installs, 1.6x other '
+                                    'cohorts at the same age over the whole history); it stood out in the previous '
+                                    'window too.')
+    r = pd.Series({**base, 'status': 'stands_out_higher', 'position': 'newest', 'crude_ratio': 3.27,
+                   'same_age_ratio': 2.92, 'window_label': None})
+    assert COH.sentence(r, '2025 Q4 to 2026 Q3') == (
+        'Touchscreen, 2026 installs: 0.66 per 100 installed machine-months over 2025 Q4 to 2026 Q3, 3.3x the rest of '
+        'the fleet and 2.9x other cohorts at the same age over the whole history.')
+
+
 def test_day_factors():
     grid = CAD.period_grid(CAD.Cadence(1), T('2026-01-01'), T('2026-04-01'))
     days = pd.date_range('2026-01-01', '2026-03-31', freq='D')

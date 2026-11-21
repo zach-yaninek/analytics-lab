@@ -87,7 +87,8 @@ Tickets (window 2024-01-01..2026-11-14 inclusive, Eastern)
 
 Planted effects (--null plants none of them; variant features still apply)
   1. touchscreen_install_cohort: Electronics / Touchscreen x3 for machines installed in calendar 2022 or 2023,
-     throughout the window (a cohort difference, not a change).
+     throughout the window (a cohort difference, not a change). The variants cohort_2025 and age_hump change this
+     effect (so they cannot be combined with --null).
   2. deposit_door_rise: Electro/Mechanical / Deposit Door x2 fleet-wide for tickets opened 2026-07-01..2026-09-30
      (the last complete quarter at the 2026-11-15 export).
   3. alex_computer_board_fall: Electronics / Computer Board x0.4 for family alEx, opened 2026-07-01..2026-09-30.
@@ -120,6 +121,13 @@ Variants (--variant NAME; each changes only what it says)
   blank_install        20% of listed machines have a blank Install Date (Go Live Date kept).
   blank_list_fields    3 listed machines with a blank Account Name, 3 with a blank Model, 3 with a blank Product
                        Family, and 2 rows with a blank Serial Number (their tickets then match no listed machine).
+  cohort_2025          planted effect 1 moved to 2025 installs: Touchscreen x3 for machines installed in calendar
+                       2025 instead of 2022-23 (in early-2026 runs the 2026 cohort is still filling up, so 2025 is
+                       the newest cohort that can be tested).
+  age_hump             planted effect 1 as an age effect, not a cohort effect: Touchscreen x3 while a machine is 3 to 5
+                       years old (from its 3rd to its 5th install anniversary), the same for every install year. In
+                       any one window the install years at that age form a peak in the install-date profile, but no
+                       install cohort differs from machines of the same age in other cohorts.
 
 truth.json
   seed, null, variant, scale, window [first, last day], extract_date, snapshots [dates], case_file,
@@ -264,6 +272,8 @@ WEEKEND_HOLIDAY = 0.3
 REMOVED_MULT, REMOVED_MULT_2X, THIRD_PARTY_MULT = 1.5, 2.0, 0.02
 TS_MULT, DD_MULT, CB_MULT, SPIKE_MULT = 3.0, 2.0, 0.4, 3.0
 COHORT_YEARS = (2022, 2023)
+COHORT_YEARS_2025 = (2025,)          # variant cohort_2025
+HUMP_YEARS = (3, 5)                  # variant age_hump: Touchscreen x3 from the 3rd to the 5th install anniversary
 MONITORING_SHARE = 0.02
 CANCEL_SHARE, PM_SHARE, DUPLICATE_SHARE, INSTALL_TICKET_SHARE = 0.032, 0.016, 0.006, 0.07
 ACCOUNT_MISMATCH, STRAY_SPACE, SUB_BLANK = 0.02, 0.003, 0.31
@@ -298,7 +308,11 @@ VARIANTS = {
     'removed_2x': "removed machines at 2x the listed rate",
     'blank_install': "20% of listed machines with a blank Install Date",
     'blank_list_fields': "a few listed machines with blank Account Name / Model / Product Family, 2 blank serials",
+    'cohort_2025': "planted Touchscreen x3 on 2025 installs instead of 2022-23 (not with --null)",
+    'age_hump': "planted Touchscreen x3 while a machine is 3-5 years old, any install year, instead of the 2022-23 "
+                "cohort effect (not with --null)",
 }
+TOUCHSCREEN_VARIANTS = ('cohort_2025', 'age_hump')      # they change planted effect 1
 STREAMS = ['fleet', 'shock', 'main', 'removed2x', 'extras', 'special', 'case', 'variant']
 MARKER = 'synthetic: trends/tests/make_trend_fixture.py'
 
@@ -562,9 +576,13 @@ def _simulate(lam, rows, f, cal, null, spike, seq, tag):
                    tag + '_duplicate', _take(fd, keep[cand]))]
     q3 = np.flatnonzero(cal['q3'])
     if not null:
-        rr = rows[f['cohort'][rows]]                   # Touchscreen x3 for 2022-23 installs (extra 2x)
-        mm, dd = _poisson_events(r_ts, lam[rr] * ((TS_MULT - 1) * W[I_TS]))
-        parts.append(_part(rr[mm], dd, 'unplanned', TC[I_TS], CAT[I_TS], tag + '_ts', _fields(len(mm), r_ts)))
+        if f.get('hump') is not None:                  # age_hump: Touchscreen x3 at age 3-5 years (extra 2x)
+            mm, dd = _poisson_events(r_ts, lam[rows] * f['hump'][rows] * ((TS_MULT - 1) * W[I_TS]))
+            parts.append(_part(rows[mm], dd, 'unplanned', TC[I_TS], CAT[I_TS], tag + '_ts', _fields(len(mm), r_ts)))
+        else:
+            rr = rows[f['cohort'][rows]]               # Touchscreen x3 for 2022-23 installs (extra 2x)
+            mm, dd = _poisson_events(r_ts, lam[rr] * ((TS_MULT - 1) * W[I_TS]))
+            parts.append(_part(rr[mm], dd, 'unplanned', TC[I_TS], CAT[I_TS], tag + '_ts', _fields(len(mm), r_ts)))
         mm, dd = _poisson_events(r_dd, lam[np.ix_(rows, q3)] * ((DD_MULT - 1) * W[I_DD]))
         parts.append(_part(rows[mm], q3[dd], 'unplanned', TC[I_DD], CAT[I_DD], tag + '_dd', _fields(len(mm), r_dd)))
     if spike:
@@ -822,6 +840,8 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0, split_f
         raise ValueError('snapshots must be at least 1')
     if not scale > 0:
         raise ValueError('scale must be positive')
+    if null and variant in TOUCHSCREEN_VARIANTS:
+        raise ValueError(f'variant {variant} changes planted effect 1, which --null does not plant')
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     _check_out_dir(out)
@@ -831,6 +851,14 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0, split_f
     # fleet, calendar, null intensity
     f, acc = _make_fleet(rng['fleet'], scale)
     f['frailty_m'] = acc['frailty'][f['acct']]
+    spec = [dict(e) for e in PLANTED]           # the planted effects, effect 1 as the variant has it
+    if variant == 'cohort_2025':
+        f['cohort'] = np.isin(f['year'], COHORT_YEARS_2025)
+        spec[0]['scope'] = {'install_years': list(COHORT_YEARS_2025)}
+    if variant == 'age_hump':
+        age = np.arange(N_DAYS)[None, :] - f['install_idx'][:f['n_grid'], None]
+        f['hump'] = (age >= HUMP_YEARS[0] * 365.25) & (age < HUMP_YEARS[1] * 365.25)
+        spec[0].update(name='touchscreen_age_hump', scope={'age_years': list(HUMP_YEARS)})
     cal = _calendar(rng['shock'])
     lam, active, base = _intensity(f, cal)
     n_grid = f['n_grid']
@@ -948,7 +976,7 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0, split_f
         e = np.ones((len(rows), N_DAYS))
         if not null:
             if i == I_TS and drop != 'ts':
-                e[f['cohort'][rows]] *= TS_MULT
+                e[f['hump'][rows] if f.get('hump') is not None else f['cohort'][rows]] *= TS_MULT
             if i == I_DD and drop != 'dd':
                 e[:, cal['q3']] *= DD_MULT
             if i == I_CB and drop != 'cb':
@@ -997,7 +1025,10 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0, split_f
                     'exposure_months_by_month': monthly(expo)})
         return res
 
-    planted = [] if null else [cell(e, False) for e in PLANTED]
+    planted = [] if null else [cell(e, False) for e in spec]
+    if variant in TOUCHSCREEN_VARIANTS:
+        info.update({'effect': spec[0]['name'], 'scope': spec[0]['scope'], 'multiplier': TS_MULT,
+                     'instead_of': {'install_years': list(COHORT_YEARS)}})
     lam_pop = lam[pop] * rowmult[pop, None]
     gen_total = lam_pop.sum()
     for i in (I_TS, I_DD, I_CB):
@@ -1104,7 +1135,11 @@ def build(out, seed=7, null=False, variant=None, snapshots=1, scale=1.0, split_f
         'variant_info': info, 'base_rate_per_machine_day': base, 'monitoring_share': MONITORING_SHARE,
         'generator': MARKER})
     (out / 'truth.json').write_text(json.dumps(truth, indent=1, default=str) + '\n', encoding='utf-8')
-    label_of = {'touchscreen_install_cohort': 'Touchscreen 2022-23 installs', 'deposit_door_rise': 'Deposit Door',
+    years = [str(y) for y in spec[0]['scope'].get('install_years', [])]
+    label_of = {'touchscreen_install_cohort': f"Touchscreen {'-'.join(years[:1] + [y[2:] for y in years[1:][-1:]])} "
+                                              'installs',
+                'touchscreen_age_hump': f'Touchscreen at age {HUMP_YEARS[0]}-{HUMP_YEARS[1]} years',
+                'deposit_door_rise': 'Deposit Door',
                 'alex_computer_board_fall': 'alEx Computer Board'}
     summary = '; '.join(f"{label_of[e['name']]} {e['expected_in_2026Q3']:.1f} "
                         f"(without effect {e['expected_without_effect_in_2026Q3']:.1f})"

@@ -419,7 +419,7 @@ def _run(P, verbose, out):
         prevc = COH.contrasts(ctx, prev_pos)[0] if prev_pos is not None else None
         contrasts = COH.add_persisting(contrasts, prevc)
         if not contrasts.empty:
-            contrasts['sentence'] = [COH.sentence(r, kinfo['window_label']) for r in contrasts.itertuples()]
+            contrasts['sentence'] = [COH.sentence(r) for r in contrasts.itertuples()]   # each row's own window
 
     # tables
     periods = grid.copy()
@@ -527,6 +527,7 @@ def make_summary(P, grid, latest_pos, cinfo, kinfo, changes, contrasts, popres, 
         s['tested'] = int(changes.eligible.sum())
         s['cohort_call_outs'] = int(contrasts.status.str.startswith('stands_out').sum()) if len(contrasts) else 0
         s['cohort_window'] = kinfo.get('window_label')
+        s['cohort_window_issue_level'] = kinfo.get('window_label_issue_level')
         lp = dq.iloc[latest_pos]
         s['latest_unlisted_share'] = float(lp.unlisted_share)
     open_p = grid[grid.status.isin(['provisional', 'in_progress'])]
